@@ -1,3 +1,29 @@
+0.19.2
+
+New features:
+
+ * Option to specify maximum source size (thanks to Raitzu for the idea)
+ * Option to zoom out towards page middle (disabled by default, thanks to Noodlers for the idea)
+ * Option to control referer headers for JDownloader batch downloading (set to per-domain by default)
+ * Support for ~45 new websites (using ~20 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Fandom/Wikia)
+
+Bugfixes:
+
+ * Work around a chrome bug where volume changing through mouse wheel doesn't work under bilibili.com (#771, thanks to isBoom for reporting)
+ * Fix rotated popups not behaving properly with "movement" popup position (#777, thanks to Noodlers for reporting)
+ * Support backslash key on less common keyboard layouts (thanks to Noodlers for reporting)
+ * Zooming out with incremental zoom will not jump around anymore when popup size < viewport size
+ * Fix JDownloader re-processing images (thanks to Jiaz from JDownloader)
+ * Fix crashes on sites where JSON.stringify is blocked
+
+Special thanks to nimbuz, Noodlers, nimuxoha, isBoom, Raitzu, Rainy, KyuJuEX099, fedesk, Liz, MinuteAd8502, Jiaz, snec for their contributions and reports for this release
+
+---
+
 0.19.1
 
 <b>Note: Instagram's native API (which finds 1440x images) is disabled by default with this release.</b> You can enable it if you wish ("Instagram: Use native API" under Rules), but it is known to flag accounts as of a recent Instagram update.

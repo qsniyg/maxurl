@@ -418,6 +418,7 @@ artspace712.com
 artsphere.fr
 artstation.com
 artwork.jaxsta.com
+artworks.thetvdb.com
 aryion.com
 ascii.jp
 asexypanties.com
@@ -439,6 +440,7 @@ asiansister.com
 asianteenpics.com
 asianteenpictures.com
 asianthumbs.org
+asiantolick.com
 asiantubevid.com
 asianxxxpics.com
 asiauncensored.com
@@ -490,6 +492,7 @@ assets.mubi.com
 assets.mubicdn.net
 assets.mycast.io
 assets.myzeki.com
+assets.nintendo.com
 assets.nos.nl
 assets.nuuvem.com
 assets.nydailynews.com
@@ -546,6 +549,7 @@ attachments.readmedia.com.s3.amazonaws.com
 attitude.co.uk
 audio.gafamfree.party
 auntjudys.com
+austrianfilms.com
 auto.sina.com.cn
 auto.sk
 autoevolution.com
@@ -734,6 +738,7 @@ bittube.video
 biztribune.co.kr
 bizweb.dktcdn.net
 bjwinslow.com
+bkimg.cdn.bcebos.com
 bkt-respaldomtonline.s3.amazonaws.com
 bl.definefetish.com
 black-leatherjacket.com
@@ -794,6 +799,7 @@ bomb01.com
 bomz.org
 bonjourlesmadames.fr
 bonnassesworld.com
+bonprix.scene7.com
 bontonland.cz
 boobgoddess.com
 boobieblog.com
@@ -845,7 +851,6 @@ bssl.es
 bstars.eu
 bstars.ru
 bstoday.kr
-bt.bmcdn.dk
 btime.com
 btrtoday.?.digitaloceanspaces.com
 bucket.scribblelive.com.s3.amazonaws.com
@@ -885,6 +890,7 @@ c.bookwalker.jp
 c.fantia.jp
 c.fc2.com
 c.igte.ch
+c.imgz.jp
 c.o0bg.com
 c.puzzcore.com
 c.shld.net
@@ -1070,6 +1076,7 @@ cdn.downriversundaytimes.com
 cdn.downtoearth.org.in
 cdn.dribbble.com
 cdn.ebaumsworld.com
+cdn.elineupmall.com
 cdn.emetro.co.kr
 cdn.empireonline.com
 cdn.entertainmentfuse.com
@@ -1161,12 +1168,14 @@ cdn.newsen.com
 cdn.newsfreezone.co.kr
 cdn.newsinside.kr
 cdn.newsserve.net
+cdn.nguyenkimmall.com
 cdn.nivoli.com
 cdn.nsfw.exchange
 cdn.nudexxx.pics
 cdn.nwmgroups.hu
 cdn.oboi7.com
 cdn.odigo.net
+cdn.ok.de
 cdn.okdress.co.nz
 cdn.okjeok.hr
 cdn.okmag.de
@@ -1218,6 +1227,7 @@ cdn.sex.com
 cdn.sharesome.com
 cdn.shazoo.ru
 cdn.shesfreaky.com
+cdn.shopclues.com
 cdn.shoplightspeed.com
 cdn.simplesite.com
 cdn.sinemia.com
@@ -1226,6 +1236,7 @@ cdn.slant.co
 cdn.slushe.com
 cdn.smutie.com
 cdn.snsimg.carview.co.jp
+cdn.sonyselect.com.cn
 cdn.spacetelescope.org
 cdn.spermmania.com
 cdn.spinrilla.com
@@ -1270,6 +1281,7 @@ cdn.webnoviny.sk
 cdn.webshopapp.com
 cdn.wegow.com
 cdn.wikimg.net
+cdn.wimg.jp
 cdn.worldcosplay.net
 cdn.xn--cumpleaosdefamosos-t0b.com
 cdn.xnxxpics.top
@@ -1592,6 +1604,7 @@ crhoy.net
 criturk.com
 crnobelo.com
 cropper.watch.aetnd.com
+crossfire.nu
 crosti.ru
 crunchyroll.com
 cryengine.com
@@ -1632,6 +1645,7 @@ d1466nnw0ex81e.cloudfront.net
 d15eldcwi10xcl.cloudfront.net
 d15hng3vemx011.cloudfront.net
 d15mj6e6qmt1na.cloudfront.net
+d166chel5lrjm5.cloudfront.net
 d16klsh1z1xre7.cloudfront.net
 d17c3xisf00oox.cloudfront.net
 d17fnq9dkz9hgj.cloudfront.net
@@ -1767,6 +1781,7 @@ dailyxtra.com
 dainikbhaskar.com
 dajiazhao.com
 dalangw.com
+dam-p-dfi.pqcloud.eu
 damimage.com
 dangerousminds.net
 dantricdn.com
@@ -2032,6 +2047,7 @@ easycelebritys.com
 easyhotpics.com
 ebayimg.com
 ebaystatic.com
+ec56229aec51f1baff1d-185c3068e22352c56024573e929788ff.ssl.cf1.rackcdn.com
 ecestaticos.com
 echosrecordbar.co.za
 econet.ru
@@ -2177,6 +2193,7 @@ europaplus.ru
 eva.bg
 eva.vn
 evawigs.com
+evelyn.tokyo.jp
 eveningecho.ie
 eventpixx.org
 everipedia-storage.s3.amazonaws.com
@@ -2187,6 +2204,7 @@ ex.f3img.gq
 executiveponies.com
 exgirlfriendmarket.com
 exl.io
+exlibris.azureedge.net
 explicithd.com
 expo.advance.net
 expofashionmagazine.com
@@ -2355,6 +2373,7 @@ fileup.calobye.com
 film-download.club
 film-like.com
 film.kinootziv.com
+filmfans.org
 filmibeat.com
 filmitena.com
 filmix.co
@@ -2515,6 +2534,7 @@ funweek.it
 fuqer.com
 furaffinity.net
 furbooru.org
+furniture1.eu
 furrycdn.org
 fuse.tv
 fuskator.com
@@ -2839,6 +2859,7 @@ heavenlynudes.net
 hebeilong.com
 heise.cloudimg.io
 hekkersmannen.nl
+hello-online.org
 helloidol.com
 hellomagazine.com
 helmstedter-nachrichten.de
@@ -3078,6 +3099,7 @@ i.slkimg.com
 i.smalljoys.me
 i.stack.imgur.com
 i.stpl.gr
+i.stpost.com
 i.sunhome.ru
 i.supload.com
 i.swisscows.ch
@@ -3090,6 +3112,7 @@ i.vidble.com
 i.videyo.net
 i.vimeocdn.com
 i.warosu.org
+i.weltbild.de
 i.wgirlz.us
 i.widelec.org
 i.wpimg.pl
@@ -3203,6 +3226,7 @@ image.dnevnik.hr
 image.entertainment-topics.jp
 image.europafm.com
 image.farm
+image.film.at
 image.fnnews.com
 image.fomos.kr
 image.gala.de
@@ -3250,6 +3274,7 @@ image.newstomato.com
 image.nj.com
 image.noelshack.com
 image.notepet.co.kr
+image.over-blog.com
 image.pbs.org
 image.phimmoi.net
 image.photocnc.com
@@ -3343,6 +3368,7 @@ images.archant.co.uk
 images.ardmediathek.de
 images.asianporn.photos
 images.asianstar.cz
+images.asics.com
 images.ask.com
 images.askmen.com
 images.asmhentai.com
@@ -3542,6 +3568,7 @@ images.thestar.com
 images.thewest.com.au
 images.toofab.com
 images.tori.fi
+images.tou.tv
 images.treccani.it
 images.twistmagazine.com
 images.ulta.com
@@ -3596,8 +3623,10 @@ img-comic.pximg.net
 img-dpreview.com
 img-fotki.yandex.ru
 img-ha.mthcdn.com
+img-hw.xvideos-cdn.com
 img-hw.xvideos.com
 img-mdpr.freetls.fastly.net
+img-news-dwango-jp-prod.s3.amazonaws.com
 img-ovh-cloud.zszywka.pl
 img-proxy.blog-video.jp
 img-s-msn-com.akamaized.net
@@ -4018,6 +4047,7 @@ imgpark.donga.com
 imgpic.org
 imgpile.com
 imgpost.co.uk
+imgprime.com
 imgproc.airliners.net
 imgproxy.camclips.cc
 imgproxy.camclips.to
@@ -4164,6 +4194,7 @@ itc.cn
 itch.io
 itedou.com
 item.ssgcdn.com
+itemimg-rcw.runway-webstore.net
 items.gog.com
 itn.dmarge.com
 itpro.nikkeibp.co.jp
@@ -4673,6 +4704,7 @@ matrix-client.matrix.org
 mature-porn.xxx
 maturexxxpics.net
 max-pix.com
+maxbhi.com
 maxim.com
 maxima.pt
 maximkorea.net
@@ -5487,6 +5519,7 @@ optimole.com
 orebtvnsretjvneokqmefoiunm.s3.amazonaws.com
 orsm.net
 oshiete.xgoo.jp
+osobnosti.cz
 oss.tan8.com
 otakotaku.com
 otaku.com
@@ -5920,6 +5953,7 @@ productserve.com
 prof.prepics-cdn.com
 profimedia.com
 programma.sorrisi.com
+programme-tv.leparisien.fr
 prokote.info
 promiflash.de
 promo.foxes.com
@@ -6240,6 +6274,7 @@ s.pornpics.today
 s.pornpictures.space
 s.properm.ru
 s.rozali.com
+s.sankakucomplex.com
 s.sc-cdn.net
 s.sdgcdn.com
 s.sexoic.com
@@ -6347,6 +6382,7 @@ seoul.co.kr
 seoulilbo.com
 sephora.com
 serey.io
+serienfans.org
 seriouseats.com
 sesso-escort.com
 sevelina.ru
@@ -6450,6 +6486,7 @@ skeptikon.fr
 sketchuptextureclub.com
 skinnygossip.com
 skinzwearphotography.com
+sklep.swiatkwiatow.pl
 sks-52.ru
 skwww.plusden.sk
 sky-seller.com
@@ -6659,6 +6696,7 @@ static.congnghe.vn
 static.cosplay-it.com
 static.dir.bg
 static.discovery-expedition.com
+static.displate.com
 static.doramatv.me
 static.e-junkie.com.s3.amazonaws.com
 static.ellahoy.es
@@ -6701,6 +6739,7 @@ static.jmusicitalia.com
 static.jpg.pl
 static.juksy.com
 static.keptelenseg.hu
+static.kino.de
 static.kinoafisha.info
 static.kinokopilka.pro
 static.klix.ba
@@ -6951,6 +6990,7 @@ taboofamily.co
 tacamateurs.com
 tag-fox.com
 tagbrand.com
+tagesspiegel.de
 tahrirnews.com
 taipeitimes.com
 take.az
@@ -7217,6 +7257,7 @@ topdesk.s3.amazonaws.com
 tophit.ru
 topstarnews.net
 topwam.com
+torako.wakarimasen.moe
 torrenthaja.com
 totalworld.s3.amazonaws.com
 tour-rest.ru
@@ -7618,6 +7659,7 @@ walmartimages.com
 walter.trakt.tv
 wanelo.com
 wangsuimg.fanshuapp.com
+wanibooks-newscrunch.com
 wankerson.com
 wankoz.com
 wanktank.co
@@ -7630,6 +7672,7 @@ warwick.film
 wasabi-files.lbstatic.nu
 washingtonpost.com
 washwasha.org
+wasliestdu.de
 watch4beauty.com
 watchdust.com
 watchmyexgf.good-cdn.com

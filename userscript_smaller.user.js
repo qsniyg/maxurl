@@ -23,9 +23,14 @@
 // @name:ko           Image Max URL
 // @name:nb           Image Max URL
 // @name:nl           Image Max URL
+// @name:pl           Image Max URL
+// @name:pt-BR        Image Max URL
 // @name:ru           Image Max URL
 // @name:bg           Image Max URL
 // @name:uk           Image Max URL
+// @name:th           Image Max URL
+// @name:tr           Image Max URL
+// @name:vi           Image Max URL
 // @name:zh           Image Max URL
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
@@ -51,15 +56,20 @@
 // @description:ko    7900개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
 // @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 7900 nettsteder
 // @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 7900 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 7900 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 7900 sites
 // @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7900 веб-сайтов
 // @description:bg    Намира увеличени или оригинални версии на изображения за повече от 7900 уеб сайтове
 // @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 7900 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 7900 งเว็บไซต์
+// @description:tr    7900'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 7900 trang web
 // @description:zh    为7900多个网站查找更大或原始图像
 // @description:zh-CN 为7900多个网站查找更大或原始图像
 // @description:zh-TW 為7900多個網站查找更大或原始圖像
 // @description:zh-HK 為7900多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           0.19.1
+// @version           0.19.2
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -422,8 +432,14 @@ var $$IMU_EXPORT$$;
 		};
 	}
 
-	var JSON_stringify = JSON.stringify;
+	var JSON_stringify;
 	var JSON_parse = JSON.parse;
+
+	// parseInt occasionally crashes for tagesspiegel.de with brave shields and violentmonkey 2.13.0
+	// seems to be a race, as it sometimes works, and it always works in the console
+	var parse_int = function(x) {
+		return x|0;
+	};
 
 	var base64_decode, base64_encode,
 		is_array, array_indexof, string_indexof,
@@ -448,6 +464,68 @@ var $$IMU_EXPORT$$;
 
 	var get_compat_functions = function() {
 		var native_functions_to_get = [];
+
+		// ublock prevents JSON.stringify from being used on foxnews.com
+		var get_json_stringify = function() {
+			try {
+				JSON_stringify = JSON.stringify;
+			} catch (e) {
+				console_warn("Cannot use native JSON.stringify, using slow implementation instead", e);
+
+				var is_json_undefined = function(x) {
+					return x === void 0 || typeof x === "function";
+				};
+
+				// probably incorrect (especially regarding string handling) and doesn't support formatting
+				// does it matter?
+				JSON_stringify = function(x) {
+					if (is_json_undefined(x))
+						return void 0;
+
+					if (typeof x === "string") {
+						return '"' + x
+							.replace(/\\/g, "\\\\")
+							.replace(/"/g, '\\"') + '"';
+					}
+
+					if (x === null)
+						return "null";
+
+					if (typeof x === "number")
+						return x + "";
+
+					if (is_array(x)) {
+						var els = [];
+						for (var i = 0; i < x.length; i++) {
+							var stringified = JSON_stringify(x[i]);
+							if (stringified === void 0)
+								stringified = "null";
+
+							els.push(stringified);
+						}
+
+						return "[" + els.join(",") + "]";
+					}
+
+					if (typeof x === "object") {
+						var els = [];
+						for (var key in x) {
+							var stringified = JSON_stringify(x[key]);
+							if (stringified === void 0)
+								continue;
+
+							els.push('"' + key + '":' + JSON_stringify(x[key]));
+						}
+
+						return "{" + els.join(",") + "}";
+					}
+
+					// does this happen?
+					return void 0;
+				};
+			}
+		};
+		get_json_stringify();
 
 		// Nano Defender(?) overrides this on some sites.
 		var get_orig_eventtarget = function() {
@@ -1905,7 +1983,7 @@ var $$IMU_EXPORT$$;
 
 			if (data.retry_503) {
 				if (data.retry_503 === true || typeof data.retry_503 !== "number")
-					data.retry_503 = parseInt(settings.retry_503_times) || 0;
+					data.retry_503 = parse_int(settings.retry_503_times);
 
 				if (data.retry_503 > 0) {
 					var real_onload_503 = data.onload;
@@ -1922,7 +2000,7 @@ var $$IMU_EXPORT$$;
 
 							setTimeout(function() {
 								do_request(orig_data);
-							}, parseInt(settings.retry_503_ms) || 1);
+							}, parse_int(settings.retry_503_ms) || 1);
 						} else {
 							if (iserror) {
 								real_onerror_503(resp);
@@ -2355,7 +2433,7 @@ var $$IMU_EXPORT$$;
 			} else {
 				// todo: improve
 				var range = headers["content-range"].split("/");
-				return parseInt(range[1]);
+				return parse_int(range[1]);
 			}
 		};
 
@@ -2391,7 +2469,7 @@ var $$IMU_EXPORT$$;
 					if (!length) {
 						var headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
 						if ("content-length" in headers) {
-							length = parseInt(headers["content-length"]);
+							length = parse_int(headers["content-length"]);
 						}
 					}
 
@@ -3756,14 +3834,6 @@ var $$IMU_EXPORT$$;
 		"Excludes the page background for the popup": {
 			"ko": "\uD31D\uC5C5\uC5D0 \uB300\uD55C \uD398\uC774\uC9C0 \uBC30\uACBD \uC81C\uC678",
 			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0435\u0442 \u0444\u043E\u043D \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u0434\u043B\u044F \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043E\u043A\u043D\u0430."
-		},
-		"Minimum image size": {
-			"ko": "\uCD5C\uC18C \uC774\uBBF8\uC9C0 \uD06C\uAE30",
-			"ru": "\u041C\u0438\u043D\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u0440\u0430\u0437\u043C\u0435\u0440 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u044F"
-		},
-		"Smallest size acceptable for the popup to open (this option is ignored for background images)": {
-			"ko": "\uD31D\uC5C5\uC774 \uC5F4\uB9B4 \uC218 \uC788\uB294 \uCD5C\uC18C \uD06C\uAE30 (\uBC31\uADF8\uB77C\uC6B4\uB4DC \uC774\uBBF8\uC9C0\uC5D0\uC11C\uB294 \uC774 \uC635\uC158\uC774 \uBB34\uC2DC\uB428)",
-			"ru": "\u041D\u0430\u0438\u043C\u0435\u043D\u044C\u0448\u0438\u0439 \u0440\u0430\u0437\u043C\u0435\u0440, \u043F\u0440\u0438\u0435\u043C\u043B\u0435\u043C\u044B\u0439 \u0434\u043B\u044F \u043E\u0442\u043A\u0440\u044B\u0442\u0438\u044F \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043E\u043A\u043D\u0430 (\u044D\u0442\u043E\u0442 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440 \u0438\u0433\u043D\u043E\u0440\u0438\u0440\u0443\u0435\u0442\u0441\u044F \u0434\u043B\u044F \u0444\u043E\u043D\u043E\u0432\u044B\u0445 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0439)."
 		},
 		"Exclude `background-image`s": {
 			"ko": "\uBC30\uACBD \uC774\uBBF8\uC9C0 \uC81C\uC678",
@@ -5426,7 +5496,7 @@ var $$IMU_EXPORT$$;
 			if (str[i] == '%') {
 				if ((i + 2) < str.length) {
 					if (str[i + 1] == '%') {
-						var num = parseInt(str[i + 2]);
+						var num = parse_int(str[i + 2]);
 						if (!isNaN(num)) {
 							parts.push(currentpart);
 							currentpart = "";
@@ -5558,6 +5628,8 @@ var $$IMU_EXPORT$$;
 		//mouseover_use_fully_loaded_image: is_extension ? false : true,
 		//mouseover_use_fully_loaded_video: false,
 		mouseover_minimum_size: 20,
+		// thanks to Raitzu on discord for the idea
+		popup_maximum_source_size: 0,
 		mouseover_exclude_backgroundimages: false,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		mouseover_exclude_page_bg: true,
@@ -5648,6 +5720,8 @@ var $$IMU_EXPORT$$;
 		scroll_override_page: false,
 		// thanks to regis on discord for the idea
 		scroll_zoom_origin: "cursor",
+		// thanks to Noodlers on discord for the idea
+		scroll_zoomout_pagemiddle: "never",
 		scroll_zoom_behavior: "fitfull",
 		// thanks to regis on discord for the idea
 		scroll_incremental_mult: 1.25,
@@ -5695,6 +5769,7 @@ var $$IMU_EXPORT$$;
 		gallery_download_unchanged: true,
 		gallery_zip_filename_format: "{host_domain_nosub}-{items_amt}-{download_unix}\n{items_amt}-{download_unix}",
 		gallery_jd_autostart: false,
+		gallery_jd_referer: "domain",
 		gallery_zip_add_tld: true,
 		gallery_zip_add_info_file: true,
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
@@ -6471,8 +6546,20 @@ var $$IMU_EXPORT$$;
 			subcategory: "source"
 		},
 		mouseover_minimum_size: {
-			name: "Minimum image size",
-			description: "Smallest size acceptable for the popup to open (this option is ignored for background images)",
+			name: "Minimum size",
+			description: "Smallest size acceptable for the popup to open (this option is ignored for background images). This refers to the size of the media to be popped up, which may differ from the source media.",
+			requires: {
+				mouseover: true
+			},
+			type: "number",
+			number_min: 0,
+			number_unit: "pixels",
+			category: "popup",
+			subcategory: "source"
+		},
+		popup_maximum_source_size: {
+			name: "Maximum source size",
+			description: "Maximum size (width/height) for the source media to allow popping up (this option is ignored for background images). Set to `0` for any size.",
 			requires: {
 				mouseover: true
 			},
@@ -7554,6 +7641,28 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "behavior"
 		},
+		scroll_zoomout_pagemiddle: {
+			name: "Zoom out towards page middle",
+			description: "Sets the origin when zooming out to the page middle, overriding the \"Zoom Origin\" option above.",
+			options: {
+				_type: "combo",
+				always: {
+					name: "Always"
+				},
+				viewport: {
+					name: "Within viewport"
+				},
+				never: {
+					name: "Never"
+				}
+			},
+			requires: [
+				{mouseover_scrollx_behavior: "zoom"},
+				{mouseover_scrolly_behavior: "zoom"}
+			],
+			category: "popup",
+			subcategory: "behavior"
+		},
 		scroll_zoom_behavior: {
 			name: "Zoom behavior",
 			description: "How zooming should work",
@@ -8157,6 +8266,27 @@ var $$IMU_EXPORT$$;
 			description: "Autostarts the download when added to JDownloader",
 			requires: {
 				gallery_download_method: "jdownloader"
+			},
+			category: "popup",
+			subcategory: "gallery"
+		},
+		gallery_jd_referer: {
+			name: "JD: Referer policy",
+			description: "Due to a current limitation in JDownloader's API, the `Referer` (sic) header can only be set on a per-package basis. This option allows working around it by submitting multiple packages with the same name using different Referer headers. This can result in JD spamming notifications due to the number of packages created.",
+			requires: {
+				gallery_download_method: "jdownloader"
+			},
+			options: {
+				_type: "combo",
+				"never": {
+					name: "Never"
+				},
+				"domain": {
+					name: "Per-domain"
+				},
+				"always": {
+					name: "Always"
+				}
 			},
 			category: "popup",
 			subcategory: "gallery"
@@ -10259,7 +10389,7 @@ var $$IMU_EXPORT$$;
 		return queries;
 	}
 
-	function stringify_queries(queries) {
+	function stringify_queries(queries, encode) {
 		var queriesstr = [];
 
 		for (var query in queries) {
@@ -10267,8 +10397,11 @@ var $$IMU_EXPORT$$;
 				continue;
 
 			var current_query = query;
+			var queryval = queries[query];
+			if (encode)
+				queryval = encodeURIComponent(queryval);
 			if (queries[query] !== true) {
-				current_query += "=" + queries[query];
+				current_query += "=" + queryval;
 			}
 
 			queriesstr.push(current_query);
@@ -10453,6 +10586,10 @@ var $$IMU_EXPORT$$;
 	};
 
 	function version_compare(a, b) {
+		// just in case
+		if (typeof a !== "string" || typeof b !== "string")
+			return null;
+
 		var version_regex = /^[0-9]+(\.[0-9]+){0,}$/;
 		if (!version_regex.test(a) ||
 			!version_regex.test(b))
@@ -10467,8 +10604,8 @@ var $$IMU_EXPORT$$;
 		}
 
 		for (var i = 0; i < a_split.length; i++) {
-			var an = parseInt(a_split[i]);
-			var bn = parseInt(b_split[i]);
+			var an = parse_int(a_split[i]);
+			var bn = parse_int(b_split[i]);
 
 			if (an < bn)
 				return 1;
@@ -10662,14 +10799,14 @@ var $$IMU_EXPORT$$;
 		if (a.length !== 8 || b.length !== 8)
 			return false;
 
-		var a_d = parseInt(a.substr(6, 2));
-		var b_d = parseInt(b.substr(6, 2));
+		var a_d = parse_int(a.substr(6, 2));
+		var b_d = parse_int(b.substr(6, 2));
 
 		if (!_fuzzy_compare_rollover(a_d, b_d, [28, 29, 30, 31]))
 			return false;
 
-		var a_m = parseInt(a.substr(4, 2));
-		var b_m = parseInt(b.substr(4, 2));
+		var a_m = parse_int(a.substr(4, 2));
+		var b_m = parse_int(b.substr(4, 2));
 
 		var d_rollover = _is_larger_rollover(a_d, b_d, [28, 29, 30, 31]);
 		if (a_m !== b_m) {
@@ -10679,8 +10816,8 @@ var $$IMU_EXPORT$$;
 				return false;
 		}
 
-		var a_y = parseInt(a.substr(0, 4));
-		var b_y = parseInt(b.substr(0, 4));
+		var a_y = parse_int(a.substr(0, 4));
+		var b_y = parse_int(b.substr(0, 4));
 
 		if (a_y !== b_y) {
 			if (!d_rollover || !_is_larger_rollover(a_m, b_m, [12]))
@@ -11412,8 +11549,8 @@ var $$IMU_EXPORT$$;
 				y = null;
 			}
 
-			x = parseInt(image.naturalWidth);
-			y = parseInt(image.naturalHeight);
+			x = parse_int(image.naturalWidth);
+			y = parse_int(image.naturalHeight);
 
 			image.src = ""; // stop loading
 
@@ -12477,7 +12614,7 @@ var $$IMU_EXPORT$$;
 						var getarg = function(x) {
 							if (/[a-z]/.test(x))
 								return vartable[x];
-							return parseInt(x);
+							return parse_int(x);
 						};
 
 						var cookievalue = numberarray_to_hex(lib.decrypt(
@@ -14268,7 +14405,7 @@ var $$IMU_EXPORT$$;
 		if (el.getAttribute("data-imu")) {
 			return {
 				username: el.getAttribute("data-username"),
-				pos: parseInt(el.getAttribute("data-pos")),
+				pos: parse_int(el.getAttribute("data-pos")),
 				url: el.getAttribute("data-url")
 			};
 		}
@@ -15328,7 +15465,7 @@ var $$IMU_EXPORT$$;
 
 			urls.push({
 				url: url,
-				quality: parseInt(quality),
+				quality: parse_int(quality),
 				video: true
 			});
 		}
@@ -15358,7 +15495,7 @@ var $$IMU_EXPORT$$;
 				if (!def.videoUrl)
 					continue;
 
-				def.quality = parseInt(def.quality);
+				def.quality = parse_int(def.quality);
 				if (def.quality > maxdef) {
 					maxdef = def.quality;
 					maxobj = def;
@@ -16306,7 +16443,7 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				return done(parseInt(headers["content-length"]), 60*60);
+				return done(parse_int(headers["content-length"]), 60*60);
 			});
 		};
 
@@ -18222,6 +18359,8 @@ var $$IMU_EXPORT$$;
 			domain === "img.hellofresh.com" ||
 			domain === "assets.petco.com" ||
 			domain === "img.redbull.com" ||
+			domain === "images.tou.tv" ||
+			domain === "assets.nintendo.com" ||
 			domain === "images.moviepilot.com") {
 			newsrc = src
 				.replace(/%2C/g, ",")
@@ -18229,7 +18368,11 @@ var $$IMU_EXPORT$$;
 				.replace(/\/fl_any_format\.[^/]*\//, "/")
 				.replace(/\/fl_keep_iptc[^/]*\//, "/")
 				.replace("/t_mp_quality/", "/")
-				.replace(/\/image\/+upload\/+t_[^/]*\//, "/image/upload/")
+				.replace(/\/image\/+upload\/+t_[^/]*\//, "/image/upload/");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src
 				.replace(/\/v[0-9]+\//, "/");
 			if (newsrc !== src)
 				return newsrc;
@@ -18594,6 +18737,7 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "zizki.com" && string_indexof(src, "/styles/") >= 0) ||
 			(domain_nowww === "rcf.fr" && string_indexof(src, "/sites/") >= 0) ||
 			domain === "images.pagina12.com.ar" ||
+			domain_nowww === "wasliestdu.de" ||
 			src.match(/\/sites\/[^/]*\/files2?\/styles\/[^/]*/) ||
 			src.match(/\/sites\/[^/]*\/files2?\/[^/]*\/styles\/[^/]*/) ||
 			src.match(/(?:(?:\/sites\/+[^/]*)?\/files\/+|\/sites\/+[^/]*\/+)imagecache\/+[^/]*|\/sites\/+[^/]*\/+public\/+styles\/+/) ||
@@ -20172,6 +20316,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "datocms-assets.com" ||
 			domain === "cdn.amomama.com" ||
 			domain === "images.ardmediathek.de" ||
+			domain === "i.weltbild.de" ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -21240,6 +21385,12 @@ var $$IMU_EXPORT$$;
 			match = src.match(/\/images\/+[0-9a-f]\/+[0-9a-f]{2}\/+([^/]+)\/+revision\//);
 			if (match) {
 				obj.filename = match[1];
+			}
+
+			newsrc = src.replace(/(\/revision\/[^/?#]+\/*)(?:[?#].*)?$/, "$1?format=original");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
 			}
 
 			newsrc = src
@@ -22804,7 +22955,7 @@ var $$IMU_EXPORT$$;
 						Referer: resp.finalUrl,
 						Origin: "https://www.imgflare.com"
 					},
-					is_private: true // contains auth code
+					is_private: true // linked to ip
 				};
 			};
 
@@ -22831,7 +22982,7 @@ var $$IMU_EXPORT$$;
 					req.headers["Content-Type"] = "application/x-www-form-urlencoded";
 				}
 
-				api_query("imgflare:" + id, req, function(data) {
+				api_query("imgflare:" + url, req, function(data) {
 					if (!data)
 						return cb(null);
 
@@ -23517,7 +23668,7 @@ var $$IMU_EXPORT$$;
 			return decodeURIComponent(src.replace(/.*[/?&]src=(.*)$/, "$1"));
 		}
 
-		if (domain === "cdn.discordapp.com") return src.replace(/\?size=[0-9]*$/, "?size=4096");
+		if (domain === "cdn.discordapp.com") return src.replace(/(\/(?:avatars|app-(?:assets|icons))\/+[0-9]+\/+[^/]+\.[^/.?#]+)(?:[?#].*)?$/, "$1?size=4096");
 
 		if (domain_nosub === "discordapp.net" && domain.match(/images-ext-[0-9]*\.discordapp\.net/)) {
 			return decodeURIComponent(src.replace(/.*\/external\/[^/]*\/(?:([^/]*)\/)?(https?)\/(.*?)(?:\?[^/]*)?$/, "$2://$3$1"));
@@ -23526,7 +23677,9 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "hot-korea.net") return src.replace(/\/uploads\/+([^/]*\/+)thumbs\//, "/uploads/$1");
 
 		if (domain_nosub === "sndcdn.com" && domain.match(/i[0-9]*\.sndcdn\.com/)) {
-			return src.replace(/-[^-/.]*(\.[^/.]*)$/, "-original$1");
+			newsrc = src.replace(/-[^-/.]*(\.[^/.]*)$/, "-original$1");
+			if (newsrc !== src)
+				return add_extensions(newsrc);
 		}
 
 		if (domain_nowww === "soundcloud.com") {
@@ -24168,10 +24321,16 @@ var $$IMU_EXPORT$$;
 			});
 		}
 
-		if (domain_nowww === "thebarchive.com" ||
+		if (domain === "img.4plebs.org" ||
+			domain === "img.fireden.net" ||
+			domain === "torako.wakarimasen.moe" ||
+			domain_nowww === "thebarchive.com" ||
 			domain_nosub === "desu-usergeneratedcontent.xyz" ||
+			(domain_nosub === "nyafuu.org" && /^archive-media/.test(domain)) ||
 			domain_nowww === "archiveofsins.com") {
-			return add_extensions(src.replace(/(\/)thumb(\/.*\/[0-9]+)s(\.[^/.]*)$/, "$1image$2$3"));
+			newsrc = src.replace(/\/thumb(\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]+)s(\.[^/.]*)(?:[?#].*)?$/, "/image$1$2");
+			if (newsrc !== src)
+				return add_full_extensions(newsrc);
 		}
 
 		if (domain === "arch.b4k.co") {
@@ -24179,6 +24338,8 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc
 		}
+
+		if (domain === "i.warosu.org") return src.replace(/\/thumb\/([0-9]+\/[0-9]+\/[0-9]+)s?(\.[^/.]*)$/, "/img/$1$2");
 
 		if (domain === "ii.yakuji.moe" ||
 			domain_nowww === "iichan.hk" ||
@@ -24772,7 +24933,6 @@ var $$IMU_EXPORT$$;
 				.replace(/\/cache\/+[^/]+\/+(uploads?)\//, "/$1/");
 		}
 
-		if (domain === "bt.bmcdn.dk") return src.replace(/\/image_[0-9]+(?:x[0-9]+)?\/+image\//, "/image/image/");
 
 		if (domain_nosub === "blogspot.es") return src.replace(/(?:\/media)?\/+cache\/+(?:resolve\/+)?media\/+files\//, "/files/");
 
@@ -25536,6 +25696,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "gala.pl" ||
 			domain === "i.moveek.com" ||
 			domain_nowww === "mainstyles.ru" ||
+			domain === "programme-tv.leparisien.fr" ||
 			domain_nowww === "longtake.it" ||
 			src.match(/^[a-z]+:\/\/[^/]*\/+media\/+cache\/+[^/]*\/+uploads\/+media\//)) {
 			return src
@@ -28619,17 +28780,26 @@ var $$IMU_EXPORT$$;
 			 domain === "media.kohlsimg.com" ||
 			 domain === "photos.mandarinoriental.com" ||
 			 domain_nosub === "assetsadobe.com" ||
+			 domain === "images.asics.com" ||
 			 domain_nosub === "scene7.com"
 			 ) && string_indexof(src, "/is/image/") >= 0) ||
 			domain === "c.shld.net") {
 			obj = {url: src};
 			if (domain_nosub === "scene7.com") {
-				obj.bad_if = [{
-					headers: {
-						"content-type": "image/jpeg",
-						"content-length": "27898"
+				obj.bad_if = [
+					{
+						headers: {
+							"content-type": "image/jpeg",
+							"content-length": "27898"
+						}
+					},
+					{
+						headers: {
+							"content-type": "image/jpeg",
+							"content-length": "5996"
+						}
 					}
-				}];
+				];
 			}
 
 			match = src.match(/\/i\/s\/.*\?(?:.*&)?src=(https?%3A.*?)(?:&.*)?$/);
@@ -28644,15 +28814,21 @@ var $$IMU_EXPORT$$;
 				return obj;
 			}
 
+			if (domain === "bonprix.scene7.com") {
+				src = src.replace(/\/[0-9]+[wh]\/+([^/]+(?:[?#].*)?)$/, "/original/$1"); // can be anything
+			}
+
 			if (string_indexof(src, "?") < 0) {
 				var basename = url_basename(src);
 				var querystr = basename.replace(/.*?-qm-/, "?");
-				querystr = querystr
-					.replace(/-eq-/g, "=")
-					.replace(/-amp-/g, "&");
+				if (querystr !== basename) {
+					querystr = querystr
+						.replace(/-eq-/g, "=")
+						.replace(/-amp-/g, "&");
 
-				newsrc = src.replace(/^(.*\/)[^/]+$/, "$1") + basename.replace(/(.*)?-qm-.*$/, "$1") + querystr;
-				if (newsrc !== src) return newsrc;
+					newsrc = src.replace(/^(.*\/)[^/]+$/, "$1") + basename.replace(/(.*)?-qm-.*$/, "$1") + querystr;
+					if (newsrc !== src) return newsrc;
+				}
 			}
 
 			var srcadd = "";
@@ -28669,7 +28845,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (!(/[?&]src=/.test(src))) {
-				obj.url = src.replace(/(?:\?.*)?$/, "?" + srcadd);
+				obj.url = src.replace(/(?:[?#].*)?$/, "") + "?" + srcadd;
 				return obj;
 			}
 		}
@@ -28868,6 +29044,7 @@ var $$IMU_EXPORT$$;
 			domain === "mikiki.tokyo.jp" ||
 			domain === "wedge.ismedia.jp" ||
 			domain === "ure.pia.co.jp" ||
+			domain_nowww === "wanibooks-newscrunch.com" ||
 			domain_nowww === "afpbb.com") {
 			return src.replace(/(\/mwimgs\/+(?:[0-9a-f]\/+){2})[0-9]+(?:[xmhw][whm]?[0-9]*)?(\/+img_[0-9a-f]{20,}\.[^/.]*)(?:[?#].*)?$/, "$1-$2");
 		}
@@ -29897,13 +30074,6 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "imgs-art-dragoart-386112.c.cdn77.org") return src.replace(/_[0-9]*(\.[^/.]*)$/, "_1$1");
 
-		if (domain_nosub === "nyafuu.org" && domain.match(/archive-media-[0-9]*\.nyafuu\.org/)) {
-			return src
-				.replace(/:\/\/archive-media-[0-9]*\./, "://archive-media-0.")
-				.replace(/\/thumb\//, "/image/")
-				.replace(/(\/[0-9]*)[a-z](\.[^/.]*)$/, "$1$2");
-		}
-
 		if (domain_nosub === "hulkshare.com" && domain.match(/s[0-9]*\.hulkshare\.com/)) {
 			return src.replace(/\/[0-9]*\/([0-9a-f]\/[0-9a-f]\/[0-9a-f]\/[0-9a-f]*\.[^/.]*)$/, "/original/$1");
 		}
@@ -30281,6 +30451,8 @@ var $$IMU_EXPORT$$;
 					src.replace(regex, "$1large/$2")
 				];
 			}
+
+			return src.replace(/(\/marketplace\/+printed_product_covers\/+(?:[0-9]{3}\/+){3})(?:downscaled|(?:white_wrap|art_print)_(?:small|big)|hd_metal_print_scene)\/+/, "$1big_image/");
 		}
 
 		if (domain === "static.cosplay-it.com") return src.replace(/(\/[-0-9a-f]*)_[a-z]+(\.[^/.]*)/, "$1$2");
@@ -31370,8 +31542,6 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/cache\/([^/]*)_[0-9]+_[0-9]+_[0-9]+(?:_[a-z]+)?(\.[^/.]*)$/, "/$1$2");
 		}
 
-		if (domain === "i.warosu.org") return src.replace(/\/thumb\/([0-9]+\/[0-9]+\/[0-9]+)s?(\.[^/.]*)$/, "/img/$1$2");
-
 		if (domain === "media.rbl.ms") {
 			if (string_indexof(src, "/image?") >= 0) {
 				var queries = get_queries(src);
@@ -31485,8 +31655,6 @@ var $$IMU_EXPORT$$;
 				.replace(/\/crop\/[0-9x:]+\/[0-9]*x[0-9]*\//, "/")
 				.replace(/\/crops\/+.*\/+(data\/+photo\/+)/, "/$1");
 		}
-
-		if (domain === "img.4plebs.org") return src.replace(/\/thumb(\/[0-9]+\/[0-9]+\/[0-9]+)[a-z](\.[^/.]*)$/, "/image$1$2");
 
 		if (domain === "cdn.thinglink.me") return src.replace(/(\/api\/image\/[0-9a-zA-Z]+)\/.*$/, "$1");
 
@@ -32839,10 +33007,6 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "img.feebee.com.tw") {
 			return src.replace(/^[a-z]+:\/\/[^/]*\/ip\/[0-9]+\/[^/]+=\//, "");
-		}
-
-		if (domain === "img.fireden.net") {
-			return add_full_extensions(src.replace(/\/thumb(\/.*?)s(\.[^/.]*)$/, "/image$1$2"));
 		}
 
 		if (domain === "www.consolefun.fr" ||
@@ -34600,7 +34764,10 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain === "img-hw.xvideos.com") return src.replace(/(\/pic_[0-9]+)_[a-z]+(\.[^/.]*)$/, "$1_big$2");
+		if (domain === "img-hw.xvideos.com" ||
+			domain === "img-hw.xvideos-cdn.com") {
+			return src.replace(/(\/pic_[0-9]+)_[a-z]+(\.[^/.]*)$/, "$1_big$2");
+		}
 
 		if (domain_nowww === "xvideos.com" ||
 			domain === "flashservice.xvideos.com" ||
@@ -37626,8 +37793,15 @@ var $$IMU_EXPORT$$;
 		if (domain === "dot.asahi.com") return src.replace(/\/upload\/[0-9]+_([0-9]{10,}_[0-9]+\.[^/.]*)$/, "/upload/$1");
 
 		if (domain === "news-img.dwango.jp" ||
+			amazon_container === "img-news-dwango-jp-prod" ||
 			amazon_container === "green-img-news-dwango-jp-prod") {
-			return src.replace(/(\/uploads\/[a-z]+\/file\/.*\/)(?:md|sm|lg)_([^/]*)$/, "$1$2");
+			newsrc = src.replace(/(\/uploads\/[a-z]+\/file\/.*\/)(?:md|sm|lg|xl)_([^/]*)$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/:\/\/news-img\.dwango\.jp\//, "://green-img-news-dwango-jp-prod.s3.amazonaws.com/");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain_nowww === "getnews.jp") return src.replace(/^[a-z]+:\/\/[^/]*\/thumb2\/ext\/([a-z]+:\/\/.*)$/, "$1");
@@ -37654,6 +37828,14 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "cdn-news30.it") return src.replace(/\/blobs\/variants\/((?:[a-f0-9]\/){4}[-0-9a-f]+)_[a-z]+(\.[^/.]*)$/, "/blobs/full/$1$2");
 
+		if (domain_nowww === "osobnosti.cz") {
+			if (/\/img\/+pic-hover\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
 		if (domain === "imagebox.cz.osobnosti.cz" ||
 			domain === "img.osobnosti.cz") {
 			return src.replace(/\/[A-Z]([0-9]+)(?:-[0-9]+x[0-9]+)?(-[0-9a-z]+)?(\.[^/.]*)(?:[?#].*)?$/, "/O$1$2$3");
@@ -37666,6 +37848,7 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "hotnews.bg") return src.replace(/(\/uploads\/news\/[^/]*\/)thumb(\/[0-9]+\.[^/.]*)$/, "$1images$2");
 
 		if (domain_nosub === "cloudimg.io" ||
+			(domain_nosub === "furniture1.eu" && /^cdn[0-9]*\./.test(domain)) ||
 			domain === "mediaproxy.salon.com") {
 			var get_orig_cloudimg_url = function(url) {
 				var aliases = {};
@@ -37685,9 +37868,14 @@ var $$IMU_EXPORT$$;
 				var new_domain = url.replace(/^([^/]+)\/.*/, "$1");
 				for (var alias in aliases) {
 					if (new_domain === alias) {
-						url = aliases[new_domain] + url.replace(/^[^/]+\//, "/");
+						new_domain = aliases[new_domain];
+						url = new_domain + url.replace(/^[^/]+\//, "/");
 						break;
 					}
+				}
+
+				if (string_indexof(new_domain, ".") < 0) {
+					return null;
 				}
 
 				return add_http(url);
@@ -37707,11 +37895,11 @@ var $$IMU_EXPORT$$;
 
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(?:(?:cdn|cdno|fit|width|height|crop(?:_px)?|cover|fit|bound)\/(?:[0-9]+|[0-9]+(?:,[0-9]+){3}-[0-9]*x?[0-9]+|[0-9]+x[0-9]+|n(?:one)?)\/[^/]+\/|s\/+(?:crop|width|height|resizeinbox|resizenp|cdn|fit)\/+[0-9]*(?:x[0-9]*)?\/+)((?:[a-z]+:\/\/)?[^/]+\/.*?)$/, "$1");
 			if (newsrc !== src)
-				return get_orig_cloudimg_url(newsrc);
+				return get_orig_cloudimg_url(newsrc) || src;
 
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+v7\/+(.*?)(?:[?#].*)?$/, "$1");
 			if (newsrc !== src)
-				return get_orig_cloudimg_url(newsrc);
+				return get_orig_cloudimg_url(newsrc) || src;
 		}
 
 		if (domain === "1.f.ix.de") return src.replace(/^[a-z]+:\/\/[^/]+\/+scale\/.*?\/q[0-9]+\/+/, "https://www.heise.de/");
@@ -39450,7 +39638,10 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "i.widelec.org") return src.replace(/_[a-z](\.[^/.]*)$/, "$1");
 
-		if (domain === "image.kurier.at") return src.replace(/\/images\/[^/]*(\/[0-9]+\/)/, "/images/original$1");
+		if (domain === "image.kurier.at" ||
+			domain === "image.film.at") {
+			return src.replace(/\/images\/+[^/]*\/+([0-9]+\/)/, "/images/original/$1");
+		}
 
 		if (domain === "media.game8.vn") {
 			newsrc = src.replace(/\.[0-9]+\.(?:[0-9]+\.)?cache(?:[?#].*)?$/, "");
@@ -40571,6 +40762,15 @@ var $$IMU_EXPORT$$;
 					};
 				}
 			}
+		}
+
+		if (domain === "cdn.zenfolio.net" ||
+			domain_nosub === "zenfolio.com") {
+			if (/\/zf\/+img\/+null\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
 		}
 
 		if ((domain === "cdn.zenfolio.net" ||
@@ -42547,7 +42747,9 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "rtbf.be" &&
 			domain.match(/^(?:[^/]*\.)?static\./)) {
-			return src.replace(/\/article\/+image\/+[0-9]+x[0-9]+\/+/, "/article/image/original/");
+			return src
+				.replace(/\/article\/+image\/+[0-9]+x[0-9]+\/+/, "/article/image/original/")
+				.replace(/(\/pictureGallery\/+album\/+[0-9]+\/+)(?:thumb|big)\/+/, "$1");
 		}
 
 		if (domain === "d5xydlzdo08s0.cloudfront.net") {
@@ -46649,7 +46851,7 @@ var $$IMU_EXPORT$$;
 				return add_full_extensions(newsrc);
 		}
 
-		if (domain === "cdnph.upi.com") return src.replace(/(:\/\/[^/]*\/+)(?:topic\/+ph\/+[0-9]+\/+upi\/+|upi\/+)/, "$1pv/upi/");
+		if (domain === "cdnph.upi.com") return src.replace(/(:\/\/[^/]*\/+)(?:topic\/+ph\/+[0-9]+\/+upi\/+|ph\/+st\/+th\/+[0-9]+\/+[0-9]{4}\/+upi\/+|upi\/+)/, "$1pv/upi/");
 
 		if (domain_nowww === "glamour.bg") return src.replace(/\/pictures\/+pic_small\/+/, "/pictures/pic_big/");
 
@@ -46998,9 +47200,25 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "boutiquefonts.com" ||
-			domain_nowww === "animuk.co.uk") {
-			return src.replace(/\/images\/+thumbnails\/+[0-9]+\/+[0-9]+\/+/, "/images/");
+			domain === "cdn.elineupmall.com" ||
+			domain === "cdn.nguyenkimmall.com" ||
+			domain_nowww === "maxbhi.com" ||
+			domain === "sklep.swiatkwiatow.pl" ||
+			domain === "d166chel5lrjm5.cloudfront.net" ||
+			domain_nowww === "animuk.co.uk" ||
+			/\/images\/+thumbnails\/+[0-9]+\/+[0-9]+\/+detailed\/+[0-9]+\/+[^/]+\.[^/.]+(?:[?#].*)?$/.test(src)) {
+			if (/\/design\/+themes\/+responsive\/+media\/+images\/+lazy_img\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
+			return src
+				.replace(/\/images\/+thumbnails\/+[0-9]+\/+[0-9]+\/+detailed\/+/, "/images/detailed/")
+				.replace(/\/images\/+thumbnails\/+([0-9]+)\/+[0-9]+\/+[0-9]+\/+([^/]+)(?:[?#].*)?$/, "/images/detailed/$1/$2");
 		}
+
+		if (domain === "cdn.shopclues.com") return src.replace(/\/images([0-9]*)\/+thumbnails\/+([0-9]+)\/+[0-9]+\/+[0-9]+\/+([^/]+)(?:[?#].*)?$/, "/images$1/detailed/$2/$3");
 
 		if (domain_nosub === "userapi.com") {
 			newsrc = src.replace(/(:\/\/[^/]+\/+)imp[gf]\/+(.*?)(?:[?#].*)?$/, "$1$2");
@@ -56088,7 +56306,7 @@ var $$IMU_EXPORT$$;
 
 		if (host_domain_nosub === "sankakucomplex.com" && options.element) {
 			var el = common_functions.get_link_el_matching(options.element, function(el) {
-				if (/:\/\/[^/]+\/+post\/+show\/+[0-9]+(?:[?#].*)?$/.test(el.href)) {
+				if (/:\/\/[^/]+\/+(?:[a-z]+\/+)?post\/+show\/+[0-9]+(?:[?#].*)?$/.test(el.href)) {
 					return true;
 				}
 			});
@@ -56113,7 +56331,8 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain === "is.sankakucomplex.com") {
+		if (domain === "is.sankakucomplex.com" ||
+			domain === "s.sankakucomplex.com") {
 			return {
 				url: src,
 				headers: {
@@ -56124,7 +56343,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "sankakucomplex.com") {
 			newsrc = website_query({
-				website_regex: /^([a-z]+:\/\/[^/]+\/+post\/+show\/+[0-9]+)(?:[?#].)?$/,
+				website_regex: /^([a-z]+:\/\/[^/]+\/+(?:[a-z]+\/+)?post\/+show\/+[0-9]+)(?:[?#].)?$/,
 				query_for_id: "${id}",
 				process: function(done, resp, cache_key) {
 					var match = resp.responseText.match(/<a id=image-link class=sample href="(\/\/(?:[^/]+\.)?sankakucomplex\.com\/[^"]+)"/);
@@ -58857,7 +59076,7 @@ var $$IMU_EXPORT$$;
 				};
 
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+watch\/+(-[0-9]+_[0-9]+)(?:[?#].*)?$/,
+				website_regex: /^[a-z]+:\/\/[^/]+\/+watch\/+(-?[0-9]+_[0-9]+)(?:[?#].*)?$/,
 				query_for_id: "https://" + domain_nosub + "/watch/${id}",
 				process: function(done, resp, cache_key) {
 					var iframeurl = null;
@@ -61044,6 +61263,138 @@ var $$IMU_EXPORT$$;
 				};
 		}
 
+		if (domain_nowww === "imgprime.com") return src.replace(/\/uploads\/+small\/+/, "/uploads/big/");
+
+		if (domain === "dam-p-dfi.pqcloud.eu") {
+			return {
+				url: src.replace(/(\/preview\/+[^/]+\/+previews\/+)[^/]*(\.jpg)(\/.*?)?([?#].*)?$/, "$1maxWidth_999999$2$3$4"),
+				head_wrong_contentlength: true
+			};
+		}
+
+		if (domain === "cdn.sonyselect.com.cn") {
+			return src.replace(/(\/covers\/+[^/]+)_512(\.[^/.]+)(?:[?#].*)?$/i, "$1$2");
+		}
+
+		if (host_domain_nowww === "asiantolick.com" && options.element) {
+			if (options.element.tagName === "IMG" && /\/img\/+loading[0-9]*\./.test(src) && options.element.hasAttribute("data-src")) {
+				return options.element.getAttribute("data-src");
+			}
+		}
+
+		if (domain_nowww === "asiantolick.com") {
+			if (/\/img\/+loading[0-9]*\.png(?:[?#].*)?$/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
+			newsrc = src.replace(/(\/down\/+[^/]+\/+)thumb\/+/, "$1");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain === "static.kino.de") return src.replace(/(\/wp-content\/+uploads\/+.*)-rcm[0-9]+x[0-9]+u\./, "$1.");
+
+		if (domain === "ec56229aec51f1baff1d-185c3068e22352c56024573e929788ff.ssl.cf1.rackcdn.com") return src.replace(/\/attachments\/+(?:small|medium|large)\/+/, "/attachments/original/");
+
+		if (domain === "artworks.thetvdb.com") return src.replace(/(\/[^/?#._]+)_t(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+
+		if ((host_domain_nowww === "serienfans.org" ||
+			host_domain_nowww === "filmfans.org") && options.element) {
+			if (options.element.tagName === "I" && !src && /^data:image\/+svg\+xml;/.test(origsrc)) {
+				return {
+					url: origsrc,
+					bad: "mask"
+				};
+			}
+		}
+
+		if (domain_nowww === "serienfans.org" ||
+			domain_nowww === "filmfans.org") {
+			return src.replace(/(\/media\/+[0-9]+)\/+[0-9]+\/+[0-9]+(?:[?#].*)?$/, "$1");
+		}
+
+		if (domain === "cdn.ok.de") return src.replace(/\/cdn\/+[^/]+\/+[^/]+\/+[0-9]{5,}\/+public\/+/, "/sites/default/files/");
+
+		if (domain_nowww === "crossfire.nu") return src.replace(/\/_cache\/+(media\/+.*)_[0-9]+x[0-9]+\./, "/$1.");
+
+		if (domain_nowww === "austrianfilms.com") {
+			if (/\/jart\/+pub-prc\/+img\.jart\?/.test(src)) {
+				newsrc = keep_queries(src, ["base", "img"]);
+				if (newsrc !== src)
+					return newsrc;
+
+				var queries = get_queries(src);
+				if (queries.img && queries.base) {
+					return urljoin(urljoin("https://www.austrianfilms.com/jart/", queries.base), queries.img);
+				}
+			}
+		}
+
+		if (domain_nowww === "tagesspiegel.de") return src.replace(/-format[a-zA-Z0-9]+\./, "-formatOriginal.");
+
+		if (domain_nowww === "hello-online.org") return src.replace(/(\/picboardimg\/+)alt2\/+([0-9]{6}\/+img[0-9]+)s\./, "$1$2.");
+
+		if (domain === "exlibris.azureedge.net") return src.replace(/(\/covers\/+.*\/[0-9]{5,})(?:x?l|[ms])\./, "$1xxl.");
+
+		if (domain === "c.imgz.jp") {
+			newsrc = src.replace(/_[1-4]?[0-9]{2}(\.[^/.]+)(?:[?#].*)?$/, "_500$1");
+			if (newsrc !== src)
+				return newsrc;
+
+			return src.replace(/:\/\/[^/]+\/+([0-9]+\/+[0-9]+\/+[^/]+)_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "://o.imgz.jp/$1$2");
+		}
+
+		if (domain === "cdn.wimg.jp") {
+			newsrc = src.replace(/(:\/\/[^/]+\/+coordinate\/+[^/]+\/+[0-9]{5,}\/+[0-9]{5,})_[0-9]{2,3}\./, "$1_1000.");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/(:\/\/[^/]+\/+)(coordinate\/+.*\/[0-9]{5,})_[0-9]+\./, "$1o/$2.");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					problems: {
+						possibly_upscaled: true
+					}
+				};
+		}
+
+		if (domain === "evelyn.tokyo.jp") return src.replace(/(\/photo\/.*\/)s-([^/]+)(?:[?#].*)?$/, "$1z-$2");
+
+		if (domain === "itemimg-rcw.runway-webstore.net") return src.replace(/(\/itemimg\/.*)-[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+
+		if (domain === "i.stpost.com") {
+
+			newsrc = src.replace(/(:\/\/[^/]+\/+[^/.?#]*~[a-z]~[A-Za-z0-9]+_[0-9]+)~[0-9]+(?:~[0-9]+)?\.(?:[0-9]+\.)?/, "$1~9999.");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/:\/\/[^/]+\/+[^/.?#]*~([ap])~(([A-Za-z0-9]{3})[A-Za-z0-9]+_[0-9]+)~[0-9]+\.([a-z]+)(?:[?#].*)?$/);
+			if (match) {
+				var folders = {
+					a: "alt",
+					p: "sku"
+				};
+
+				return "https://i.stpost.com/" + folders[match[1]] + "/" + match[3] + "/" + match[2] + "." + match[4]; //.ashx?
+			}
+		}
+
+		if (domain === "static.displate.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:[0-9]+x[0-9]+\/+)?(avatars|covers|displate)(\/+[0-9]{4}(?:-[0-9]{2}){2}\/+.*)/);
+			if (match) {
+				var folders = {
+					avatars: "avatars",
+					covers: "covers",
+					displate: "images/displate"
+				};
+
+				return "https://www.displate.com/" + folders[match[1]] + match[2];
+			}
+		}
+
 
 
 
@@ -61355,6 +61706,7 @@ var $$IMU_EXPORT$$;
 			domain === "cdn.pinkblog.it" ||
 			domain === "studio.cults3d.com" ||
 			(domain_nowww === "reuters.com" && string_indexof(src, "/resizer/") >= 0) ||
+			domain === "image.over-blog.com" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			src.match(/:\/\/[^/]*\/resizer\/[^/]*=\/(?:fit-in\/+)?[0-9]+x[0-9]+(?::[^/]*\/[0-9]+x[0-9]+)?\/(?:filters:[^/]*\/)?/)) {
 			newsrc = src.replace(/.*?\/(?:thumb(?:or)?|(?:new-)?resizer)\/.*?\/(?:filters(?::|%3A)[^/]*\/)?([a-z]*(?::|%3A)(?:\/|%2F){2}.*)/, "$1");
@@ -61625,13 +61977,14 @@ var $$IMU_EXPORT$$;
 			domain === "img.xiumi.us" ||
 			domain === "s.oneroof.co.nz" ||
 			(domain_nosub === "hoopchina.com.cn" && domain.match(/[ci][0-9]*\.hoopchina\.com\.cn/)) ||
+			domain === "bkimg.cdn.bcebos.com" ||
 			src.match(/[?&]x-oss-process=(?:image|style)\//)) {
 			var authkey = src.replace(/.*[?&]auth_key=([-0-9a-f]+).*?$/, "$1");
 			var replacement = "";
 			if (authkey !== src)
 				replacement = "?auth_key=" + authkey;
 
-			if (src.match(/[?&]x-oss-process=/)) {
+			if (src.match(/[?&]x-(?:oss|bce)-process=/)) {
 				newsrc = src.replace(/[?#].*/, replacement);
 				if (newsrc !== src)
 					return newsrc;
@@ -62086,12 +62439,17 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
+				// e.g. for picture elements with source.srcset
+				if (!options.get_img_src) {
+					options.get_img_src = get_img_src;
+				}
+
 				if (options.compare_urls) {
 					options.compare_els = function(a, b) {
 						if (!a || !b)
 							return false;
 
-						return options.compare_urls(get_img_src(a), get_img_src(b));
+						return options.compare_urls(options.get_img_src(a), options.get_img_src(b));
 					};
 				}
 			}
@@ -62132,8 +62490,10 @@ var $$IMU_EXPORT$$;
 				}
 			});
 
-			if (!thumb)
+			if (!thumb) {
 				console_error("Unable to find thumb for", el, "in", thumbs_el);
+				return false;
+			}
 
 			return get_next_in_gallery(thumb, nextprev);
 		};
@@ -62880,6 +63240,34 @@ var $$IMU_EXPORT$$;
 						thumbs_selector: "#fancybox-thumbs",
 						thumbs_selector_global: true,
 						thumb_selector: "li > a > img"
+					});
+					return next_el !== false ? next_el : "default";
+				}
+			};
+		}
+
+		if (host_domain_nowww === "asics.com") {
+			return {
+				gallery: function(el, nextprev) {
+					var get_source_src = function(el) {
+						if (el.tagName === "PICTURE") {
+							var sourceel = el.querySelector("source");
+							if (sourceel)
+								return get_source_src(sourceel);
+						} else if (el.tagName === "SOURCE") {
+							return el.srcset;
+						}
+
+						return get_img_src(el);
+					};
+
+					// thanks to MinuteAd8502 on github for reporting: https://github.com/qsniyg/maxurl/issues/790
+					var next_el = get_nextprev_from_thumbs(el, nextprev, {
+						id_for_url: /.*\/is\/+image\/+asics\/+([^/.?#]+)(?:\.[^/]+?)?(?:[?#].*)?$/,
+						get_img_src: get_source_src,
+						thumbs_selector: "#thumbnails > ul div.slick-track",
+						thumbs_selector_global: true,
+						thumb_selector: "li.thumb > a > picture"
 					});
 					return next_el !== false ? next_el : "default";
 				}
@@ -65882,10 +66270,10 @@ var $$IMU_EXPORT$$;
 
 		var normalize_value = function(value) {
 			if (is_array(value) && value.length === 1) {
-				return JSON.stringify(value[0]);
+				return JSON_stringify(value[0]);
 			}
 
-			return JSON.stringify(value);
+			return JSON_stringify(value);
 		};
 
 		var category_settings = {};
@@ -68259,7 +68647,8 @@ var $$IMU_EXPORT$$;
 		219: "[",
 		220: "\\",
 		221: "]",
-		222: "'"
+		222: "'",
+		226: "\\" // IntlBackslash, VK_OEM_102 (thanks to Noodlers for reporting)
 	};
 
 	//var maxzindex = 2147483647;
@@ -72697,28 +73086,56 @@ var $$IMU_EXPORT$$;
 					var popup_width = outerdiv.clientWidth;
 					var popup_height = outerdiv.clientHeight;
 
-					if (x === void 0 && y === void 0) {
-						// TODO: if mouse is within the popup, use the mouse's coordinates instead
-						//   This will have to check the zoom_origin setting.
-						//x = mouseAbsX;
-						//y = mouseAbsY;
+					update_vwh();
+
+					if (x === void 0)
+						x = "center";
+					if (y === void 0)
+						y = "center";
+
+					// used by pagemiddle, determines the final desired global position
+					var x_moveto = null;
+					var y_moveto = null;
+
+					if (zoomdir > 0) {
+						var zoomout_mode = get_single_setting("scroll_zoomout_pagemiddle");
+						if (zoomout_mode === "always") {
+							x = "pagemiddle";
+							y = "pagemiddle";
+						} else if (zoomout_mode === "viewport") {
+							if (popup_width < vw)
+								x = "pagemiddle";
+							if (popup_height < vh)
+								y = "pagemiddle";
+						}
+					}
+
+					// TODO: if mouse is within the popup, use the mouse's coordinates instead
+					//   This will have to check the zoom_origin setting.
+					if (x === "center" || x === "pagemiddle") {
+						if (x === "pagemiddle")
+							x_moveto = vw / 2;
 
 						var visible_left = Math_max(popup_left, 0);
-						var visible_top = Math_max(popup_top, 0);
-
 						var visible_right = Math_min(visible_left + popup_width, vw);
-						var visible_bottom = Math_min(visible_top + popup_height, vh);
-
 						// get the middle of the visible portion of the popup
 						x = visible_left + (visible_right - visible_left) / 2;
-						y = visible_top + (visible_bottom - visible_top) / 2;
 					} else {
 						// ensure it's clamped, e.g. when scrolling on the document instead of the popup
 						if (x < popup_left)
 							x = popup_left;
 						else if (x > popup_left + popup_width)
 							x = popup_left + popup_width;
+					}
 
+					if (y === "center" || y === "pagemiddle") {
+						if (y === "pagemiddle")
+							y_moveto = vh / 2;
+
+						var visible_top = Math_max(popup_top, 0);
+						var visible_bottom = Math_min(visible_top + popup_height, vh);
+						y = visible_top + (visible_bottom - visible_top) / 2;
+					} else {
 						if (y < popup_top)
 							y = popup_top;
 						else if (y > popup_top + popup_height)
@@ -72728,8 +73145,8 @@ var $$IMU_EXPORT$$;
 					var offsetX = x - popup_left;
 					var offsetY = y - popup_top;
 
-					var percentX = offsetX / outerdiv.clientWidth;
-					var percentY = offsetY / outerdiv.clientHeight;
+					var percentX = offsetX / popup_width;
+					var percentY = offsetY / popup_height;
 
 					if (zoom_mode === "fitfull") {
 						if (zoom_out_to_close && currentmode === "fit" && zoomdir > 0) {
@@ -72738,8 +73155,6 @@ var $$IMU_EXPORT$$;
 						}
 
 						if (zoomdir > 0 && currentmode !== "fit") {
-							update_vwh();
-
 							imgh = img_naturalHeight;
 							imgw = img_naturalWidth;
 							calc_imghw_for_fit();
@@ -72827,10 +73242,28 @@ var $$IMU_EXPORT$$;
 
 					var newx, newy;
 
+					var zoom_lerp = function(wantedpos, origpos, viewport) {
+						var change = wantedpos - origpos;
+						var maxchange = Math_max(100, viewport / 10); // arbitrary numbers
+						if (change < 0) {
+							change = -Math_min(maxchange, -change);
+						} else {
+							change = Math_min(maxchange, change);
+						}
+						return origpos + change;
+					};
+
 					if (true || (imgwidth <= vw && imgheight <= vh) || zoom_mode === "incremental") {
 						// centers wanted region to pointer
 						newx = (x - percentX * imgwidth);
+						if (x_moveto !== null) {
+							newx = zoom_lerp(x_moveto - imgwidth / 2, newx, vw);
+						}
+
 						newy = (y - percentY * imgheight);
+						if (y_moveto !== null) {
+							newy = zoom_lerp(y_moveto - imgheight / 2, newy, vh);
+						}
 					} else if (imgwidth > vw || imgheight > vh) {
 						// centers wanted region to center of screen
 						newx = (vw / 2) - percentX * imgwidth;
@@ -72850,7 +73283,8 @@ var $$IMU_EXPORT$$;
 							newy = Math_min(border_thresh, (vh + border_thresh) - imgheight);
 					}
 
-					if (imgwidth <= vw && imgheight <= vh) {
+					// fitfull only because incremental is under user control
+					if (zoom_mode === "fitfull" && imgwidth <= vw && imgheight <= vh) {
 						newx = Math_max(newx, border_thresh);
 						if (newx + imgwidth > (vw - border_thresh)) {
 							newx = (vw + border_thresh) - imgwidth;
@@ -72999,8 +73433,8 @@ var $$IMU_EXPORT$$;
 					var cursor_x = e.clientX;
 					var cursor_y = e.clientY;
 					if (get_single_setting("scroll_zoom_origin") === "center") {
-						cursor_x = void 0;
-						cursor_y = void 0;
+						cursor_x = "center";
+						cursor_y = "center";
 					}
 
 					var zoom_mode = get_single_setting("scroll_zoom_behavior");
@@ -73362,11 +73796,22 @@ var $$IMU_EXPORT$$;
 			if (isNaN(thresh) || result.imu)
 				thresh = 0;
 
-			if ((!isNaN(result.width) && result.width > 0 && result.width < thresh) ||
-				(!isNaN(result.height) && result.height > 0 && result.height < thresh)) {
-				if (_nir_debug_) nir_debug("find_source", "find_source: result size is too small");
+			var maxThresh = parseInt(settings.popup_maximum_source_size);
+			if (isNaN(maxThresh))
+				maxThresh = 0;
 
-				return ret_bad();
+			if (!isNaN(result.width) && !isNaN(result.height) && result.width > 0 && result.height > 0) {
+				if (result.width < thresh || result.height < thresh) {
+					if (_nir_debug_) nir_debug("find_source", "find_source: result size is too small");
+					return ret_bad();
+				}
+
+				if (maxThresh) {
+					if (result.width > maxThresh || result.height > maxThresh) {
+						console_log("Source media is too big to popup (user-configured maximum is", maxThresh, "px)");
+						return null;
+					}
+				}
 			}
 
 			return result;
@@ -76245,57 +76690,114 @@ var $$IMU_EXPORT$$;
 				});
 			};
 
-			jdcheck(function(ok) {
-				if (!ok)
-					return cb(false);
+			var prepare_flashgots = function() {
+				var referers = {};
 
-				var referer = null;
-				var urls = [];
-				var descs = [];
-				var fnames = [];
+				var referer_policy = get_single_setting("gallery_jd_referer");
+
 				for (var i = 0; i < got_objs.length; i++) {
 					var gobj = got_objs[i];
 					if (!gobj)
 						continue;
 
-					urls.push(gobj.obj.url);
-					fnames.push(gobj.filename || "");
-					descs.push("");
+					var our_obj = {
+						url: gobj.obj.url,
+						filename: gobj.filename || "",
+						desc: ""
+					};
 
-					if (gobj.obj.headers) {
-						var our_referer = headerobj_get(gobj.obj.headers, "referer");
-						if (our_referer)
-							referer = our_referer;
+					var referer_key = "";
+					var our_referer = null;
+
+					if (gobj.obj.headers && referer_policy !== "never") {
+						our_referer = headerobj_get(gobj.obj.headers, "referer") || null;
+						if (our_referer) {
+							our_obj.referer = our_referer;
+
+							referer_key = our_referer;
+
+							// batch referers by domain, hopefully avoiding package spam
+							if (referer_policy === "domain") {
+								referer_key = get_domain_from_url(referer_key);
+							}
+						}
 					}
+
+					if (!(referer_key in referers)) {
+						referers[referer_key] = {
+							referer: our_referer,
+							urls: []
+						};
+					}
+
+					referers[referer_key].urls.push(our_obj);
 				}
 
-				var queries = [
-					"urls=" + encodeURIComponent(urls.join("\n")),
-					"descriptions=" + encodeURIComponent(descs.join("\n")),
-					"fnames=" + encodeURIComponent(fnames.join("\n"))
-				];
+				var final_queries = [];
+				for (var key in referers) {
+					var referer_obj = referers[key];
 
-				if (foldername)
-					queries.push("package=" + encodeURIComponent(foldername));
+					var urls = [];
+					var descs = [];
+					var fnames = [];
 
-				// fixme!
-				if (false && referer)
-					queries.push("referer=" + referer);
+					array_foreach(referer_obj.urls, function(url) {
+						// thanks to Jiaz from JDownloader for the directhttp trick
+						urls.push("directhttp://" + url.url);
 
-				if (settings.gallery_jd_autostart)
-					queries.push("autostart=1");
+						fnames.push(url.fnames);
+						descs.push(url.desc);
+					});
 
-				do_jd_request({
-					method: "GET",
-					url: "http://127.0.0.1:9666/flashgot?" + queries.join("&"),
-					onload: function(resp) {
-						if (resp.status !== 200) {
-							console_error("Error with flashgot api", resp);
-							return cb(false);
+					var query = {
+						urls: urls.join("\n"),
+						descriptions: descs.join("\n"),
+						fnames: fnames.join("\n")
+					};
+
+					if (foldername)
+						query.package = foldername;
+
+					//if (referer_obj.referer)
+					query.referer = referer_obj.referer || "";
+
+					if (settings.gallery_jd_autostart)
+						query.autostart = "1";
+
+					final_queries.push(stringify_queries(query, true));
+				}
+
+				return final_queries;
+			};
+
+			jdcheck(function(ok) {
+				if (!ok)
+					return cb(false);
+
+				var queries = prepare_flashgots();
+				var queries_done = 0;
+				var total_queries = queries.length;
+				var query_error = false;
+
+				array_foreach(queries, function(query) {
+					do_jd_request({
+						method: "GET",
+						url: "http://127.0.0.1:9666/flashgot?" + query,
+						onload: function(resp) {
+							queries_done++;
+							if (query_error)
+								return;
+
+							if (resp.status !== 200) {
+								console_error("Error with flashgot api", resp);
+								query_error = true;
+								return cb(false);
+							}
+
+							if (queries_done >= total_queries)
+								cb(true);
 						}
-
-						cb(true);
-					}
+					});
 				});
 			});
 		};
@@ -78026,25 +78528,40 @@ var $$IMU_EXPORT$$;
 			};
 
 			var popup_clientrect = null;
+			var popup_media_clientrect = null;
 			var domovement = function(lefttop) {
 				if (!popup_clientrect) {
 					popup_clientrect = get_popup_client_rect();
+					popup_media_clientrect = get_popup_media_client_rect();
 				}
 
 				// offset* is very slow, slower than setting top/left! 250ms vs 30ms after a while
 				//var offsetD = lefttop ? popup.offsetHeight : popup.offsetWidth;
+				// offsetD and mediaOffsetD can differ when rotating, because the popup's dimensions don't get updated
 				var offsetD = lefttop ? popup_clientrect.height : popup_clientrect.width;
+				var mediaOffsetD = lefttop ? popup_media_clientrect.height : popup_media_clientrect.width;
+				// the popup is always in the middle, so if the media is rotated, adding the difference in offset allows the position to be accurate
+				var offset_add = (mediaOffsetD - offsetD) / 2;
+
+				// mediaOffsetD will usually be smaller than offsetD because of the border
+				// if the popup isn't rotated (or 180), we prefer offsetD
+				// a proper fix would be nice though, as this only improves the situation for unrotated, which creates inconsistent behavior when rotated
+				if (Math_abs(offset_add) < border_thresh) {
+					mediaOffsetD = offsetD;
+					offset_add = 0;
+				}
+
 				var viewportD = lefttop ? viewport[1] : viewport[0];
 				var mousepos = lefttop ? mouseY : mouseX;
 
 				if (!settings.mouseover_movement_inverted)
 					mousepos = viewportD - mousepos;
 
-				if (offsetD > viewportD) {
+				if (mediaOffsetD > viewportD) {
 					var mouse_edge = Math_min(Math_max((mousepos - edge_buffer), 0), viewportD - edge_buffer * 2);
 					var percent = mouse_edge / (viewportD - (edge_buffer * 2));
 
-					var newpos = (percent * (viewportD - offsetD - border_thresh * 2) + border_thresh) + "px";
+					var newpos = (percent * (viewportD - mediaOffsetD - border_thresh * 2) + offset_add + border_thresh) + "px";
 
 					if (lefttop)
 						popup.style.top = newpos;
@@ -78259,9 +78776,23 @@ var $$IMU_EXPORT$$;
 			}
 		};
 
-		our_addEventListener(document, "wheel", wheel_cb, {
-			passive: false
-		});
+		our_addEventListener(document, "wheel", wheel_cb, { passive: false });
+
+		// https://github.com/qsniyg/maxurl/issues/771
+		// seems to be a bug in chrome. if both a "wheel" and a "mousewheel" (deprecated) event are set on document, it will not fire the mousewheel event
+		if (host_domain_nosub === "bilibili.com" && navigator.userAgent.indexOf("Chrome/") >= 0) {
+			our_addEventListener(document, "wheel", function(e) {
+				var ev = document.createEvent("MouseEvents");
+				ev.initEvent("mousewheel", true, true);
+				//ev.originalEvent = e.originalEvent || e;
+				ev.wheelDelta = e.wheelDelta;
+				ev.detail = e.detail;
+				ev.deltaMode = e.deltaMode;
+				ev.target = e.target;
+				ev.srcElement = e.srcElement;
+				document.dispatchEvent(ev);
+			});
+		}
 
 		var update_mouse_from_event = function(event) {
 			if (event.pageX === null && event.clientX !== null) {

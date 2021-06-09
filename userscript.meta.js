@@ -20,9 +20,14 @@
 // @name:ko           Image Max URL
 // @name:nb           Image Max URL
 // @name:nl           Image Max URL
+// @name:pl           Image Max URL
+// @name:pt-BR        Image Max URL
 // @name:ru           Image Max URL
 // @name:bg           Image Max URL
 // @name:uk           Image Max URL
+// @name:th           Image Max URL
+// @name:tr           Image Max URL
+// @name:vi           Image Max URL
 // @name:zh           Image Max URL
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
@@ -48,15 +53,20 @@
 // @description:ko    7900개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
 // @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 7900 nettsteder
 // @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 7900 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 7900 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 7900 sites
 // @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7900 веб-сайтов
 // @description:bg    Намира увеличени или оригинални версии на изображения за повече от 7900 уеб сайтове
 // @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 7900 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 7900 งเว็บไซต์
+// @description:tr    7900'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 7900 trang web
 // @description:zh    为7900多个网站查找更大或原始图像
 // @description:zh-CN 为7900多个网站查找更大或原始图像
 // @description:zh-TW 為7900多個網站查找更大或原始圖像
 // @description:zh-HK 為7900多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           0.19.1
+// @version           0.19.2
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
