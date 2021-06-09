@@ -1537,6 +1537,18 @@ msgstr ""
 msgid "Center"
 msgstr ""
 
+#. scroll_zoomout_pagemiddle.name
+msgid "Zoom out towards page middle"
+msgstr ""
+
+#. scroll_zoomout_pagemiddle.description
+msgid "Sets the origin when zooming out to the page middle, overriding the \"Zoom Origin\" option above."
+msgstr ""
+
+#. scroll_zoomout_pagemiddle.options.viewport.name
+msgid "Within viewport"
+msgstr ""
+
 #. scroll_zoom_behavior.name
 msgid "Zoom behavior"
 msgstr ""
@@ -2017,6 +2029,18 @@ msgstr ""
 
 #. gallery_jd_autostart.description
 msgid "Autostarts the download when added to JDownloader"
+msgstr ""
+
+#. gallery_jd_referer.name
+msgid "JD: Referer policy"
+msgstr ""
+
+#. gallery_jd_referer.description
+msgid "Due to a current limitation in JDownloader's API, the `Referer` (sic) header can only be set on a per-package basis. This option allows working around it by submitting multiple packages with the same name using different Referer headers. This can result in JD spamming notifications due to the number of packages created."
+msgstr ""
+
+#. gallery_jd_referer.options.domain.name
+msgid "Per-domain"
 msgstr ""
 
 #. gallery_zip_add_info_file.name
@@ -2949,7 +2973,7 @@ msgstr ""
 msgid "Automatically highlights images as you view pages"
 msgstr ""
 
-#. highlightimgs_auto.options.always.name, mouseover_enable_mask_styles2.options.always.name, mouseover_zoom_use_last.options.always.name
+#. highlightimgs_auto.options.always.name, mouseover_enable_mask_styles2.options.always.name, mouseover_zoom_use_last.options.always.name, scroll_zoomout_pagemiddle.options.always.name, gallery_jd_referer.options.always.name
 msgid "Always"
 msgstr ""
 
@@ -2961,7 +2985,7 @@ msgstr ""
 msgid "When hovering over an image"
 msgstr ""
 
-#. highlightimgs_auto.options.never.name, mouseover_zoom_use_last.options.never.name
+#. highlightimgs_auto.options.never.name, mouseover_zoom_use_last.options.never.name, scroll_zoomout_pagemiddle.options.never.name, gallery_jd_referer.options.never.name
 msgid "Never"
 msgstr ""
 
