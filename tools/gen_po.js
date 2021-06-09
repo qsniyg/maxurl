@@ -81,6 +81,7 @@ var start = function(userscript) {
 		"pl": "Polish",
 		"ps": "Pashto",
 		"pt": "Portuguese",
+		"pt_BR": "Portuguese (Brazil)",
 		"qu": "Quechua",
 		"ro": "Romanian",
 		"ru": "Russian",
