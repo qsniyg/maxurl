@@ -84,7 +84,7 @@ function patch_shaka(data) {
 		.replace(/window\.(XMLHttpRequest|decodeURIComponent|parseInt|muxjs)/g, "$1")
 		.replace(/innerGlobal\.shaka/g, "_fakeGlobal.shaka")
 		.replace(/goog\.global\.XMLHttpRequest/g, "XMLHttpRequest") // more XHR
-		.replace(/(HttpFetchPlugin\.isSupported=function..{)/g, "$1return false;") // disable fetch
+		.replace(/(HttpFetchPlugin\.isSupported=function..{)/g, "$1return false;") // disable fetch to force XHR
 		.replace(/\r*\n\/\/# sourceMappingURL=.*/, "") // remove sourcemapping to avoid warnings under devtools
 	;
 
@@ -95,6 +95,21 @@ lib_patches["shaka"] = {
 	patch: patch_shaka,
 	files: "shaka-player.compiled.debug.js",
 	requires: "muxjs"
+};
+
+function patch_jszip(text) {
+	text = text
+		.replace(/^/, "var _fakeWindow={};\n")
+		.replace(/\("undefined"!=typeof window.window:"undefined"!=typeof global.global:"undefined"!=typeof self.self:this\)/g, "(_fakeWindow)")
+		.replace(/\("undefined"!=typeof window.window:void 0!==...:"undefined"!=typeof self\?self:this\)/g, "(_fakeWindow)")
+		.replace(/if\(typeof window!=="undefined"\){g=window}/, 'if(typeof _fakeWindow!=="undefined"){g=_fakeWindow}')
+		.replace(/typeof global !== "undefined" . global/, 'typeof _fakeWindow !== "undefined" ? _fakeWindow');
+
+	return libexport_shim(text, "_fakeWindow.JSZip");
+}
+lib_patches["jszip"] = {
+	patch: patch_jszip,
+	files: "jszip.js"
 };
 
 var unwrap_object = function(obj) {

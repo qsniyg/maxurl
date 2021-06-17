@@ -12,6 +12,7 @@ node ../tools/patch_libs.js slowaes orig > testcookie_slowaes.js
 node ../tools/patch_libs.js cryptojs_aes orig > cryptojs_aes.js
 node ../tools/patch_libs.js muxjs orig > mux.lib.js
 node ../tools/patch_libs.js shaka orig > shaka.debug.js
+node ../tools/patch_libs.js jszip orig > jszip.js
 
 to_uricomponent() {
 	cat "$@" | node -e 'var fs = require("fs"); var data = fs.readFileSync(0, "utf8"); process.stdout.write(encodeURIComponent(data));'
@@ -74,25 +75,10 @@ cat shim.js >> stream_parser.js
 dos2unix stream_parser.js
 strip_whitespace stream_parser.js
 
-cp orig/jszip.js jszip.orig.js
-sed -i \
-	-e 's/("undefined"!=typeof window.window:"undefined"!=typeof global.global:"undefined"!=typeof self.self:this)/(_fakeWindow)/g' \
-	-e 's/("undefined"!=typeof window.window:void 0!==...:"undefined"!=typeof self?self:this)/(_fakeWindow)/g' \
-	-e 's/if(typeof window!=="undefined"){g=window}/if(typeof _fakeWindow!=="undefined"){g=_fakeWindow}/g' \
-	-e 's/typeof global !== "undefined" . global/typeof _fakeWindow !== "undefined" ? _fakeWindow/g' \
-	jszip.orig.js
-echo "var _fakeWindow={};" > jszip.js
-cat jszip.orig.js >> jszip.js
-echo "" >> jszip.js
-echo "var lib_export = _fakeWindow.JSZip;" >> jszip.js
-cat shim.js >> jszip.js
-# dos2unix doesn't work because it's binary
-
 CLEANUP=1
 if [ $CLEANUP -eq 1 ]; then
 	rm \
 		mux.lib.js \
 		ffmpeg.min.orig.js ffmpeg-core.orig.js ffmpeg-core.js \
-		mpd-parser.js m3u8-parser.js \
-		jszip.orig.js
+		mpd-parser.js m3u8-parser.js
 fi
