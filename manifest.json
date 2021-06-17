@@ -72,5 +72,7 @@
     "notifications",
     "downloads",
     "clipboardWrite"
-  ]
+  ],
+
+  "update_url": "https://raw.githubusercontent.com/qsniyg/maxurl/master/extension/updates.xml"
 }
