@@ -137,9 +137,24 @@ var patch_lib = null;
 
 		var patchinfo = lib_patches[libname];
 		var data = {};
-		data[patchinfo.files] = await getfile(patchinfo.files);
-		if (patchinfo.requires)
-			data[patchinfo.requires] = await do_patch(patchinfo.requires, getfile);
+
+		var fetched_file = await getfile(patchinfo.files);
+		if (!fetched_file) {
+			console.error("Unable to load file", patchinfo.files);
+			return null;
+		} else {
+			data[patchinfo.files] = fetched_file;
+		}
+
+		if (patchinfo.requires) {
+			var fetched_require = await do_patch(patchinfo.requires, getfile);
+			if (!fetched_require) {
+				console.error("Unable to load dependency", patchinfo.requires);
+				return null;
+			}
+
+			data[patchinfo.requires] = fetched_require;
+		}
 
 		var patched = patchinfo.patch(unwrap_object(data));
 		if (patchinfo.cached)
@@ -158,7 +173,7 @@ var patch_lib = null;
 		};
 
 		var process_cli = async function(argv) {
-			var patch = process.argv[2];
+			var patch = argv[2];
 			if (!patch) {
 				console.error("Need patch type");
 				return;
@@ -169,7 +184,7 @@ var patch_lib = null;
 				return;
 			}
 
-			var dirname = process.argv[3];
+			var dirname = argv[3];
 			if (!dirname) {
 				console.error("Need orig library dirname");
 				return;
