@@ -2,7 +2,9 @@
 
 cd "`dirname "$0"`"
 
-./fetch_libs.sh
+if [ "$1" = "fetch" ]; then
+	./fetch_libs.sh
+fi
 
 strip_whitespace() {
 	sed -i -e 's/[ \t]*$//g' -e 's/^ *$//g' "$1"
