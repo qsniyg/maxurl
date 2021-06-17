@@ -12,7 +12,7 @@ msgstr ""
 msgid "$language_native$"
 msgstr "Français"
 
-#. English: Finds larger or original versions of images and videos for 7900+ websites, including a powerful media popup and download feature
+#. English: Finds larger or original versions of images and videos for 8000+ websites, including a powerful media popup and download feature
 msgid "$description$"
 msgstr "Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 000 sites web, y compris une puissante fonction de popup média"
 
