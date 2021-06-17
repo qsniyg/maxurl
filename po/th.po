@@ -14,7 +14,7 @@ msgstr ""
 
 #. English: Finds larger or original versions of images and videos for 7900+ websites, including a powerful media popup and download feature
 msgid "$description$"
-msgstr "หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 7900 งเว็บไซต์"
+msgstr "หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 8000 งเว็บไซต์"
 
 #. English: Options
 msgid "options_header"

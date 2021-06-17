@@ -14,7 +14,7 @@ msgstr "한국어"
 
 #. English: Finds larger or original versions of images and videos for 7900+ websites, including a powerful media popup and download feature
 msgid "$description$"
-msgstr "7900개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다"
+msgstr "8000개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다"
 
 #. English: Options
 msgid "options_header"
