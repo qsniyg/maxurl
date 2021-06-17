@@ -34,40 +34,40 @@
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 7900+ websites, including a powerful media popup and download feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 7900 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 7900 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 7900 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 7900 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 7900 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 7900 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 7900 sitios
-// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 7900 verkkosivustolle
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 7 900 sites web, y compris une puissante fonction de popup média
-// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 7 900 sites web, y compris une puissante fonction de popup média
-// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-7900 אתרים
-// @description:hi    7900 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
-// @description:hu    Több mint 7900 webhely képének és videóinak nagyobb vagy eredeti változatát találja
-// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 7900 situs web
-// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 7900 siti web
-// @description:ja    7900以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ko    7900개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 7900 nettsteder
-// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 7900 websites
-// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 7900 stron internetowych
-// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 7900 sites
-// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7900 веб-сайтов
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 7900 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 7900 веб-сайтів
-// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 7900 งเว็บไซต์
-// @description:tr    7900'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
-// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 7900 trang web
-// @description:zh    为7900多个网站查找更大或原始图像
-// @description:zh-CN 为7900多个网站查找更大或原始图像
-// @description:zh-TW 為7900多個網站查找更大或原始圖像
-// @description:zh-HK 為7900多個網站查找更大或原始圖像
+// @description       Finds larger or original versions of images and videos for 8000+ websites, including a powerful media popup and download feature
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 8000 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 8000 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 8000 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 8000 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 8000 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 8000 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 8000 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 8000 verkkosivustolle
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 000 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 000 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-8000 אתרים
+// @description:hi    8000 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
+// @description:hu    Több mint 8000 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 8000 situs web
+// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 8000 siti web
+// @description:ja    8000以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ko    8000개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 8000 nettsteder
+// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 8000 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 8000 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 8000 sites
+// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 8000 веб-сайтов
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 8000 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 8000 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 8000 งเว็บไซต์
+// @description:tr    8000'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 8000 trang web
+// @description:zh    为8000多个网站查找更大或原始图像
+// @description:zh-CN 为8000多个网站查找更大或原始图像
+// @description:zh-TW 為8000多個網站查找更大或原始圖像
+// @description:zh-HK 為8000多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           0.19.2
+// @version           0.19.3
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -103,7 +103,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@b6085bf2c769d4e51b79ba37920842cc6396fd4d/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@1f1c750dbd59c57c689a83910515584c51df6bb7/build/rules.js
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
@@ -2510,7 +2510,9 @@ var $$IMU_EXPORT$$;
 			}, resp);
 		};
 
-		var chunk_size = options.chunk_size || 512*1024;
+		var chunk_size = options.chunk_size;
+		if (!chunk_size && chunk_size !== 0)
+			chunk_size = 512*1024;
 
 		// todo: GET, if Accept-Ranges is present, abort, save the current response, then go with chunked
 		// more info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
@@ -2887,6 +2889,8 @@ var $$IMU_EXPORT$$;
 		need_credentials: true,
 		// overrides the content type for websites that send the wrong one
 		content_type: null,
+		// maximum amount of chunks for downloading, 0 means unlimited
+		max_chunks: 0,
 		referer_ok: {
 			same_domain: false,
 			same_domain_nosub: false
@@ -10119,7 +10123,7 @@ var $$IMU_EXPORT$$;
 		return obj;
 	};
 
-	var fillobj_urls = function(urls, obj) {
+	var fillobj_urls = function(urls, obj, overwrite) {
 		var newobj = [];
 		for (var i = 0; i < urls.length; i++) {
 			var currentobj = deepcopy(obj);
@@ -10128,7 +10132,8 @@ var $$IMU_EXPORT$$;
 				currentobj.url = urls[i];
 			} else {
 				for (var key in urls[i]) {
-					currentobj[key] = urls[i][key];
+					if (!overwrite || !(key in currentobj))
+						currentobj[key] = urls[i][key];
 				}
 			}
 
@@ -12752,11 +12757,24 @@ var $$IMU_EXPORT$$;
 		if (!obj.headers)
 			obj.headers = {};
 
+		// referer = instagram.com is crucial to avoid throttling (thanks to remlap for reporting)
 		headerobj_set(obj.headers, "Referer", "https://www.instagram.com/");
-		headerobj_set(obj.headers, "Origin", "https://www.instagram.com");
+		// origin apparently seems to throttle? is this placebo?
+		//headerobj_set(obj.headers, "Origin", "https://www.instagram.com"); // is this needed?
+
+		// instagram seems to throttle without these?
+		if (obj.video)
+			headerobj_set(obj.headers, "Sec-Fetch-Dest", "video");
+		else
+			headerobj_set(obj.headers, "Sec-Fetch-Dest", "image");
+		headerobj_set(obj.headers, "Sec-Fetch-Mode", "cors");
+		headerobj_set(obj.headers, "Sec-Fetch-Site", "cross-site");
 
 		// in order to allow the extension to override allow-access-control-origin
 		obj.need_credentials = false;
+
+		// is this needed to avoid throttling?
+		//obj.max_chunks = 1;
 
 		return obj;
 	};
@@ -13531,12 +13549,12 @@ var $$IMU_EXPORT$$;
 			if (image.video_dash) {
 				var dashurl = "data:application/dash+xml," + encodeURIComponent(image.video_dash);
 
-				preobj.push({
+				preobj.push(common_functions.set_cdninstagram_obj({
 					url: dashurl,
 					video: "dash",
 					extra: deepcopy(extra),
 					album_info: deepcopy(album_info)
-				});
+				}));
 			}
 
 			if (image.video) {
@@ -13554,7 +13572,8 @@ var $$IMU_EXPORT$$;
 				album_info: deepcopy(album_info)
 			});
 
-			return fillobj_urls(obj, common_functions.set_cdninstagram_obj({}));
+			// set true to overwrite, as the cdninstagram headers are critical
+			return fillobj_urls(obj, common_functions.set_cdninstagram_obj({}), true);
 		};
 
 		var image_meld_largest = function(image) {
@@ -17197,13 +17216,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "2j6bkag2n4k1401b") {
+	            } else if (bigimage_obj.nonce !== "1n4bea01pp7oehmo") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "2j6bkag2n4k1401b"
+	                    message: "Bad nonce, expected: " + "1n4bea01pp7oehmo"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -22507,6 +22526,9 @@ var $$IMU_EXPORT$$;
 		// Under Waterfox, if offsetInlineStart is set to anything (even unset), it'll set the left to 0
 		// Thanks to decembre on github for reporting this: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
 		el.style.removeProperty("offset-inline-start");
+
+		// https://developer.chrome.com/en/blog/tablesng/ breaks without this with reduced-motion, thanks to Noodlers for reporting
+		el.style.setProperty("transition-duration", "0s", "important");
 	}
 
 	function check_bad_if(badif, resp) {
@@ -24912,6 +24934,14 @@ var $$IMU_EXPORT$$;
 
 				var max_run = Math_min(3, single_urls.length);
 				var chunks = Math_max(1, ((max_run / 3) * 5) | 0);
+				var chunk_size = 2*1024*1024;
+
+				if (info_obj.max_chunks)
+					chunks = Math_min(chunks, info_obj.max_chunks);
+
+				if (chunks === 1)
+					chunk_size = 0;
+
 				var running = 0;
 				var current_url_i = 0;
 				var finished = 0;
@@ -24928,7 +24958,7 @@ var $$IMU_EXPORT$$;
 						head_wrong_contentlength: info_obj.head_wrong_contentlength
 					}, {
 						chunks: chunks,
-						chunk_size: 2*1024*1024,
+						chunk_size: chunk_size,
 						onload: function(data) {
 							running--;
 
@@ -30598,11 +30628,19 @@ var $$IMU_EXPORT$$;
 			return cb(value);
 		}
 
+		// https://developer.chrome.com/en/blog/tablesng/
+		// keeps re-requesting the same element, which causes massive performance issues
+		// <img alt="correct and incorrect table rendering" height="333" loading="lazy" sizes="(min-width: 800px) 800px, calc(100vw - 48px)" src="https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?auto=format" srcset="https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=200 200w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=228 228w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=260 260w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=296 296w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=338 338w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=385 385w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=439 439w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=500 500w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=571 571w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=650 650w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=741 741w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=845 845w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=964 964w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=1098 1098w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=1252 1252w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=1428 1428w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=1600 1600w" width="800">
+		var valid_el_cache = new Cache();
 		function is_valid_el(el) {
 			if (!el)
 				return false;
 
-			return !!find_source([el]);
+			if (valid_el_cache.has(el))
+				return valid_el_cache.get(el);
+
+			var result = !!find_source([el]);
+			valid_el_cache.set(el, result, 3);
 		}
 
 		function count_gallery(nextprev, max, is_counting, origel, el, cb) {

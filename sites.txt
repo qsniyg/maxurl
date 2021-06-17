@@ -491,6 +491,7 @@ assets.mocha.global
 assets.mubi.com
 assets.mubicdn.net
 assets.mycast.io
+assets.myntassets.com
 assets.myzeki.com
 assets.nintendo.com
 assets.nos.nl
@@ -792,6 +793,7 @@ bobaedream.co.kr
 bobcat.grahamdigital.com
 bobs-tube.com
 bobx.com
+bodytalk.com
 bogmedia.org
 boligsurf-production.s3.amazonaws.com
 boltdns.net
@@ -1075,6 +1077,7 @@ cdn.donmai.us
 cdn.downriversundaytimes.com
 cdn.downtoearth.org.in
 cdn.dribbble.com
+cdn.dsmcdn.com
 cdn.ebaumsworld.com
 cdn.elineupmall.com
 cdn.emetro.co.kr
@@ -1240,6 +1243,7 @@ cdn.sonyselect.com.cn
 cdn.spacetelescope.org
 cdn.spermmania.com
 cdn.spinrilla.com
+cdn.sportshop.com
 cdn.static.lovehomeporn.com
 cdn.staticaly.com
 cdn.stereo.vn
@@ -1596,6 +1600,7 @@ cr-resource.storage.googleapis.com
 crack-assets.com
 crank-in.net
 craveonline.com
+crazyimg.com
 cre.ma
 createphotocalendars.com
 creativecirclemedia.com
@@ -1625,6 +1630,7 @@ customink-iotw-east-prod.s3.amazonaws.com
 customink-prod.imgix.net
 customity.com
 cuteasians.co
+cvxf2z6hud.user-space.cdn.idcfcloud.net
 cwcontent.asiae.co.kr
 cwh-cdn.21buttons.com
 cwtvembeds.com
@@ -1706,6 +1712,7 @@ d2p4y1juxwnww4.cloudfront.net
 d2pptc4exyus09.cloudfront.net
 d2pqhom6oey9wx.cloudfront.net
 d2qm30jidfbm96.cloudfront.net
+d2r55xnwy6nx47.cloudfront.net
 d2skuhm0vrry40.cloudfront.net
 d2t7cq5f1ua57i.cloudfront.net
 d2t8nixuow17vt.cloudfront.net
@@ -1857,6 +1864,8 @@ deviants.com
 devold.com
 devote.se
 devtube.dev-wiki.de
+df0a04043ae3b0be60ce-0769ebb99367e103e6cc409064fb3339.ssl.cf2.rackcdn.com
+dfocupmdlnlkc.cloudfront.net
 dg31sz3gwrwan.cloudfront.net
 dgtle.com
 dhgywazgeek0d.cloudfront.net
@@ -2294,6 +2303,7 @@ fay3.com
 fb.ru
 fbcdn.net
 fc2.com
+fdn.gsmarena.com
 fdncms.com
 fee.org
 feedme.id
@@ -2483,6 +2493,7 @@ free2music.com
 free4kwallpapers.com
 freeaddon.com
 freeasianpics.net
+freebunker.com
 freedroid.org
 freefeet4u.com
 freehardcore.com
@@ -3285,6 +3296,7 @@ image.side2.no
 image.side3.no
 image.spreadshirtmedia.com
 image.stirileprotv.ro
+image.tfgmedia.co.za
 image.thanhnien.vn
 image.thestartmagazine.com
 image.thmeythmey.com
@@ -3348,6 +3360,7 @@ images-origin.playboy.com
 images-production.freetls.fastly.net
 images-production.global.ssl.fastly.net
 images-ssl.gotinder.com
+images-static.nykaa.com
 images.24ur.com
 images.45cat.com
 images.45spaces.com
@@ -3372,6 +3385,7 @@ images.asics.com
 images.ask.com
 images.askmen.com
 images.asmhentai.com
+images.asos-media.com
 images.assettype.com
 images.attvideo.com
 images.bigboobsbeauties.com
@@ -4014,6 +4028,7 @@ imgcache.dealmoon.com
 imgcarry.com
 imgcc.naver.jp
 imgcdn.thecover.cn
+imgcloud.pw
 imgcp.aacdn.jp
 imgcredit.xyz
 imgdino.com
@@ -4815,6 +4830,8 @@ media.laodong.vn
 media.lasvegasweekly.com
 media.lelombrik.net
 media.linkonlineworld.com
+media.littlewoods.com
+media.littlewoodsireland.ie
 media.lolusercontent.com
 media.loot.co.za
 media.loupak.fun
@@ -4909,6 +4926,7 @@ media.trud.bg
 media.vandal.net
 media.vandalsports.com
 media.vanityfair.com
+media.very.co.uk
 media.vietq.vn
 media.vingle.net
 media.virbcdn.com
@@ -5206,6 +5224,7 @@ nakedsexyasians.com
 nakedteens.fun
 nakedwench.com
 namooactors.com
+namshicdn.com
 nana10img.storage.googleapis.com
 nanopress.it
 napiszar.com
@@ -5947,6 +5966,7 @@ prod-media.gameinformer.com.s3.amazonaws.com
 prod.media.larepublica.pe
 prod.presets.larepublica.pe
 prodimage.images-bn.com
+prodirectrunning.com
 production-2.?.digitaloceanspaces.com
 productionparadise.com
 productserve.com
@@ -6381,6 +6401,7 @@ sensualgirls.org
 seoul.co.kr
 seoulilbo.com
 sephora.com
+seprun.com
 serey.io
 serienfans.org
 seriouseats.com
@@ -6402,6 +6423,7 @@ sexyasians.net
 sexyfandom.com
 sexyfitbabes.com
 sexygirlcity.com
+sexyhairyvagina.com
 sexylabia.net
 sexypet.co.kr
 sexypic.org
@@ -6763,6 +6785,7 @@ static.myfigurecollection.net
 static.namethatporn.com
 static.netlife.vn
 static.new-magazine.co.uk
+static.nike.com
 static.noticiasaominuto.com
 static.noticiasaominuto.com.br
 static.nrk.no
@@ -7094,6 +7117,7 @@ thecelebritydresses.us
 thedjlist.com
 thedonald.win
 thedrive.co.kr
+theedge-sports.com
 theepochtimes.com
 thefamouspeople.com
 thefappening.rocks
@@ -7734,6 +7758,7 @@ wikiquicky.com
 wikispaces.com
 wikizeroo.org
 wilddream.net
+wildpictures.net
 win4000.com
 windows7themes.net
 winporn.com

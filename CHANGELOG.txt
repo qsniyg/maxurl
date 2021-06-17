@@ -1,3 +1,24 @@
+0.19.3
+
+<b>Note: When sideloading this version under a chromium-based browser, it will "create" a new addon instead of updating in-place. Make sure to export your settings before updating!</b>
+
+New features:
+
+ * Support for ~25 new websites (using ~10 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Discord, Instagram, Tumblr, Twitter)
+ * Checks for valid elements are cached, improves performance on certain pages
+
+Bugfixes:
+
+ * Fix popup under websites that override `transition-duration` (thanks to Noodlers for reporting)
+
+Special thanks to MinuteAd8502, Wisedrow, remlap, Noodlers, fedesk, Afterpwn, nimbuz, sn3akyb3ar for their contributions and reports for this release
+
+---
+
 0.19.2
 
 New features:
