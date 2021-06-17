@@ -179,14 +179,16 @@ zipsourcecmd() {
     cd ..
 }
 
-rm -f build/ImageMaxURL.xpi
-zipcmd build/ImageMaxURL.xpi firefox
+outxpi=build/ImageMaxURL_unsigned.xpi
+
+rm -f "$outxpi"
+zipcmd "$outxpi" firefox
 
 getzipfiles() {
     unzip -l "$1" | awk '{print $4}' | awk 'BEGIN{x=0;y=0} /^----$/{x=1} {if (x==1) {x=2} else if (x==2) {print}}' | sed '/^ *$/d' | sort
 }
 
-FILES=$(getzipfiles build/ImageMaxURL.xpi)
+FILES=$(getzipfiles "$outxpi")
 echo "$FILES" > files.txt
 
 cat <<EOF > files1.txt
