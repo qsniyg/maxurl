@@ -3,9 +3,10 @@
 node_modules
 *~
 site/
-extension.xpi
+#extension.xpi
+extension_source.zip
 *.pem
-*.crx
+#*.crx
 maxurl.zip
 *.pub
 *.sig
