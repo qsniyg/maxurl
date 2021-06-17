@@ -200,43 +200,6 @@ getzipfiles() {
 FILES=$(getzipfiles "$outxpi")
 echo "$FILES" > files.txt
 
-cat <<EOF > all_files.txt
-extension/background.js
-extension/options.css
-extension/options.html
-extension/popup.html
-extension/popup.js
-#-EXTENSION_README.txt
-?-lib/cryptojs_aes.js
-#-lib/fetch_libs.sh
-?-lib/ffmpeg.js
-#-lib/libs.txt
-?-lib/jszip.js
-!-lib/orig/cryptojs_aes.js
-!-lib/orig/jszip.js
-!-lib/orig/mux.js
-!-lib/orig/shaka-player.compiled.debug.js
-?-lib/shaka.debug.js
-?-lib/stream_parser.js
-?-lib/testcookie_slowaes.js
-LICENSE.txt
-manifest.json
-resources/disabled_40.png
-resources/disabled_48.png
-resources/disabled_96.png
-resources/logo_40.png
-resources/logo_48.png
-resources/logo_96.png
-#-tools/package_extension.sh
-#-tools/remcomments.js
-#-tools/util.js
-userscript.user.js
-EOF
-
-sed '/^[#?!]-/d' all_files.txt > common_files.txt
-sed 's/^#-//g' files1.txt > files1_source.txt
-sed -i '/^#-/d' files1.txt
-
 assemble_file_list() {
     out=$1
     shift
