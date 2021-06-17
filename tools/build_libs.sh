@@ -7,6 +7,8 @@ if [ "$1" = "fetch" ]; then
 	../tools/fetch_libs.sh
 fi
 
+CLEANUP_FILES=
+
 strip_whitespace() {
 	sed -i -e 's/[ \t]*$//g' -e 's/^ *$//g' "$1"
 }
@@ -62,6 +64,8 @@ EOF
 	cat shim.js >> ffmpeg.js
 	dos2unix ffmpeg.js
 	strip_whitespace ffmpeg.js
+
+	CLEANUP_FILES="$CLEANUP_FILES ffmpeg.min.orig.js ffmpeg-core.orig.js ffmpeg-core.js"
 fi
 
 if [ -f orig/mpd-parser.js ]; then
@@ -81,11 +85,11 @@ if [ -f orig/mpd-parser.js ]; then
 	cat shim.js >> stream_parser.js
 	dos2unix stream_parser.js
 	strip_whitespace stream_parser.js
+
+	CLEANUP_FILES="$CLEANUP_FILES mpd-parser.js m3u8-parser.js"
 fi
 
 CLEANUP=1
-if [ $CLEANUP -eq 1 ]; then
-	rm \
-		ffmpeg.min.orig.js ffmpeg-core.orig.js ffmpeg-core.js \
-		mpd-parser.js m3u8-parser.js
+if [ $CLEANUP -eq 1 ] && [ ! -z "$CLEANUP_FILES" ]; then
+	rm $CLEANUP_FILES
 fi
