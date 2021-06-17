@@ -8,15 +8,7 @@ strip_whitespace() {
 	sed -i -e 's/[ \t]*$//g' -e 's/^ *$//g' "$1"
 }
 
-cp orig/slowaes.js aes.patched.js
-# patch is adapted from https://raw.githubusercontent.com/kyprizel/testcookie-nginx-module/eb9f7d65f50f054a0e7525cf6ad225ca076d1173/util/aes.patch
-patch -p0 aes.patched.js < aes1.patch
-cat aes.patched.js > testcookie_slowaes.js
-echo "" >> testcookie_slowaes.js
-echo "var lib_export = slowAES;" >> testcookie_slowaes.js
-cat shim.js >> testcookie_slowaes.js
-dos2unix testcookie_slowaes.js
-strip_whitespace testcookie_slowaes.js
+node ../lib/patch_libs.js slowaes orig/slowaes.js > testcookie_slowaes.js
 
 cp orig/cryptojs_aes.js cryptojs_aes.js
 echo "" >> cryptojs_aes.js
@@ -132,7 +124,6 @@ cat shim.js >> jszip.js
 CLEANUP=1
 if [ $CLEANUP -eq 1 ]; then
 	rm \
-		aes.patched.js \
 		shaka.debug.orig.js shaka_global.js \
 		mux.lib.js \
 		ffmpeg.min.orig.js ffmpeg-core.orig.js ffmpeg-core.js \
