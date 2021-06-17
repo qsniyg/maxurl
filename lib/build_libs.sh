@@ -6,15 +6,6 @@ strip_whitespace() {
 	sed -i -e 's/[ \t]*$//g' -e 's/^ *$//g' "$1"
 }
 
-# 3.1.2 has issues with our generated coub dash streams
-wget http://cdn.dashjs.org/v3.1.1/dash.all.debug.js -O dash.all.debug.js
-echo "" >> dash.all.debug.js
-echo "var lib_export = dashjs;" >> dash.all.debug.js
-cat shim.js >> dash.all.debug.js
-dos2unix dash.all.debug.js
-sed -i -e '/\/\/# sourceMappingURL=/d' dash.all.debug.js
-strip_whitespace dash.all.debug.js
-
 wget https://raw.githubusercontent.com/escolarea-labs/slowaes/f53404fb0aba47fcd336ae32623033bffa1dab41/js/aes.js -O aes.orig.js
 cp aes.orig.js aes.patched.js
 # patch is adapted from https://raw.githubusercontent.com/kyprizel/testcookie-nginx-module/eb9f7d65f50f054a0e7525cf6ad225ca076d1173/util/aes.patch
