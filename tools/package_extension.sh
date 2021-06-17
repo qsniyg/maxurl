@@ -124,10 +124,12 @@ separator EXTENSION_README.txt
 echo
 echo Building Firefox extension
 
-BASEFILES="LICENSE.txt manifest.json userscript.user.js lib/testcookie_slowaes.js lib/cryptojs_aes.js lib/jszip.js lib/shaka.debug.js resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension/background.js extension/options.css extension/options.html extension/popup.js extension/popup.html"
+BASEFILES="LICENSE.txt manifest.json userscript.user.js resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension/background.js extension/options.css extension/options.html extension/popup.js extension/popup.html"
 NONFFFILES="lib/ffmpeg.js lib/stream_parser.js"
-SOURCEFILES="lib/aes1.patch lib/shim.js lib/fetch_shim.js lib/build_libs.sh EXTENSION_README.txt tools/package_extension.sh tools/remcomments.js tools/util.js"
-DIRS="extension lib resources tools"
+NONAMOFILES="lib/testcookie_slowaes.js lib/cryptojs_aes.js lib/jszip.js lib/shaka.debug.js"
+AMOFILES="lib/orig/slowaes.js lib/orig/cryptojs_aes.js lib/orig/jszip.js lib/orig/mux.js lib/orig/shaka-player.compiled.debug.js"
+SOURCEFILES="lib/fetch_libs.sh lib/libs.txt EXTENSION_README.txt tools/package_extension.sh tools/remcomments.js tools/util.js"
+DIRS="extension lib lib/orig resources tools"
 
 zip_tempcreate() {
     mkdir tempzip
@@ -136,7 +138,7 @@ zip_tempcreate() {
         mkdir tempzip/$dir
     done
 
-    for file in $BASEFILES $NONFFFILES $SOURCEFILES; do
+    for file in $BASEFILES $NONFFFILES $NONAMOFILES $AMOFILES $SOURCEFILES; do
         sourcefile="$file"
         if [ "$file" == "userscript.user.js" ]; then
             sourcefile=userscript_smaller.user.js
@@ -159,9 +161,16 @@ zipcmd() {
     echo "Building extension package: $1"
     echo
 
-    FILES2=$NONFFFILES
-    if [ "$2" == "firefox" ]; then
-        FILES2=
+    FILES2="$NONFFFILES $NONAMOFILES"
+    if [ "$2" == "amoff" ]; then
+        FILES2="$AMOFILES"
+
+        cd tempzip
+        sed -i 's/amo_build = false;/amo_build = true;/g' extension/background.js
+        cat ../tools/patch_libs.js extension/background.js > temp
+        rm extension/background.js
+        mv temp extension/background.js
+        cd ..
     fi
 
     cd tempzip
@@ -175,14 +184,14 @@ zipsourcecmd() {
     echo
 
     cd tempzip
-    zip -r ../"$1" $BASEFILES $NONFFFILES $SOURCEFILES -x "*~"
+    zip -r ../"$1" $BASEFILES $AMOFILES $SOURCEFILES -x "*~"
     cd ..
 }
 
 outxpi=build/ImageMaxURL_unsigned.xpi
 
 rm -f "$outxpi"
-zipcmd "$outxpi" firefox
+zipcmd "$outxpi" amoff
 
 getzipfiles() {
     unzip -l "$1" | awk '{print $4}' | awk 'BEGIN{x=0;y=0} /^----$/{x=1} {if (x==1) {x=2} else if (x==2) {print}}' | sed '/^ *$/d' | sort
@@ -191,23 +200,25 @@ getzipfiles() {
 FILES=$(getzipfiles "$outxpi")
 echo "$FILES" > files.txt
 
-cat <<EOF > files1.txt
+cat <<EOF > all_files.txt
 extension/background.js
 extension/options.css
 extension/options.html
 extension/popup.html
 extension/popup.js
 #-EXTENSION_README.txt
-#-lib/aes1.patch
-#-lib/build_libs.sh
-lib/cryptojs_aes.js
-#-lib/fetch_shim.js
-#-lib/ffmpeg.js
-lib/jszip.js
-lib/shaka.debug.js
-lib/stream_parser.js
-#-lib/shim.js
-lib/testcookie_slowaes.js
+?-lib/cryptojs_aes.js
+#-lib/fetch_libs.sh
+?-lib/ffmpeg.js
+#-lib/libs.txt
+?-lib/jszip.js
+!-lib/orig/cryptojs_aes.js
+!-lib/orig/jszip.js
+!-lib/orig/mux.js
+!-lib/orig/shaka-player.compiled.debug.js
+?-lib/shaka.debug.js
+?-lib/stream_parser.js
+?-lib/testcookie_slowaes.js
 LICENSE.txt
 manifest.json
 resources/disabled_40.png
@@ -222,12 +233,29 @@ resources/logo_96.png
 userscript.user.js
 EOF
 
+sed '/^[#?!]-/d' all_files.txt > common_files.txt
 sed 's/^#-//g' files1.txt > files1_source.txt
 sed -i '/^#-/d' files1.txt
+
+assemble_file_list() {
+    out=$1
+    shift
+
+    rm -f files_temp.txt
+
+    for i in "$@"; do
+        echo "$i" >> files_temp.txt
+    done
+
+    cat files_temp.txt | sort > $out
+    rm files_temp.txt
+}
 
 diffzipfiles() {
     cat $1 $2 | sort | uniq -u
 }
+
+assemble_file_list files1.txt $BASEFILES $AMOFILES
 
 DIFF="$(diffzipfiles files.txt files1.txt)"
 if [ ! -z "$DIFF" ]; then
@@ -246,7 +274,9 @@ zipsourcecmd extension_source.zip
 FILES=$(getzipfiles extension_source.zip)
 echo "$FILES" > files.txt
 
-DIFF="$(diffzipfiles files.txt files1_source.txt)"
+assemble_file_list files1.txt $BASEFILES $AMOFILES $SOURCEFILES
+
+DIFF="$(diffzipfiles files.txt files1.txt)"
 if [ ! -z "$DIFF" ]; then
     echo
     echo 'Wrong files for source package'
