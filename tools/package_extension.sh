@@ -163,6 +163,12 @@ zip_tempcreate
 # the proper fix is likely to build our own version, or better yet, find a way to avoid use it
 sed -i 's/has_ffmpeg_lib = true/has_ffmpeg_lib = false/' tempzip/userscript.user.js
 
+# remove chrome/opera-specific properties for firefox build
+sed -i \
+    -e '/"options_page": /d' \
+    -e '/"key": /d' \
+    -e '/"update_url": /d' tempzip/manifest.json
+
 zipcmd() {
     echo
     echo "Building extension package: $1"
@@ -328,7 +334,7 @@ if [ ! -z $RELEASE ]; then
     echo ' * Ensure translation strings are updated'
     echo ' * Ensure xx00+ count is updated (userscript - greasyfork/oujs, reddit post, mozilla/opera, website)'
     echo ' * Ensure CHANGELOG.txt is updated'
-    echo ' * git add userscript.user.js userscript_smaller.user.js userscript.meta.js CHANGELOG.txt build/userscript_extr.user.js build/userscript_extr_min.user.js manifest.json sites.txt'
+    echo ' * git add userscript.user.js userscript_smaller.user.js userscript.meta.js CHANGELOG.txt build/userscript_extr.user.js build/userscript_extr_min.user.js build/ImageMaxURL_crx3.crx build/ImageMaxURL_unsigned.xpi manifest.json sites.txt'
     echo ' * git commit ('$USERVERSION')'
     echo ' * Update greasyfork, oujs, firefox, opera, changelog.txt'
     echo ' * git tag v'$USERVERSION
