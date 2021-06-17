@@ -322,7 +322,7 @@ if [ -f ./maxurl.pem ]; then
 
     rm "$zip"
 
-    sed -i "s/version='[0-9.]*'/version='$USERVERSION'/g" extension/updates.xml
+    sed -i "s/version=\"[0-9.]*\"/version=\"$USERVERSION\"/g" extension/updates.xml
 else
     echo "Warning: skipping chrome extension build"
 fi
