@@ -22,11 +22,7 @@ function libexport_shim(text, varname, add_newline) {
 	return base.join("\n");
 }
 
-function add_newline(text) {
-	return [text, ""].join("\n");
-}
-
-var patches = {};
+var lib_patches = {};
 
 // slowaes needs to be patched to match testcookie's version of slowaes
 // patch is adapted from https://raw.githubusercontent.com/kyprizel/testcookie-nginx-module/eb9f7d65f50f054a0e7525cf6ad225ca076d1173/util/aes.patch
@@ -45,16 +41,52 @@ function patch_slowaes(text) {
 
 	return libexport_shim(patched, "slowAES");
 }
-patches["slowaes"] = patch_slowaes;
+lib_patches["slowaes"] = {
+	patch: patch_slowaes,
+	files: "slowaes.js"
+};
 
 function patch_cryptojs_aes(text) {
 	var patched = libexport_shim(text, "CryptoJS");
 
 	return dos_to_unix(strip_trailing_whitespace(patched));
 }
-patches["cryptojs_aes"] = patch_cryptojs_aes;
+lib_patches["cryptojs_aes"] = {
+	patch: patch_cryptojs_aes,
+	files: "cryptojs_aes.js"
+};
 
-module.exports = patches;
+function patch_muxjs(text) {
+	return text
+		.replace(/^/, "var muxjs=null;\n")
+		.replace(/^\(function\(f\){if\(typeof exports/, "(function(f){muxjs = f();return;if(typeof exports");
+}
+lib_patches["muxjs"] = {
+	patch: patch_muxjs,
+	files: "mux.js",
+	cached: true
+};
+
+var cache = {};
+async function do_patch(libname, getfile) {
+	if (!(libname in lib_patches)) {
+		console.error("Invalid library", libname);
+		return null;
+	}
+
+	if (libname in cache)
+		return cache[libname];
+
+	var patchinfo = lib_patches[libname];
+	var data = await getfile(patchinfo.files);
+	var patched = patchinfo.patch(data);
+	if (patchinfo.cached)
+		cache[libname] = patched;
+
+	return patched;
+}
+
+module.exports = do_patch;
 
 // https://stackoverflow.com/a/42587206
 var isCLI = !module.parent;
@@ -64,26 +96,27 @@ if (isCLI) {
 		return fs.readFileSync(file).toString();
 	};
 
-	var process_cli = function(argv) {
+	var process_cli = async function(argv) {
 		var patch = process.argv[2];
 		if (!patch) {
 			console.error("Need patch type");
 			return;
 		}
 
-		if (!(patch in patches)) {
+		if (!(patch in lib_patches)) {
 			console.error("Invalid patch", patch);
 			return;
 		}
 
-		var filename = process.argv[3];
-		if (!filename) {
-			console.error("Need filename");
+		var dirname = process.argv[3];
+		if (!dirname) {
+			console.error("Need orig library dirname");
 			return;
 		}
 
-		var read = readfile(filename);
-		process.stdout.write(patches[patch](read));
+		process.stdout.write(await do_patch(patch, function(libname) {
+			return readfile(dirname + "/" + libname);
+		}));
 	};
 
 	process_cli(process.argv);
