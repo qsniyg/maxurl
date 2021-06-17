@@ -10,35 +10,8 @@ strip_whitespace() {
 
 node ../tools/patch_libs.js slowaes orig > testcookie_slowaes.js
 node ../tools/patch_libs.js cryptojs_aes orig > cryptojs_aes.js
-
-echo 'var muxjs=null;' > mux.lib.js
-cat orig/mux.js >> mux.lib.js
-# don't store in window
-#sed -i 's/g\.muxjs *=/muxjs =/' mux.lib.js
-sed -i 's/^(function(f){if(typeof exports/(function(f){muxjs = f();return;if(typeof exports/' mux.lib.js
-
-cp orig/shaka-player.compiled.debug.js shaka.debug.orig.js
-# move exportTo outside the anonymous function scope
-echo 'var _fakeGlobal={};var exportTo={};' > shaka_global.js
-sed -i 's/var exportTo={};//g' shaka.debug.orig.js
-cat mux.lib.js shaka_global.js shaka.debug.orig.js > shaka.debug.js
-# XHR is same as above, to allow overriding
-# the other window.* changes fixes it failing under the firefox addon
-# disable fetch in order to force XHR
-# remove sourcemapping to avoid warnings under devtools
-sed -i \
-    -e 's/window\.XMLHttpRequest/XMLHttpRequest/g' \
-	-e 's/window\.decodeURIComponent/decodeURIComponent/g' \
-	-e 's/window\.parseInt/parseInt/g' \
-	-e 's/window\.muxjs/muxjs/g' \
-	-e 's/innerGlobal\.shaka/_fakeGlobal.shaka/g' \
-	-e 's/goog\.global\.XMLHttpRequest/XMLHttpRequest/g' \
-	-e 's/\(HttpFetchPlugin.isSupported=function..{\)/\1return false;/g' \
-	-e '/\/\/# sourceMappingURL=/d' shaka.debug.js
-echo 'var lib_export = exportTo.shaka;' >> shaka.debug.js
-cat shim.js >> shaka.debug.js
-dos2unix shaka.debug.js
-strip_whitespace shaka.debug.js
+node ../tools/patch_libs.js muxjs orig > mux.lib.js
+node ../tools/patch_libs.js shaka orig > shaka.debug.js
 
 to_uricomponent() {
 	cat "$@" | node -e 'var fs = require("fs"); var data = fs.readFileSync(0, "utf8"); process.stdout.write(encodeURIComponent(data));'
@@ -118,7 +91,6 @@ cat shim.js >> jszip.js
 CLEANUP=1
 if [ $CLEANUP -eq 1 ]; then
 	rm \
-		shaka.debug.orig.js shaka_global.js \
 		mux.lib.js \
 		ffmpeg.min.orig.js ffmpeg-core.orig.js ffmpeg-core.js \
 		mpd-parser.js m3u8-parser.js \
