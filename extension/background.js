@@ -7,6 +7,9 @@ chrome.tabs.query({ currentWindow: true, active: true }, function(tabs) {
 	background_tab = tabs[0];
 });
 
+// Set to true if exporting to firefox addons. This uses less efficient codepaths in order to satisfy their requirements.
+const amo_build = false;
+
 var requests = {};
 var redirects = {};
 var loading_urls = {};
@@ -1035,6 +1038,61 @@ var download_with_tabs = function(tab_options, imu, filename, respond) {
 	});
 };
 
+var fetch_lib_file = function(filename) {
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", chrome.runtime.getURL("/lib/" + filename), true);
+
+	return new Promise((resolve, reject) => {
+		xhr.onload = function() {
+			if (xhr.readyState !== 4)
+				return;
+
+			if (xhr.status !== 200 && xhr.status !== 0)
+				return resolve(null);
+
+			return resolve(xhr.responseText);
+		};
+
+		xhr.onerror = function() {
+			return resolve(null);
+		};
+
+		xhr.send();
+	});
+};
+
+var amo_lib_map = {
+	testcookie_slowaes: "slowaes",
+	"shaka.debug": "shaka",
+	cryptojs_aes: "cryptojs_aes",
+	stream_parser: null,
+	ffmpeg: null,
+	jszip: "jszip"
+};
+
+var lib_cache = {};
+var fetch_lib = async function(libname) {
+	if (libname in lib_cache)
+		return lib_cache[libname];
+
+	if (amo_build) {
+		var amo_libname = amo_lib_map[libname];
+		if (!amo_libname) {
+			console.error("Invalid library for AMO build", libname);
+			return null;
+		}
+
+		var patched = await patch_lib(amo_libname, function(lib) {
+			return fetch_lib_file("orig/" + lib);
+		});
+
+		lib_cache[libname] = patched;
+		return patched;
+	} else {
+		return await fetch_lib_file(libname + ".js");
+	}
+};
+
 // Message handler
 var extension_message_handler = (message, sender, respond) => {
 	if (message && message.type !== "getvalue") {
@@ -1130,35 +1188,16 @@ var extension_message_handler = (message, sender, respond) => {
 	} else if (message.type === "get_lib") {
 		debug("get_lib", message);
 
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", chrome.runtime.getURL("/lib/" + message.data.name + ".js"), true);
-
-		xhr.onload = function() {
-			if (xhr.readyState !== 4)
-				return;
-
-			if (xhr.status !== 200 && xhr.status !== 0)
-				return respond({
-					type: "get_lib",
-					data: null
-				});
-
+		(async function() {
+			var lib = await fetch_lib(message.data.name);
 			respond({
 				type: "get_lib",
 				data: {
-					text: xhr.responseText
+					text: lib
 				}
 			});
-		};
+		})();
 
-		xhr.onerror = function() {
-			respond({
-				type: "get_lib",
-				data: null
-			});
-		};
-
-		xhr.send();
 		return true;
 	} else if (message.type === "override_next_headers") {
 		debug("override_next_headers", message);
