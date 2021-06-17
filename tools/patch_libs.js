@@ -6,15 +6,24 @@ function dos_to_unix(text) {
 	return text.replace(/\r*\n/g, "\n");
 }
 
-function libexport_shim(text, varname) {
-	return [
-		text,
-		//"",
+function libexport_shim(text, varname, add_newline) {
+	var base = [text];
+
+	if (add_newline)
+		base.push("");
+
+	base.push(
 		"var lib_export = " + varname + ";",
 		"if (typeof module !== 'undefined')",
 		"\tmodule.exports = lib_export;",
 		""
-	].join("\n");
+	)
+
+	return base.join("\n");
+}
+
+function add_newline(text) {
+	return [text, ""].join("\n");
 }
 
 var patches = {};
@@ -37,6 +46,13 @@ function patch_slowaes(text) {
 	return libexport_shim(patched, "slowAES");
 }
 patches["slowaes"] = patch_slowaes;
+
+function patch_cryptojs_aes(text) {
+	var patched = libexport_shim(text, "CryptoJS");
+
+	return dos_to_unix(strip_trailing_whitespace(patched));
+}
+patches["cryptojs_aes"] = patch_cryptojs_aes;
 
 module.exports = patches;
 

@@ -8,14 +8,8 @@ strip_whitespace() {
 	sed -i -e 's/[ \t]*$//g' -e 's/^ *$//g' "$1"
 }
 
-node ../lib/patch_libs.js slowaes orig/slowaes.js > testcookie_slowaes.js
-
-cp orig/cryptojs_aes.js cryptojs_aes.js
-echo "" >> cryptojs_aes.js
-echo "var lib_export = CryptoJS;" >> cryptojs_aes.js
-cat shim.js >> cryptojs_aes.js
-strip_whitespace cryptojs_aes.js
-dos2unix cryptojs_aes.js
+node ../tools/patch_libs.js slowaes orig/slowaes.js > testcookie_slowaes.js
+node ../tools/patch_libs.js cryptojs_aes orig/cryptojs_aes.js > cryptojs_aes.js
 
 echo 'var muxjs=null;' > mux.lib.js
 cat orig/mux.js >> mux.lib.js
