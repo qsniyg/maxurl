@@ -179,8 +179,8 @@ zipsourcecmd() {
     cd ..
 }
 
-rm extension.xpi
-zipcmd extension.xpi firefox
+rm -f build/ImageMaxURL.xpi
+zipcmd build/ImageMaxURL.xpi firefox
 
 getzipfiles() {
     unzip -l "$1" | awk '{print $4}' | awk 'BEGIN{x=0;y=0} /^----$/{x=1} {if (x==1) {x=2} else if (x==2) {print}}' | sed '/^ *$/d' | sort
@@ -257,13 +257,18 @@ rm files1_source.txt
 
 rm -rf tempzip
 
+hascmd() {
+    which "$1" >/dev/null 2>&1
+}
+
 if [ -f ./maxurl.pem ]; then
     echo
     echo Building chrome extension
     # This is based on http://web.archive.org/web/20180114090616/https://developer.chrome.com/extensions/crx#scripts
 
     name=maxurl
-    crx="$name.crx"
+    crx="build/ImageMaxURL_crx2.crx"
+    crx3="build/ImageMaxURL_crx3.crx"
     pub="$name.pub"
     sig="$name.sig"
     zip="$name.zip"
@@ -294,6 +299,13 @@ if [ -f ./maxurl.pem ]; then
     echo "$crmagic_hex $version_hex $pub_len_hex $sig_len_hex" | xxd -r -p
     cat "$pub" "$sig" "$zip"
     ) > "$crx"
+
+    if hascmd crx3; then
+        cat $zip | crx3 -p $key -o $crx3
+    else
+        echo "crx3 not found, not building CRX v3 extension"
+        echo "Install using npm install -g crx3"
+    fi
 else
     echo "Warning: skipping chrome extension build"
 fi
