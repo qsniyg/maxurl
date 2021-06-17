@@ -186,7 +186,7 @@ getzipfiles() {
     unzip -l "$1" | awk '{print $4}' | awk 'BEGIN{x=0;y=0} /^----$/{x=1} {if (x==1) {x=2} else if (x==2) {print}}' | sed '/^ *$/d' | sort
 }
 
-FILES=$(getzipfiles extension.xpi)
+FILES=$(getzipfiles build/ImageMaxURL.xpi)
 echo "$FILES" > files.txt
 
 cat <<EOF > files1.txt
@@ -274,10 +274,10 @@ if [ -f ./maxurl.pem ]; then
     zip="$name.zip"
     key="$name.pem"
 
-    rm $zip $pub $sig
+    rm -f "$zip" "$pub" "$sig"
 
     zip_tempcreate
-    zipcmd $zip
+    zipcmd "$zip"
     rm -rf tempzip
 
     # signature
@@ -300,12 +300,16 @@ if [ -f ./maxurl.pem ]; then
     cat "$pub" "$sig" "$zip"
     ) > "$crx"
 
+    rm "$pub" "$sig"
+
     if hascmd crx3; then
-        cat $zip | crx3 -p $key -o $crx3
+        cat "$zip" | crx3 -p "$key" -o "$crx3"
     else
         echo "crx3 not found, not building CRX v3 extension"
         echo "Install using npm install -g crx3"
     fi
+
+    rm "$zip"
 
     sed -i "s/version='[0-9.]*'/version='$USERVERSION'/g" extension/updates.xml
 else
