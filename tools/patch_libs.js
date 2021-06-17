@@ -31,8 +31,9 @@ function patch_slowaes(text) {
 		.replace(/(var blockSize = 16;\s*)(for \(var i = data\.length - 1;)/, "$1if (data.length > 16) {\r\n\t\t$2")
 		.replace(/(data\.splice\(data\.length - padCount, padCount\);\r\n)/, "$1\t\t}\r\n");
 
-	// this section is to ensure byte-for-byte correctness with the old build_libs.sh version, it's otherwise useless
+	// dos_to_unix because web archive does this and therefore integrity checks for the userscript can fail
 	patched = dos_to_unix(patched);
+	// this section is to ensure byte-for-byte correctness with the old build_libs.sh version, it's otherwise useless
 	var matchregex = /for \(var i = data\.length - 1;[\s\S]+data\.splice\(data\.length - padCount, padCount\);/
 	var match = patched.match(matchregex);
 	var indented = match[0].replace(/^/mg, "\t");
@@ -98,6 +99,7 @@ lib_patches["shaka"] = {
 };
 
 function patch_jszip(text) {
+	// don't store in window
 	text = text
 		.replace(/^/, "var _fakeWindow={};\n")
 		.replace(/\("undefined"!=typeof window.window:"undefined"!=typeof global.global:"undefined"!=typeof self.self:this\)/g, "(_fakeWindow)")
@@ -142,10 +144,8 @@ async function do_patch(libname, getfile) {
 	return patched;
 }
 
-module.exports = do_patch;
-
 // https://stackoverflow.com/a/42587206
-var isCLI = !module.parent;
+var isCLI = typeof navigator === "undefined" && !module.parent;
 if (isCLI) {
 	var fs = require("fs");
 	var readfile = function(file) {
