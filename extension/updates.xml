@@ -1,0 +1,6 @@
+<?xml version='0.19.2' encoding='UTF-8'?>
+<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
+  <app appid='momhpkepmajdopjgahiglmboldkepibg'>
+    <updatecheck codebase='https://github.com/qsniyg/maxurl/blob/master/build/ImageMaxURL_crx3.crx?raw=true' version='0.19.2' status='ok' />
+  </app>
+</gupdate>

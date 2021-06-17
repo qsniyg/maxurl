@@ -306,6 +306,8 @@ if [ -f ./maxurl.pem ]; then
         echo "crx3 not found, not building CRX v3 extension"
         echo "Install using npm install -g crx3"
     fi
+
+    sed -i "s/version='[0-9.]*'/version='$USERVERSION'/g" extension/updates.xml
 else
     echo "Warning: skipping chrome extension build"
 fi
