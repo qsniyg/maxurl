@@ -1,9 +1,10 @@
 #!/bin/bash
 
 cd "`dirname "$0"`"
+cd ../lib
 
 if [ "$1" = "fetch" ]; then
-	./fetch_libs.sh
+	../tools/fetch_libs.sh
 fi
 
 strip_whitespace() {

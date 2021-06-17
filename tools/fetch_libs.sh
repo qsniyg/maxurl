@@ -1,6 +1,7 @@
 #!/bin/bash
 
 cd "`dirname "$0"`"
+cd ../lib
 
 if [ ! -d orig ]; then
 	mkdir orig
