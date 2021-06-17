@@ -17,18 +17,6 @@ cat shim.js >> testcookie_slowaes.js
 dos2unix testcookie_slowaes.js
 strip_whitespace testcookie_slowaes.js
 
-wget https://github.com/video-dev/hls.js/releases/download/v0.14.13/hls.js -O hls.js
-# 1/2: don't use window.XMLHttpRequest, in order to allow overriding it
-# 3: avoids some warnings in devtools
-sed -i \
-	-e 's/xhr_loader_window\.XMLHttpRequest/XMLHttpRequest/g' \
-	-e 's/window\.XMLHttpRequest/XMLHttpRequest/g' \
-	-e '/\/\/# sourceMappingURL=hls.js.map/d' hls.js
-echo "" >> hls.js
-echo "var lib_export = this;" >> hls.js
-strip_whitespace hls.js
-dos2unix hls.js
-
 wget https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js -O cryptojs_aes.js
 echo "" >> cryptojs_aes.js
 echo "var lib_export = CryptoJS;" >> cryptojs_aes.js
