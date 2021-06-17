@@ -7,7 +7,7 @@ chrome.tabs.query({ currentWindow: true, active: true }, function(tabs) {
 	background_tab = tabs[0];
 });
 
-// Set to true if exporting to firefox addons. This uses less efficient codepaths in order to satisfy their requirements.
+// Used to control which codepath to use (true for AMO), but this may not be needed
 const amo_build = false;
 
 var requests = {};
