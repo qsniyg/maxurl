@@ -1,0 +1,16 @@
+https://raw.githubusercontent.com/Stuk/jszip/v3.6.0/dist/jszip.js
+https://raw.githubusercontent.com/escolarea-labs/slowaes/f53404fb0aba47fcd336ae32623033bffa1dab41/js/aes.js = slowaes.js
+https://raw.githubusercontent.com/brix/crypto-js/release-3.1.2/build/rollups/aes.js = cryptojs_aes.js
+
+# Built versions for mux.js aren't available on github
+https://unpkg.com/mux.js@5.7.0/dist/mux.js
+
+# Built versions for shaka aren't available on github
+https://ajax.googleapis.com/ajax/libs/shaka-player/3.0.6/shaka-player.compiled.debug.js
+
+# Libraries below are not included in the firefox extension
+https://unpkg.com/@ffmpeg/ffmpeg@0.9.7/dist/ffmpeg.min.js
+https://unpkg.com/@ffmpeg/core@0.8.5/dist/ffmpeg-core.js
+https://unpkg.com/@ffmpeg/core@0.8.5/dist/ffmpeg-core.worker.js
+https://unpkg.com/mpd-parser@0.15.0/dist/mpd-parser.js
+https://unpkg.com/m3u8-parser@4.5.0/dist/m3u8-parser.js

@@ -2,12 +2,13 @@
 
 cd "`dirname "$0"`"
 
+./fetch_libs.sh
+
 strip_whitespace() {
 	sed -i -e 's/[ \t]*$//g' -e 's/^ *$//g' "$1"
 }
 
-wget https://raw.githubusercontent.com/escolarea-labs/slowaes/f53404fb0aba47fcd336ae32623033bffa1dab41/js/aes.js -O aes.orig.js
-cp aes.orig.js aes.patched.js
+cp orig/slowaes.js aes.patched.js
 # patch is adapted from https://raw.githubusercontent.com/kyprizel/testcookie-nginx-module/eb9f7d65f50f054a0e7525cf6ad225ca076d1173/util/aes.patch
 patch -p0 aes.patched.js < aes1.patch
 cat aes.patched.js > testcookie_slowaes.js
@@ -17,21 +18,20 @@ cat shim.js >> testcookie_slowaes.js
 dos2unix testcookie_slowaes.js
 strip_whitespace testcookie_slowaes.js
 
-wget https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js -O cryptojs_aes.js
+cp orig/cryptojs_aes.js cryptojs_aes.js
 echo "" >> cryptojs_aes.js
 echo "var lib_export = CryptoJS;" >> cryptojs_aes.js
 cat shim.js >> cryptojs_aes.js
 strip_whitespace cryptojs_aes.js
 dos2unix cryptojs_aes.js
 
-wget https://unpkg.com/mux.js@5.7.0/dist/mux.js -O mux.orig.js
 echo 'var muxjs=null;' > mux.lib.js
-cat mux.orig.js >> mux.lib.js
+cat orig/mux.js >> mux.lib.js
 # don't store in window
 #sed -i 's/g\.muxjs *=/muxjs =/' mux.lib.js
 sed -i 's/^(function(f){if(typeof exports/(function(f){muxjs = f();return;if(typeof exports/' mux.lib.js
 
-wget https://ajax.googleapis.com/ajax/libs/shaka-player/3.0.6/shaka-player.compiled.debug.js -O shaka.debug.orig.js
+cp orig/shaka-player.compiled.debug.js shaka.debug.orig.js
 # move exportTo outside the anonymous function scope
 echo 'var _fakeGlobal={};var exportTo={};' > shaka_global.js
 sed -i 's/var exportTo={};//g' shaka.debug.orig.js
@@ -58,8 +58,8 @@ to_uricomponent() {
 	cat "$@" | node -e 'var fs = require("fs"); var data = fs.readFileSync(0, "utf8"); process.stdout.write(encodeURIComponent(data));'
 }
 
-wget https://unpkg.com/@ffmpeg/ffmpeg@0.9.7/dist/ffmpeg.min.js -O ffmpeg.min.orig.js
-wget https://unpkg.com/@ffmpeg/core@0.8.5/dist/ffmpeg-core.js -O ffmpeg-core.orig.js
+cp orig/ffmpeg.min.js ffmpeg.min.orig.js
+cp orig/ffmpeg-core.js ffmpeg-core.orig.js
 cp ffmpeg-core.orig.js ffmpeg-core.js
 # window.* and self->_fakeGlobal are for preventing leaking
 # remove sourcemapping to avoid warnings under devtools
@@ -82,8 +82,7 @@ EOF
 # note that the unpkg url is used instead of integrating it in the repo. this is for cache reasons, as all other scripts using ffmpeg.js will use the same url
 sed -i 's/{return [a-z]*\.locateFile[?][a-z]*\.locateFile(a,[^}]*}var/{return "https:\/\/unpkg.com\/@ffmpeg\/core@0.8.5\/dist\/" + a}var/' ffmpeg-core.js
 # inject the worker directly, fixes more cors issues
-wget https://unpkg.com/@ffmpeg/core@0.8.5/dist/ffmpeg-core.worker.js -O ffmpeg-core.worker.js
-WORKER_CODE=`to_uricomponent ffmpeg-core.worker.js`
+WORKER_CODE=`to_uricomponent orig/ffmpeg-core.worker.js`
 #sed -i 's/{var a=..("ffmpeg-core.worker.js");\([^}]*\.push(new Worker(a))}\)/{var a="data:application\/x-javascript,'$WORKER_CODE'";\1/g' ffmpeg-core.js
 # use blob instead of data, works on more sites (such as instagram)
 sed -i 's/{var a=..("ffmpeg-core.worker.js");\([^}]*\.push(new Worker(a))}\)/{var a=URL.createObjectURL(new Blob([decodeURIComponent("'$WORKER_CODE'")]));\1/g' ffmpeg-core.js
@@ -99,14 +98,14 @@ cat shim.js >> ffmpeg.js
 dos2unix ffmpeg.js
 strip_whitespace ffmpeg.js
 
-wget https://unpkg.com/mpd-parser@0.15.0/dist/mpd-parser.js -O mpd-parser.js
+cp orig/mpd-parser.js mpd-parser.js
 # isNaN prevents failing under firefox addon
 # location.href is to avoid resolving to the local href (breaks v.redd.it dash streams)
 sed -i \
 	-e 's/}(this, (function (exports/}(_fakeGlobal, (function (exports/' \
 	-e 's/window\.isNaN/isNaN/g' \
 	-e 's/window__[^ ]*\.location\.href/""/g' mpd-parser.js
-wget https://unpkg.com/m3u8-parser@4.5.0/dist/m3u8-parser.js -O m3u8-parser.js
+cp orig/m3u8-parser.js m3u8-parser.js
 sed -i 's/}(this, function (exports/}(_fakeGlobal, function (exports/' m3u8-parser.js
 echo "var _fakeGlobal={window: window};" > stream_parser.js
 cat mpd-parser.js m3u8-parser.js >> stream_parser.js
@@ -116,7 +115,7 @@ cat shim.js >> stream_parser.js
 dos2unix stream_parser.js
 strip_whitespace stream_parser.js
 
-wget https://raw.githubusercontent.com/Stuk/jszip/7c75dff02e729bd9985f15b560aa02944e14f238/dist/jszip.js -O jszip.orig.js
+cp orig/jszip.js jszip.orig.js
 sed -i \
 	-e 's/("undefined"!=typeof window.window:"undefined"!=typeof global.global:"undefined"!=typeof self.self:this)/(_fakeWindow)/g' \
 	-e 's/("undefined"!=typeof window.window:void 0!==...:"undefined"!=typeof self?self:this)/(_fakeWindow)/g' \
@@ -133,10 +132,10 @@ cat shim.js >> jszip.js
 CLEANUP=1
 if [ $CLEANUP -eq 1 ]; then
 	rm \
-		aes.orig.js aes.patched.js \
+		aes.patched.js \
 		shaka.debug.orig.js shaka_global.js \
-		mux.orig.js mux.lib.js \
-		ffmpeg.min.orig.js ffmpeg-core.orig.js ffmpeg-core.js ffmpeg-core.worker.js \
+		mux.lib.js \
+		ffmpeg.min.orig.js ffmpeg-core.orig.js ffmpeg-core.js \
 		mpd-parser.js m3u8-parser.js \
 		jszip.orig.js
 fi
