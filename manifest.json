@@ -74,5 +74,6 @@
     "clipboardWrite"
   ],
 
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWO5xT8unDmhWBJpTF1KN2loSBtp7RHE19cVT46zxBcvscy2QLlZAjBQ/0m5paqVXO4ln2KzgH5unyNNZowbT7P9+DukwymjeXoSnaE9+ooKBmxz5Wr6j+x43hWxPAf8PcgnIgY99DgPXV7ZlPzHOGIe9dRarrGNRsbQyoI+Bj4gpu5yIgvg0jYHKAUCpAAwIA9Vhg92+vD7rCUEMwEo+DQp7rOA4RkFQjp83xMdqZwOYzX8+0FDy2TpuGKlkW+N4DvqbcJIi8U/CZhdgSM/KcRKaEc6cGI7Zv6GcrXxPsLqYWj/4e7IpHydLshvtQxcfQ7BV2IWIx/41NtuAIBzNQIDAQAB",
   "update_url": "https://raw.githubusercontent.com/qsniyg/maxurl/master/extension/updates.xml"
 }
