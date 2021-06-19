@@ -16,7 +16,7 @@ It is currently released as:
   - `userscript.user.js <https://github.com/qsniyg/maxurl/blob/master/userscript.user.js>`__ is also the base for everything listed below
   - It also serves as a node module (used by the reddit bot), and can be embedded in a website
 
-- Browser extension: `Firefox Quantum <https://addons.mozilla.org/firefox/addon/image-max-url/>`__ | `Opera <https://addons.opera.com/en/extensions/details/image-max-url/>`__ (other browsers supporting WebExtensions can sideload the extension through this git repository)
+- Browser extension: `Firefox Quantum <https://addons.mozilla.org/firefox/addon/image-max-url/>`__ | `Opera Beta/Developer <https://addons.opera.com/en/extensions/details/image-max-url/>`__ (other browsers supporting WebExtensions can sideload the extension through this git repository)
 
   - Since addons have more privileges than userscripts, it has a bit of extra functionality over the userscript
   - Source code is in `manifest.json <https://github.com/qsniyg/maxurl/blob/master/manifest.json>`__ and the `extension <https://github.com/qsniyg/maxurl/tree/master/extension>`__ folder
@@ -43,14 +43,26 @@ Sideloading the extension
 *************************
 
 The extension is currently unavailable to other browsers' addon stores (such as Chrome and Microsoft Edge),
-but you can sideload this repository if you wish to use the extension instead of the userscript.
+but you can sideload this repository if you wish to use the extension version instead of the userscript.
 
-- Download the repository however you wish (I'd recommend cloning it through git as it allows easier updating)
+- Repository:
 
-- Go to chrome://extensions, make sure "Developer mode" is enabled, click "Load unpacked [extension]", and navigate to the maxurl repository
+  - Download the repository however you wish (I'd recommend cloning it through git as it allows easier updating)
+  - Chromium:
+    - Go to chrome://extensions, make sure "Developer mode" is enabled, click "Load unpacked [extension]", and navigate to the maxurl repository
+  - Firefox:
+    - Go to about:debugging->This Firefox, select "Load temporary Add-on...", and navigate to "manifest.json" within the maxurl repository
+    - Note that the addon will be deleted once Firefox is closed. There's unfortunately nothing I can do about this.
 
-You'll probably want to keep "Check for updates" enabled (it's enabled by default) as sideloaded extensions aren't automatically updated.
-Any new updates will be displayed at the top of the options page.
+- CRX (Chromium-based browsers):
+
+  - Download the CRX build from https://github.com/qsniyg/maxurl/blob/master/build/ImageMaxURL_crx3.crx
+  - Go to chrome://extensions, make sure "Developer mode" is enabled, then drag&drop the downloaded CRX file onto the page.
+
+- XPI (Firefox-based browsers):
+
+  - Download the XPI build from https://github.com/qsniyg/maxurl/blob/master/build/ImageMaxURL_signed.xpi
+  - Go to about:addons, click on the gear icon, then select "Install Add-on from From File...", and navigate to the downloaded XPI file.
 
 ************
 Contributing
