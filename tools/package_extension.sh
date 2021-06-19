@@ -340,6 +340,7 @@ if [ ! -z $RELEASE ]; then
     echo ' * git tag v'$USERVERSION
     echo ' * Update userscript.user.js for site (but check about.js for site count before)'
     echo ' * Update Discord changelog'
+    echo ' * Update build/ImageMaxURL_signed.xpi'
 else
     echo
     echo "Non-maintainer build finished"
