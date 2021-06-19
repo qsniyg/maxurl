@@ -49,8 +49,11 @@ but you can sideload this repository if you wish to use the extension version in
 
   - Download the repository however you wish (I'd recommend cloning it through git as it allows easier updating)
   - Chromium:
+
     - Go to chrome://extensions, make sure "Developer mode" is enabled, click "Load unpacked [extension]", and navigate to the maxurl repository
+
   - Firefox:
+
     - Go to about:debugging->This Firefox, select "Load temporary Add-on...", and navigate to "manifest.json" within the maxurl repository
     - Note that the addon will be deleted once Firefox is closed. There's unfortunately nothing I can do about this.
 
