@@ -272,6 +272,52 @@ hascmd() {
     which "$1" >/dev/null 2>&1
 }
 
+makecrx2() {
+    zip="$1"
+    key="$2"
+    outcrx="$3"
+
+    name="maxurl"
+    sig="$name.sig"
+    pub="$name.pub"
+
+    # signature
+    openssl sha1 -sha1 -binary -sign "$key" < "$zip" > "$sig"
+
+    # public key
+    openssl rsa -pubout -outform DER < "$key" > "$pub" 2>/dev/null
+
+    byte_swap() {
+        # Take "abcdefgh" and return it as "ghefcdab"
+        echo "${1:6:2}${1:4:2}${1:2:2}${1:0:2}"
+    }
+
+    crmagic_hex="4372 3234" # Cr24
+    version_hex="0200 0000" # 2
+    pub_len_hex=$(byte_swap $(printf '%08x\n' $(ls -l "$pub" | awk '{print $5}')))
+    sig_len_hex=$(byte_swap $(printf '%08x\n' $(ls -l "$sig" | awk '{print $5}')))
+    (
+        echo "$crmagic_hex $version_hex $pub_len_hex $sig_len_hex" | xxd -r -p
+        cat "$pub" "$sig" "$zip"
+    ) > "$outcrx"
+
+    rm "$pub" "$sig"
+}
+
+makecrx3() {
+    zip="$1"
+    key="$2"
+    outcrx="$3"
+
+    if hascmd crx3; then
+        cat "$zip" | crx3 -p "$key" -o "$outcrx"
+    else
+        echo "crx3 not found, not building CRX v3 extension"
+        echo "Install using npm install -g crx3"
+        return 1
+    fi
+}
+
 if [ -f ./maxurl.pem ]; then
     echo
     echo Building chrome extension
@@ -280,6 +326,7 @@ if [ -f ./maxurl.pem ]; then
     name=maxurl
     crx="build/ImageMaxURL_crx2.crx"
     crx3="build/ImageMaxURL_crx3.crx"
+    operacrx="build/ImageMaxURL_opera.crx"
     pub="$name.pub"
     sig="$name.sig"
     zip="$name.zip"
@@ -291,36 +338,18 @@ if [ -f ./maxurl.pem ]; then
     zipcmd "$zip"
     rm -rf tempzip
 
-    # signature
-    openssl sha1 -sha1 -binary -sign "$key" < "$zip" > "$sig"
-
-    # public key
-    openssl rsa -pubout -outform DER < "$key" > "$pub" 2>/dev/null
-
-    byte_swap () {
-    # Take "abcdefgh" and return it as "ghefcdab"
-    echo "${1:6:2}${1:4:2}${1:2:2}${1:0:2}"
-    }
-
-    crmagic_hex="4372 3234" # Cr24
-    version_hex="0200 0000" # 2
-    pub_len_hex=$(byte_swap $(printf '%08x\n' $(ls -l "$pub" | awk '{print $5}')))
-    sig_len_hex=$(byte_swap $(printf '%08x\n' $(ls -l "$sig" | awk '{print $5}')))
-    (
-    echo "$crmagic_hex $version_hex $pub_len_hex $sig_len_hex" | xxd -r -p
-    cat "$pub" "$sig" "$zip"
-    ) > "$crx"
-
-    rm "$pub" "$sig"
-
-    if hascmd crx3; then
-        cat "$zip" | crx3 -p "$key" -o "$crx3"
-    else
-        echo "crx3 not found, not building CRX v3 extension"
-        echo "Install using npm install -g crx3"
-    fi
+    makecrx2 "$zip" "$key" "$crx"
+    makecrx3 "$zip" "$key" "$crx3"
 
     rm "$zip"
+
+    # Opera build requires key to be removed: https://github.com/qsniyg/maxurl/issues/825
+    zip_tempcreate
+    sed -i '/"key": *".*",/d' tempzip/manifest.json
+    zipcmd "$zip"
+    rm -rf tempzip
+
+    makecrx2 "$zip" "$key" "$operacrx"
 
     sed -i "s/version=\"[0-9.]*\"/version=\"$USERVERSION\"/g" extension/updates.xml
 else
