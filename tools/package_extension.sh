@@ -349,7 +349,7 @@ if [ -f ./maxurl.pem ]; then
     zipcmd "$zip"
     rm -rf tempzip
 
-    makecrx2 "$zip" "$key" "$operacrx"
+    makecrx3 "$zip" "$key" "$operacrx"
 
     sed -i "s/version=\"[0-9.]*\"/version=\"$USERVERSION\"/g" extension/updates.xml
 else
