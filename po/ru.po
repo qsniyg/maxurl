@@ -472,6 +472,14 @@ msgstr ""
 msgid "SmugMug"
 msgstr ""
 
+#. redirect_enable_infobox.name
+msgid "Enable tooltip"
+msgstr ""
+
+#. redirect_enable_infobox.description
+msgid "Enables the 'Mouseover popup is needed to display the original version' tooltip"
+msgstr ""
+
 #. redirect_infobox_url.name
 msgid "Show image URL in tooltip"
 msgstr "Показывать ссылку изображения во всплывающей подсказке"
@@ -1486,7 +1494,15 @@ msgstr "Действие вертикальной прокрутки"
 msgid "How the popup reacts to a vertical scroll/mouse wheel event"
 msgstr "Как всплывающее окно реагирует на событие вертикальной прокрутки/колеса мыши."
 
-#. mouseover_scrolly_behavior.options.zoom.name
+#. mouseover_scrolly_hold_behavior.name
+msgid "Vertical scroll action (hold)"
+msgstr ""
+
+#. mouseover_scrolly_hold_behavior.description
+msgid "How the popup (when held) reacts to a vertical scroll/mouse wheel event"
+msgstr ""
+
+#. mouseover_scrolly_behavior.options.zoom.name, mouseover_scrolly_hold_behavior.options.zoom.name
 msgid "Zoom"
 msgstr "Масштаб"
 
@@ -1498,11 +1514,19 @@ msgstr "Действие горизонтальной прокрутки"
 msgid "How the popup reacts to a horizontal scroll/mouse wheel event"
 msgstr "Как всплывающее окно реагирует на событие горизонтальной прокрутки/колеса мыши."
 
-#. mouseover_scrolly_behavior.options.pan.name, mouseover_scrollx_behavior.options.pan.name
+#. mouseover_scrollx_hold_behavior.name
+msgid "Horizontal scroll action (hold)"
+msgstr ""
+
+#. mouseover_scrollx_hold_behavior.description
+msgid "How the popup (when held) reacts to a horizontal scroll/mouse wheel event"
+msgstr ""
+
+#. mouseover_scrolly_behavior.options.pan.name, mouseover_scrollx_behavior.options.pan.name, mouseover_scrolly_hold_behavior.options.pan.name, mouseover_scrollx_hold_behavior.options.pan.name
 msgid "Pan"
 msgstr "Панель"
 
-#. mouseover_scrolly_behavior.options.gallery.name, mouseover_scrollx_behavior.options.gallery.name, mouseover_zoom_use_last.options.gallery.name
+#. mouseover_scrolly_behavior.options.gallery.name, mouseover_scrollx_behavior.options.gallery.name, mouseover_zoom_use_last.options.gallery.name, mouseover_scrolly_hold_behavior.options.gallery.name, mouseover_scrollx_hold_behavior.options.gallery.name
 msgid "Gallery"
 msgstr "Галерея"
 
@@ -1530,7 +1554,7 @@ msgstr "Действие горизонтальной прокрутки вид�
 msgid "Overrides the horizontal scroll action for videos. Set to `Default` to avoid overriding the behavior."
 msgstr "Переопределяет действие горизонтальной прокрутки для видео. Установите значение `По умолчанию`, чтобы избежать переопределения поведения."
 
-#. mouseover_scrolly_video_behavior.options.default.name, mouseover_scrollx_video_behavior.options.default.name
+#. mouseover_scrolly_video_behavior.options.default.name, mouseover_scrollx_video_behavior.options.default.name, mouseover_scrolly_hold_behavior.options.default.name, mouseover_scrollx_hold_behavior.options.default.name
 msgid "Default"
 msgstr "По умолчанию"
 
@@ -1538,7 +1562,7 @@ msgstr "По умолчанию"
 msgid "Seek"
 msgstr "Стремление"
 
-#. mouseover_trigger_behavior.options.none.name, mouseover_allow_partial.options.none.name, mouseover_scrolly_behavior.options.nothing.name, mouseover_scrollx_behavior.options.nothing.name, mouseover_scrolly_video_behavior.options.nothing.name, mouseover_scrollx_video_behavior.options.nothing.name, popup_hold_zoom.options.none.name
+#. mouseover_trigger_behavior.options.none.name, mouseover_allow_partial.options.none.name, mouseover_scrolly_behavior.options.nothing.name, mouseover_scrollx_behavior.options.nothing.name, mouseover_scrolly_video_behavior.options.nothing.name, mouseover_scrollx_video_behavior.options.nothing.name, popup_hold_zoom.options.none.name, mouseover_scrolly_hold_behavior.options.nothing.name, mouseover_scrollx_hold_behavior.options.nothing.name
 msgid "None"
 msgstr "Ничего"
 
@@ -2242,6 +2266,14 @@ msgstr "Нет всплывающих окон для других типов м
 msgid "This option prevents the popup from loading a video when the source was an image or vice-versa"
 msgstr "Этот параметр запрещает всплывающему окну загружать видео, если источником было изображение, или наоборот."
 
+#. mouseover_allow_popup_when_fullscreen.name
+msgid "Allow popup when fullscreen"
+msgstr ""
+
+#. mouseover_allow_popup_when_fullscreen.description
+msgid "Allows the popup to open if an element (such as a video player) is fullscreen."
+msgstr ""
+
 #. mouseover_find_els_mode.name
 msgid "Element finding mode"
 msgstr "Режим поиска элементов"
@@ -2606,8 +2638,8 @@ msgstr ""
 
 #. instagram_use_app_api.warning.true
 msgid ""
-"As of a recent (May 2021) Instagram update, this option may flag your account.\n"
-"Please use a backup account if enabling this option."
+"As of a recent (May 2021) Instagram update, this option may flag your account when requesting too often.\n"
+"Please consider using a backup account if enabling this option."
 msgstr ""
 
 #. instagram_dont_use_web.name
