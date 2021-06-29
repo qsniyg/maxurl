@@ -1,3 +1,32 @@
+0.19.5
+
+New features:
+
+ * Option to enable popup when fullscreened (disabled by default, thanks to ComedicFox for the idea)
+ * Options to change popup zoom behavior when held (unset by default, thanks to madman06 for the idea)
+ * Option to toggle redirection tooltip (enabled by default, thanks to DevWannabe-dot for the idea)
+ * Support for ~30 new websites (using ~15 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Reddit)
+
+Bugfixes:
+
+ * Galleries work again, fixing a regression since 0.19.3 (thanks to remlap for reporting)
+ * Popup buttons/mask will no longer trigger other mousedown handlers in the page (thanks to Noodlers for reporting)
+ * Prevent redirecting if source tab is video/audio and redirecting to/from video/audio is disabled (thanks to InSimpleTermsJordan for reporting)
+ * Fix audio/video detection for redirection (thanks to InSimpleTermsJordan for reporting)
+ * Fix HEAD requests not working properly with cache (#826, thanks to MinuteAd8502 for reporting)
+
+Special thanks to MinuteAd8502, Noodlers, remlap, snek, InSimpleTermsJordan, Zui, madman06, DevWannabe-dot, Liz, nimbuz, ayunami2000, fedesk, fireattack for their contributions and reports for this release
+
+---
+
+0.19.4 was used for resubmitting the addon to Mozilla, there are no functional changes from 0.19.3.
+
+---
+
 0.19.3
 
 <b>Note: When sideloading this version under a chromium-based browser, it will "create" a new addon instead of updating in-place. Make sure to export your settings before updating!</b>

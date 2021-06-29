@@ -176,6 +176,7 @@ abcimg.es
 abcnews.com
 abload.de
 ablwang.com
+abm.hayabusa.media
 about.me
 absfreepic.com
 absolugirl.com
@@ -226,6 +227,7 @@ akamaihd.net
 akamaized.net
 akcdn.detik.net.id
 akcenty.com.ua
+akcijeikatalozi.ba
 akhbarus.com
 akherkhabrtoday.com
 akiba-souken.k-img.com
@@ -1082,6 +1084,7 @@ cdn.ebaumsworld.com
 cdn.elineupmall.com
 cdn.emetro.co.kr
 cdn.empireonline.com
+cdn.entameclip.com
 cdn.entertainmentfuse.com
 cdn.erocurves.com
 cdn.eso.org
@@ -1173,6 +1176,7 @@ cdn.newsinside.kr
 cdn.newsserve.net
 cdn.nguyenkimmall.com
 cdn.nivoli.com
+cdn.notonthehighstreet.com
 cdn.nsfw.exchange
 cdn.nudexxx.pics
 cdn.nwmgroups.hu
@@ -1446,7 +1450,9 @@ ci.xiaohongshu.com
 cilacila.com
 cimg.tvgcdn.net
 cine-vox.com
+cine.com
 cinefish.bg
+cinema.de
 cinemablend.com
 cinemacafe.net
 cinemapalace.ch
@@ -1789,6 +1795,7 @@ dainikbhaskar.com
 dajiazhao.com
 dalangw.com
 dam-p-dfi.pqcloud.eu
+dam.nmhmedia.sk
 damimage.com
 dangerousminds.net
 dantricdn.com
@@ -3078,6 +3085,7 @@ i.mommd.gr
 i.moveek.com
 i.myass.ru
 i.nahraj.to
+i.natgeofe.com
 i.neoseeker.com
 i.newsarama.com
 i.nextmedia.com.au
@@ -3108,6 +3116,7 @@ i.shgcdn.com
 i.skyrock.net
 i.slkimg.com
 i.smalljoys.me
+i.smutty.com
 i.stack.imgur.com
 i.stpl.gr
 i.stpost.com
@@ -3315,6 +3324,7 @@ image.wisetrail.com
 image.xahoi.com.vn
 image.xportsnews.com
 image.yes24.com
+image.youtv.de
 image.ytn.co.kr
 imagearn.com
 imagebam.com
@@ -4069,6 +4079,7 @@ imgproxy.camclips.to
 imgproxy.geocaching.com
 imgprx.livejournal.net
 imgr.es
+imgr.search.brave.com
 imgs-art-dragoart-386112.c.cdn77.org
 imgs.aixifan.com
 imgs.cc
@@ -4123,7 +4134,6 @@ indavideo.hu
 indeed.com
 independent.bbvms.com
 independent.com.mt
-independent.ie
 indiancinemagallery.com
 indiansexvideo.xxx
 indiatimes.com
@@ -4205,6 +4215,7 @@ islam.kz
 islingtongazette.co.uk
 ismcdn.jp
 issuedaily.com
+isubtitles.org
 itc.cn
 itch.io
 itedou.com
@@ -4704,6 +4715,7 @@ mandatory.com
 manga-news.com
 mangadex.cc
 mangadrawing.net
+mangovideo.club
 mania.kr
 maquillagecreation.ch
 marecipe.com
@@ -5016,6 +5028,7 @@ miaminewtimes.com
 middleburgfilm.org
 midiastm.gazetaonline.com.br
 mightyupload.com
+mihanfilm.live
 mikiki.tokyo.jp
 milanparal.cz
 milf-pics.net
@@ -5483,6 +5496,7 @@ of2media.s3.amazonaws.com
 ofashion.com.cn
 officialcharts.com
 offnews.bg
+ogre.natalie.mu
 ohfun.net
 ohmymag.com
 ohsohumorous.com
@@ -5532,6 +5546,7 @@ opencollective.com
 openxh.com
 openxh1.com
 openxh2.com
+opernhaus.ch
 oplace.ru
 opt.toiimg.com
 optimole.com
@@ -5904,6 +5919,7 @@ pornouploads.com
 pornovoisines.com
 pornozavod.cc
 pornpaw.com
+pornpics.vip
 pornpros.com
 pornrewind.com
 pornrice.com
@@ -5982,6 +5998,7 @@ promo.hollyrandall.com
 promo.mattsmodels.com
 promo.spunkyangels.com
 promshopau.com
+pronpic.org
 pronto.com.ar
 proprofs.com
 prostitutki.today
@@ -6410,6 +6427,7 @@ sevelina.ru
 sexbahrain.club
 sexgirlspics.com
 sexgrace.com
+sexhd.co
 sexhd.pics
 sexiestpicture.com
 sexo18.net
@@ -6476,6 +6494,7 @@ siglo.mx
 sigmalive.com
 sih.avn.com
 silenzioinsala.com
+silhcdn.com
 silverpic.com
 silviomessina.pw
 simdunyasi.com
@@ -6619,6 +6638,7 @@ ss.metronews.ru
 ss.sport-express.ru
 ssl-images-amazon.com
 ssl.gstatic.com
+ssl.ofdb.de
 ssmscdn.yp.ca
 ssproxy.ucloudbiz.olleh.com
 ssref.net
@@ -6798,6 +6818,8 @@ static.origos.hu
 static.otvfoco.com.br
 static.panoramio.com
 static.panoramio.com.storage.googleapis.com
+static.pantaflix.com
+static.pantaflix.com.s3.amazonaws.com
 static.pinwallpapers.com
 static.pjmedia.com
 static.planetminecraft.com
@@ -6819,6 +6841,7 @@ static.screenweek.it
 static.screenweek.it.s3.amazonaws.com
 static.showit.co
 static.sify.com
+static.slickdealscdn.com
 static.soltana.ma
 static.spankbang.com
 static.spin.com
@@ -6936,6 +6959,7 @@ studio-design-assets.storage.googleapis.com
 studio-dostor.org
 studio.cults3d.com
 studiosol-a.akamaihd.net
+studywalker.jp
 stuffpoint.com
 stuttgarter-nachrichten.de
 styapokupayu.ru
@@ -7018,6 +7042,7 @@ tahrirnews.com
 taipeitimes.com
 take.az
 talentandpartner.com
+tampabay.com
 tangovalley.com
 tannerbucks.com
 taobaocdn.com
@@ -7459,6 +7484,8 @@ uploads.rayli.com.cn
 uploads.spiritfanfiction.com
 uploads.xrel.to
 upornia.com
+upstream.to
+upstreamcdn.co
 urbanbug.net
 urbanhit.fr
 ure.pia.co.jp
@@ -7944,6 +7971,7 @@ yonhapnews.co.kr
 yoptel.ru
 you-anime.ru
 you2php.me
+youdbox.net
 youdew88yl.com
 youhealthtube.com
 youjizz.com

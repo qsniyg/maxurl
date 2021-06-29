@@ -67,7 +67,7 @@
 // @description:zh-TW 為8000多個網站查找更大或原始圖像
 // @description:zh-HK 為8000多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           0.19.3
+// @version           0.19.5
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -103,7 +103,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@1f1c750dbd59c57c689a83910515584c51df6bb7/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@978c41e1d3f9fa3960804b7ddc33ed4c6fffb4ca/build/rules.js
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
@@ -5575,6 +5575,8 @@ var $$IMU_EXPORT$$;
 		redirect_extension: true,
 		canhead_get: true,
 		redirect_force_page: false,
+		// thanks to DevWannabe-dot on github for the idea: https://github.com/qsniyg/maxurl/issues/822
+		redirect_enable_infobox: true,
 		// thanks to fireattack on discord for the idea: https://github.com/qsniyg/maxurl/issues/324
 		redirect_infobox_url: false,
 		redirect_infobox_timeout: 7,
@@ -5717,7 +5719,10 @@ var $$IMU_EXPORT$$;
 		mouseover_movement_inverted: true,
 		mouseover_drag_min: 5,
 		mouseover_scrolly_behavior: "zoom",
+		// thanks to madman06 on greasyfork for the idea: https://greasyfork.org/en/scripts/36662-image-max-url/discussions/90341
+		mouseover_scrolly_hold_behavior: "default",
 		mouseover_scrollx_behavior: "gallery",
+		mouseover_scrollx_hold_behavior: "default",
 		// thanks to Runakanta on discord for the idea
 		mouseover_scrolly_video_behavior: "default",
 		mouseover_scrolly_video_invert: false,
@@ -5811,6 +5816,8 @@ var $$IMU_EXPORT$$;
 		mouseover_apply_blacklist: true,
 		apply_blacklist_host: false,
 		mouseover_matching_media_types: false,
+		// thanks to ComedicFox on discord for the idea: https://github.com/qsniyg/maxurl/issues/811
+		mouseover_allow_popup_when_fullscreen: false,
 		//mouseover_support_pointerevents_none: false,
 		mouseover_find_els_mode: "hybrid",
 		popup_allow_cache: true,
@@ -6206,6 +6213,15 @@ var $$IMU_EXPORT$$;
 				"..."
 			],
 			category: "rules"
+		},
+		redirect_enable_infobox: {
+			name: "Enable tooltip",
+			description: "Enables the 'Mouseover popup is needed to display the original version' tooltip",
+			category: "redirection",
+			requires: {
+				redirect: true
+			},
+			userscript_only: true // tooltip isn't shown in the extension
 		},
 		redirect_infobox_url: {
 			name: "Show image URL in tooltip",
@@ -7525,25 +7541,49 @@ var $$IMU_EXPORT$$;
 			name: "Vertical scroll action",
 			description: "How the popup reacts to a vertical scroll/mouse wheel event",
 			options: {
-				_type: "or",
-				_group1: {
-					zoom: {
-						name: "Zoom"
-					},
-					pan: {
-						name: "Pan"
-					},
-					gallery: {
-						name: "Gallery",
-						requires: [{
-							mouseover_enable_gallery: true
-						}]
-					}
+				_type: "combo",
+				zoom: {
+					name: "Zoom"
 				},
-				_group2: {
-					nothing: {
-						name: "None"
-					}
+				pan: {
+					name: "Pan"
+				},
+				gallery: {
+					name: "Gallery",
+					requires: [{
+						mouseover_enable_gallery: true
+					}]
+				},
+				nothing: {
+					name: "None"
+				}
+			},
+			requires: "action:popup",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_scrolly_hold_behavior: {
+			name: "Vertical scroll action (hold)",
+			description: "How the popup (when held) reacts to a vertical scroll/mouse wheel event",
+			options: {
+				_type: "combo",
+				default: {
+					name: "Default"
+				},
+				zoom: {
+					name: "Zoom"
+				},
+				pan: {
+					name: "Pan"
+				},
+				gallery: {
+					name: "Gallery",
+					requires: [{
+						mouseover_enable_gallery: true
+					}]
+				},
+				nothing: {
+					name: "None"
 				}
 			},
 			requires: "action:popup",
@@ -7554,20 +7594,43 @@ var $$IMU_EXPORT$$;
 			name: "Horizontal scroll action",
 			description: "How the popup reacts to a horizontal scroll/mouse wheel event",
 			options: {
-				_type: "or",
-				_group1: {
-					pan: {
-						name: "Pan"
-					},
-					gallery: {
-						name: "Gallery",
-						requires: [{
-							mouseover_enable_gallery: true
-						}]
-					},
-					nothing: {
-						name: "None"
-					}
+				_type: "combo",
+				pan: {
+					name: "Pan"
+				},
+				gallery: {
+					name: "Gallery",
+					requires: [{
+						mouseover_enable_gallery: true
+					}]
+				},
+				nothing: {
+					name: "None"
+				}
+			},
+			requires: "action:popup",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_scrollx_hold_behavior: {
+			name: "Horizontal scroll action (hold)",
+			description: "How the popup (when held) reacts to a horizontal scroll/mouse wheel event",
+			options: {
+				_type: "combo",
+				default: {
+					name: "Default"
+				},
+				pan: {
+					name: "Pan"
+				},
+				gallery: {
+					name: "Gallery",
+					requires: [{
+						mouseover_enable_gallery: true
+					}]
+				},
+				nothing: {
+					name: "None"
 				}
 			},
 			requires: "action:popup",
@@ -7642,7 +7705,9 @@ var $$IMU_EXPORT$$;
 			},
 			requires: [
 				{mouseover_scrollx_behavior: "zoom"},
-				{mouseover_scrolly_behavior: "zoom"}
+				{mouseover_scrollx_hold_behavior: "zoom"},
+				{mouseover_scrolly_behavior: "zoom"},
+				{mouseover_scrolly_hold_behavior: "zoom"}
 			],
 			category: "popup",
 			subcategory: "behavior"
@@ -7664,7 +7729,9 @@ var $$IMU_EXPORT$$;
 			},
 			requires: [
 				{mouseover_scrollx_behavior: "zoom"},
-				{mouseover_scrolly_behavior: "zoom"}
+				{mouseover_scrollx_hold_behavior: "zoom"},
+				{mouseover_scrolly_behavior: "zoom"},
+				{mouseover_scrolly_hold_behavior: "zoom"}
 			],
 			category: "popup",
 			subcategory: "behavior"
@@ -7684,7 +7751,9 @@ var $$IMU_EXPORT$$;
 			},
 			requires: [
 				{mouseover_scrollx_behavior: "zoom"},
-				{mouseover_scrolly_behavior: "zoom"}
+				{mouseover_scrollx_hold_behavior: "zoom"},
+				{mouseover_scrolly_behavior: "zoom"},
+				{mouseover_scrolly_hold_behavior: "zoom"}
 			],
 			category: "popup",
 			subcategory: "behavior"
@@ -7719,7 +7788,9 @@ var $$IMU_EXPORT$$;
 			description: "Closes the popup if you zoom out past the minimum zoom",
 			requires: [
 				{mouseover_scrollx_behavior: "zoom"},
-				{mouseover_scrolly_behavior: "zoom"}
+				{mouseover_scrollx_hold_behavior: "zoom"},
+				{mouseover_scrolly_behavior: "zoom"},
+				{mouseover_scrolly_hold_behavior: "zoom"}
 			],
 			category: "popup",
 			subcategory: "close_behavior"
@@ -7729,7 +7800,9 @@ var $$IMU_EXPORT$$;
 			description: "Closes the popup if you scroll past the end of the gallery",
 			requires: [
 				{mouseover_scrollx_behavior: "gallery"},
-				{mouseover_scrolly_behavior: "gallery"}
+				{mouseover_scrollx_hold_behavior: "gallery"},
+				{mouseover_scrolly_behavior: "gallery"},
+				{mouseover_scrolly_hold_behavior: "gallery"}
 			],
 			category: "popup",
 			subcategory: "close_behavior"
@@ -8466,6 +8539,15 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "source"
 		},
+		mouseover_allow_popup_when_fullscreen: {
+			name: "Allow popup when fullscreen",
+			description: "Allows the popup to open if an element (such as a video player) is fullscreen.",
+			requires: {
+				mouseover: true
+			},
+			category: "popup",
+			subcategory: "source"
+		},
 		mouseover_support_pointerevents_none: {
 			name: "Support `pointer-events:none`",
 			description: "Manually looks through every element on the page to see if the cursor is beneath them. Supports more images, but also results in a higher CPU load for websites such as Facebook.",
@@ -8790,7 +8872,8 @@ var $$IMU_EXPORT$$;
 			category: "rules",
 			subcategory: "rule_specific",
 			warning: {
-				"true": "As of a recent (May 2021) Instagram update, this option may flag your account.\nPlease use a backup account if enabling this option."
+				// according to a user, this appears to happen if there are more than ~250 requests within 8-12 hours
+				"true": "As of a recent (May 2021) Instagram update, this option may flag your account when requesting too often.\nPlease consider using a backup account if enabling this option."
 			},
 			onupdate: update_rule_setting
 		},
@@ -12981,11 +13064,15 @@ var $$IMU_EXPORT$$;
 				//"User-Agent": "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+",
 				//"User-Agent": "Instagram 10.26.0 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
 				// thanks to ambler on discord for reporting, earlier UAs don't receive stories anymore
-				"User-Agent": "Instagram 146.0.0.27.125 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
+				//"User-Agent": "Instagram 146.0.0.27.125 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
+				//"User-Agent": "Instagram 146.0.0.27.125 Android (30/11; 420dpi; 2678x1080; samsung; SM-G988U1; z3q; qcom; en_US)", // made up
+				// from instaloader:
+				"User-Agent": "Instagram 146.0.0.27.125 (iPhone12,1; iOS 13_3; en_US; en-US; scale=2.00; 1656x3584; 190542906)",
 				//"User-Agent": "Mozilla/5.0 (Linux; Android 10; SM-T860 Build/QP1A.190711.020; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.101 Mobile Safari/537.36 Instagram 168.0.0.40.355 Android (29/10; 360dpi; 2560x1492; samsung; SM-T860; gts6lwifi; qcom; en_US; 261079769)",
 				"X-IG-Capabilities": "36oD",
 				"Accept": "*/*",
-				"Accept-Language": "en-US,en;q=0.8"
+				"Accept-Language": "en-US,en;q=0.8",
+				"Sec-CH-UA": "" // prevent the browser from leaking user-agent
 			};
 
 			get_instagram_cookies(function(cookies) {
@@ -13647,6 +13734,7 @@ var $$IMU_EXPORT$$;
 				var entry_data = shareddata.entry_data;
 				if ("ProfilePage" in entry_data) {
 					var edges = entry_data.ProfilePage[0].graphql.user.edge_owner_to_timeline_media.edges;
+					// todo: also cache edge_felix_video_timeline to avoid requesting videos
 
 					for (var i = 0; i < edges.length; i++) {
 						var edge = edges[i].node;
@@ -17216,13 +17304,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "1n4bea01pp7oehmo") {
+	            } else if (bigimage_obj.nonce !== "2bma9if2lfeh8p12") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "1n4bea01pp7oehmo"
+	                    message: "Bad nonce, expected: " + "2bma9if2lfeh8p12"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -19620,6 +19708,9 @@ var $$IMU_EXPORT$$;
 					return err_cb(reason, true);
 				}
 
+				if (!settings.redirect_enable_infobox)
+					return;
+
 				var trigger_behavior = get_single_setting("mouseover_trigger_behavior");
 
 				var mouseover;
@@ -19896,6 +19987,13 @@ var $$IMU_EXPORT$$;
 	}
 
 	function contenttype_can_be_redirected(contentType) {
+		// disable redirecting if redirecting to/from audio/video is disabled
+		if (/^video\//.test(contentType))
+			return !!settings.redirect_video;
+
+		if (/^audio\//.test(contentType))
+			return !!settings.redirect_audio;
+
 		// amazonaws's error page are application/xml
 		// fixme: why not search for image/ or video/ instead?
 		return !(/^(?:text|application)\//.test(contentType));
@@ -19975,17 +20073,11 @@ var $$IMU_EXPORT$$;
 
 			var new_newhref = [];
 			for (var i = 0; i < newhref.length; i++) {
-				if (!newhref[i].media_info) continue;
-
-				var type = newhref[i].media_info.type;
-
-				if (!settings.redirect_video && type === "video") {
+				if (!settings.redirect_video && is_probably_video(newhref[i]))
 					continue;
-				}
 
-				if (!settings.redirect_audio && type === "audio") {
+				if (!settings.redirect_audio && is_probably_audio(newhref[i]))
 					continue;
-				}
 
 				new_newhref.push(newhref[i]);
 			}
@@ -20968,7 +21060,7 @@ var $$IMU_EXPORT$$;
 					var meta_options = meta.options;
 					var regexp = new RegExp("^input_" + setting + "_");
 
-					var els = options[i].querySelectorAll("input, textarea, button, select");
+					var els = options[i].querySelectorAll("input, textarea, button, select, option");
 					for (var j = 0; j < els.length; j++) {
 						var input = els[j];
 
@@ -21858,11 +21950,17 @@ var $$IMU_EXPORT$$;
 					if (!("name_gettext" in coption_obj) || coption_obj.name_gettext) {
 						trans_name = _(trans_name);
 					}
-					label_texts["input_" + setting + "_" + coption] = trans_name;
+					var optionid = "input_" + setting + "_" + coption;
+					label_texts[optionid] = trans_name;
 
 					var optionel = document_createElement("option");
 					optionel.innerText = trans_name;
 					optionel.value = coption;
+					optionel.id = optionid;
+
+					if (coption_obj.description) {
+						optionel.title = _(coption_obj.description);
+					}
 
 					if (coption_obj.is_null)
 						null_option = coption;
@@ -23117,7 +23215,12 @@ var $$IMU_EXPORT$$;
 						obj[0].filesize = cached_result.filesize;
 					}
 
-					cb(cached_result.img, cached_result.resp.finalUrl, obj[0], cached_result.resp);
+					if (processing.head) {
+						cb(cached_result.resp, obj[0]);
+					} else {
+						cb(cached_result.img, cached_result.resp.finalUrl, obj[0], cached_result.resp);
+					}
+
 					return;
 				}
 			}
@@ -26207,9 +26310,19 @@ var $$IMU_EXPORT$$;
 						}
 					}
 
-					our_addEventListener(mask, "click", function() {
+					// same as the addbtn mousedown stop
+					our_addEventListener(mask, "mousedown", function(e) {
 						if (!settings.mouseover_close_click_outside)
 							return;
+
+						estop(e);
+					});
+
+					our_addEventListener(mask, "click", function(e) {
+						if (!settings.mouseover_close_click_outside)
+							return;
+
+						estop(e);
 
 						set_important_style(mask, "pointer-events", "none");
 						resetpopups();
@@ -26948,6 +27061,13 @@ var $$IMU_EXPORT$$;
 								action_handler(old_action);
 							};
 						}
+
+						// thanks to Noodlers on discord for reporting
+						// test: discord emoji picker, mousedown will close it
+						our_addEventListener(btn, "mousedown", function(e) {
+							e.stopPropagation();
+							e.stopImmediatePropagation();
+						});
 
 						if (typeof options.action === "function") {
 							our_addEventListener(btn, "click", function(e) {
@@ -28298,6 +28418,17 @@ var $$IMU_EXPORT$$;
 
 					var scrollx_behavior = get_single_setting("mouseover_scrollx_behavior");
 					var scrolly_behavior = get_single_setting("mouseover_scrolly_behavior");
+
+					if (popup_hold) {
+						var hold_scrollx_behavior = get_single_setting("mouseover_scrollx_hold_behavior");
+						var hold_scrolly_behavior = get_single_setting("mouseover_scrolly_hold_behavior");
+
+						if (hold_scrollx_behavior !== "default")
+							scrollx_behavior = hold_scrollx_behavior;
+
+						if (hold_scrolly_behavior !== "default")
+							scrolly_behavior = hold_scrolly_behavior;
+					}
 
 					var handle_gallery = function(xy) {
 						if (!settings.mouseover_enable_gallery)
@@ -30228,6 +30359,10 @@ var $$IMU_EXPORT$$;
 			if (_nir_debug_)
 				console_log("trigger_popup (options:", options, ")", current_frame_id);
 
+			// this check is set here instead of trigger_popup_with_source because automatic requests (e.g. gallery) should be ok
+			if (!settings.mouseover_allow_popup_when_fullscreen && is_fullscreen() && !is_popup_fullscreen())
+				return;
+
 			delay_handle_triggering = true;
 			//var els = document.elementsFromPoint(mouseX, mouseY);
 			var point = null;
@@ -30641,6 +30776,8 @@ var $$IMU_EXPORT$$;
 
 			var result = !!find_source([el]);
 			valid_el_cache.set(el, result, 3);
+
+			return result;
 		}
 
 		function count_gallery(nextprev, max, is_counting, origel, el, cb) {
