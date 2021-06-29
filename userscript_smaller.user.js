@@ -69,7 +69,7 @@
 // @description:zh-TW 為8000多個網站查找更大或原始圖像
 // @description:zh-HK 為8000多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           0.19.3
+// @version           0.19.5
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -5573,6 +5573,8 @@ var $$IMU_EXPORT$$;
 		redirect_extension: true,
 		canhead_get: true,
 		redirect_force_page: false,
+		// thanks to DevWannabe-dot on github for the idea: https://github.com/qsniyg/maxurl/issues/822
+		redirect_enable_infobox: true,
 		// thanks to fireattack on discord for the idea: https://github.com/qsniyg/maxurl/issues/324
 		redirect_infobox_url: false,
 		redirect_infobox_timeout: 7,
@@ -5715,7 +5717,10 @@ var $$IMU_EXPORT$$;
 		mouseover_movement_inverted: true,
 		mouseover_drag_min: 5,
 		mouseover_scrolly_behavior: "zoom",
+		// thanks to madman06 on greasyfork for the idea: https://greasyfork.org/en/scripts/36662-image-max-url/discussions/90341
+		mouseover_scrolly_hold_behavior: "default",
 		mouseover_scrollx_behavior: "gallery",
+		mouseover_scrollx_hold_behavior: "default",
 		// thanks to Runakanta on discord for the idea
 		mouseover_scrolly_video_behavior: "default",
 		mouseover_scrolly_video_invert: false,
@@ -5809,6 +5814,8 @@ var $$IMU_EXPORT$$;
 		mouseover_apply_blacklist: true,
 		apply_blacklist_host: false,
 		mouseover_matching_media_types: false,
+		// thanks to ComedicFox on discord for the idea: https://github.com/qsniyg/maxurl/issues/811
+		mouseover_allow_popup_when_fullscreen: false,
 		//mouseover_support_pointerevents_none: false,
 		mouseover_find_els_mode: "hybrid",
 		popup_allow_cache: true,
@@ -6204,6 +6211,15 @@ var $$IMU_EXPORT$$;
 				"..."
 			],
 			category: "rules"
+		},
+		redirect_enable_infobox: {
+			name: "Enable tooltip",
+			description: "Enables the 'Mouseover popup is needed to display the original version' tooltip",
+			category: "redirection",
+			requires: {
+				redirect: true
+			},
+			userscript_only: true // tooltip isn't shown in the extension
 		},
 		redirect_infobox_url: {
 			name: "Show image URL in tooltip",
@@ -7523,25 +7539,49 @@ var $$IMU_EXPORT$$;
 			name: "Vertical scroll action",
 			description: "How the popup reacts to a vertical scroll/mouse wheel event",
 			options: {
-				_type: "or",
-				_group1: {
-					zoom: {
-						name: "Zoom"
-					},
-					pan: {
-						name: "Pan"
-					},
-					gallery: {
-						name: "Gallery",
-						requires: [{
-							mouseover_enable_gallery: true
-						}]
-					}
+				_type: "combo",
+				zoom: {
+					name: "Zoom"
 				},
-				_group2: {
-					nothing: {
-						name: "None"
-					}
+				pan: {
+					name: "Pan"
+				},
+				gallery: {
+					name: "Gallery",
+					requires: [{
+						mouseover_enable_gallery: true
+					}]
+				},
+				nothing: {
+					name: "None"
+				}
+			},
+			requires: "action:popup",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_scrolly_hold_behavior: {
+			name: "Vertical scroll action (hold)",
+			description: "How the popup (when held) reacts to a vertical scroll/mouse wheel event",
+			options: {
+				_type: "combo",
+				default: {
+					name: "Default"
+				},
+				zoom: {
+					name: "Zoom"
+				},
+				pan: {
+					name: "Pan"
+				},
+				gallery: {
+					name: "Gallery",
+					requires: [{
+						mouseover_enable_gallery: true
+					}]
+				},
+				nothing: {
+					name: "None"
 				}
 			},
 			requires: "action:popup",
@@ -7552,20 +7592,43 @@ var $$IMU_EXPORT$$;
 			name: "Horizontal scroll action",
 			description: "How the popup reacts to a horizontal scroll/mouse wheel event",
 			options: {
-				_type: "or",
-				_group1: {
-					pan: {
-						name: "Pan"
-					},
-					gallery: {
-						name: "Gallery",
-						requires: [{
-							mouseover_enable_gallery: true
-						}]
-					},
-					nothing: {
-						name: "None"
-					}
+				_type: "combo",
+				pan: {
+					name: "Pan"
+				},
+				gallery: {
+					name: "Gallery",
+					requires: [{
+						mouseover_enable_gallery: true
+					}]
+				},
+				nothing: {
+					name: "None"
+				}
+			},
+			requires: "action:popup",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_scrollx_hold_behavior: {
+			name: "Horizontal scroll action (hold)",
+			description: "How the popup (when held) reacts to a horizontal scroll/mouse wheel event",
+			options: {
+				_type: "combo",
+				default: {
+					name: "Default"
+				},
+				pan: {
+					name: "Pan"
+				},
+				gallery: {
+					name: "Gallery",
+					requires: [{
+						mouseover_enable_gallery: true
+					}]
+				},
+				nothing: {
+					name: "None"
 				}
 			},
 			requires: "action:popup",
@@ -7640,7 +7703,9 @@ var $$IMU_EXPORT$$;
 			},
 			requires: [
 				{mouseover_scrollx_behavior: "zoom"},
-				{mouseover_scrolly_behavior: "zoom"}
+				{mouseover_scrollx_hold_behavior: "zoom"},
+				{mouseover_scrolly_behavior: "zoom"},
+				{mouseover_scrolly_hold_behavior: "zoom"}
 			],
 			category: "popup",
 			subcategory: "behavior"
@@ -7662,7 +7727,9 @@ var $$IMU_EXPORT$$;
 			},
 			requires: [
 				{mouseover_scrollx_behavior: "zoom"},
-				{mouseover_scrolly_behavior: "zoom"}
+				{mouseover_scrollx_hold_behavior: "zoom"},
+				{mouseover_scrolly_behavior: "zoom"},
+				{mouseover_scrolly_hold_behavior: "zoom"}
 			],
 			category: "popup",
 			subcategory: "behavior"
@@ -7682,7 +7749,9 @@ var $$IMU_EXPORT$$;
 			},
 			requires: [
 				{mouseover_scrollx_behavior: "zoom"},
-				{mouseover_scrolly_behavior: "zoom"}
+				{mouseover_scrollx_hold_behavior: "zoom"},
+				{mouseover_scrolly_behavior: "zoom"},
+				{mouseover_scrolly_hold_behavior: "zoom"}
 			],
 			category: "popup",
 			subcategory: "behavior"
@@ -7717,7 +7786,9 @@ var $$IMU_EXPORT$$;
 			description: "Closes the popup if you zoom out past the minimum zoom",
 			requires: [
 				{mouseover_scrollx_behavior: "zoom"},
-				{mouseover_scrolly_behavior: "zoom"}
+				{mouseover_scrollx_hold_behavior: "zoom"},
+				{mouseover_scrolly_behavior: "zoom"},
+				{mouseover_scrolly_hold_behavior: "zoom"}
 			],
 			category: "popup",
 			subcategory: "close_behavior"
@@ -7727,7 +7798,9 @@ var $$IMU_EXPORT$$;
 			description: "Closes the popup if you scroll past the end of the gallery",
 			requires: [
 				{mouseover_scrollx_behavior: "gallery"},
-				{mouseover_scrolly_behavior: "gallery"}
+				{mouseover_scrollx_hold_behavior: "gallery"},
+				{mouseover_scrolly_behavior: "gallery"},
+				{mouseover_scrolly_hold_behavior: "gallery"}
 			],
 			category: "popup",
 			subcategory: "close_behavior"
@@ -8464,6 +8537,15 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "source"
 		},
+		mouseover_allow_popup_when_fullscreen: {
+			name: "Allow popup when fullscreen",
+			description: "Allows the popup to open if an element (such as a video player) is fullscreen.",
+			requires: {
+				mouseover: true
+			},
+			category: "popup",
+			subcategory: "source"
+		},
 		mouseover_support_pointerevents_none: {
 			name: "Support `pointer-events:none`",
 			description: "Manually looks through every element on the page to see if the cursor is beneath them. Supports more images, but also results in a higher CPU load for websites such as Facebook.",
@@ -8788,7 +8870,8 @@ var $$IMU_EXPORT$$;
 			category: "rules",
 			subcategory: "rule_specific",
 			warning: {
-				"true": "As of a recent (May 2021) Instagram update, this option may flag your account.\nPlease use a backup account if enabling this option."
+				// according to a user, this appears to happen if there are more than ~250 requests within 8-12 hours
+				"true": "As of a recent (May 2021) Instagram update, this option may flag your account when requesting too often.\nPlease consider using a backup account if enabling this option."
 			},
 			onupdate: update_rule_setting
 		},
@@ -12979,11 +13062,15 @@ var $$IMU_EXPORT$$;
 				//"User-Agent": "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+",
 				//"User-Agent": "Instagram 10.26.0 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
 				// thanks to ambler on discord for reporting, earlier UAs don't receive stories anymore
-				"User-Agent": "Instagram 146.0.0.27.125 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
+				//"User-Agent": "Instagram 146.0.0.27.125 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
+				//"User-Agent": "Instagram 146.0.0.27.125 Android (30/11; 420dpi; 2678x1080; samsung; SM-G988U1; z3q; qcom; en_US)", // made up
+				// from instaloader:
+				"User-Agent": "Instagram 146.0.0.27.125 (iPhone12,1; iOS 13_3; en_US; en-US; scale=2.00; 1656x3584; 190542906)",
 				//"User-Agent": "Mozilla/5.0 (Linux; Android 10; SM-T860 Build/QP1A.190711.020; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.101 Mobile Safari/537.36 Instagram 168.0.0.40.355 Android (29/10; 360dpi; 2560x1492; samsung; SM-T860; gts6lwifi; qcom; en_US; 261079769)",
 				"X-IG-Capabilities": "36oD",
 				"Accept": "*/*",
-				"Accept-Language": "en-US,en;q=0.8"
+				"Accept-Language": "en-US,en;q=0.8",
+				"Sec-CH-UA": "" // prevent the browser from leaking user-agent
 			};
 
 			get_instagram_cookies(function(cookies) {
@@ -13645,6 +13732,7 @@ var $$IMU_EXPORT$$;
 				var entry_data = shareddata.entry_data;
 				if ("ProfilePage" in entry_data) {
 					var edges = entry_data.ProfilePage[0].graphql.user.edge_owner_to_timeline_media.edges;
+					// todo: also cache edge_felix_video_timeline to avoid requesting videos
 
 					for (var i = 0; i < edges.length; i++) {
 						var edge = edges[i].node;
@@ -18731,6 +18819,12 @@ var $$IMU_EXPORT$$;
 
 
 
+		if (domain_nowww === "cinema.de") {
+			return src
+				.replace(/.*\/files\/+sync\/([^/]+\.cinema\.de\/)/, "http://$1")
+				.replace(/\/styles\/+.*?\/+(?:public|private)\/(.*\.jpeg)\.jpg(?:[?#].*)?$/, "/$1");
+		}
+
 		if (domain === "cdn-img.instyle.com" ||
 
 			domain === "static.independent.co.uk" ||
@@ -20361,6 +20455,8 @@ var $$IMU_EXPORT$$;
 			domain === "media.littlewoods.com" ||
 			domain === "media.very.co.uk" ||
 			(domain_nowww === "prodirectrunning.com" && string_indexof(src, "/ProductImages/") >= 0) ||
+			(domain === "ogre.natalie.mu" && string_indexof(src, "/media/") >= 0) ||
+			(domain_nowww === "studywalker.jp" && string_indexof(src, "/images/") >= 0) ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -20770,6 +20866,7 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "scrolller.com" && /-[0-9a-z]{5,}-[0-9]+x[0-9]+\./.test(src)) ||
 			domain === "images.thedigitalfix.com" ||
 			domain === "d2r55xnwy6nx47.cloudfront.net" ||
+			domain === "cdn.entameclip.com" ||
 			(domain === "cdn.theathletic.com" && /\/app\/+uploads\//.test(src))
 			) {
 			src = src.replace(/-[0-9]+x[0-9]+\.([^/]*(?:[?#].*)?)$/, ".$1");
@@ -23246,7 +23343,15 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain === "render.fineartamerica.com") return src.replace(/render\.fineartamerica\.com\/images\/rendered\/search\/print\/[^/]*(-[0-9]*)\/([^/]*)$/, "images.fineartamerica.com/images-medium-large$1/$2");
+		if (domain === "render.fineartamerica.com") {
+			newsrc = src.replace(/render\.fineartamerica\.com\/images\/rendered\/search\/print\/[^/]*(-[0-9]*)\/([^/]*)$/, "images.fineartamerica.com/images-medium-large$1/$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			if (/\/previewhighresolutionimage\.php\?/.test(src)) {
+				return add_queries(src, {domainUrl: "++++++++++"});
+			}
+		}
 
 		if (domain === "media.npr.org") {
 			return {
@@ -24905,8 +25010,8 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "elsoldepuebla.com.mx" ||
 			domain_nowww === "svensktnaringsliv.se" ||
 			src.match(/\/(?:article[0-9]+\.(?:ece|svt)|[0-9a-z]+\/+picture[0-9]{4,})\/+(?:[^/]*\/)?alternates\//i) ||
-			src.match(/:\/\/i[0-9]*(?:-prod)?\..*\/article[^/]*\.(?:ece|svt)\//i) ||
-			domain_nosub === "independent.ie") {
+			src.match(/:\/\/i[0-9]*(?:-prod)?\..*\/article[^/]*\.(?:ece|svt)\//i)
+			) {
 			newsrc = src.replace(/(?:alternates|autocrop|binary)\/+[^/]*\/+([^/]*)$/i, "BINARY/$1");
 			if (newsrc !== src)
 				return newsrc;
@@ -30086,7 +30191,7 @@ var $$IMU_EXPORT$$;
 			domain === "img.booru.org" ||
 			domain_nosub === "rule34.xxx" ||
 			domain_nowww === "realbooru.com") {
-			newsrc = src.replace(/\/+(?:thumbnails|samples|images)(\/+[0-9]+\/+)(?:(?:thumbnail|sample)_)?([0-9a-f]+\.[^/.]*)$/, "/images$1$2");
+			newsrc = src.replace(/\/(?:thumbnails|samples|images)(\/+[0-9]+\/+)(?:(?:thumbnail|sample)_)?([0-9a-f]+\.[^/.]*)$/, "/images$1$2");
 			if (/\/images\/+[0-9]+\/[0-9a-f]+\./.test(newsrc))
 				return add_full_extensions(newsrc,
 					[
@@ -30357,7 +30462,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "obs.line-scdn.net") {
 			return {
 				can_head: false,
-				url: src.replace(/(:\/\/[^/]*\/[-_0-9A-Za-z]*)\/[a-z0-9]*$/, "$1")
+				url: src.replace(/(:\/\/[^/]*\/[-_0-9A-Za-z]*)\/(?:small|large|s[0-9]+x[0-9]+)(?:[?#].*)?$$/, "$1")
 			};
 		}
 
@@ -32367,7 +32472,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "resize-rbl-ms.cdn.ampproject.org" ||
 			(domain_nosub === "ampproject.org" && domain.match(/\.cdn\.ampproject/))) {
-			return src.replace(/^[a-z]+:\/\/[^/]*\/ii\/[wh][0-9]+\/s\//, "http://");
+			return src.replace(/^[a-z]+:\/\/[^/]*\/(?:ii\/[wh][0-9]+|i)\/s\/([^/]+\.[^/]+\/[^?#]+)(?:[?#].*)?$/, "http://$1");
 		}
 
 		if (domain === "assets.rbl.ms") return src.replace(/(:\/\/[^/]*\/[0-9]+\/)[^/.]*(\.[^/.]*)$/, "$1origin$2");
@@ -32616,6 +32721,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain_nowww === "axisanimation.com" ||
+			 domain_nowww === "opernhaus.ch" ||
 			 domain_nowww === "sexo18.net") &&
 			string_indexof(src, "/assets/") >= 0) {
 			return src.replace(/\.[0-9]+x[0-9]+(\.[^/.]*)$/, "$1");
@@ -33546,6 +33652,9 @@ var $$IMU_EXPORT$$;
 			var request_reddit_api = function(id, cb) {
 				api_query("reddit_api:" + id, {
 					url: "https://www.reddit.com/api/info.json?id=" + id,
+					headers: {
+						"User-Agent": ""
+					},
 					json: true
 				}, cb, function(done, resp, cache_key) {
 					console_log(resp);
@@ -33684,9 +33793,9 @@ var $$IMU_EXPORT$$;
 			var current = options.element;
 			do {
 				if (current.tagName === "DIV") {
-					var testid = current.getAttribute("data-testid") || current.getAttribute("data-fullname");
+					var testid = current.getAttribute("data-testid") || current.getAttribute("data-fullname") || current.getAttribute("id");
 					if (testid) {
-						match = testid.match(/^t3_([a-z0-9]+)$/);
+						match = testid.match(/^t3_([a-z0-9]{2,8})$/);
 						if (match) {
 							return get_reddit_link(match[1]);
 						}
@@ -34350,7 +34459,10 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "twatis.com") return src.replace(/\/thumb(\.[^/.]*)$/, "/photo$1");
 
 
-		if (domain === "s.smutty.com") return src.replace(/\/[a-z]\/+([^/]*)(?:[?#].*)?$/, "/b/$1");
+		if (domain === "s.smutty.com" ||
+			domain === "i.smutty.com") {
+			return src.replace(/\/[a-z]\/+([^/]*)(?:[?#].*)?$/, "/b/$1");
+		}
 
 		if (domain_nowww === "welovesexyfeet.com" ||
 			domain_nowww === "podolatria.net" ||
@@ -35663,6 +35775,8 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "pornpics.vip") return src.replace(/(\/xxx\/.*\/)hd-([^/]+)(?:[?#].*)?$/, "$1$2");
+
 		if (domain_nowww === "purejapanese.com" ||
 			domain_nowww === "jjgirls.com" ||
 			domain_nowww === "1pondo.com" ||
@@ -35815,6 +35929,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "hdteen.porn" ||
 			domain_nowww === "indiansexvideo.xxx" ||
 			domain_nosub === "theyarehuge.com" ||
+			domain_nowww === "mangovideo.club" ||
 			domain_nosub === "xmegadrive.com" ||
 			domain_nosub === "deviants.com" ||
 			domain_nosub === "cuckoldplacetube.com" ||
@@ -37522,6 +37637,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "hornybabepics.com" ||
 			domain === "hosted.showybeauty.com" ||
 			domain_nowww === "sexyhairyvagina.com" ||
+			domain_nowww === "pronpic.org" ||
 			domain_nowww === "teengalleries.mobi") {
 			return src.replace(/\/th_([0-9]+\.[^/.]*)$/, "/$1");
 		}
@@ -44686,7 +44802,10 @@ var $$IMU_EXPORT$$;
 		if (domain === "img.fdb.cz") return src.replace(/(\/galerie)_[a-z]+(\/+[0-9a-f]\/+[0-9a-f]{10,}\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 
 		if (domain_nosub === "wuaki.tv" && domain.match(/^images(?:-[0-9]*)\./)) {
-			return src.replace(/(?:-(?:width|height|quality)[0-9]+){1,}(\.[^/.]*)(?:[?#].*)?$/, "$1");
+			return {
+				url: src.replace(/(?:-(?:width|height|quality)[0-9]+){1,}(\.[^/.]*)(?:[?#].*)?$/, "$1"),
+				can_head: false // 415
+			}
 		}
 
 		if (domain_nosub === "bebee.com" && domain.match(/^std[0-9]*\./)) {
@@ -45470,7 +45589,8 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/uploads\/+pj\/+)thumbs(?:-[a-z]+)?\/+/, "$1");
 		}
 
-		if (domain_nowww === "hayabusa.io") {
+		if (domain_nowww === "hayabusa.io" ||
+			domain === "abm.hayabusa.media") {
 
 			var queries = get_queries(src);
 			var basename = src.replace(/.*\/([^/?#]+)(?:[?#].*)?$/, "$1");
@@ -45521,7 +45641,7 @@ var $$IMU_EXPORT$$;
 				};
 			}
 
-			return src.replace(/(\/files\/+(?:temp\/+)?)rcms_conv_webp\/+(?:files\/+)?(.*)_[0-9]{5,}\.webp(?:[?#].*)?$/, "$1$2.jpg");
+			return src.replace(/(\/files\/+(?:temp\/+)?)rcms_conv_webp\/+(?:files\/+)?(.*?)(?:\.jpg)?_[0-9]{5,}\.webp(?:[?#].*)?$/, "$1$2.jpg");
 		}
 
 		if (domain === "s.dou.ua") return src.replace(/(\/img\/+avatars\/+)[0-9]+x[0-9]+_/, "$1");
@@ -48851,6 +48971,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "darkmovie.info" ||
+			domain_nowww === "mihanfilm.live" ||
 			domain_nowww === "darkmovie.org") {
 			return src.replace(/(\/upload\/+(?:cast|poster)\/+(?:nm|tt)[0-9]+)_[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
@@ -53798,6 +53919,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "luxubu.review" ||
 			domain_nowww === "javlove.club" ||
 			domain_nowww === "pelispng.online" ||
+			domain_nowww === "sexhd.co" ||
 			domain_nowww === "playvideo.best") {
 			var base_domain = domain_nosub;
 			if (domain_nowww === "fembed.com" ||
@@ -54060,9 +54182,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "mightyupload.com" ||
+			domain_nowww === "upstream.to" ||
 			domain_nowww === "streamsb.net") {
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+embed-([a-z0-9]{5,})\.html(?:[?#].*)?$/,
+				website_regex: /^[a-z]+:\/\/[^/]+\/+embed-([a-z0-9]{12})(?:-[0-9]+x[0-9]+)?\.html(?:[?#].*)?$/,
 				query_for_id: "https://" + domain + "/embed-${id}.html",
 				process: function(done, resp, cache_key) {
 					var unpacked = common_functions.unpack_packer(resp.responseText);
@@ -54085,13 +54208,61 @@ var $$IMU_EXPORT$$;
 					return done({
 						url: videourl,
 						headers: {
-							Referer: resp.finalUrl
+							Origin: "https://" + domain,
+							Referer: "https://" + domain + "/"
 						},
 						video: videotype
 					}, 60*60);
 				}
 			});
 			if (newsrc) return newsrc;
+		}
+
+		if (domain_nosub === "upstreamcdn.co" && /^s[0-9]*\./.test(domain)) {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+i\/+[0-9]{2}\/+[0-9]+\/+([0-9a-z]{12})\./);
+			if (match)
+				return {
+					url: "https://upstream.to/embed-" + match[1] + ".html",
+					is_pagelink: true
+				};
+		}
+
+		if (domain_nowww === "youdbox.net") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+embed-([0-9a-z]{12})(?:-[0-9]+x[0-9]+)?\.html(?:[?#].*)?$/,
+				query_for_id: "https://youdbox.net/embed-${id}.html",
+				process: function(done, resp, cache_key) {
+					match = resp.responseText.match(/var [0-9a-zA-Z]+ *= *\[("\\x3b"(?:,"\\x[0-9a-f]{2}")+)\]/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var hex = match[1].replace(/[^0-9a-f]/g, "");
+					var code = reverse_str(hex_to_ascii(hex));
+
+					match = code.match(/<source src="([^"]+)"/);
+					if (!match) {
+						console_error(cache_key, "Unable to find source match for", {resp: resp, code: code});
+						return done(null, false);
+					}
+
+					return done({
+						url: match[1],
+						video: true
+					}, 60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain_nosub === "youdbox.net" && /^bin[0-9]*\./.test(domain)) {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+i\/+[0-9]+\/+([0-9a-z]{12})\./);
+			if (match)
+				return {
+					url: "https://youdbox.net/embed-" + match[1] + ".html",
+					is_pagelink: true
+				};
 		}
 
 		if (domain_nowww === "videyo.net") {
@@ -61193,7 +61364,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/image\/+)(?:[0-9]{1,3}x[0-9]{1,3}m?|1000x1333m)\/+/, "$11395x1860/");
 		}
 
-		if (domain === "i.rtings.com") return src.replace(/(\/assets\/+products\/+[^/]+\/+[^/]+\/+[^/]+)-(?:small|medium)\./, "$1-large.");
+		if (domain === "i.rtings.com") return src.replace(/(\/assets\/+[^/]+\/+[A-Za-z0-9]{5,10}\/+(?:[^/]+\/+)?[^/]+)-(?:small|medium)\./, "$1-large.");
 
 		if (domain === "img.yts.mx") return src.replace(/(\/assets\/+images\/+movies\/+[^/]+\/+)[a-z]+(-cover\.)/, "$1original$2");
 
@@ -61591,6 +61762,58 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "dfocupmdlnlkc.cloudfront.net") return src.replace(/(\/original\/+[-0-9a-f]{10,})_[0-9]+x[0-9]+\./, "$1_99999x99999.");
 
+		if (domain_nowww === "akcijeikatalozi.ba") return src.replace(/(\/media\/+[^/]+\/+)[0-9]+\/+/, "$1");
+
+		if (domain === "static.pantaflix.com" ||
+			amazon_container === "static.pantaflix.com") {
+			return src
+				.replace(/\/v2\/+[^/]+\/+p\/+pro\//, "/v2/p/pro/")
+				.replace(/\.jpeg\.webp(?:[?#].*)?$/, ".jpeg");
+		}
+
+		if (domain === "dam.nmhmedia.sk") {
+			return {
+				url: src.replace(/(\/image\/+[^/]+\.[^/.]+)\/[0-9]+\/[0-9]+(?:[?#].*)?$/, "$1/0"),
+				headers: {
+					Referer: "https://magazin.pluska.sk/"
+				}
+			};
+		}
+
+		if (domain === "static.slickdealscdn.com") return src.replace(/(\/attachment\/+(?:[0-9]+\/+)+)[0-9]+x[0-9]+\/+([0-9]+)\.thumb(?:[?#].*)?$/, "$1$2.attach");
+
+		if (domain_nowww === "cine.com") return src.replace(/(\/peliculas[0-9]*\/+[0-9]+\/+)cartel\/+([0-9]+)_cartel_[0-9]+\./, "$1$2_0.");
+
+		if (domain_nowww === "silhcdn.com") return src.replace(/\/shapes\/+(?:sm|md)\/+/, "/shapes/lg/");
+
+		if (domain === "cdn.notonthehighstreet.com") return src.replace(/(\/fs\/.*\/)(?:preview|normal|thumb)_([^/]+)(?:[?#].*)?$/, "$1original_$2");
+
+		if (domain_nowww === "isubtitles.org") return src.replace(/(\/img\/+poster\/.*\.[^/.?#;]+)(?:[?#;].*)?$/, "$1");
+
+		if (domain === "i.natgeofe.com") return src.replace(/(:\/\/[^/]+\/+[a-z]\/+[-0-9a-f]{10,}\/+[^/?#]+)(?:[?#].*)?$/, "$1");
+
+		if (domain === "imgr.search.brave.com") {
+			match = src.match(/\/fit\/+[0-9]+\/+[0-9]+\/+no\/+[0-9]+\/+(aHR0[^?#.]+)(?:[?#].*)?$/);
+			if (match) {
+				var splitted = match[1].split("/");
+				array_foreach(splitted, function(x, i) {
+					splitted[i] = base64_decode(x);
+				});
+
+				return splitted.join("");
+			}
+		}
+
+		if (domain === "image.youtv.de") return src.replace(/(\/tv-bilder\/+normal\/+)[a-z]+\/+/, "$1original/");
+
+		if (domain === "ssl.ofdb.de") {
+			if (/\/thumbnail\.php\?/.test(src)) {
+				var queries = get_queries(src, {decode: true});
+				if (queries.cover)
+					return "https://ssl.ofdb.de/" + queries.cover;
+			}
+		}
+
 
 
 
@@ -61903,6 +62126,7 @@ var $$IMU_EXPORT$$;
 			domain === "studio.cults3d.com" ||
 			(domain_nowww === "reuters.com" && string_indexof(src, "/resizer/") >= 0) ||
 			domain === "image.over-blog.com" ||
+			domain_nowww === "tampabay.com" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			src.match(/:\/\/[^/]*\/resizer\/[^/]*=\/(?:fit-in\/+)?[0-9]+x[0-9]+(?::[^/]*\/[0-9]+x[0-9]+)?\/(?:filters:[^/]*\/)?/)) {
 			newsrc = src.replace(/.*?\/(?:thumb(?:or)?|(?:new-)?resizer)\/.*?\/(?:filters(?::|%3A)[^/]*\/)?([a-z]*(?::|%3A)(?:\/|%2F){2}.*)/, "$1");
@@ -64896,6 +65120,9 @@ var $$IMU_EXPORT$$;
 					return err_cb(reason, true);
 				}
 
+				if (!settings.redirect_enable_infobox)
+					return;
+
 				var trigger_behavior = get_single_setting("mouseover_trigger_behavior");
 
 				var mouseover;
@@ -65172,6 +65399,13 @@ var $$IMU_EXPORT$$;
 	}
 
 	function contenttype_can_be_redirected(contentType) {
+		// disable redirecting if redirecting to/from audio/video is disabled
+		if (/^video\//.test(contentType))
+			return !!settings.redirect_video;
+
+		if (/^audio\//.test(contentType))
+			return !!settings.redirect_audio;
+
 		// amazonaws's error page are application/xml
 		// fixme: why not search for image/ or video/ instead?
 		return !(/^(?:text|application)\//.test(contentType));
@@ -65251,17 +65485,11 @@ var $$IMU_EXPORT$$;
 
 			var new_newhref = [];
 			for (var i = 0; i < newhref.length; i++) {
-				if (!newhref[i].media_info) continue;
-
-				var type = newhref[i].media_info.type;
-
-				if (!settings.redirect_video && type === "video") {
+				if (!settings.redirect_video && is_probably_video(newhref[i]))
 					continue;
-				}
 
-				if (!settings.redirect_audio && type === "audio") {
+				if (!settings.redirect_audio && is_probably_audio(newhref[i]))
 					continue;
-				}
 
 				new_newhref.push(newhref[i]);
 			}
@@ -66244,7 +66472,7 @@ var $$IMU_EXPORT$$;
 					var meta_options = meta.options;
 					var regexp = new RegExp("^input_" + setting + "_");
 
-					var els = options[i].querySelectorAll("input, textarea, button, select");
+					var els = options[i].querySelectorAll("input, textarea, button, select, option");
 					for (var j = 0; j < els.length; j++) {
 						var input = els[j];
 
@@ -67134,11 +67362,17 @@ var $$IMU_EXPORT$$;
 					if (!("name_gettext" in coption_obj) || coption_obj.name_gettext) {
 						trans_name = _(trans_name);
 					}
-					label_texts["input_" + setting + "_" + coption] = trans_name;
+					var optionid = "input_" + setting + "_" + coption;
+					label_texts[optionid] = trans_name;
 
 					var optionel = document_createElement("option");
 					optionel.innerText = trans_name;
 					optionel.value = coption;
+					optionel.id = optionid;
+
+					if (coption_obj.description) {
+						optionel.title = _(coption_obj.description);
+					}
 
 					if (coption_obj.is_null)
 						null_option = coption;
@@ -68393,7 +68627,12 @@ var $$IMU_EXPORT$$;
 						obj[0].filesize = cached_result.filesize;
 					}
 
-					cb(cached_result.img, cached_result.resp.finalUrl, obj[0], cached_result.resp);
+					if (processing.head) {
+						cb(cached_result.resp, obj[0]);
+					} else {
+						cb(cached_result.img, cached_result.resp.finalUrl, obj[0], cached_result.resp);
+					}
+
 					return;
 				}
 			}
@@ -71483,9 +71722,19 @@ var $$IMU_EXPORT$$;
 						}
 					}
 
-					our_addEventListener(mask, "click", function() {
+					// same as the addbtn mousedown stop
+					our_addEventListener(mask, "mousedown", function(e) {
 						if (!settings.mouseover_close_click_outside)
 							return;
+
+						estop(e);
+					});
+
+					our_addEventListener(mask, "click", function(e) {
+						if (!settings.mouseover_close_click_outside)
+							return;
+
+						estop(e);
 
 						set_important_style(mask, "pointer-events", "none");
 						resetpopups();
@@ -72224,6 +72473,13 @@ var $$IMU_EXPORT$$;
 								action_handler(old_action);
 							};
 						}
+
+						// thanks to Noodlers on discord for reporting
+						// test: discord emoji picker, mousedown will close it
+						our_addEventListener(btn, "mousedown", function(e) {
+							e.stopPropagation();
+							e.stopImmediatePropagation();
+						});
 
 						if (typeof options.action === "function") {
 							our_addEventListener(btn, "click", function(e) {
@@ -73574,6 +73830,17 @@ var $$IMU_EXPORT$$;
 
 					var scrollx_behavior = get_single_setting("mouseover_scrollx_behavior");
 					var scrolly_behavior = get_single_setting("mouseover_scrolly_behavior");
+
+					if (popup_hold) {
+						var hold_scrollx_behavior = get_single_setting("mouseover_scrollx_hold_behavior");
+						var hold_scrolly_behavior = get_single_setting("mouseover_scrolly_hold_behavior");
+
+						if (hold_scrollx_behavior !== "default")
+							scrollx_behavior = hold_scrollx_behavior;
+
+						if (hold_scrolly_behavior !== "default")
+							scrolly_behavior = hold_scrolly_behavior;
+					}
 
 					var handle_gallery = function(xy) {
 						if (!settings.mouseover_enable_gallery)
@@ -75504,6 +75771,10 @@ var $$IMU_EXPORT$$;
 			if (_nir_debug_)
 				console_log("trigger_popup (options:", options, ")", current_frame_id);
 
+			// this check is set here instead of trigger_popup_with_source because automatic requests (e.g. gallery) should be ok
+			if (!settings.mouseover_allow_popup_when_fullscreen && is_fullscreen() && !is_popup_fullscreen())
+				return;
+
 			delay_handle_triggering = true;
 			//var els = document.elementsFromPoint(mouseX, mouseY);
 			var point = null;
@@ -75917,6 +76188,8 @@ var $$IMU_EXPORT$$;
 
 			var result = !!find_source([el]);
 			valid_el_cache.set(el, result, 3);
+
+			return result;
 		}
 
 		function count_gallery(nextprev, max, is_counting, origel, el, cb) {
