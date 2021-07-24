@@ -37,6 +37,9 @@ msgstr "Esporta"
 msgid "Requires:"
 msgstr "Richiede"
 
+msgid "Or:"
+msgstr ""
+
 #. English: Redirection
 msgid "category_redirection"
 msgstr ""

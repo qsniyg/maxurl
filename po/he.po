@@ -37,6 +37,9 @@ msgstr ""
 msgid "Requires:"
 msgstr ""
 
+msgid "Or:"
+msgstr ""
+
 #. English: Redirection
 msgid "category_redirection"
 msgstr ""

@@ -37,6 +37,9 @@ msgstr "내보내기"
 msgid "Requires:"
 msgstr "요구사항:"
 
+msgid "Or:"
+msgstr ""
+
 #. English: Redirection
 msgid "category_redirection"
 msgstr "리디렉션"
