@@ -407,6 +407,14 @@ msgstr "Принудительное диалоговое окно сохран�
 msgid "Tries to ensure the 'save as' dialog displays when downloading. This requires the 'downloads' permission to work, and will sometimes not work when custom headers are required."
 msgstr "Посторается обеспечить отображение диалогового окна 'Сохранить как' при скачивании. Для этого требуется разрешение на 'скачивание', и иногда не будет работать, когда требуются пользовательские заголовки."
 
+#. enable_console_logging.name
+msgid "Enable logging to console"
+msgstr ""
+
+#. enable_console_logging.description
+msgid "Allows the script to log messages to the browser console."
+msgstr ""
+
 #. write_to_clipboard.name
 msgid "Enable writing to clipboard"
 msgstr "Включить запись в буфер обмена"
@@ -2752,8 +2760,8 @@ msgid "Twitter: Use extension"
 msgstr "Twitter: Использовать расширение"
 
 #. twitter_use_ext.description
-msgid "Prefers `.jpg?name=orig` over `?format=jpg&name=orig`. This will possibly incur extra requests before succeeding"
-msgstr "Предпочитает `.jpg?name=orig` поверх `?format=jpg&name=orig`. Это, возможно, принесёт дополнительные запросы, прежде чем завершиться."
+msgid "Prefers `.jpg?name=orig` over `?format=jpg&name=orig`. This will possibly incur extra requests before succeeding. Note that there is no difference in image quality."
+msgstr ""
 
 #. bigimage_blacklist.name
 msgid "Blacklist"
