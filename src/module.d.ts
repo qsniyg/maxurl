@@ -1,5 +1,5 @@
-interface Window {
-	ClipboardItem: class
+declare class ClipboardItem {
+	constructor(...args)
 }
 
 declare var unsafeWindow : Window;
@@ -23,7 +23,7 @@ declare var GM_download: Function;
 
 declare var GM: {
 	getValue: (key:string, default_value?:any)=>Promise<any>;
-	setValue: (key:string, value:any)=>Promise;
+	setValue: (key:string, value:any)=>Promise<any>;
 	setClipboard: (data:string)=>void,
 	notification: (details:Object, ondone:Function)=>void,
 	xmlHttpRequest: (data:Object)=>void,
@@ -37,7 +37,11 @@ declare var Buffer: {
 declare var module: { exports: any };
 
 declare var imu_variable:any;
-declare var imu_xhr:{ custom_xhr: class }; // for custom_xhr_wrap, which is stringified
+
+// for custom_xhr_wrap, which is stringified
+declare var imu_xhr: {
+	custom_xhr: any
+}
 
 declare var chrome: {
 	permissions: {
