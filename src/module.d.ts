@@ -54,3 +54,22 @@ declare var chrome: {
 
 declare var userscript_extension_message_handler:Function;
 declare var imu_userscript_message_sender:Function;
+
+declare function BigInt(n:number):any;
+
+declare class Map<K,V> {
+	set: (key:K, value:V)=>void
+	get: (key:K)=>V
+	has: (key:K)=>boolean
+	delete: (key:K)=>void
+	keys: ()=>any
+	size: number
+}
+
+interface Object {
+	assign: (...args)=>any
+}
+
+declare class SharedArrayBuffer {
+	constructor(n:number)
+}
