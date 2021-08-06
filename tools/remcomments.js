@@ -25,7 +25,7 @@ for (var i = 3; i < process.argv.length; i++) {
 }
 
 var get_multidomain = function(name, userscript) {
-	var multidomain_text = "common_functions\\." + name + "\\s*=\\s*function\\(.*?\\)\\s*{\\s*(?://.*\\n\\s*)*return\\s+([\\s\\S]*?);\\s*};";
+	var multidomain_text = "common_functions\\." + name + "\\s*=\\s*function\\s*\\(.*?\\)\\s*{\\s*(?://.*\\n\\s*)*return\\s+([\\s\\S]*?);\\s*};";
 	var multidomain_regex = new RegExp(multidomain_text);
 	var match = userscript.match(multidomain_regex);
 	if (!match) return null;
@@ -37,7 +37,7 @@ var replace_multidomain = function(call, prevchar, line, userscript) {
 	// comment
 	if (prevchar === "/") return null;
 
-	var multidomain_name = call.replace(/^common_functions\.(.*?)\(.*/, "$1");
+	var multidomain_name = call.replace(/^common_functions\.(.*?)\s*\(.*/, "$1");
 	var is_host = /\(\s*host_domain/.test(call);
 
 	var multidomain_text = get_multidomain(multidomain_name, userscript);
@@ -57,10 +57,46 @@ var replace_multidomain = function(call, prevchar, line, userscript) {
 	return "(" + multidomain_text + ")";
 };
 
+var spaces_to_tabs = function(splitted) {
+	for (var i = 0; i < splitted.length; i++) {
+		let match = splitted[i].match(/^( +)(.*)$/);
+		if (!match)
+			continue;
+
+		let ws = match[1].replace(/ {4}/g, "\t");
+		splitted[i] = ws + (match[2]||"");
+	}
+
+	return splitted;
+};
+
+var normalize_tsstyle = function(script) {
+	return script
+		.replace(/function \((.*?)\)(\s*{)/g, "function($1)$2")
+		.replace(/}\n\s*((?:catch|else)\s)/g, "} $1");
+}
+
+function build_userscript_user_js(tsout) {
+	var userscript = fs.readFileSync(tsout).toString();
+	userscript = normalize_tsstyle(userscript);
+	var lines = spaces_to_tabs(userscript.split("\n"));
+
+	var newlines = [];
+	for (const line of lines) {
+		if (/^\/\/\/<reference/.test(line))
+			continue;
+
+		newlines.push(line);
+	}
+
+	fs.writeFileSync("userscript.user.js", newlines.join("\n"));
+}
+
 function update() {
 	console.log("Updating...");
+	build_userscript_user_js("build/tsout.js");
 	var userscript = fs.readFileSync(process.argv[2] || "userscript.user.js").toString();
-	var lines = userscript.split("\n");
+	var lines = spaces_to_tabs(userscript.split("\n"));
 
 	if (lines.length < 90000) {
 		console.log("Incomplete");
@@ -247,4 +283,4 @@ if (!do_watch) {
 }
 
 console.log("Watching");
-fs.watchFile("userscript.user.js", update);
+fs.watchFile("build/tsout.js", update);
