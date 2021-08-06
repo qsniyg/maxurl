@@ -404,6 +404,14 @@ msgstr ""
 msgid "Tries to ensure the 'save as' dialog displays when downloading. This requires the 'downloads' permission to work, and will sometimes not work when custom headers are required."
 msgstr ""
 
+#. enable_console_logging.name
+msgid "Enable logging to console"
+msgstr ""
+
+#. enable_console_logging.description
+msgid "Allows the script to log messages to the browser console."
+msgstr ""
+
 #. write_to_clipboard.name
 msgid "Enable writing to clipboard"
 msgstr ""
@@ -2694,7 +2702,7 @@ msgid "Twitter: Use extension"
 msgstr ""
 
 #. twitter_use_ext.description
-msgid "Prefers `.jpg?name=orig` over `?format=jpg&name=orig`. This will possibly incur extra requests before succeeding"
+msgid "Prefers `.jpg?name=orig` over `?format=jpg&name=orig`. This will possibly incur extra requests before succeeding. Note that there is no difference in image quality."
 msgstr ""
 
 #. bigimage_blacklist.name

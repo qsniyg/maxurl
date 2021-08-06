@@ -106,7 +106,7 @@ var variables_list = [
 	"get_domain_from_url",
 	"get_domain_nosub",
 	"looks_like_valid_link",
-	"Cache",
+	"IMUCache",
 	"url_basename"
 ];
 
@@ -130,7 +130,7 @@ function get_bigimage(splitted) {
 
 	for (var i = 0; i < splitted.length; i++) {
 		if (bigimage_start < 0) {
-			if (splitted[i] === "\tfunction bigimage(src, options) {") {
+			if (/^\tfunction bigimage\s*\(src, options\)\s*{$/.test(splitted[i])) {
 				bigimage_start = i;
 			}
 		} else {
@@ -357,7 +357,7 @@ function start(userscript_filename) {
 		userscript_require = userscript_require
 			.replace(/\n\/\/\s*@(?:name|description):en.*/g, "") // greasyfork no longer allows this
 			.replace(/^\/\/\s*imu:require_rules.*/m, require_statement)
-			.replace(/\n\n\/\/\/ All comments within bigimage.*\n\/\/\/ You can view.*/, "\n");
+			.replace(/\n\/\/\/ All comments within bigimage.*\n\/\/\/ You can view.*/, "");
 	}
 
 	// extr = external rules
