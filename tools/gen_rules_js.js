@@ -107,7 +107,8 @@ var variables_list = [
 	"get_domain_nosub",
 	"looks_like_valid_link",
 	"IMUCache",
-	"url_basename"
+	"url_basename",
+	"parse_int"
 ];
 
 var get_random_text = function(length) {
