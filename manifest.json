@@ -2,9 +2,9 @@
   "manifest_version": 2,
   "name": "Image Max URL",
   "author": "qsniyg",
-  "version": "0.19.5",
+  "version": "0.19.5.2",
 
-  "description": "Finds larger or original versions of images",
+  "description": "Finds larger or original versions of images - 75aaa3a",
 
   "background": {
     "scripts": [
@@ -14,15 +14,9 @@
     "persistent": true
   },
 
-  "applications": {
-    "gecko": {
-      "id": "maxurl@qsniyg"
-    }
-  },
-
   "browser_specific_settings": {
     "gecko": {
-      "id": "maxurl@qsniyg"
+      "id": "maxurl@ntnguyen"
     }
   },
 
