@@ -2599,6 +2599,18 @@ msgstr "Включает правила, требующие использова
 msgid "Deezer"
 msgstr ""
 
+#. browser_cookies.name
+msgid "Use browser cookies"
+msgstr ""
+
+#. browser_cookies.description
+msgid "Uses the browser's cookies for API calls in order to access otherwise private data"
+msgstr ""
+
+#. browser_cookies.example_websites[0]
+msgid "Private Flickr images"
+msgstr ""
+
 #. deviantart_prefer_size.name
 msgid "DeviantART: Prefer size over original"
 msgstr "DeviantART: Предпочитать размер оригиналу"
