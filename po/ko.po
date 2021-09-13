@@ -235,6 +235,10 @@ msgstr ""
 msgid "Русский"
 msgstr ""
 
+#. language.options.zh-CN.name
+msgid "中文"
+msgstr ""
+
 #. dark_mode.name
 msgid "Dark mode"
 msgstr "다크 모드"

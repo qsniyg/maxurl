@@ -1,15 +1,14 @@
 # Chinese translations for Image Max URL
-# Image Max URL的中文翻译
+#
 msgid ""
 msgstr ""
-"MIME-Version: 1.1\n"
+"Project-Id-Version: Image Max URL\n"
+"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: POEditor.com\n"
-"Project-Id-Version: Image Max URL\n"
-"Language: zh-CN\n"
+"Language: zh_CN\n"
 
-#. Native language name (e.g. Français for French, 한국어 for Korean)
+# Native language name (e.g. Français for French, 한국어 for Korean)
 msgid "$language_native$"
 msgstr "中文"
 
@@ -235,6 +234,10 @@ msgstr "韩语"
 #. language.options.ru.name
 msgid "Русский"
 msgstr "俄语"
+
+#. language.options.zh-CN.name
+msgid "中文"
+msgstr ""
 
 #. dark_mode.name
 msgid "Dark mode"
