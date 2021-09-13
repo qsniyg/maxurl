@@ -239,5 +239,5 @@ var start = function(userscript) {
 	}
 };
 
-var userscript = fs.readFileSync(process.argv[2] || "userscript.user.js").toString();
+var userscript = fs.readFileSync(process.argv[2] || util.ts_userscript_filename).toString();
 start(userscript);

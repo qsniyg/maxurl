@@ -1,6 +1,7 @@
 const fs = require("fs");
 
-var userscript_filename = module.exports.userscript_filename = __dirname + "/../userscript.user.js";;
+var userscript_filename = module.exports.userscript_filename = __dirname + "/../userscript.user.js";
+var ts_userscript_filename = module.exports.ts_userscript_filename = __dirname + "/../src/userscript.ts";
 
 // https://stackoverflow.com/a/31652607/13255485
 var json_escape_unicode = function(stringified) {
@@ -24,11 +25,11 @@ module.exports.update_userscript_strings = function(strings, userscript) {
 	var stringified = stringify_strings(strings);
 
 	if (!userscript)
-		userscript = fs.readFileSync(userscript_filename).toString();
+		userscript = fs.readFileSync(ts_userscript_filename).toString();
 
 	userscript = userscript.replace(strings_regex, "$1" + stringified + "$3");
 
-	fs.writeFileSync(userscript_filename, userscript);
+	fs.writeFileSync(ts_userscript_filename, userscript);
 };
 
 var read_userscript = module.exports.read_userscript = function(filename) {

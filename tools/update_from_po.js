@@ -84,7 +84,7 @@ var read_po = function(filename) {
 };
 
 var update_userscript_strings = function(newstrings) {
-	var filename = "userscript.user.js"
+	var filename = util.ts_userscript_filename;
 	var userscript = fs.readFileSync(filename).toString();
 	var strings_regex = /(\n\tvar strings = )({[\s\S]+?})(;\n)/;
 
@@ -123,7 +123,7 @@ var update_userscript_strings = function(newstrings) {
 };
 
 var update_userscript_supported_languages = function(supported_languages) {
-	var filename = "userscript.user.js"
+	var filename = util.ts_userscript_filename;
 	var userscript = fs.readFileSync(filename).toString();
 	var strings_regex = /(\n\tvar supported_languages = )(\[[\s\S]+?\])(;\n)/;
 
@@ -144,7 +144,7 @@ var update_userscript_supported_languages = function(supported_languages) {
 };
 
 var update_userscript_language_options = function(languages) {
-	var filename = "userscript.user.js"
+	var filename = util.ts_userscript_filename;
 	var userscript = fs.readFileSync(filename).toString();
 	var strings_regex = /(\n\t\tlanguage: {\n[^}]+?\n\t\t\toptions: )(\{\n\t{4}_type: "combo",(?:\n\t{4}(?:"[^"]+"|[_a-z]+): \{\n\t{5}name: "[^"]+"(?:,\n\t{5}name_gettext: false)?\n\t{4}\},?)*\n\t{3}\})(,\n)/;
 
@@ -172,7 +172,7 @@ var update_userscript_language_options = function(languages) {
 };
 
 var update_userscript_description = function(languages) {
-	var filename = "userscript.user.js"
+	var filename = util.ts_userscript_filename;
 	var userscript = fs.readFileSync(filename).toString();
 
 	for (var key in languages) {
