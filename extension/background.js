@@ -1377,7 +1377,7 @@ var extension_message_handler = (message, sender, respond) => {
 	} else if (message.type === "get_localstorage") {
 		debug("get_localstorage", message);
 
-		get_localstorage_for_origin(message.data.keys, message.data.origin, function(data) {
+		get_localstorage_for_origin(message.data.keys, message.data.url, function(data) {
 			respond({
 				type: "get_localstorage",
 				data: data
@@ -1386,14 +1386,14 @@ var extension_message_handler = (message, sender, respond) => {
 	}
 };
 
-var get_localstorage_for_origin = function(keys, origin, cb) {
+var get_localstorage_for_origin = function(keys, url, cb) {
 	if (typeof keys === "string")
 		keys = [keys];
 
 	var message = {
 		type: "get_localstorage",
 		data: {
-			origin: origin.toLowerCase(),
+			url: url,
 			keys: keys
 		}
 	};
