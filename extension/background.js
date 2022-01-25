@@ -1374,7 +1374,54 @@ var extension_message_handler = (message, sender, respond) => {
 		}
 
 		return true;
+	} else if (message.type === "get_localstorage") {
+		debug("get_localstorage", message);
+
+		get_localstorage_for_origin(message.data.keys, message.data.origin, function(data) {
+			respond({
+				type: "get_localstorage",
+				data: data
+			});
+		});
 	}
+};
+
+var get_localstorage_for_origin = function(keys, origin, cb) {
+	if (typeof keys === "string")
+		keys = [keys];
+
+	var message = {
+		type: "get_localstorage",
+		data: {
+			origin: origin.toLowerCase(),
+			keys: keys
+		}
+	};
+
+	var replied = false;
+	chrome.tabs.query({}, function (tabs) {
+		var tabs_handled = 0;
+		tabs.forEach((tab) => {
+			// we can't access tab.url without the "tabs" permission, so move the origin logic to the content script
+			chrome.tabs.sendMessage(tab.id, JSON.parse(JSON.stringify(message)), {}, (response) => {
+				handle_error();
+
+				tabs_handled++;
+				if (replied)
+					return;
+
+				if (tabs_handled >= tabs.length)
+					return cb(response);
+
+				if (!response)
+					return;
+
+				// we only want one reply
+				replied = true;
+				cb(response);
+			});
+		});
+	});
 };
 
 var notification_handler = function(notif_id, action, byuser) {
