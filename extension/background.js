@@ -1383,6 +1383,8 @@ var extension_message_handler = (message, sender, respond) => {
 				data: data
 			});
 		});
+
+		return true;
 	}
 };
 
