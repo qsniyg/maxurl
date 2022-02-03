@@ -128,32 +128,6 @@ function resetels() {
   origpageel.innerHTML = "";
 }
 
-// Google Analytics statistics
-var last_ga = {};
-var ga_thresh = 1000;
-function track_ga(value) {
-  var now = Date.now();
-
-  // FIXME: why does this happen?
-  if (last_ga === undefined || typeof last_ga !== "object")
-    return;
-
-  if (last_ga[value] && (now - last_ga[value]) < ga_thresh) {
-    return;
-  }
-
-  last_ga[value] = now;
-
-  try {
-    gtag('event', 'imu', {
-      'event_category': 'engagement',
-      'event_label': value
-    });
-  } catch (e) {
-    console.error(e);
-  }
-}
-
 function set_max(obj) {
   var error = true;
 
@@ -164,18 +138,15 @@ function set_max(obj) {
     maxspanel.innerHTML = "Loading...";
   } else if (obj === "error") {
     maxspanel.innerHTML = "<p>Unknown error</p><p>Please <a href=\"https://github.com/qsniyg/maxurl/issues\">file an issue on Github</a> including the URL you entered</p>";
-    track_ga("error");
   } else if (obj === "broken") {
     maxspanel.innerHTML = "Broken image";
     obj = false;
   } else if (obj === "invalid") {
     maxspanel.innerHTML = "Invalid URL";
-    track_ga("invalid_url");
   } else if (obj === "blank") {
     maxspanel.innerHTML = "";
   } else if (!obj || (typeof obj === "string" && !obj.match(/^https?:\/\//))) {
     maxspanel.innerHTML = "Unknown error";
-    track_ga("unknown_error");
   } else {
     error = false;
   }
@@ -218,10 +189,8 @@ function set_max(obj) {
   if (urls.length === 0 || (urls.length === 1 && !urls[0]) || (waiting && likely_broken)) {
     if (waiting || likely_broken) {
       maxspanel.innerHTML = "<p>The <a href='https://greasyfork.org/en/scripts/36662-image-max-url'>userscript</a> or <a href='https://addons.mozilla.org/en-US/firefox/addon/image-max-url/'>firefox add-on</a> is needed for this URL.</p><p>It requires a cross-origin request to find the original size.</p>";
-      track_ga("userscript_needed");
     } else {
       maxspanel.innerHTML = "No larger image found";
-      track_ga("no_larger_image");
     }
 
     resetels();
@@ -249,14 +218,11 @@ function set_max(obj) {
 
   if (urls.length === 1 && urls[0] === currenturl) {
     maxspanel.innerHTML = "No larger image found";
-    track_ga("no_larger_image");
 
     resetels();
     set_orig_page();
     return;
   }
-
-  track_ga("found");
 
   maxael.innerHTML = "";
   maxspanel.innerHTML = "";
