@@ -88,14 +88,6 @@ if (typeof document !== "undefined") {
   oReq.addEventListener("load", reqListener);
   oReq.open("GET", userscript_location);
   oReq.send();
-
-  document.onreadystatechange = function() {
-    if (document.readyState !== "complete")
-      return;
-
-    if (!("google_tag_manager" in window))
-      document.getElementById("analytics-blocked").innerHTML = " but your browser has blocked it.";
-  };
 } else if (typeof require !== undefined && require.main == module) {
   var fs = require("fs");
   var data = fs.readFileSync(process.argv[2], {
