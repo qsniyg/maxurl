@@ -26,6 +26,10 @@ if [ "$USERVERSION" != "$MANIFESTVERSION" ]; then
     exit 1
 fi
 
+if [ ! -d "node_modules" ]; then
+    npm install
+fi
+
 if [ -f ./tools/remcomments.js ]; then
     echo "Generating userscript_smaller.user.js"
     node ./tools/remcomments.js userscript.user.js nowatch
@@ -75,13 +79,14 @@ echo Creating extension readme file
 cat << EOF > EXTENSION_README.txt
 To build the extension, run:
 
-$ ./tools/build_libs.sh
-$ ./tools/package_extension.sh
+$ npm install
+$ npm run build-libs
+$ npm run package
 
 The built extension can be found in build/ImageMaxURL_unsigned.xpi.
 
 Please refer to lib/libs.txt for the source URLs of the libraries stored in lib/orig.
- You can also fetch the libraries automatically by using ./lib/fetch_libs.sh.
+ You can also fetch the libraries automatically by using ./tools/fetch_libs.sh.
 
 The libraries are patched in order to be compatible with the script in a number of ways.
  Please refer to lib/patch_libs.js for details on how the libraries are patched.
@@ -95,7 +100,7 @@ The userscript has the following changes applied:
   * Unneeded strings within the strings object have been removed
 
 This version is identical to userscript_smaller.user.js in the Github repository.
- This is generated when running package_extension.sh, or manually by using: node ./tools/remcomments.js userscript.user.js nowatch
+ This is generated when running package_extension.sh, or manually by using: npx tsc && node ./tools/remcomments.js userscript.user.js nowatch
 
 Below are the versions of the programs used to generate this extension:
 
@@ -309,13 +314,7 @@ makecrx3() {
     key="$2"
     outcrx="$3"
 
-    if hascmd crx3; then
-        cat "$zip" | crx3 -p "$key" -o "$outcrx"
-    else
-        echo "crx3 not found, not building CRX v3 extension"
-        echo "Install using npm install -g crx3"
-        return 1
-    fi
+    cat "$zip" | npx crx3 -p "$key" -o "$outcrx"
 }
 
 if [ -f ./maxurl.pem ]; then
