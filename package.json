@@ -6,7 +6,7 @@
   "private": true,
   "devDependencies": {
     "concurrently": "^7.0.0",
-    "typescript": "^4.3.5"
+    "typescript": "^4.6.2"
   },
   "scripts": {
     "watch-tsc": "./tools/watch_tsc.sh",
