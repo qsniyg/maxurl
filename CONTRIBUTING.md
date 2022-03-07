@@ -6,9 +6,9 @@ Translations
 Translations are done through standard .po (gettext) files, located in the [po subdirectory](https://github.com/qsniyg/maxurl/tree/master/po).
 You can either translate it manually using a text editor, or use one of the numerous .po translation tools, such as [poedit](https://poedit.net/) or [poeditor](https://poeditor.com/) (online).
 
-To test a modified translation, run: `node tools/update_from_po.js`. This will update userscript.user.js with the translations from the po subdirectory.
+To test a modified translation, run: `node tools/update_from_po.js`. This will update src/userscript.ts with the translations from the po subdirectory.
 
-Note: when submitting a pull request for a translation, please do not include the modified userscript.user.js, as it will increase the risk of merge conflicts.
+Note: when submitting a pull request for a translation, please do not include the modified userscript.ts, as it will increase the risk of merge conflicts.
 
 To add support for a new language, create a new .po file for the language code from [po/imu.pot](https://github.com/qsniyg/maxurl/blob/master/po/imu.pot),
 and make sure to translate `$language_native$` (the native word for your language, such as Français for French, or 한국어 for Korean).
@@ -18,7 +18,7 @@ Website/rule contributions
 
 If you spot any issue with existing rules, or want to suggest a new websites, **the easiest way for the moment is if you file an issue**.
 
-Pull requests are also accepted (especially if the rule you want to submit is complex), but since everything is currently stored in one file (userscript.user.js),
+Pull requests are also accepted (especially if the rule you want to submit is complex), but since everything is currently stored in one file (src/userscript.ts),
 it can lead to merge conflicts.
 
 ------------
@@ -119,8 +119,10 @@ perfect though, I often get it wrong myself :) I can fix it up if you make a mis
 
 As mentioned earlier, these are just guidelines, and you don't have to get it to be perfect to submit a rule :)
 
-If you're testing the userscript, I'd recommend running `node tools/remcomments.js`. This will generate userscript_smaller.user.js and the files under the
-build/ subdirectory. It will watch for changes to userscript.user.js in the background and automatically update the files as it changes.
+To build the userscript:
+
+- Single build: `npm run build`
+- Build and watch for changes: `npm run watch`
 
 Personally I install build/userscript_extr_cat.js as a userscript under Violentmonkey, with the "Track local file..." setting enabled. This allows the userscript
 to be automatically updated within ~5 seconds after saving. Using the built file instead of userscript.user.js also has a few advantages:
