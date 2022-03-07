@@ -1,0 +1,19 @@
+{
+  "name": "image-max-url",
+  "version": "0.19.6",
+  "author": "qsniyg",
+  "license": "Apache-2.0",
+  "private": true,
+  "devDependencies": {
+    "concurrently": "^7.0.0",
+    "typescript": "^4.3.5"
+  },
+  "scripts": {
+    "watch-tsc": "./tools/watch_tsc.sh",
+    "build-tsc": "npx tsc",
+    "watch-js": "node ./tools/remcomments.js",
+    "build-js": "node ./tools/remcomments.js userscript.user.js nowatch",
+    "watch": "npx concurrently -k \"npm:watch-tsc\" \"npm:watch-js\"",
+    "build": "npm run build-tsc; npm run build-js"
+  }
+}
