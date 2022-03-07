@@ -30,12 +30,8 @@ if [ ! -d "node_modules" ]; then
     npm install
 fi
 
-if [ -f ./tools/remcomments.js ]; then
-    echo "Generating userscript_smaller.user.js"
-    node ./tools/remcomments.js userscript.user.js nowatch
-else
-    echo "Warning: remcomments.js not available, skipping generating userscript_smaller.user.js"
-fi
+echo "Building userscript"
+npm run build
 
 if [ ! -z $RELEASE ]; then
     if [ -f ./tools/gen_minified.js ]; then
@@ -141,8 +137,8 @@ BASEFILES="LICENSE.txt manifest.json userscript.user.js resources/logo_40.png re
 NONFFFILES="lib/ffmpeg.js lib/stream_parser.js"
 NONAMOFILES="lib/testcookie_slowaes.js lib/cryptojs_aes.js lib/jszip.js lib/shaka.debug.js"
 AMOFILES="lib/orig/slowaes.js lib/orig/cryptojs_aes.js lib/orig/jszip.js lib/orig/mux.js lib/orig/shaka-player.compiled.debug.js"
-SOURCEFILES="tools/fetch_libs.sh tools/build_libs.sh lib/libs.txt EXTENSION_README.txt tools/package_extension.sh tools/remcomments.js tools/util.js tools/patch_libs.js"
-DIRS="extension lib lib/orig resources tools"
+SOURCEFILES="tools/fetch_libs.sh tools/build_libs.sh lib/libs.txt EXTENSION_README.txt tools/package_extension.sh tools/remcomments.js tools/util.js tools/patch_libs.js tools/watch_tsc.sh src/userscript.ts src/module.d.ts package.json tsconfig.json"
+DIRS="extension lib lib/orig resources tools src"
 
 zip_tempcreate() {
     mkdir tempzip
@@ -165,7 +161,7 @@ zip_tempcreate
 
 # firefox doesn't currently support ffmpeg.wasm (lacking proper SharedArrayBuffer support)
 # even if it were to support it, we'd still be running foreign code because a 20MB .wasm file cannot be reasonably included in the extension
-# the proper fix is likely to build our own version, or better yet, find a way to avoid use it
+# the proper fix is likely to build our own version, or better yet, find a way to avoid using it
 sed -i 's/has_ffmpeg_lib = true/has_ffmpeg_lib = false/' tempzip/userscript.user.js
 
 # remove chrome/opera-specific properties for firefox build
