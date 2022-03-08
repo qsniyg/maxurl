@@ -31,6 +31,7 @@ var variables_list = [
 	"string_charat",
 	"array_extend",
 	"array_foreach",
+	"array_map",
 	"array_or_null",
 	"array_upush",
 	"string_replaceall",
