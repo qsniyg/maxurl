@@ -35,6 +35,9 @@ declare var Buffer: {
 	from: (...args)=>any;
 };
 declare var module: { exports: any };
+declare var process: {
+	argv: Array<string>
+};
 
 declare var imu_variable:any;
 
