@@ -212,7 +212,7 @@ var get_all_strings = function() {
 
 			for (var string in langstrings) {
 				if (string.indexOf("#comment") >= 0) {
-					var real_string = string.replace(/#.*/, "");
+					var real_string = string.replace(/#comment.*/, "");
 					if (!(real_string in strings)) strings[real_string] = {};
 					if (!("_info" in strings[real_string])) strings[real_string]._info = {};
 					if (!("comments" in strings[real_string]._info)) strings[real_string]._info.comments = {};
