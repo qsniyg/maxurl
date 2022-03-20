@@ -103,8 +103,7 @@ var start = function(userscript) {
 		"ur": "Urdu",
 		"vi": "Vietnamese",
 		"xh": "Xhosa",
-		"zh": "Chinese",
-		"zh_CN": "Chinese",
+		"zh_CN": "Chinese (Simplified)",
 		"zh_HK": "Chinese (Hong Kong)",
 		"zh_TW": "Chinese (Taiwan)",
 		"zu": "Zulu"
