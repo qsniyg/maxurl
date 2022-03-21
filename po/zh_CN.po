@@ -3,18 +3,23 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Image Max URL\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: YFdyh000 <yfdyh000@gmail.com>\n"
+"Language-Team: \n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_CN\n"
+"X-Generator: Poedit 3.0.1\n"
 
 # Native language name (e.g. Français for French, 한국어 for Korean)
 msgid "$language_native$"
-msgstr "中文"
+msgstr "简体中文"
 
 #. English: Finds larger or original versions of images and videos for 8000+ websites, including a powerful media popup and download feature
 msgid "$description$"
-msgstr "为8000多个网站查找更大或原始图像"
+msgstr "在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能"
 
 #. English: Options
 msgid "options_header"
@@ -35,7 +40,7 @@ msgid "Export"
 msgstr "导出"
 
 msgid "Requires:"
-msgstr "要求:"
+msgstr "需要:"
 
 msgid "Or:"
 msgstr "或者:"
@@ -46,7 +51,7 @@ msgstr "重定向"
 
 #. English: Popup
 msgid "category_popup"
-msgstr "弹出"
+msgstr "弹窗"
 
 #. English: Updates
 msgid "subcategory_update"
@@ -62,7 +67,7 @@ msgstr "设置"
 
 #. English: UI
 msgid "subcategory_ui"
-msgstr "ui"
+msgstr "界面"
 
 #. English: Trigger
 msgid "subcategory_trigger"
@@ -70,7 +75,7 @@ msgstr "触发器"
 
 #. English: Source
 msgid "subcategory_popup_source"
-msgstr "弹出来源"
+msgstr "弹窗源头"
 
 #. English: Open Behavior
 msgid "subcategory_open_behavior"
@@ -82,7 +87,7 @@ msgstr "关闭方式"
 
 #. English: Popup Behavior
 msgid "subcategory_behavior"
-msgstr "subcategory_behavior"
+msgstr "行为"
 
 #. English: Video/Audio
 msgid "subcategory_video"
@@ -102,11 +107,11 @@ msgstr "缓存"
 
 #. English: Shortcuts
 msgid "category_keybinds"
-msgstr "快捷方式"
+msgstr "快捷键"
 
 #. English: Popup actions
 msgid "subcategory_keybinds_popup_actions"
-msgstr "弹出操作"
+msgstr "操作弹窗"
 
 msgid "Mouse cursor"
 msgstr "鼠标光标"
@@ -117,7 +122,7 @@ msgstr "规则"
 
 #. English: Rule-specific
 msgid "subcategory_rule_specific"
-msgstr "特定规则"
+msgstr "专用规则"
 
 #. English: Website
 msgid "category_website"
@@ -125,11 +130,11 @@ msgstr "网站"
 
 #. English: Saved! Refresh the target page for changes to take effect
 msgid "saved_refresh_target"
-msgstr "保存并刷新页面，使更改生效"
+msgstr "已保存，刷新目标页面使更改生效"
 
 #. English: Saved!
 msgid "saved_no_refresh"
-msgstr "保存但不刷新"
+msgstr "已保存"
 
 #. English: Save
 msgid "save"
@@ -137,14 +142,14 @@ msgstr "保存"
 
 #. English: Record
 msgid "record"
-msgstr "记录"
+msgstr "录制"
 
 #. English: Cancel
 msgid "cancel"
 msgstr "取消"
 
 msgid "Mouseover popup (%%1) is needed to display the original version"
-msgstr "需要鼠标悬停弹出 (%%1) 才能显示原始版本"
+msgstr "需要鼠标悬停弹窗（%%1）来显示原始版本"
 
 msgid "custom headers"
 msgstr "自定义标题"
@@ -181,7 +186,7 @@ msgstr "向右旋转"
 
 #. English: Buttons
 msgid "category_extra"
-msgstr "额外的"
+msgstr "其他"
 
 #. English: Replace Images
 msgid "subcategory_replaceimages"
@@ -189,7 +194,7 @@ msgstr "替换图像"
 
 #. English: Highlight Images
 msgid "subcategory_highlightimages"
-msgstr "突出显示图像"
+msgstr "高亮图像"
 
 #. English: General
 msgid "category_general"
@@ -237,11 +242,11 @@ msgstr "俄语"
 
 #. language.options.zh-CN.name
 msgid "中文"
-msgstr ""
+msgstr "中文"
 
 #. dark_mode.name
 msgid "Dark mode"
-msgstr "暗夜模式"
+msgstr "深色模式"
 
 #. dark_mode.description
 msgid "Changes the colors to have light text on a dark background"
@@ -249,35 +254,35 @@ msgstr "将颜色更改为在深色背景上显示浅色文本"
 
 #. settings_visible_description.name
 msgid "Description below options"
-msgstr "选项下的描述"
+msgstr "选项下方显示描述"
 
 #. settings_visible_description.description
 msgid "Shows the description below the options (otherwise the description is only shown when you hover over the option's name)"
-msgstr "显示选项下面的说明(否则只有当您将鼠标悬停在该选项的名称上时才会显示说明)"
+msgstr "选项下方显示描述（禁用则仅当鼠标悬停在选项的名称上时显示说明）"
 
 #. settings_show_disabled.name
 msgid "Show disabled options"
-msgstr "显示禁用选项"
+msgstr "显示停用的选项"
 
 #. settings_show_disabled.description
 msgid "If disabled, options that are disabled due to their requirements being unmet will not be displayed"
-msgstr "如果禁用，则不会显示由于未满足要求而禁用的选项"
+msgstr "禁用后将不显示因未满足要求而被停用的选项"
 
 #. settings_show_disabled_profiles.name
 msgid "Show disabled trigger profiles"
-msgstr "显示被禁用的触发配置文件"
+msgstr "显示停用的触发器配置"
 
 #. settings_show_disabled_profiles.description
 msgid "If disabled, options for alternate trigger profiles (options with `(#2)` after them) will not be shown if the relevant trigger isn't active"
-msgstr "如果禁用，如果相关触发器未激活，则不会显示备用触发器配置文件(后面带有 `(# 2) `的选项)的选项"
+msgstr "如果禁用，将不显示相关触发器未被激活的备用触发器的配置选项（带有 `(#2)` )"
 
 #. settings_show_requirements.name
 msgid "Requirements below disabled options"
-msgstr "禁用选项的启用需求"
+msgstr "停用选项下方显示需求"
 
 #. settings_show_requirements.description
 msgid "If an option is disabled, the requirements to enable the option will be displayed below it"
-msgstr "如果某个选项被禁用，则启用该选项的要求将显示在其下方"
+msgstr "在已停用选项的下方显示启用要求"
 
 #. check_updates.name
 msgid "Check for updates"
@@ -285,7 +290,7 @@ msgstr "检查更新"
 
 #. check_updates.description
 msgid "Periodically checks for updates. If a new update is available, it will be shown at the top of the options page"
-msgstr "定期检查更新。如果有新的更新可用，它将显示在选项页面的顶部"
+msgstr "定期检查更新。有可用的更新时将在选项页面的顶部显示"
 
 #. check_update_interval.name
 msgid "Update check interval"
@@ -301,11 +306,11 @@ msgstr "小时"
 
 #. check_update_notify.name
 msgid "Notify when update is available"
-msgstr "更新可用时的通知"
+msgstr "有可用更新时通知"
 
 #. check_update_notify.description
 msgid "Creates a browser notification when an update is available"
-msgstr "在更新可用时创建浏览器通知"
+msgstr "有可用更新时弹出浏览器通知"
 
 #. advanced_options.name
 msgid "Show advanced settings"
@@ -313,23 +318,23 @@ msgstr "显示高级设置"
 
 #. advanced_options.description
 msgid "If disabled, settings that might be harder to understand will be hidden"
-msgstr "如果禁用，可能更难理解的设置将被隐藏"
+msgstr "禁用后将隐藏比较难以理解的设置"
 
 #. settings_tabs.name
 msgid "Use tabs"
-msgstr "使用标签"
+msgstr "标签式设置"
 
 #. settings_tabs.description
 msgid "If disabled, all settings will be shown on a single page"
-msgstr "如果禁用，所有设置将显示在一个单一的页面"
+msgstr "如果禁用，将在同一页上显示全部设置"
 
 #. settings_alphabetical_order.name
 msgid "Alphabetical order"
-msgstr "字母顺序"
+msgstr "按字母顺序"
 
 #. settings_alphabetical_order.description
 msgid "Lists options in alphabetical order"
-msgstr "选项以字母顺序排列"
+msgstr "以字母顺序排列选项"
 
 #. allow_browser_request.name
 msgid "Allow using browser XHR"
@@ -337,67 +342,67 @@ msgstr "允许使用浏览器 XHR"
 
 #. allow_browser_request.description
 msgid "This allows XHR requests to be run in the browser's context if they fail in the extension (e.g. when Tracking Protection is set to High)"
-msgstr "这允许 XHR 请求在扩展失败时在浏览器的上下文中运行(例如，当跟踪保护设置为高)"
+msgstr "允许扩展中运行 XHR 请求失败时在浏览器上下文中运行 XHR。原因例如“跟踪保护”被设定为高。"
 
 #. retry_503_times.name
 msgid "Retry requests with 503 errors"
-msgstr "重试503请求"
+msgstr "重试返回 503 错误的请求"
 
 #. retry_503_times.description
 msgid "Amount of times to retry a request when 503 (service unavailable) is returned by the server"
-msgstr "服务器返回503(服务不可用)时重试请求的次数"
+msgstr "服务器返回 503 错误（服务不可用）时，重试请求次数"
 
 #. retry_503_times.number_unit
 msgid "times"
-msgstr "次数"
+msgstr "次"
 
 #. retry_503_ms.name
 msgid "Delay between 503 retries"
-msgstr "503重试之间延迟"
+msgstr "503 重试之间延迟"
 
 #. retry_503_ms.description
 msgid "Time (in milliseconds) to delay between retrying requests that received 503"
-msgstr "在接收到503重试请求之间延迟的时间(以毫秒为单位)"
+msgstr "收到 503 错误后重试请求之间延迟多久（毫秒）"
 
 #. use_blob_over_arraybuffer.name
 msgid "Use `Blob` over `ArrayBuffer`"
-msgstr "在ArrayBuffer上使用Blob"
+msgstr "使用 Blob 代替 ArrayBuffer"
 
 #. use_blob_over_arraybuffer.description
 msgid "Uses `Blob`s for XHRs instead of `ArrayBuffer`s. Keep this enabled unless your userscript manager doesn't support blob requests"
-msgstr "XHRs使用' Blob '代替' ArrayBuffer '。除非您的用户脚本管理器不支持blob请求，否则请保持此状态"
+msgstr "XHR 中使用 Blob 代替 ArrayBuffer。除非您的用户脚本管理器不支持 Blob 请求，否则保持启用"
 
 #. allow_live_settings_reload.name
 msgid "Live settings reloading"
-msgstr "活动设置重新加载"
+msgstr "设置实时生效"
 
 #. allow_live_settings_reload.description
 msgid "Enables/disables live settings reloading. There shouldn't be a reason to disable this unless you're experiencing issues with this feature"
-msgstr "启用/禁用活动设置重新加载。除非您遇到此功能的问题，否则不应该禁用此功能"
+msgstr "启用/禁用设置实时重新加载。除非遇到此功能相关的问题，否则应保持此功能启用"
 
 #. disable_keybind_when_editing.name
 msgid "Disable keybindings when editing text"
-msgstr "在编辑文本时禁用按键绑定"
+msgstr "编辑文本框时禁用快捷键"
 
 #. disable_keybind_when_editing.description
 msgid "Disables shortcuts when key events are sent to an input area on the page"
-msgstr "当键盘事件发送到页面上的输入区域时，禁用快捷方式"
+msgstr "将键盘事件发送到页面上的输入区域时，停用已设置的快捷键"
 
 #. enable_gm_download.name
 msgid "Use `GM_download` if available"
-msgstr "使用 `GM_download `如果有的话"
+msgstr "可用时使用 GM_download"
 
 #. enable_gm_download.description
 msgid "Prefers using `GM_download` over simple browser-based downloads, if the function is available. Some userscript managers download the entire file before displaying a save dialog, which can be undesirable for large video files"
-msgstr "喜欢使用 GM _ download 而不是简单的基于浏览器的下载，如果这个功能可用的话，一些用户的脚本管理器在显示保存对话框之前下载整个文件，这对于大型视频文件来说是不可取的"
+msgstr "优先使用 GM_download 代替浏览器的下载功能。部分用户脚本管理器会在显示“保存”对话框前下载整个文件，这不利于下载大体量的视频文件"
 
 #. gm_download_max.name
 msgid "Maximum size to `GM_download`"
-msgstr "`GM_download`的最大大小"
+msgstr "GM_download 大小上限"
 
 #. gm_download_max.description
 msgid "If a file is larger than this size, use a simple browser-based download instead. Set to `0` for unlimited."
-msgstr "如果文件大于这个大小，则使用基于浏览器的简单下载。设置为0表示无限。"
+msgstr "文件大于此大小时改用基于浏览器的下载功能。设为 0 表示无限制。"
 
 #. gm_download_max.number_unit
 msgid "MB"
@@ -405,19 +410,19 @@ msgstr "MB"
 
 #. enable_webextension_download.name
 msgid "Force save dialog when downloading"
-msgstr "下载时使用“强制保存”对话框"
+msgstr "下载时强制打开“保存”对话框"
 
 #. enable_webextension_download.description
 msgid "Tries to ensure the 'save as' dialog displays when downloading. This requires the 'downloads' permission to work, and will sometimes not work when custom headers are required."
-msgstr "尝试确保“另存为”对话框在下载时显示。这需要'下载'的许可工作，有时将不工作时，自定义头是必需的。"
+msgstr "尝试确保下载时打开“另存为”对话框。此功能需要“下载”权限，并且搭配“自定义头”时可能无效。"
 
 #. enable_console_logging.name
 msgid "Enable logging to console"
-msgstr ""
+msgstr "启用控制台日志"
 
 #. enable_console_logging.description
 msgid "Allows the script to log messages to the browser console."
-msgstr ""
+msgstr "允许记录日志消息到浏览器的控制台。"
 
 #. write_to_clipboard.name
 msgid "Enable writing to clipboard"
@@ -425,7 +430,7 @@ msgstr "启用写入剪贴板"
 
 #. write_to_clipboard.description
 msgid "This option does nothing on its own, but enabling it allows other functionality that require writing to the clipboard to work"
-msgstr "这个选项本身不做任何事情，但是启用它可以允许其他需要写入剪贴板的功能工作"
+msgstr "此选项本身无功能，但启用它才能使其他需要写入剪贴板的功能运作"
 
 #. redirect.name
 msgid "Enable redirection"
@@ -433,7 +438,7 @@ msgstr "启用重定向"
 
 #. redirect.description
 msgid "Automatically redirect media opened in their own tab to their larger/original versions"
-msgstr "自动重定向媒体打开自己的标签到他们的较大/原始版本"
+msgstr "在打开的媒体文件标签页中自动重定向到其更清晰的版本"
 
 #. redirect_video.name
 msgid "Allow video"
@@ -441,7 +446,7 @@ msgstr "允许视频"
 
 #. redirect_video.description
 msgid "Allows redirecting from/to video"
-msgstr "允许从/到视频的重定向"
+msgstr "允许视频被重定向"
 
 #. redirect_audio.name
 msgid "Allow audio"
@@ -449,15 +454,15 @@ msgstr "允许音频"
 
 #. redirect_audio.description
 msgid "Allows redirecting from/to audio"
-msgstr "允许从/到重定向音频"
+msgstr "允许音频被重定向"
 
 #. redirect_history.name
 msgid "Add to history"
-msgstr "加入历史"
+msgstr "添加到历史记录"
 
 #. redirect_history.description
 msgid "Redirection will add a new entry to the browser's history"
-msgstr "重定向将在浏览器的历史记录中添加一个新条目"
+msgstr "重定向发生时在浏览器的历史记录中加入一条记录"
 
 #. redirect_extension.name
 msgid "Do redirection in extension"
@@ -465,15 +470,15 @@ msgstr "在扩展中执行重定向"
 
 #. redirect_extension.description
 msgid "Performs the redirection in the extension instead of the content script. This is significantly faster and shouldn't cause issues in theory, but this option is kept in case of regressions"
-msgstr "在扩展名中而不是在内容脚本中执行重定向。这种速度要快得多，理论上不应该引起问题，但这个选项被保留以防回归"
+msgstr "在扩展内而非内容脚本中执行重定向。这样快得多并且理论上不应该引起问题，但该选项被保留以防特殊问题"
 
 #. canhead_get.name
 msgid "Use GET if HEAD is unsupported"
-msgstr "如果不支持 HEAD，则使用 GET"
+msgstr "不支持 HEAD 时改用 GET"
 
 #. canhead_get.description
 msgid "Use a GET request to check an image's availability, if the server does not support HEAD requests"
-msgstr "如果服务器不支持 HEAD 请求，则使用 GET 请求检查映像的可用性"
+msgstr "服务器不支持 HEAD 请求时改用一条 GET 请求来检查一个图像的可用性"
 
 #. redirect_force_page.name
 msgid "Try finding extra information"
@@ -481,7 +486,7 @@ msgstr "尝试查找额外信息"
 
 #. redirect_force_page.description
 msgid "Enables methods that use API calls for finding extra information, such as the original page, caption, or album information. Note that this option does not affect finding the original media."
-msgstr "启用使用 API 调用查找额外信息(如原始页面、标题或相册信息)的方法。请注意，此选项不影响查找原始媒体。"
+msgstr "启用通过 API 调用查找额外信息的方法，查找如原始页面、标题或相册信息。此选项不影响查找原始版本的媒体文件。"
 
 #. redirect_force_page.example_websites[1]
 msgid "SmugMug"
@@ -493,7 +498,7 @@ msgstr "启用工具提示"
 
 #. redirect_enable_infobox.description
 msgid "Enables the 'Mouseover popup is needed to display the original version' tooltip"
-msgstr "启用鼠标悬停弹出窗口来显示原始版本的工具提示"
+msgstr "启用“需要鼠标悬停弹窗来显示原始版本”的工具提示"
 
 #. redirect_infobox_url.name
 msgid "Show image URL in tooltip"
@@ -501,71 +506,71 @@ msgstr "在工具提示中显示图像 URL"
 
 #. redirect_infobox_url.description
 msgid "If the popup is needed to display the larger version of an image, display the image link in the tooltip"
-msgstr "如果需要弹出窗口来显示图像的较大版本，请在工具提示中显示图像链接"
+msgstr "如果需要弹窗来显示图像的较大版本，在工具提示中显示图像链接"
 
 #. redirect_infobox_timeout.name
 msgid "Hide tooltip after"
-msgstr "隐藏工具提示后"
+msgstr "隐藏工具提示的时间"
 
 #. redirect_infobox_timeout.description
 msgid "Hides the tooltip after the specified number of seconds (or when the mouse clicks on it). Set to 0 to never hide automatically"
-msgstr "隐藏指定秒数之后的工具提示(或当鼠标点击时)。设置为0，不会自动隐藏"
+msgstr "在指定秒数后隐藏工具提示。鼠标单击后也会隐藏。设为 0 则禁用自动隐藏"
 
 #. print_imu_obj.name
 msgid "Log info object to console"
-msgstr "将对象记录到控制台"
+msgstr "记录信息对象到控制台"
 
 #. print_imu_obj.description
 msgid "Prints the full info object to the console whenever a popup/redirect is found"
-msgstr "每当发现弹出/重定向时，将完整信息对象打印到控制台"
+msgstr "每当发现弹出/重定向时，记录完整的信息对象到控制台"
 
 #. redirect_disable_for_responseheader.name
 msgid "Disable when response headers need modifying"
-msgstr "当响应头需要修改时禁用"
+msgstr "需要修改响应头时禁用"
 
 #. redirect_disable_for_responseheader.description
 msgid "This option works around Chrome's migration to manifest v3, redirecting some images to being force-downloaded"
-msgstr "这个选项可以绕过Chrome迁移到manifest v3，将一些图像重定向到强制下载"
+msgstr "此选项是为配合 Chrome 的迁移到 manifest v3，重定向一些图像来强制下载"
 
 #. redirect_to_no_infobox.name
 msgid "Redirect to largest without issues"
-msgstr "重定向到最大，没有问题"
+msgstr "无需求也重定向到最大版本"
 
 #. redirect_to_no_infobox.description
 msgid "Redirects to the largest image found that doesn't require custom headers or forces download"
-msgstr "重定向到找到的不需要自定义头部或强制下载的最大图像"
+msgstr "重定向到找到的最大图像版本，哪怕不需要自定义头或强制下载"
 
 #. redirect_host_html.name
 msgid "Redirect for HTML pages too"
-msgstr "重定向到 HTML 页面"
+msgstr "同时重定向 HTML 页面"
 
 #. redirect_host_html.description
 msgid "Tries redirection even if the host page is HTML. This option might be useful for dead links. However, this will also result in many normal pages being redirected to images/video, so please avoid enabling this by default!"
-msgstr "尝试重定向，即使主页是 HTML。此选项可能对无效链接有用。但是，这也会导致许多正常的页面被重定向到图像/视频，所以请避免默认启用这个！"
+msgstr "尝试重定向，即使主页是 HTML。此选项可能对失效链接有用。但是，这也会导致许多正常的页面被重定向到图像/视频，所以请避免默认启用这个！"
 
 #. redirect_host_html.warning.true
 msgid ""
 "This will result in many pages being redirected to images/videos.\n"
 "I'd recommend only enabling this for the media you need it for, then disabling it after."
-msgstr "这将导致许多页面被重定向到图像/视频。 我建议只为您需要的媒体启用它，然后再禁用它。"
+msgstr "这将导致许多页面被重定向到图像/视频。我建议只为您需要的媒体启用它，然后再禁用它。"
 
 #. mouseover.name
 #. English: Enable image popup
 msgid "Enable mouseover popup"
-msgstr "启用鼠标悬停弹出窗口"
+msgstr "启用鼠标悬停弹窗"
 
 #. mouseover.description
 msgid "Show a popup with the larger image when you mouseover an image with the trigger key held (if applicable)"
-msgstr "当鼠标悬停在一个图像上时，用触发键(如果适用)显示一个弹出窗口"
+msgstr "当鼠标悬停在一个图像上时，用触发键（如果适用）显示一个弹窗"
 
 #. mouseover_trigger_behavior.name
 #. English: Popup trigger
 msgid "Mouseover popup trigger"
-msgstr "鼠标悬停弹出触发器"
+msgstr "鼠标悬停弹窗触发器"
 
 #. mouseover_trigger_behavior.description
 msgid "How the popup will get triggered"
-msgstr "弹出窗口如何被触发"
+msgstr "弹窗触发方式"
 
 #. mouseover_trigger_behavior.options.mouse.name
 msgid "Mouseover"
@@ -573,7 +578,7 @@ msgstr "鼠标悬停"
 
 #. mouseover_trigger_behavior.options.mouse.description
 msgid "Triggers when your mouse is over the image"
-msgstr "当鼠标悬停在图像上时触发"
+msgstr "鼠标在图像上悬停时触发"
 
 #. mouseover_trigger_behavior.options.keyboard.name
 msgid "Key trigger"
@@ -581,43 +586,43 @@ msgstr "按键触发"
 
 #. mouseover_trigger_behavior.options.keyboard.description
 msgid "Triggers when you press a key sequence when your mouse is over an image"
-msgstr "当鼠标悬停在图像上时按某个键触发"
+msgstr "当鼠标在图像上悬停时按指定键触发"
 
 #. mouseover_trigger_behavior.options.none.description
 msgid "Disables the popup from being triggered (useful if you only want to use the context menu item)"
-msgstr "禁止触发弹出窗口（如果您只想使用上下文菜单项，则此功能非常有用）"
+msgstr "禁止触发弹窗（如果您只想使用右键菜单项，则此选项很实用）"
 
 #. mouseover_trigger_key.name
 msgid "Popup trigger key"
-msgstr "弹出触发键"
+msgstr "弹窗触发键"
 
 #. mouseover_trigger_key.description
 msgid "Key sequence to trigger the popup"
-msgstr "触发弹出窗口的按键序列"
+msgstr "触发弹窗的按键序列"
 
 #. mouseover_trigger_key_t2.name
 msgid "Popup trigger key (#2)"
-msgstr "弹出触发键(# 2)"
+msgstr "弹窗触发键 (#2)"
 
 #. mouseover_trigger_key_t2.description
 msgid "Key sequence to trigger the popup with alternate options. Search for `(#2)` to find the relevant options"
-msgstr "按键顺序触发弹出窗口，选择其他选项。搜索(# 2)找到相关的选项"
+msgstr "触发弹窗的按键序列，搭配备用选项。搜索“(#2)”找到相关的选项"
 
 #. mouseover_trigger_key_t3.name
 msgid "Popup trigger key (#3)"
-msgstr "弹出触发键(# 3)"
+msgstr "弹窗触发键 (#3)"
 
 #. mouseover_trigger_key_t3.description
 msgid "Key sequence to trigger the popup with alternate options. Search for `(#3)` to find the relevant options"
-msgstr "按键顺序触发弹出窗口，选择其他选项。搜索(# 3)找到相关的选项"
+msgstr "触发弹窗的按键序列，搭配备用选项。搜索“(#3)”找到相关的选项"
 
 #. mouseover_trigger_delay.name
 msgid "Popup trigger delay"
-msgstr "弹出触发延迟"
+msgstr "弹窗触发键延迟"
 
 #. mouseover_trigger_delay.description
 msgid "Delay (in seconds) before the popup shows"
-msgstr "弹出窗口显示前的延迟(秒)"
+msgstr "弹窗显示前延迟（秒）"
 
 #. mouseover_trigger_mouseover.name
 msgid "Use mouseover event"
@@ -625,15 +630,15 @@ msgstr "使用 mouseover 事件"
 
 #. mouseover_trigger_mouseover.description
 msgid "Uses the mouseover event instead of mousemove to figure out where to trigger the popup. This more closely matches the way other image popup addons work, at the cost of configurability"
-msgstr "使用 mouseover 事件而不是 mousemove 来确定在哪里触发弹出窗口。这更接近于其他图像弹出插件的工作方式，代价是可配置性"
+msgstr "使用 mouseover 事件而不是 mousemove 来确定在哪里触发弹窗。这更接近于其他图像弹窗扩展的运作方式，代价是可配置性"
 
 #. mouseover_trigger_enabledisable_toggle.name
 msgid "Enable/disable toggle"
-msgstr "启用/禁用切换"
+msgstr "启用/禁用切换开关"
 
 #. mouseover_trigger_enabledisable_toggle.description
 msgid "Controls whether the 'Popup enable/disable key' will enable or disable the popup from opening"
-msgstr "控制“弹出启用/禁用键”在打开时是否启用或禁用弹出窗口"
+msgstr "控制“弹窗启用/禁用键”是否控制弹窗的打开"
 
 #. mouseover_trigger_enabledisable_toggle.options.enable.name
 msgid "Enable"
@@ -645,35 +650,35 @@ msgstr "禁用"
 
 #. mouseover_trigger_prevent_key.name
 msgid "Popup enable/disable key"
-msgstr "弹出启用/禁用键"
+msgstr "弹窗启用/禁用键"
 
 #. mouseover_trigger_prevent_key.description
 msgid "Holding down this key will enable or disable the popup from being opened, depending on the 'Enable/disable toggle' setting"
-msgstr "按住这个键将启用或禁用弹出窗口打开，具体取决于“启用/禁用切换”设置"
+msgstr "按住这个键将启用/禁用弹窗打开，具体取决于“启用/禁用切换开关”设置"
 
 #. mouseover_allow_partial.name
 msgid "Allow showing partially loaded"
-msgstr "允许显示部分加载"
+msgstr "允许显示部分加载的内容"
 
 #. mouseover_allow_partial.description
 msgid ""
 "This will allow the popup to open for partially loaded media.\n"
 "Partially loaded media will contain the source URL directly (where possible), whereas fully loaded media will use a blob or data URL."
 msgstr ""
-"这将允许弹出窗口为部分加载的媒体打开。\n"
-"部分加载的媒体将直接包含源 URL (如果可能的话) ，而完全加载的媒体将使用 blob 或数据 URL。"
+"这将允许为部分加载的媒体打开弹窗。\n"
+"部分加载的媒体将直接包含源 URL（如果可能），而完全加载的媒体使用 blob 或数据 URL。"
 
 #. mouseover_allow_partial.description_userscript
 msgid ""
 "This will allow the popup to open for partially loaded media, but this might break images that require custom headers to display properly.\n"
 "Partially loaded media will contain the source URL directly (where possible), whereas fully loaded media will use a blob or data URL."
 msgstr ""
-"这将允许弹出窗口为部分加载的媒体打开，但这可能会破坏需要自定义标头才能正确显示的图像。\n"
-"部分加载的媒体将直接包含源 URL (如果可能的话) ，而完全加载的媒体将使用 blob 或数据 URL。"
+"这将允许为部分加载的媒体打开弹窗，但这可能导致需要自定义标头才能正确显示的图像出错。\n"
+"部分加载的媒体将直接包含源 URL（如果可能），而完全加载的媒体使用 blob 或数据 URL。"
 
 #. mouseover_allow_partial.options.video.name
 msgid "Streams"
-msgstr "溪流"
+msgstr "数据流"
 
 #. mouseover_allow_partial.options.video.description
 msgid "Audio and video"
@@ -681,7 +686,7 @@ msgstr "音频和视频"
 
 #. mouseover_allow_partial.options.media.name
 msgid "Media"
-msgstr "视频"
+msgstr "多媒体"
 
 #. mouseover_allow_partial.options.media.description
 msgid "Images, audio, and video"
@@ -689,19 +694,19 @@ msgstr "图像、音频和视频"
 
 #. mouseover_partial_avoid_head.name
 msgid "Avoid HEAD request for partially loaded media"
-msgstr "避免对部分加载的媒体提出 HEAD 请求"
+msgstr "避免对已部分加载的媒体发出 HEAD 请求"
 
 #. mouseover_partial_avoid_head.description
 msgid "Avoids a possibly unnecessary HEAD request before displaying partially loaded images, which further decreases the delay before opening the popup. This can cause issues if the server returns an error, but still returns an image"
-msgstr "在显示部分加载的图像之前避免了可能不必要的 HEAD 请求，这进一步减少了打开弹出窗口之前的延迟。如果服务器返回一个错误，但仍然返回一个图像，这可能会导致问题"
+msgstr "显示已部分加载的媒体时避免可能不必要的 HEAD 请求，这能进一步减少打开弹窗的延迟。但如果服务器返回一个错误的同时也返回了一个图像，这可能会导致问题"
 
 #. mouseover_use_blob_over_data.name
 msgid "Use `blob:` over `data:` URLs"
-msgstr "使用blob:  结束data: 网址"
+msgstr "使用 blob: 代替 data: URL"
 
 #. mouseover_use_blob_over_data.description
 msgid "Blob URLs are more efficient, but aren't supported by earlier browsers. Some websites also block `blob:` URLs"
-msgstr "Blob url 更有效率，但是早期的浏览器不支持它，一些网站也屏蔽了 Blob: url"
+msgstr "Blob URL 效率更佳，但早期版本的浏览器不支持。一些网站也屏蔽了 Blob: URL"
 
 #. popup_use_anonymous_crossorigin.name
 msgid "Load media anonymously"
@@ -709,31 +714,31 @@ msgstr "匿名加载媒体"
 
 #. popup_use_anonymous_crossorigin.description
 msgid "Loads the media without sending any cookies or other forms of credentials. This is required to screenshot videos from other sources"
-msgstr "在不发送任何 cookie 或其他形式的凭据的情况下加载媒体。这是需要从其他来源的视频截图"
+msgstr "加载媒体而不发送任何 Cookie 或其他形式的凭据。这需要有其他来源的视频截图"
 
 #. mouseover_enable_notallowed.name
 msgid "Use `not-allowed` cursor when unsupported"
-msgstr "当不支持时，使用`not-allowed` 光标"
+msgstr "不支持时给出鼠标指针“禁止”"
 
 #. mouseover_enable_notallowed.description
 msgid "If the image isn't supported, the mouse cursor will change to a `not-allowed` cursor for a brief duration"
-msgstr "如果不支持图像，鼠标光标将在短时间内变为不允许的光标"
+msgstr "如果遇到不支持的图像，鼠标指针将暂时变为“禁止”图案"
 
 #. mouseover_enable_notallowed_cant_load.name
 msgid "Use `not-allowed` cursor when unable to load"
-msgstr "无法加载时使用“不允许”光标"
+msgstr "无法加载时给出鼠标指针“禁止”"
 
 #. mouseover_enable_notallowed_cant_load.description
 msgid "If the image fails to load, the mouse cursor will change to a `not-allowed` cursor for a brief duration"
-msgstr "如果加载图像失败，鼠标光标将在短时间内变为不允许使用的光标"
+msgstr "如果图像下载失败，鼠标指针将暂时变为“禁止”图案"
 
 #. mouseover_notallowed_duration.name
 msgid "`not-allowed` cursor duration"
-msgstr "`不允许`光标持续时间"
+msgstr "“禁止”指针持续时间"
 
 #. mouseover_notallowed_duration.description
 msgid "How long the `not-allowed` cursor should last"
-msgstr "不允许的光标应该持续多长时间"
+msgstr "“禁止”指针的显示持续多久"
 
 #. mouseover_exclude_page_bg.name
 msgid "Exclude page background"
@@ -741,23 +746,23 @@ msgstr "排除页面背景"
 
 #. mouseover_exclude_page_bg.description
 msgid "Excludes the page background for the popup"
-msgstr "排除弹出窗口的页面背景"
+msgstr "避免为页面背景显示弹窗"
 
 #. mouseover_minimum_size.name
 msgid "Minimum size"
-msgstr "最小面积"
+msgstr "最小尺寸"
 
 #. mouseover_minimum_size.description
 msgid "Smallest size acceptable for the popup to open (this option is ignored for background images). This refers to the size of the media to be popped up, which may differ from the source media."
-msgstr "弹出窗口可以打开的最小尺寸(对于背景图像，忽略此选项)。这是指要弹出的媒体的大小，它可能与源媒体不同。"
+msgstr "允许多小的图像显示弹窗。背景图像不被此选项涵盖。这指将要弹窗显示的媒体大小，这可能与源媒体不同。"
 
 #. popup_maximum_source_size.name
 msgid "Maximum source size"
-msgstr "最大源面积"
+msgstr "最大源尺寸"
 
 #. popup_maximum_source_size.description
 msgid "Maximum size (width/height) for the source media to allow popping up (this option is ignored for background images). Set to `0` for any size."
-msgstr "源媒体允许弹出的最大大小(宽度/高度)(对于背景图像，忽略此选项)。设置为0的任何大小。"
+msgstr "以源媒体显示弹窗的最大尺寸（宽度/高度）（对背景图像来说此选项无效)。设为 0 表示任意大小。"
 
 #. mouseover_exclude_backgroundimages.name
 msgid "Exclude `background-image`s"
@@ -765,47 +770,47 @@ msgstr "排除背景图像"
 
 #. mouseover_exclude_backgroundimages.description
 msgid "Excludes `background-image`s for the popup. Might prevent the popup from working on many images"
-msgstr "排除弹出窗口的背景图像。可能会阻止弹出窗口处理多个图像"
+msgstr "不为背景图像显示弹窗。可能使很多图像上不显示弹窗"
 
 #. mouseover_exclude_imagetab.name
 msgid "Exclude image tabs"
-msgstr "排除图片标签"
+msgstr "排除图像标签页"
 
 #. mouseover_exclude_imagetab.description
 msgid "Excludes images that are opened in their own tabs"
-msgstr "排除在自己的选项卡中打开的图像"
+msgstr "排除在单独的标签页中打开的图像"
 
 #. mouseover_exclude_sameimage.name
 msgid "Exclude if media URL is unchanged"
-msgstr "如果媒体 URL 没有改变，则排除"
+msgstr "排除无变化的媒体 URL"
 
 #. mouseover_exclude_sameimage.description
 msgid "Don't pop up if the new URL is the same as the source"
-msgstr "如果新的 URL 与源代码相同，则不要弹出"
+msgstr "如果新 URL 与源 URL 相同则不弹出"
 
 #. mouseover_only_links.name
 msgid "Only popup for linked media"
-msgstr "只有链接媒体才会弹出"
+msgstr "仅弹出链接形式的媒体"
 
 #. mouseover_only_links.description
 msgid "Don't pop up if the media isn't hyperlinked"
-msgstr "如果媒体没有超链接，就不要弹出"
+msgstr "不弹出非超链接形式的媒体"
 
 #. mouseover_linked_image.name
 msgid "Popup link for linked media"
-msgstr "用于链接媒体的弹出式链接"
+msgstr "链接的媒体弹窗链接"
 
 #. mouseover_linked_image.description
 msgid "If the linked media cannot be made larger, pop up for the link instead of the media"
-msgstr "如果链接媒体不能放大，则弹出该链接而不是该媒体"
+msgstr "如果链接的媒体不能变大，弹出该链接而非媒体"
 
 #. mouseover_exclude_imagemaps.name
 msgid "Exclude image maps"
-msgstr "排除图像地图"
+msgstr "排除图像集"
 
 #. mouseover_exclude_imagemaps.description
 msgid "Don't pop up if the image is an image map (image with multiple clickable areas)"
-msgstr "如果图像是图像地图，则不要弹出(图像有多个可点击区域)"
+msgstr "不弹出有多个可点击区域的图像集（image map）"
 
 #. mouseover_video_autoplay.name
 msgid "Autoplay"
@@ -813,7 +818,7 @@ msgstr "自动播放"
 
 #. mouseover_video_autoplay.description
 msgid "Play automatically once the popup is opened"
-msgstr "打开弹出窗口后自动播放"
+msgstr "弹窗打开后自动播放"
 
 #. mouseover_video_controls.name
 msgid "Show video controls"
@@ -821,7 +826,7 @@ msgstr "显示视频控件"
 
 #. mouseover_video_controls.description
 msgid "Shows native video controls. Note that this prevents dragging under Firefox"
-msgstr "显示本机视频控件。注意，这可以防止在Firefox下拖动"
+msgstr "显示原生视频控件（视频控制按钮）。注意，这会阻止在 Firefox 中拖拽"
 
 #. mouseover_video_controls_key.name
 msgid "Toggle video controls"
@@ -829,7 +834,7 @@ msgstr "切换视频控件"
 
 #. mouseover_video_controls_key.description
 msgid "Key to toggle whether the video controls are shown"
-msgstr "切换是否显示视频控件的键"
+msgstr "切换是否显示视频控件的按键"
 
 #. mouseover_video_loop.name
 msgid "Loop"
@@ -837,15 +842,15 @@ msgstr "循环"
 
 #. mouseover_video_loop.description
 msgid "Allows the media to automatically restart to the beginning after finishing playing"
-msgstr "允许媒体播放完毕后自动重新开始播放"
+msgstr "是否允许媒体播放完毕后自动重新开始播放"
 
 #. mouseover_video_autoloop_max.name
 msgid "Max duration for looping"
-msgstr "循环的最大持续时间"
+msgstr "循环最长持续时间"
 
 #. mouseover_video_autoloop_max.description
 msgid "Media longer than the specified duration will not be automatically looped. Setting this to `0` will always enable looping, regardless of duration."
-msgstr "超过指定持续时间的媒体不会自动循环。将此设置为0将始终启用循环，与持续时间无关。"
+msgstr "超过指定时间后媒体不再自动循环播放。设为 0 则始终循环，不限制持续时间。"
 
 #. mouseover_video_playpause_key.name
 msgid "Play/pause key"
@@ -853,7 +858,7 @@ msgstr "播放/暂停键"
 
 #. mouseover_video_playpause_key.description
 msgid "Key to toggle whether the media is playing or paused"
-msgstr "用于切换媒体是否正在播放或暂停的键"
+msgstr "切换媒体的播放/暂停的按键"
 
 #. mouseover_video_muted.name
 msgid "Mute"
@@ -861,7 +866,7 @@ msgstr "静音"
 
 #. mouseover_video_muted.description
 msgid "Mutes the media by default"
-msgstr "默认情况下屏蔽媒体声音"
+msgstr "默认将媒体静音"
 
 #. mouseover_video_mute_key.name
 msgid "Toggle mute key"
@@ -869,7 +874,7 @@ msgstr "切换静音键"
 
 #. mouseover_video_mute_key.description
 msgid "Key to toggle mute"
-msgstr "按键切换静音"
+msgstr "切换静音的按键"
 
 #. mouseover_video_volume.name
 msgid "Default volume"
@@ -885,7 +890,7 @@ msgstr "音量调高键"
 
 #. mouseover_video_volume_up_key.description
 msgid "Key to increase the volume"
-msgstr "按键增大音量"
+msgstr "增大音量的按键"
 
 #. mouseover_video_volume_down_key.name
 msgid "Volume down key"
@@ -893,7 +898,7 @@ msgstr "音量调低键"
 
 #. mouseover_video_volume_down_key.description
 msgid "Key to decrease the volume"
-msgstr "按键减小音量"
+msgstr "减小音量的按键"
 
 #. mouseover_video_volume_change_amt.name
 msgid "Volume change amount"
@@ -901,71 +906,71 @@ msgstr "音量变化百分比"
 
 #. mouseover_video_volume_change_amt.description
 msgid "Percent for volume to increase/decrease when using the volume up/down keys"
-msgstr "使用音量增加/减少键时，音量要增加/减少的百分比"
+msgstr "使用音量调高/调低键时，音量增减的百分比"
 
 #. mouseover_video_resume_from_source.name
 msgid "Resume playback from source"
-msgstr "从源地址恢复播放"
+msgstr "从源地址继续播放"
 
 #. mouseover_video_resume_from_source.description
 msgid "If enabled, playback will resume from where the source left off"
-msgstr "如果启用，播放将从源停止的地方继续"
+msgstr "启用后，播放将从源媒体中停止的进度继续"
 
 #. mouseover_video_resume_if_different.name
 msgid "Resume if different length"
-msgstr "恢复如果长度不同"
+msgstr "长度不同也继续播放"
 
 #. mouseover_video_resume_if_different.description
 msgid "If disabled, it will not resume if the source has a different length from the media in the popup (e.g. from a preview video to a full one)"
-msgstr "如果禁用，如果源代码与弹出窗口中的媒体长度不同(例如从预览视频到完整视频) ，则不会恢复"
+msgstr "禁用后，如果源媒体与弹出的媒体的时长不同（例如预览视频与完整视频的区别），则不继续播放"
 
 #. mouseover_video_pause_source.name
 msgid "Pause source"
-msgstr "暂停源"
+msgstr "暂停源媒体"
 
 #. mouseover_video_pause_source.description
 msgid "Pauses the source once the popup has opened"
-msgstr "在弹出窗口打开后暂停源"
+msgstr "弹窗打开后暂停源媒体"
 
 #. mouseover_video_seek_amount.name
 msgid "Seek amount"
-msgstr "寻求数量"
+msgstr "进退距离"
 
 #. mouseover_video_seek_amount.description
 msgid "Amount of time to seek forward/back when using the seek keys"
-msgstr "使用查找键时查找前进/后退的时间量"
+msgstr "使用快进/快退按键时前进/后退的时间量"
 
 #. mouseover_video_seek_left_key.name
 msgid "Seek left key"
-msgstr "左进（快退）"
+msgstr "快退键"
 
 #. mouseover_video_seek_left_key.description
 msgid "Key to seek backwards by the specified amount"
-msgstr "按指定秒数向前快退"
+msgstr "向左侧（之前）快速移动指定时长的按键"
 
 #. mouseover_video_seek_right_key.name
 msgid "Seek right key"
-msgstr "右进（快进）"
+msgstr "快进键"
 
 #. mouseover_video_seek_right_key.description
 msgid "Key to seek forwards by the specified amount"
-msgstr "按指定秒数向后快进"
+msgstr "向右侧（之后）快速移动指定时长的按键"
 
 #. mouseover_video_frame_prev_key.name
 msgid "Previous frame key"
-msgstr "前一帧关键字"
+msgstr "上一帧按键"
 
 #. mouseover_video_frame_prev_key.description
 msgid "Rewinds the video one \"frame\" backward. Due to current limitations, the frame size is static (but configurable), and might not match the video's framerate"
-msgstr "将视频倒回一帧。由于当前的限制，帧大小是静态的(但是可配置的) ，并且可能不匹配视频的帧速率"
+msgstr "将视频倒回前一帧。由于当前的限制，帧大小是静态的（但可配置），可能与视频的帧速率不匹配"
 
 #. mouseover_video_frame_next_key.name
 msgid "Next frame key"
-msgstr "下一帧键"
+msgstr "下一帧按键"
 
 #. mouseover_video_frame_next_key.description
 msgid "Advances the video one \"frame\" forward. Due to current limitations, the frame size is static (but configurable), and might not match the video's framerate"
-msgstr "将视频向前推进一帧。由于当前的限制，帧大小是静态的(但是可配置的) ，并且可能不匹配视频的帧速率"
+msgstr "将视频移入下一帧。由于当前的限制，帧大小是静态的（但可配置），可能与视频的帧速率不匹配"
 
 #. mouseover_video_framerate.name
 msgid "Frame rate"
@@ -973,11 +978,11 @@ msgstr "帧速率"
 
 #. mouseover_video_framerate.description
 msgid "Frame rate for videos to seek forward/back with the next/previous frame keys"
-msgstr "帧速率为视频寻找前进/后退与下一个/上一个帧键"
+msgstr "帧速率用于视频的快进/快退按键"
 
 #. mouseover_video_framerate.number_unit
 msgid "FPS"
-msgstr "FPS"
+msgstr "每秒帧数（FPS）"
 
 #. mouseover_video_speed_down_key.name
 msgid "Speed down key"
@@ -985,7 +990,7 @@ msgstr "减速键"
 
 #. mouseover_video_speed_down_key.description
 msgid "Key to decrease playback rate by a specified amount"
-msgstr "键可以将播放速率降低一个指定的数量"
+msgstr "此键可以将播放速率降低指定的额度"
 
 #. mouseover_video_speed_up_key.name
 msgid "Speed up key"
@@ -993,7 +998,7 @@ msgstr "加速键"
 
 #. mouseover_video_speed_up_key.description
 msgid "Key to increase playback rate by a specified amount"
-msgstr "按键可以将播放速率提高一个指定的数量"
+msgstr "此键可以将播放速率提升指定的额度"
 
 #. mouseover_video_speed_amount.name
 msgid "Speed up/down amount"
@@ -1001,7 +1006,7 @@ msgstr "加速/减速量"
 
 #. mouseover_video_speed_amount.description
 msgid "How much to increase/decrease the playback rate"
-msgstr "增加/减少播放的速率"
+msgstr "增加/减少的播放速率"
 
 #. mouseover_video_reset_speed_key.name
 msgid "Reset speed key"
@@ -1009,7 +1014,7 @@ msgstr "重置速度键"
 
 #. mouseover_video_reset_speed_key.description
 msgid "Resets the playback rate to normal speed"
-msgstr "将播放速率重置为正常速度"
+msgstr "将播放速度重置为正常速度"
 
 #. mouseover_video_screenshot_key.name
 msgid "Screenshot key"
@@ -1017,7 +1022,7 @@ msgstr "屏幕截图键"
 
 #. mouseover_video_screenshot_key.description
 msgid "Screenshots the current frame in the video"
-msgstr "视频中当前帧的屏幕截图"
+msgstr "对视频中的当前帧截图"
 
 #. popup_video_screenshot_format.name
 msgid "Screenshot format"
@@ -1029,27 +1034,27 @@ msgstr "保存截图的文件格式"
 
 #. popup_video_screenshot_format.options.png.name
 msgid "PNG"
-msgstr "PNG格式"
+msgstr "PNG"
 
 #. popup_video_screenshot_format.options.jpg.name
 msgid "JPG"
-msgstr "JPG格式"
+msgstr "JPG"
 
 #. mouseover_ui.name
 msgid "Popup UI"
-msgstr "弹出式用户界面"
+msgstr "弹窗界面"
 
 #. mouseover_ui.description
 msgid "Enables a UI on top of the popup"
-msgstr "启用弹出窗口顶部的 UI"
+msgstr "启用弹窗上的界面"
 
 #. mouseover_ui_toggle_key.name
 msgid "UI Toggle key"
-msgstr "UI切换键"
+msgstr "界面切换键"
 
 #. mouseover_ui_toggle_key.description
 msgid "Toggles the display of the UI"
-msgstr "切换用户界面的显示方式"
+msgstr "切换界面的显示方式"
 
 #. mouseover_ui_opacity.name
 msgid "Opacity"
@@ -1057,39 +1062,39 @@ msgstr "不透明度"
 
 #. mouseover_ui_opacity.description
 msgid "Opacity of the UI on top of the popup"
-msgstr "弹出窗口顶部用户界面的不透明度"
+msgstr "弹窗上界面的不透明度"
 
 #. mouseover_ui_use_safe_glyphs.name
 msgid "Use safe glyphs"
-msgstr "使用安全的字形"
+msgstr "使用安全字形"
 
 #. mouseover_ui_use_safe_glyphs.description
 msgid "Uses glyphs that are more likely to be available on all fonts. Enable this option if the following characters render as boxes: 🡇 🡐 🡒. The 'Noto Sans Symbols2' font contains these characters."
-msgstr "使用更可能适用于所有字体的字形。如果下列字符呈现为方框，则启用此选项“ Noto Sans symboss2”字体包含这些字符。"
+msgstr "使用更可能适用于所有字体的字形。启用此选项，如果下列字符呈现为方框：🡇 🡐 🡒。“Noto Sans symboss2”字体包含这些字符。"
 
 #. mouseover_ui_imagesize.name
 msgid "Media resolution"
-msgstr "媒体解决方案"
+msgstr "媒体分辨率"
 
 #. mouseover_ui_imagesize.description
 msgid ""
 "Displays the original media dimensions on top of the UI.\n"
 "CSS ID: `#sizeinfo`"
 msgstr ""
-"在 UI上显示原始的媒体尺寸。\n"
-"CSS ID: # sizeinfo"
+"在界面上显示原始媒体尺寸。\n"
+"CSS ID: `#sizeinfo`"
 
 #. mouseover_ui_zoomlevel.name
 msgid "Zoom percent"
-msgstr "放大百分比"
+msgstr "缩放百分比"
 
 #. mouseover_ui_zoomlevel.description
 msgid ""
 "Displays the current zoom level on top of the UI.\n"
 "CSS ID: `#sizeinfo`"
 msgstr ""
-"在 UI上显示当前的缩放级别。\n"
-"CSS ID: # sizeinfo"
+"在界面上显示当前的缩放级别。\n"
+"CSS ID: `#sizeinfo`"
 
 #. mouseover_ui_filesize.name
 msgid "File size"
@@ -1099,27 +1104,29 @@ msgstr "文件大小"
 msgid ""
 "Displays the media's file size on top of the UI. For the moment, this will not work with partially loaded media if 'Avoid HEAD request for partially loaded media' is enabled.\n"
 "CSS ID: `#sizeinfo`"
-msgstr "在 UI 的顶部显示媒体的文件大小。目前，如果‘ Avoid HEAD request For parallly loaded media’是 enabled.CSS ID: # sizeinfo，这将不适用于部分加载的媒体"
+msgstr ""
+"在界面上显示媒体的文件大小。目前，如果启用了“避免对部分加载的媒体使用 HEAD 请求”，则此项无效。\n"
+"CSS ID: `#sizeinfo`"
 
 #. mouseover_ui_gallerycounter.name
 msgid "Gallery counter"
-msgstr "图库计数"
+msgstr "图库计数器"
 
 #. mouseover_ui_gallerycounter.description
 msgid ""
 "Enables a gallery counter on top of the UI.\n"
 "CSS ID: `#gallerycounter`"
 msgstr ""
-"启用 UI顶部的图库计数器。\n"
-"CSS ID： # gallerycounter"
+"启用界面上的图库计数器。\n"
+"CSS ID: `#gallerycounter`"
 
 #. mouseover_ui_gallerymax.name
 msgid "Gallery counter max"
-msgstr "最大图库计数器"
+msgstr "图库计数器上限"
 
 #. mouseover_ui_gallerymax.description
 msgid "Maximum amount of images to check in the counter (this can be slightly CPU-intensive)"
-msgstr "要在计数器中检查的最大图像数量(这可能需要一点 cpu 密集型)"
+msgstr "该计数器显示图像数量上限（可能消耗较多 CPU 资源）"
 
 #. mouseover_ui_gallerybtns.name
 msgid "Gallery buttons"
@@ -1130,8 +1137,8 @@ msgid ""
 "Enables buttons to go left/right in the gallery.\n"
 "CSS IDs: `#galleryprevbtn`, `#gallerynextbtn`"
 msgstr ""
-"允许按钮在图库中左/右移动。 \n"
-"css id: # galleryprevbtn，# gallerynextbtn"
+"启用在图库中向左/右移动的按钮。\n"
+"CSS IDs: `#galleryprevbtn`, `#gallerynextbtn`"
 
 #. mouseover_ui_closebtn.name
 msgid "Close Button"
@@ -1142,8 +1149,8 @@ msgid ""
 "Enables a button to close the popup.\n"
 "CSS ID: `#closebtn`"
 msgstr ""
-"启用一个按钮来关闭 popup.\n"
-"CSS ID: # closebtn"
+"启用关闭当前弹窗的按钮。\n"
+"CSS ID: `#closebtn`"
 
 #. mouseover_ui_optionsbtn.name
 msgid "Options Button"
@@ -1153,7 +1160,9 @@ msgstr "选项按钮"
 msgid ""
 "Enables a button to go to this page.\n"
 "CSS ID: `#optionsbtn`"
-msgstr "启用一个按钮来访问这个页面"
+msgstr ""
+"启用访问选项页面（本页面）的按钮。\n"
+"CSS ID: `#optionsbtn`"
 
 #. mouseover_ui_downloadbtn.name
 msgid "Download Button"
@@ -1163,7 +1172,9 @@ msgstr "下载按钮"
 msgid ""
 "Enables a button to download the image.\n"
 "CSS ID: `#downloadbtn`"
-msgstr "启用一个按钮来下载图像"
+msgstr ""
+"启用下载该图像的按钮。\n"
+"CSS ID: `#downloadbtn`"
 
 #. mouseover_ui_rotationbtns.name
 msgid "Rotation Buttons"
@@ -1173,7 +1184,9 @@ msgstr "旋转按钮"
 msgid ""
 "Enables buttons on the UI to rotate the image by 90 degrees.\n"
 "CSS IDs: `#rotleftbtn`, `#rotrightbtn`"
-msgstr "启用 UI 上的按钮将图像旋转90度"
+msgstr ""
+"启用在界面上将图像旋转 90 度的按钮。\n"
+"CSS IDs: `#rotleftbtn`, `#rotrightbtn`"
 
 #. mouseover_ui_caption.name
 msgid "Caption"
@@ -1183,7 +1196,9 @@ msgstr "标题"
 msgid ""
 "Shows the image's caption (if available) at the top.\n"
 "CSS ID: `#caption`"
-msgstr "在顶端显示图像的标题(如果可用)"
+msgstr ""
+"在顶端显示图像的标题（如果可用）。\n"
+"CSS ID: `#caption`"
 
 #. mouseover_ui_wrap_caption.name
 msgid "Wrap caption text"
@@ -1191,83 +1206,84 @@ msgstr "标题文本换行"
 
 #. mouseover_ui_wrap_caption.description
 msgid "Wraps the caption if it's too long"
-msgstr "如果标题太长，就把它包起来"
+msgstr "标题文本太长时自动换行"
 
 #. mouseover_ui_caption_link_page.name
 msgid "Link original page in caption"
-msgstr "链接标题中的原始页面"
+msgstr "标题链接原始页面"
 
 #. mouseover_ui_caption_link_page.description
 msgid "Links the original page (if it exists) in the caption"
-msgstr "链接标题中的原始页面(如果存在)"
+msgstr "将标题链接到原始页面（如有）"
 
 #. mouseover_ui_link_underline.name
 msgid "Underline links"
-msgstr "下划线链接"
+msgstr "链接下划线"
 
 #. mouseover_ui_link_underline.description
 msgid "Adds an underline to links (such as the original page)"
-msgstr "向链接(如原始页面)添加下划线"
+msgstr "向链接（如原始页面）添加下划线"
 
 #. mouseover_close_behavior.name
 msgid "Keep popup open until"
-msgstr "保持弹出窗口打开直到"
+msgstr "保持弹窗开启直到"
 
 #. mouseover_close_behavior.description
 msgid "Closes the popup when the selected condition is met"
-msgstr "满足选定条件时关闭弹出窗口"
+msgstr "满足选定条件时关闭弹窗"
 
 #. mouseover_close_behavior.options.any.name
 msgid "Any trigger is released"
-msgstr "任何触发器都会被释放"
+msgstr "松开任何触发器"
 
 #. mouseover_close_behavior.options.all.name
 msgid "All triggers are released"
-msgstr "所有触发器都被释放"
+msgstr "松开全部触发器"
 
 #. mouseover_close_behavior.options.esc.name
 msgid "ESC/Close is pressed"
-msgstr "按 ESC/Close 释放"
+msgstr "按下 ESC/Close"
 
 #. mouseover_close_need_mouseout.name
 msgid "Don't close until mouse leaves"
-msgstr "在鼠标移开前不要关闭"
+msgstr "鼠标移开前不关闭"
 
 #. mouseover_close_need_mouseout.description
 msgid "If true, this keeps the popup open even if all triggers are released if the mouse is still over the image"
-msgstr "如果为真，即使鼠标仍然在图像上方时释放所有触发器，也会保持弹出窗口打开"
+msgstr "如果启用，松开所有触发器后，假如鼠标仍悬停在图像上，弹窗保持开启"
 
 #. mouseover_jitter_threshold.name
 msgid "Threshold to leave image"
-msgstr "离开图像的界限"
+msgstr "移开图像的门限值"
 
 #. mouseover_jitter_threshold.description
 msgid "How many pixels outside of the image before the cursor is considered to have left the image"
-msgstr "在光标离开图像之前，图像外面有多少像素"
+msgstr "鼠标指针离开图像外缘多少像素视作移开图像"
 
 #. mouseover_cancel_popup_when_elout.name
 msgid "Leaving thumbnail cancels loading"
-msgstr "留下缩略图取消加载"
+msgstr "离开缩略图则取消加载"
 
 #. mouseover_cancel_popup_when_elout.description
 msgid "Cancels the current popup loading when the cursor has left the thumbnail image"
-msgstr "当光标离开缩略图时取消当前弹出窗口的加载"
+msgstr "鼠标指针离开缩略图时取消当前弹窗的加载"
 
 #. mouseover_cancel_popup_with_esc.name
 msgid "ESC cancels loading"
-msgstr "取消加载"
+msgstr "ESC 键取消加载"
 
 #. mouseover_cancel_popup_with_esc.description
 msgid "Cancels the current popup loading if ESC is pressed"
-msgstr "如果按 ESC，则取消当前弹出式加载"
+msgstr "按下 ESC 键时取消当前弹窗的加载"
 
 #. mouseover_cancel_popup_when_release.name
 msgid "Releasing triggers cancels loading"
-msgstr "释放触发器取消加载"
+msgstr "松开触发器取消加载"
 
 #. mouseover_cancel_popup_when_release.description
+#, fuzzy
 msgid "Cancels the current popup loading if all/any triggers are released (as set by the \"Keep popup open until\" setting)"
-msgstr "如果释放了所有/任何触发器，则取消当前弹出式加载(由“保持弹出式打开直到”设置设置)"
+msgstr "如果松开了所有/任何触发器，并且设置了“保持弹窗开启直到”，取消当前的弹窗加载"
 
 #. mouseover_auto_close_popup.name
 msgid "Automatically close after timeout"
@@ -1275,15 +1291,15 @@ msgstr "超时后自动关闭"
 
 #. mouseover_auto_close_popup.description
 msgid "Closes the popup automatically after a specified period of time has elapsed"
-msgstr "在指定时间过后自动关闭弹出窗口"
+msgstr "指定时间后自动关闭弹窗"
 
 #. mouseover_auto_close_popup_time.name
 msgid "Timeout to close popup"
-msgstr "关闭弹出窗口的时间"
+msgstr "关闭弹窗的超时"
 
 #. mouseover_auto_close_popup_time.description
 msgid "Amount of time to elapse before automatically closing the popup"
-msgstr "在自动关闭弹出窗口之前经过的时间"
+msgstr "多久后自动关闭弹窗"
 
 #. mouseover_hold_key.name
 msgid "Hold key"
@@ -1291,47 +1307,48 @@ msgstr "保持键"
 
 #. mouseover_hold_key.description
 msgid "Hold key that, when pressed, will keep the popup open"
-msgstr "按住键，当按下时，将保持弹出窗口打开"
+msgstr "按住此键时将保持弹窗开启"
 
 #. mouseover_hold_position_center.name
 msgid "Center popup on hold"
-msgstr "中心弹出暂停"
+msgstr "保持时弹窗居中"
 
 #. mouseover_hold_position_center.description
 msgid "Centers the popup to the middle of the page when the popup is held"
-msgstr "当弹出窗口举行时，将弹出窗口居中到页面中间"
+msgstr "弹窗保持呈现于页面正中心"
 
 #. popup_hold_zoom.name
 msgid "Override zoom on hold"
-msgstr "覆盖保持按键"
+msgstr "保持时覆盖缩放"
 
 #. popup_hold_zoom.description
 msgid "Overrides the zoom when the popup is held"
-msgstr "弹出窗口时覆盖缩放"
+msgstr "保持弹窗时覆盖缩放级别"
 
 #. mouseover_hold_close_unhold.name
 msgid "Close popup on unhold"
-msgstr "关闭未保持的弹出窗口"
+msgstr "取消保持时关闭弹窗"
 
 #. mouseover_hold_close_unhold.description
+#, fuzzy
 msgid "Closes the popup when the hold key is pressed again, after having previously held the popup"
-msgstr "当按住按键再次按下时关闭弹出窗口，在之前按住弹出窗口之后"
+msgstr "曾经保持弹窗后，再次按下保持键时关闭弹窗"
 
 #. mouseover_hold_unclickthrough.name
 msgid "Enable pointer events on hold"
-msgstr "启用暂停的指针事件"
+msgstr "保持期间启用指针事件"
 
 #. mouseover_hold_unclickthrough.description
 msgid "Enables previously disabled pointer events when the popup is held"
-msgstr "在保持弹出窗口时启用先前禁用的指针事件"
+msgstr "弹窗保持期间启用先前禁用的指针事件"
 
 #. mouseover_close_click_outside.name
 msgid "Clicking outside the popup closes"
-msgstr "点击弹出窗口之外关闭"
+msgstr "点击弹窗外关闭"
 
 #. mouseover_close_click_outside.description
 msgid "Closes the popup when the mouse clicks outside of it"
-msgstr "当鼠标在弹出窗口外单击时关闭弹出窗口"
+msgstr "鼠标在弹窗外单击时关闭弹窗"
 
 #. mouseover_close_el_policy.name
 msgid "Close when leaving"
@@ -1339,7 +1356,7 @@ msgstr "离开时关闭"
 
 #. mouseover_close_el_policy.description
 msgid "Closes the popup when the mouse leaves the thumbnail element, the popup, or both"
-msgstr "当鼠标离开缩略图元素、弹出窗口或两者都离开时，关闭弹出窗口"
+msgstr "鼠标移出缩略图元素、弹窗或上述两者时关闭弹窗"
 
 #. mouseover_close_el_policy.options.thumbnail.name
 msgid "Thumbnail"
@@ -1347,51 +1364,51 @@ msgstr "缩略图"
 
 #. mouseover_close_el_policy.options.both.name
 msgid "Both"
-msgstr "都"
+msgstr "上述两者"
 
 #. mouseover_wait_use_el.name
 msgid "Use invisible element when waiting"
-msgstr "在等待时使用隐形元素"
+msgstr "等待时使用隐形元素"
 
 #. mouseover_wait_use_el.description
 msgid "Creates an invisible element under the cursor when waiting for the popup instead of a style element (can improve performance on websites with many elements, but prevents the cursor from clicking anything while loading the popup)"
-msgstr "在等待弹出窗口而不是样式元素时在光标下创建一个不可见的元素(可以通过许多元素提高网站的性能，但是可以防止光标在加载弹出窗口时点击任何东西)"
+msgstr "在等待弹窗时在鼠标指针下方创建一个隐形元素（而非样式元素）（可以改善有大量元素的网站性能，但这会阻止加载期间鼠标点击任何东西）"
 
 #. mouseover_add_to_history.name
 msgid "Add popup link to history"
-msgstr "添加弹出式链接到历史记录"
+msgstr "添加弹出的链接到历史记录"
 
 #. mouseover_add_to_history.description
 msgid "Adds the image/video link opened through the popup to the browser's history"
-msgstr "将通过弹出窗口打开的图像/视频链接添加到浏览器的历史记录中"
+msgstr "将通过弹窗打开的图像/视频链接添加到浏览器的历史记录"
 
 #. allow_remote.name
 msgid "Allow inter-frame communication"
-msgstr "允许帧间通信"
+msgstr "允许框架间通信"
 
 #. allow_remote.description
 msgid "Allows communication between frames in windows, improving support for keybindings"
-msgstr "允许窗口中的帧之间的通信，提高对密钥绑定的支持"
+msgstr "允许窗口中的框架间通信，改善对快捷键绑定的支持"
 
 #. allow_remote.description_userscript
 msgid "Allows communication between frames in windows, improving support for keybindings. Can pose a fingerprinting risk when used through the userscript"
-msgstr "允许窗口中的帧之间的通信，提高对密钥绑定的支持。当通过用户脚本使用时，是否会造成指纹识别的风险"
+msgstr "允许窗口中的框架间通信，改善对快捷键绑定的支持。通过用户脚本使用时，也许会构成指纹识别的风险"
 
 #. mouseover_use_remote.name
 msgid "Pop out of frames"
-msgstr "跳出画面"
+msgstr "跳出框架"
 
 #. mouseover_use_remote.description
 msgid "Opens the popup on the top frame instead of within iframes. This option is still experimental."
-msgstr "打开顶部框架的弹出窗口，而不是在 iframe 内部。这个选项仍处于试验阶段。"
+msgstr "在框架外而非框架内打开弹窗。此选项仍处于试验阶段。"
 
 #. mouseover_zoom_behavior.name
 msgid "Popup default zoom"
-msgstr "弹出式默认缩放"
+msgstr "弹窗默认缩放级别"
 
 #. mouseover_zoom_behavior.description
 msgid "How the popup should be initially sized"
-msgstr "弹出窗口的初始大小应该是多少"
+msgstr "弹窗的初始尺寸"
 
 #. mouseover_zoom_behavior.options.fit.name, popup_hold_zoom.options.fit.name
 msgid "Fit to screen"
@@ -1399,7 +1416,7 @@ msgstr "适合屏幕"
 
 #. mouseover_zoom_behavior.options.fill.name, popup_hold_zoom.options.fill.name
 msgid "Fill screen"
-msgstr "填充屏幕"
+msgstr "填满屏幕"
 
 #. mouseover_zoom_behavior.options.full.name, popup_hold_zoom.options.full.name
 msgid "Full size"
@@ -1407,7 +1424,7 @@ msgstr "全尺寸"
 
 #. mouseover_zoom_behavior.options.custom.name
 msgid "Custom size"
-msgstr "自定义大小"
+msgstr "自定义尺寸"
 
 #. mouseover_zoom_custom_percent.name
 msgid "Custom zoom percent"
@@ -1415,7 +1432,7 @@ msgstr "自定义缩放百分比"
 
 #. mouseover_zoom_custom_percent.description
 msgid "Custom percent to initially size the popup"
-msgstr "自定义百分比，相对于最初的弹出窗口大小"
+msgstr "自定义相对于初始弹窗大小的百分比"
 
 #. mouseover_video_volume.number_unit, mouseover_video_volume_change_amt.number_unit, mouseover_ui_opacity.number_unit, mouseover_zoom_custom_percent.number_unit
 msgid "%"
@@ -1423,11 +1440,11 @@ msgstr "%"
 
 #. mouseover_zoom_use_last.name
 msgid "Use last zoom"
-msgstr "使用最后一次缩放"
+msgstr "使用最后的缩放设置"
 
 #. mouseover_zoom_use_last.description
 msgid "Use the last popup's zoom. Note that this is per-page."
-msgstr "使用最后一个弹出窗口的缩放。请注意，这是每页。"
+msgstr "使用最后一个弹窗的缩放级别。注意，此级别不跨页共享。"
 
 #. mouseover_zoom_max_width.name
 msgid "Maximum width"
@@ -1435,7 +1452,7 @@ msgstr "最大宽度"
 
 #. mouseover_zoom_max_width.description
 msgid "Maximum width for the initial popup size. Set to `0` for unlimited."
-msgstr "初始弹出窗口大小的最大宽度。无限设置为0。"
+msgstr "初始弹窗尺寸的最大宽度。设为 0 则无限制。"
 
 #. mouseover_zoom_max_height.name
 msgid "Maximum height"
@@ -1443,15 +1460,15 @@ msgstr "最大高度"
 
 #. mouseover_zoom_max_height.description
 msgid "Maximum height for the initial popup size. Set to `0` for unlimited."
-msgstr "初始弹出窗口大小的最大高度。无限设置为0。"
+msgstr "初始弹窗尺寸的最大高度。设为 0 则无限制。"
 
 #. mouseover_pan_behavior.name
 msgid "Popup panning method"
-msgstr "弹出式平移法"
+msgstr "弹窗平移方法"
 
 #. mouseover_pan_behavior.description
 msgid "How the popup should be panned when larger than the screen"
-msgstr "当弹出窗口比屏幕大时应该如何平移"
+msgstr "弹窗比屏幕大时应如何平移"
 
 #. mouseover_pan_behavior.options.movement.name
 msgid "Movement"
@@ -1459,31 +1476,31 @@ msgstr "移动"
 
 #. mouseover_pan_behavior.options.movement.description
 msgid "The popup pans as you move your mouse"
-msgstr "当移动鼠标时，弹出窗口会移动"
+msgstr "移动鼠标时弹窗平移"
 
 #. mouseover_pan_behavior.options.drag.name
 msgid "Drag"
-msgstr "拖、拉"
+msgstr "拖拽"
 
 #. mouseover_pan_behavior.options.drag.description
 msgid "Clicking and dragging pans the popup"
-msgstr "点击和拖动，可以移动弹出窗口"
+msgstr "单击并拖拽移动弹窗"
 
 #. mouseover_movement_inverted.name
 msgid "Invert movement"
-msgstr "反转运动"
+msgstr "反转移动"
 
 #. mouseover_movement_inverted.description
 msgid "Inverts the movement of the mouse. For example, if the mouse moves left, the popup moves right. If disabled, it feels more like the popup is being invisibly dragged."
-msgstr "反转鼠标的移动。例如，如果鼠标向左移动，弹出窗口向右移动。如果被禁用，感觉更像是弹出窗口在无形中被拖动。"
+msgstr "反转鼠标的移动。例如，如果鼠标向左移动，弹窗向右移动。如果禁用，感觉更像是弹出窗口在无形中被拖动。"
 
 #. mouseover_drag_min.name
 msgid "Minimum drag amount"
-msgstr "最小阻力"
+msgstr "最小拖拽起始"
 
 #. mouseover_drag_min.description
 msgid "How many pixels the mouse should move to start a drag"
-msgstr "鼠标应该移动多少像素才能开始拖动"
+msgstr "鼠标移动多少像素才开始拖拽"
 
 #. mouseover_minimum_size.number_unit, mouseover_jitter_threshold.number_unit, mouseover_drag_min.number_unit, popup_maximum_source_size.number_unit
 msgid "pixels"
@@ -1495,7 +1512,7 @@ msgstr "垂直滚动操作"
 
 #. mouseover_scrolly_behavior.description
 msgid "How the popup reacts to a vertical scroll/mouse wheel event"
-msgstr "弹出窗口如何对垂直滚动/鼠标滚轮事件做出反应"
+msgstr "弹窗如何对垂直滚动/鼠标滚轮事件做出反应"
 
 #. mouseover_scrolly_hold_behavior.name
 msgid "Vertical scroll action (hold)"
@@ -1503,11 +1520,11 @@ msgstr "垂直滚动动作(保持)"
 
 #. mouseover_scrolly_hold_behavior.description
 msgid "How the popup (when held) reacts to a vertical scroll/mouse wheel event"
-msgstr "如何弹出窗口(当持有)对垂直滚动/鼠标滚轮事件的反应"
+msgstr "“保持”显示的弹窗如何对垂直滚动/鼠标滚轮事件做出反应"
 
 #. mouseover_scrolly_behavior.options.zoom.name, mouseover_scrolly_hold_behavior.options.zoom.name
 msgid "Zoom"
-msgstr "变焦"
+msgstr "缩放"
 
 #. mouseover_scrollx_behavior.name
 msgid "Horizontal scroll action"
@@ -1515,7 +1532,7 @@ msgstr "水平滚动动作"
 
 #. mouseover_scrollx_behavior.description
 msgid "How the popup reacts to a horizontal scroll/mouse wheel event"
-msgstr "弹出窗口如何对水平滚动/鼠标滚轮事件做出反应"
+msgstr "弹窗如何对水平滚动/鼠标滚轮事件做出反应"
 
 #. mouseover_scrollx_hold_behavior.name
 msgid "Horizontal scroll action (hold)"
@@ -1523,11 +1540,11 @@ msgstr "水平滚动动作(保持)"
 
 #. mouseover_scrollx_hold_behavior.description
 msgid "How the popup (when held) reacts to a horizontal scroll/mouse wheel event"
-msgstr "如何弹出窗口(当持有)对水平滚动/鼠标滚轮事件的反应"
+msgstr "“保持”显示的弹窗如何对水平滚动/鼠标滚轮事件做出反应"
 
 #. mouseover_scrolly_behavior.options.pan.name, mouseover_scrollx_behavior.options.pan.name, mouseover_scrolly_hold_behavior.options.pan.name, mouseover_scrollx_hold_behavior.options.pan.name
 msgid "Pan"
-msgstr "跟踪"
+msgstr "平移"
 
 #. mouseover_scrolly_behavior.options.gallery.name, mouseover_scrollx_behavior.options.gallery.name, mouseover_zoom_use_last.options.gallery.name, mouseover_scrolly_hold_behavior.options.gallery.name, mouseover_scrollx_hold_behavior.options.gallery.name
 msgid "Gallery"
@@ -1539,15 +1556,15 @@ msgstr "垂直视频滚动动作"
 
 #. mouseover_scrolly_video_behavior.description
 msgid "Overrides the vertical scroll action for videos. Set to `Default` to avoid overriding the behavior."
-msgstr "覆盖视频的垂直滚动动作。设置为默认以避免覆盖该行为。"
+msgstr "覆盖视频的垂直滚动动作。设为 `默认` 来避免覆盖该行为。"
 
 #. mouseover_scrolly_video_invert.name
 msgid "Invert vertical scroll seek"
-msgstr "反转垂直滚动寻道"
+msgstr "反转垂直滚动的快进/快退"
 
 #. mouseover_scrolly_video_invert.description
 msgid "Inverts the seek direction when scrolling vertically: Scrolling up will seek right, scrolling down will seek left."
-msgstr "在垂直滚动时反转寻找方向: 向上滚动将寻找右边，向下滚动将寻找左边。"
+msgstr "在垂直滚动时反转移动方向：向上滚动将向右移动，向下滚动将向左移动。"
 
 #. mouseover_scrollx_video_behavior.name
 msgid "Horizontal video scroll action"
@@ -1555,7 +1572,7 @@ msgstr "水平视频滚动动作"
 
 #. mouseover_scrollx_video_behavior.description
 msgid "Overrides the horizontal scroll action for videos. Set to `Default` to avoid overriding the behavior."
-msgstr "覆盖视频的水平滚动动作。设置为默认以避免覆盖该行为。"
+msgstr "覆盖视频的水平滚动动作。设为 `默认` 来避免覆盖该行为。"
 
 #. mouseover_scrolly_video_behavior.options.default.name, mouseover_scrollx_video_behavior.options.default.name, mouseover_scrolly_hold_behavior.options.default.name, mouseover_scrollx_hold_behavior.options.default.name
 msgid "Default"
@@ -1563,31 +1580,31 @@ msgstr "默认"
 
 #. mouseover_scrolly_video_behavior.options.seek.name, mouseover_scrollx_video_behavior.options.seek.name
 msgid "Seek"
-msgstr "寻找"
+msgstr "快进/快退"
 
 #. mouseover_trigger_behavior.options.none.name, mouseover_allow_partial.options.none.name, mouseover_scrolly_behavior.options.nothing.name, mouseover_scrollx_behavior.options.nothing.name, mouseover_scrolly_video_behavior.options.nothing.name, mouseover_scrollx_video_behavior.options.nothing.name, popup_hold_zoom.options.none.name, mouseover_scrolly_hold_behavior.options.nothing.name, mouseover_scrollx_hold_behavior.options.nothing.name
 msgid "None"
-msgstr "没有"
+msgstr "无"
 
 #. scroll_override_page.name
 msgid "Override scroll outside of popup"
-msgstr "在弹出窗口外部覆盖滚动"
+msgstr "覆盖弹窗外的滚动"
 
 #. scroll_override_page.description
 msgid "Scrolling outside of the popup will also be overriden by the script"
-msgstr "在弹出窗口之外滚动也会被脚本覆盖"
+msgstr "同时覆盖弹窗外的滚动"
 
 #. scroll_zoom_origin.name
 msgid "Zoom origin"
-msgstr "放大原点"
+msgstr "缩放原点"
 
 #. scroll_zoom_origin.description
 msgid "The point on the image it's zoomed in/out from"
-msgstr "它放大/缩小的图像上的点"
+msgstr "图像放大/缩小的原点"
 
 #. scroll_zoom_origin.options.cursor.name
 msgid "Cursor"
-msgstr "光标"
+msgstr "鼠标指针"
 
 #. scroll_zoom_origin.options.center.name
 msgid "Center"
@@ -1599,19 +1616,19 @@ msgstr "缩小到页面中间"
 
 #. scroll_zoomout_pagemiddle.description
 msgid "Sets the origin when zooming out to the page middle, overriding the \"Zoom Origin\" option above."
-msgstr "设置缩放到页面中间时的原点，重写上面的“缩放原点”选项。"
+msgstr "设置缩放到页面中间时的原点，重写上放的“缩放原点”选项。"
 
 #. scroll_zoomout_pagemiddle.options.viewport.name
 msgid "Within viewport"
-msgstr "在窗口内"
+msgstr "在视野内"
 
 #. scroll_zoom_behavior.name
 msgid "Zoom behavior"
-msgstr "变焦行为"
+msgstr "缩放行为"
 
 #. scroll_zoom_behavior.description
 msgid "How zooming should work"
-msgstr "缩放应该如何工作"
+msgstr "缩放应如何工作"
 
 #. scroll_zoom_behavior.options.fitfull.name
 msgid "Fit/Full"
@@ -1623,27 +1640,27 @@ msgstr "在全尺寸和适合屏幕之间切换"
 
 #. scroll_zoom_behavior.options.incremental.name
 msgid "Incremental"
-msgstr "增量式"
+msgstr "增量"
 
 #. scroll_incremental_mult.name
 msgid "Incremental zoom multiplier"
-msgstr "增量变焦系数"
+msgstr "增量缩放系数"
 
 #. scroll_incremental_mult.description
 msgid "How much to zoom in/out by (for incremental zooming)"
-msgstr "放大/缩小多少(用于增量放大)"
+msgstr "增量缩放时每次放大/缩小多少"
 
 #. mouseover_video_speed_amount.number_unit, scroll_incremental_mult.number_unit
 msgid "x"
-msgstr "x"
+msgstr "倍"
 
 #. mouseover_move_with_cursor.name
 msgid "Move with cursor"
-msgstr "用光标移动"
+msgstr "随鼠标指针移动"
 
 #. mouseover_move_with_cursor.description
 msgid "Moves the popup as the cursor moves"
-msgstr "当光标移动时移动弹出窗口"
+msgstr "鼠标移动时移动弹窗"
 
 #. mouseover_move_within_page.name
 msgid "Move within page"
@@ -1651,7 +1668,7 @@ msgstr "在页面内移动"
 
 #. mouseover_move_within_page.description
 msgid "Ensures the popup doesn't leave the page"
-msgstr "确保弹出窗口不会离开页面"
+msgstr "确保弹窗不会离开页面"
 
 #. zoom_out_to_close.name
 msgid "Zoom out fully to close"
@@ -1659,15 +1676,15 @@ msgstr "完全缩小至关闭"
 
 #. zoom_out_to_close.description
 msgid "Closes the popup if you zoom out past the minimum zoom"
-msgstr "如果放大超过最小缩放，则关闭弹出窗口"
+msgstr "缩小超过最小级别时关闭弹窗"
 
 #. scroll_past_gallery_end_to_close.name
 msgid "Scroll past gallery end to close"
-msgstr "滚动图库结束到关闭"
+msgstr "滚动到图库末尾时关闭"
 
 #. scroll_past_gallery_end_to_close.description
 msgid "Closes the popup if you scroll past the end of the gallery"
-msgstr "如果滚动到图库的最后，则关闭弹出窗口"
+msgstr "滚动到图库的结尾时关闭弹窗"
 
 #. mouseover_position.name
 msgid "Popup position"
@@ -1675,19 +1692,19 @@ msgstr "弹出位置"
 
 #. mouseover_position.description
 msgid "Where the popup will appear"
-msgstr "弹出窗口会出现在哪里"
+msgstr "弹窗出现在哪里"
 
 #. mouseover_position.options.cursor.name
 msgid "Cursor middle"
-msgstr "光标中间"
+msgstr "鼠标指针为中心"
 
 #. mouseover_position.options.cursor.description
 msgid "Underneath the mouse cursor"
-msgstr "鼠标光标下方"
+msgstr "鼠标指针下方"
 
 #. mouseover_position.options.beside_cursor.name
 msgid "Beside cursor"
-msgstr "光标旁边"
+msgstr "鼠标指针旁"
 
 #. mouseover_position.options.center.name
 msgid "Page middle"
@@ -1695,19 +1712,19 @@ msgstr "页面中间"
 
 #. mouseover_prevent_cursor_overlap.name
 msgid "Prevent cursor overlap"
-msgstr "防止光标重叠"
+msgstr "避免指针重叠"
 
 #. mouseover_prevent_cursor_overlap.description
 msgid "Prevents the image from overlapping with the cursor"
-msgstr "防止图像与光标重叠"
+msgstr "避免图像与鼠标指针重叠"
 
 #. mouseover_overflow_position_center.name
 msgid "Center popup on overflow"
-msgstr "溢出时将弹出窗口置于中心"
+msgstr "溢出时将弹窗置于中心"
 
 #. mouseover_overflow_position_center.description
 msgid "Centers the popup if its initial size overflows"
-msgstr "如果初始大小溢出，则将弹出窗口置于中心位置"
+msgstr "如果初始大小溢出，将弹窗置于中心位置"
 
 #. mouseover_overflow_origin.name
 msgid "Overflow origin"
@@ -1715,23 +1732,23 @@ msgstr "溢出原点"
 
 #. mouseover_overflow_origin.description
 msgid "Where the popup will appear in the page if its initial size overflows"
-msgstr "如果初始大小溢出，弹出窗口将出现在页面的哪个位置"
+msgstr "如果初始大小溢出，弹窗将出现在页面的哪个位置"
 
 #. mouseover_hide_cursor.name
 msgid "Hide cursor over popup"
-msgstr "将光标隐藏在弹出窗口上"
+msgstr "弹窗上隐藏鼠标指针"
 
 #. mouseover_hide_cursor.description
 msgid "Hides the cursor when the mouse is over the popup"
-msgstr "当鼠标在弹出窗口上时，隐藏光标"
+msgstr "鼠标在弹窗上悬停时隐藏指针"
 
 #. mouseover_hide_cursor_after.name
 msgid "Hide cursor after"
-msgstr "隐藏光标后"
+msgstr "隐藏指针延迟"
 
 #. mouseover_hide_cursor_after.description
 msgid "Hides the cursor over the popup after a specified period of time (in milliseconds), 0 always hides the cursor"
-msgstr "将光标隐藏在弹出窗口上一段指定的时间后(以毫秒为单位) ，0将始终隐藏光标"
+msgstr "鼠标在弹窗上停留指定时间（毫秒）后隐藏指针，0 为立即隐藏"
 
 #. mouseover_mouse_inactivity_jitter.name
 msgid "Mouse jitter threshold"
@@ -1739,11 +1756,11 @@ msgstr "鼠标抖动阈值"
 
 #. mouseover_mouse_inactivity_jitter.description
 msgid "Threshold for mouse movement before the mouse cursor is shown again, 0 always shows the cursor after any movement"
-msgstr "鼠标移动的阈值在鼠标光标再次显示之前，0始终显示任何移动后的光标"
+msgstr "鼠标指针再次显示前的移动阈值，0 为始终显示移动后的指针"
 
 #. mouseover_zoom_max_width.number_unit, mouseover_zoom_max_height.number_unit, mouseover_mouse_inactivity_jitter.number_unit
 msgid "px"
-msgstr "px"
+msgstr "像素"
 
 #. mouseover_clickthrough.name
 msgid "Disable pointer events"
@@ -1751,43 +1768,45 @@ msgstr "禁用指针事件"
 
 #. mouseover_clickthrough.description
 msgid "Enabling this option will allow you to click on links underneath the popup"
-msgstr "启用此选项将允许您单击弹出窗口下面的链接"
+msgstr "启用此选项将允许您单击弹窗下方的链接"
 
 #. mouseover_mask_ignore_clicks.name
 msgid "Ignore clicks outside popup"
-msgstr "忽略弹出窗口外的点击"
+msgstr "忽略弹窗外的点击"
 
 #. mouseover_mask_ignore_clicks.description
 msgid "Any mouse event outside the popup will be discarded with this option"
-msgstr "弹出窗口之外的任何鼠标事件都将与此选项一起丢弃"
+msgstr "启用此选项后，任何弹窗外的鼠标事件都将丢弃"
 
 #. enable_stream_download.name
 msgid "Enable downloading HLS/DASH streams"
-msgstr "启用下载 HLS/DASH 流"
+msgstr "启用 HLS/DASH 流媒体的下载"
 
 #. enable_stream_download.description
+#, fuzzy
 msgid ""
 "Downloads and muxes the contents of the streams rather than the stream information file.\n"
 "This currently does not work under Firefox."
 msgstr ""
-"下载和多变流的内容，而不是流信息文件。\n"
-"目前在 Firefox 下无法工作。"
+"下载和组合流的内容，代替流信息文件。\n"
+"目前不能在 Firefox 中使用。"
 
 #. stream_mux_mp4_over_mkv.name
 msgid "Prefer MP4 over MKV"
-msgstr "选择 MP4而不是 MKV"
+msgstr "偏好 MP4 代替 MKV"
 
 #. stream_mux_mp4_over_mkv.description
+#, fuzzy
 msgid "Tries to mux the video into mp4 instead of mkv when required. This may slightly slow down muxing as it currently needs to try muxing both."
-msgstr "在需要的时候试图将视频切换到 mp4而不是 mkv。这可能会稍微降低 muxing 的速度，因为它目前需要尝试同时改变两者。"
+msgstr "请求时尝试用 mp4 代替 mkv。这可能稍微降低组合内容的速度，因为目前需要尝试两组操作。"
 
 #. mouseover_add_link.name
 msgid "Link image"
-msgstr "链接图片"
+msgstr "链接图像"
 
 #. mouseover_add_link.description
 msgid "Adds a link to the image in the popup"
-msgstr "在弹出窗口中添加到图像的链接"
+msgstr "在弹窗的图像中添加链接"
 
 #. mouseover_add_video_link.name
 msgid "Link video"
@@ -1795,7 +1814,7 @@ msgstr "链接视频"
 
 #. mouseover_add_video_link.description
 msgid "Adds a link to the video in the popup"
-msgstr "在弹出窗口中添加视频链接"
+msgstr "在弹窗的视频中添加链接"
 
 #. mouseover_click_image_close.name
 msgid "Clicking image closes"
@@ -1803,7 +1822,7 @@ msgstr "点击图片关闭"
 
 #. mouseover_click_image_close.description
 msgid "Clicking the popup image closes the popup"
-msgstr "单击弹出图像将关闭弹出窗口"
+msgstr "单击弹出图像将关闭弹窗"
 
 #. mouseover_click_video_close.name
 msgid "Clicking video closes"
@@ -1811,7 +1830,7 @@ msgstr "点击视频关闭"
 
 #. mouseover_click_video_close.description
 msgid "Clicking the popup video closes the popup"
-msgstr "点击弹出视频关闭弹出窗口"
+msgstr "点击弹出的视频时关闭弹窗"
 
 #. mouseover_download.name
 msgid "Clicking link downloads"
@@ -1819,7 +1838,7 @@ msgstr "点击链接下载"
 
 #. mouseover_download.description
 msgid "Instead of opening the link in a new tab, it will download the image/video instead"
-msgstr "它不会在新标签页打开链接，而是下载图片/视频"
+msgstr "下载图像/视频，代替在新标签页中打开链接"
 
 #. mouseover_close_key.name
 msgid "Close key"
@@ -1827,7 +1846,7 @@ msgstr "关闭键"
 
 #. mouseover_close_key.description
 msgid "Closes the popup when this key is pressed. Currently, ESC will also close the popup regardless of the value of this setting."
-msgstr "按下此键时关闭弹出窗口。目前，ESC 还将关闭弹出窗口，不管这个设置的值是多少。"
+msgstr "按下此键时关闭弹窗。目前，ESC 也将关闭弹窗，并且无视此设置。"
 
 #. mouseover_download_key.name
 msgid "Download key"
@@ -1835,23 +1854,23 @@ msgstr "下载键"
 
 #. mouseover_download_key.description
 msgid "Downloads the image in the popup when this key is pressed"
-msgstr "按下此键时，在弹出窗口中下载图像"
+msgstr "按下此键时下载弹窗中的图像"
 
 #. mouseover_open_new_tab_key.name
 msgid "Open in new tab key"
-msgstr "在新选项卡打开"
+msgstr "在新建标签页中打开的按键"
 
 #. mouseover_open_new_tab_key.description
 msgid "Opens the image in the popup in a new tab when this key is pressed"
-msgstr "按下此键时，在新选项卡的弹出窗口中打开图像"
+msgstr "按下此键时在新建的标签页中弹窗中的图像"
 
 #. mouseover_open_bg_tab_key.name
 msgid "Open in background tab key"
-msgstr "打开背景标签键"
+msgstr "在后台标签页打开的按键"
 
 #. mouseover_open_bg_tab_key.description
 msgid "Opens the image in the popup in a new tab without switching to it when this key is pressed"
-msgstr "在新选项卡的弹出窗口中打开图像，而不在按下此键时切换到图像"
+msgstr "按下此键时在新建的后台标签页中弹窗中的图像"
 
 #. mouseover_copy_link_key.name
 msgid "Copy link key"
@@ -1867,7 +1886,7 @@ msgstr "打开选项键"
 
 #. mouseover_open_options_key.description
 msgid "Opens this page in a new tab when this key is pressed"
-msgstr "按下此键时在新选项卡中打开此页"
+msgstr "按下此键时在标签页中打开此页面"
 
 #. mouseover_open_orig_page_key.name
 msgid "Open original page key"
@@ -1875,23 +1894,23 @@ msgstr "打开原始页面键"
 
 #. mouseover_open_orig_page_key.description
 msgid "Opens the original page (if available) when this key is pressed"
-msgstr "按下此键时打开原始页面(如果可用)"
+msgstr "按下此键时打开原始页面（如果可用）"
 
 #. mouseover_rotate_left_key.name
 msgid "Rotate left key"
-msgstr "左旋转键"
+msgstr "向左旋转键"
 
 #. mouseover_rotate_left_key.description
 msgid "Rotates the popup 90 degrees to the left"
-msgstr "向左旋转弹出框90度"
+msgstr "将弹窗向左旋转90度"
 
 #. mouseover_rotate_right_key.name
 msgid "Rotate right key"
-msgstr "右旋转键"
+msgstr "向右旋转键"
 
 #. mouseover_rotate_right_key.description
 msgid "Rotates the popup 90 degrees to the right"
-msgstr "将弹出框向右旋转90度"
+msgstr "将弹窗向右旋转90度"
 
 #. mouseover_flip_horizontal_key.name
 msgid "Horizontal flip key"
@@ -1923,15 +1942,15 @@ msgstr "缩小键"
 
 #. mouseover_zoom_out_key.description
 msgid "Incrementally zooms out of the image"
-msgstr "逐渐缩小图像"
+msgstr "逐步缩小图像"
 
 #. mouseover_zoom_full_key.name
 msgid "Full zoom key"
-msgstr "全缩放键"
+msgstr "全尺寸缩放键"
 
 #. mouseover_zoom_full_key.description
 msgid "Sets the image to be at a 100% zoom, even if it overflows the screen"
-msgstr "将图像设置为100% 缩放，即使它溢出屏幕"
+msgstr "将图像设置为 100% 缩放，即使将溢出屏幕"
 
 #. mouseover_zoom_fit_key.name
 msgid "Fit screen key"
@@ -1939,7 +1958,7 @@ msgstr "适合屏幕键"
 
 #. mouseover_zoom_fit_key.description
 msgid "Sets the image to either be at a 100% zoom, or to fit the screen, whichever is smaller"
-msgstr "将图像设置为100% 缩放或适合屏幕，以较小者为准"
+msgstr "将图像设置为 100% 缩放或适合屏幕，以较小者为准"
 
 #. mouseover_fullscreen_key.name
 msgid "Toggle fullscreen key"
@@ -1947,15 +1966,15 @@ msgstr "切换全屏键"
 
 #. mouseover_fullscreen_key.description
 msgid "Toggles fullscreen mode for the image/video in the popup"
-msgstr "在弹出窗口中切换图像/视频的全屏模式"
+msgstr "切换弹窗中的图像/视频的全屏模式"
 
 #. mouseover_links.name
 msgid "Popup for plain hyperlinks"
-msgstr "普通超链接的弹出窗口"
+msgstr "为纯超链接弹窗"
 
 #. mouseover_links.description
 msgid "Whether or not the popup should also open for plain hyperlinks"
-msgstr "弹出窗口是否也应该为普通超链接打开"
+msgstr "是否为纯粹的超链接显示弹窗"
 
 #. mouseover_only_valid_links.name
 msgid "Only for links that look valid"
@@ -1963,39 +1982,39 @@ msgstr "只针对看起来有效的链接"
 
 #. mouseover_only_valid_links.description
 msgid "Enabling this option will only allow links to be popped up if they look valid (such as if they have a known image/video extension, or are explicitly supported)"
-msgstr "启用此选项将只允许在链接看起来有效的情况下弹出链接(例如，如果它们具有已知的图像/视频扩展，或者显式支持)"
+msgstr "启用此选项后，将只为看起来有效的链接显示弹窗（例如有已知的图像/视频扩展名，或者明显受支持）"
 
 #. mouseover_allow_self_pagelink.name
 msgid "Popup page URL"
-msgstr "弹出页面网址"
+msgstr "为页面网址弹窗"
 
 #. mouseover_allow_self_pagelink.description
 msgid "If no element can be found, try the page URL. Only relevant for pagelink rules, such as image and video hosting websites"
-msgstr "如果找不到元素，请尝试页面 URL。只有相关的页面链接规则，如图像和视频托管网站"
+msgstr "如果找不到元素，尝试页面网址。只与 pagelink 规则相关，如图像或视频托管网站"
 
 #. mouseover_allow_iframe_el.name
 msgid "Popup for `<iframe>`"
-msgstr "弹出窗口<iframe>"
+msgstr "为 <iframe> 弹窗"
 
 #. mouseover_allow_iframe_el.description
 msgid "Allows `<iframe>` elements to be popped up as well. Storing images/videos in this way is rather uncommon, but it can allow embeds to be supported"
-msgstr "允许弹出 `<iframe>` 元素。以这种方式存储图像/视频相当罕见，但它可以支持嵌入"
+msgstr "允许为 `<iframe>` 元素显示弹窗。以这种方式存储图像/视频相当罕见，但总之可以支持"
 
 #. mouseover_allow_canvas_el.name
 msgid "Popup for `<canvas>`"
-msgstr "弹出窗口 `<canvas>`"
+msgstr "为 <canvas> 弹窗"
 
 #. mouseover_allow_canvas_el.description
 msgid "Allows `<canvas>` elements to be popped up as well. This will likely cause popups with any kind of web-based games, so it's recommended to keep this disabled"
-msgstr "允许弹出 `<canvas>` 元素。这可能会导致弹出窗口与任何类型的网络游戏，所以建议保持此禁用"
+msgstr "允许为 `<canvas>` 元素显示弹窗。这可能导致在网页游戏上触发弹窗，所以建议此项保持禁用"
 
 #. mouseover_allow_svg_el.name
 msgid "Popup for `<svg>`"
-msgstr "弹出窗口<svg>"
+msgstr "为 <svg> 弹窗"
 
 #. mouseover_allow_svg_el.description
 msgid "Allows `<svg>` elements to be popped up as well. These are usually used for icons, and can occasionally cause problems for websites that overlay icons on top of images"
-msgstr "允许弹出 < svg > 元素。这些图标通常用于图标，偶尔也会导致网站在图标上叠加图标的问题"
+msgstr "允许为 `<svg>` 元素显示弹窗。这通常用于图标，并且偶尔会在网站于图像上叠加图标时出现问题"
 
 #. mouseover_enable_gallery.name
 msgid "Enable gallery"
@@ -2003,15 +2022,15 @@ msgstr "启用图库"
 
 #. mouseover_enable_gallery.description
 msgid "Toggles whether gallery detection support should be enabled"
-msgstr "切换是否应该启用图库检测支持"
+msgstr "切换是否启用图库检测支持"
 
 #. mouseover_gallery_cycle.name
 msgid "Cycle gallery"
-msgstr "循环图库"
+msgstr "图库循环"
 
 #. mouseover_gallery_cycle.description
 msgid "Going to the previous image for the first image will lead to the last image and vice-versa"
-msgstr "转到第一个图像的前一个图像将跳转到最后一个图像，反之亦然"
+msgstr "第一个图像再向上抵达最后一个图像，最后一个图像向下抵达第一个图像"
 
 #. mouseover_gallery_prev_key.name
 msgid "Previous gallery item"
@@ -2019,7 +2038,7 @@ msgstr "前一个图库项"
 
 #. mouseover_gallery_prev_key.description
 msgid "Key to trigger the previous gallery item"
-msgstr "按键触发前面的图库项"
+msgstr "触发上一个图库项的按键"
 
 #. mouseover_gallery_next_key.name
 msgid "Next gallery item"
@@ -2027,7 +2046,7 @@ msgstr "下一个图库项"
 
 #. mouseover_gallery_next_key.description
 msgid "Key to trigger the next gallery item"
-msgstr "按键触发后面的图库项"
+msgstr "触发下一个图库项的按键"
 
 #. mouseover_gallery_download_key.name
 msgid "Gallery download key"
@@ -2035,7 +2054,7 @@ msgstr "图库下载键"
 
 #. mouseover_gallery_download_key.description
 msgid "Key to download the current gallery"
-msgstr "键下载当前的图库"
+msgstr "下载当前图库的按键"
 
 #. gallery_download_method.name
 msgid "Download method"
@@ -2047,7 +2066,7 @@ msgstr "应如何下载图库"
 
 #. gallery_download_method.options.zip.name
 msgid "Zip file"
-msgstr "Zip文件"
+msgstr "Zip 文件"
 
 #. gallery_download_method.options.jdownloader.name
 msgid "JDownloader"
@@ -2055,11 +2074,11 @@ msgstr "JDownloader"
 
 #. gallery_download_unchanged.name
 msgid "Download unchanged media"
-msgstr "下载不变的媒体"
+msgstr "下载未更改的媒体"
 
 #. gallery_download_unchanged.description
 msgid "Includes gallery items that have not been changed. Useful to potentially avoid downloading thumbnails"
-msgstr "包括未更改的库项目。有助于避免下载缩略图"
+msgstr "包含未更改的图库项目。有助于潜在避免下载缩略图"
 
 #. gallery_zip_filename_format.name
 msgid "Directory/zip filename format"
@@ -2072,10 +2091,10 @@ msgid ""
 "An additional `items_amt` format variable is supported, which contains the number of items.\n"
 "`.zip` will be automatically suffixed for zip filenames."
 msgstr ""
-"格式化目录的字符串(JDownloader 的包名)和 zip 文件名(如果适用)。\n"
-"请参考“规则”部分中的“文件名格式”以获得文档。这些变量是从第一个加载的媒体设置的。\n"
-"支持一个额外的 items _ amt 格式变量，其中包含项目的数量。\n"
-"`.zip` 将自动为 zip 文件名添加后缀。"
+"目录（JDownloader 的包名）和 zip 文件名（如果适用）的格式化字符串。\n"
+"文档参见“规则”部分中的“文件名格式”。这些变量来自首个已加载的媒体。\n"
+"支持一个额外的 `items_amt` 格式变量，其中包含项目数量。\n"
+"zip 的文件名自动追加 `.zip` 后缀。"
 
 #. gallery_zip_add_tld.name
 msgid "Zip: Store in subdirectory"
@@ -2083,7 +2102,7 @@ msgstr "Zip: 存储在子目录中"
 
 #. gallery_zip_add_tld.description
 msgid "Stores the files in a subdirectory with the same name as the .zip file (without the .zip extension)"
-msgstr "将文件存储在与.zip 文件同名的子目录中(不带.zip 扩展名)"
+msgstr "将文件存储在与 .zip 文件同名的子目录中（目录不带 .zip）"
 
 #. gallery_jd_autostart.name
 msgid "JD: Autostart"
@@ -2091,43 +2110,43 @@ msgstr "JD: 自动启动"
 
 #. gallery_jd_autostart.description
 msgid "Autostarts the download when added to JDownloader"
-msgstr "添加到 JDownloader 时自动启动下载"
+msgstr "添加到 JDownloader 时自动开始下载"
 
 #. gallery_jd_referer.name
 msgid "JD: Referer policy"
-msgstr "参考政策"
+msgstr "JD: Referer 策略"
 
 #. gallery_jd_referer.description
 msgid "Due to a current limitation in JDownloader's API, the `Referer` (sic) header can only be set on a per-package basis. This option allows working around it by submitting multiple packages with the same name using different Referer headers. This can result in JD spamming notifications due to the number of packages created."
-msgstr "由于当前 JDownloader 的 API 的限制，Referer (sic)头只能在每个包的基础上设置。此选项允许通过使用不同的 Referer 头提交具有相同名称的多个包来解决这个问题。这可能导致 JD 由于创建的包的数量而发送垃圾邮件通知。"
+msgstr "由于目前 JDownloader API 的限制，`Referer` (sic) 头只能在每个包的基础上设置。此选项通过提交同名但不同 Referer 头的多个包来规避该问题。这可能导致 JD 由于创建的包数量较多而给出垃圾消息通知。"
 
 #. gallery_jd_referer.options.domain.name
 msgid "Per-domain"
-msgstr "Per-domain"
+msgstr "按域名"
 
 #. gallery_zip_add_info_file.name
 msgid "Zip: Store info file"
-msgstr "Zip:存储信息文件"
+msgstr "Zip: 存储信息文件"
 
 #. gallery_zip_add_info_file.description
 msgid "Stores a `info.txt` file in the .zip containing information about the downloaded files and host page."
-msgstr "在.zip中存储一个包含下载文件和主机页面信息的“info.txt”文件。"
+msgstr "在 .zip 中存储一个包含下载的文件和网页信息的“info.txt”文件。"
 
 #. mouseover_gallery_move_after_video.name
 msgid "Move to next when video finishes"
-msgstr "当视频结束时移动到下一个"
+msgstr "视频结束时转到下一个"
 
 #. mouseover_gallery_move_after_video.description
 msgid "Moves to the next gallery item when a video finishes playing"
-msgstr "当视频播放结束时移动到下一个图库项目"
+msgstr "视频播放结束时移动到下一个图库项目"
 
 #. mouseover_styles.name
 msgid "Popup CSS style"
-msgstr "弹出式 CSS 样式"
+msgstr "弹窗 CSS 样式"
 
 #. mouseover_styles.description
 msgid "Custom CSS styles for the popup"
-msgstr "弹出窗口的自定义 CSS 样式"
+msgstr "自定义弹窗的 CSS 样式"
 
 #. mouseover_styles.documentation.value
 msgid ""
@@ -2152,20 +2171,20 @@ msgid ""
 "}\n"
 "</pre>"
 msgstr ""
-"支持大多数有效的 CSS，具有以下差异:\n"
-"<ul><li>多行注释(<code>/* ... */</code>) 目前不受支持</li>\n"
-"<li>单独评论 (<code>// ...</code>) 是支持的, 但是只能在行的开头</li>\n"
-"<li><code>%thumburl%</code> 是缩略图的 URL，例如，你可以这样使用它:background-image: url(%thumburl%)</code><br />\n"
-"URL 的编码是正确的，所以没有必要使用引号(但也不会有害)</li>\n"
-"<li><code>%fullurl%</code> 是完整图片的 URL。如果 IMU 不能找到一个更大的图像，它将是相同的 <code>%thumburl%</code></li>\n"
-"<li>风格是 <code>!important</code> 默认</li></ul>\n"
-"<p>对于 Button CSS 样式，你也可以通过 id 为单个按钮定制 CSS。例如:</p>\n"
+"支持大多数有效的 CSS，但有下列差异：\n"
+"<ul><li>目前不支持多行注释（<code>/* ... */</code>）</li>\n"
+"<li>支持单行注释（<code>// ...</code>），但只能在行开头</li>\n"
+"<li><code>%thumburl%</code> 是缩略图的 URL，例如可以这样使用它：background-image: url(%thumburl%)</code><br />\n"
+"URL 被正确编码，所以没有必要使用引号（但使用也无害）</li>\n"
+"<li><code>%fullurl%</code> 是完整图像的 URL。如果 Image Max URL 不能找到一个更大的图像，将与 <code>%thumburl%</code> 相同</li>\n"
+"<li>样式默认 <code>!important</code></li></ul>\n"
+"<p>对于按钮 CSS 样式，您也可以通过 id 为单个按钮定制 CSS。例如：</p>\n"
 "<pre>\n"
 "#closebtn {\n"
 "  background-color: red;\n"
-"  // -imu-text allows you to set the text inside the button\n"
+"  // -imu-text 允许您设置按钮内的文本\n"
 "  -imu-text: \"Close\";\n"
-"  // -imu-title allows you to set the tooltip when hovering\n"
+"  // -imu-title 允许您设置悬停时的工具提示\n"
 "  -imu-title: \"Close the popup\";\n"
 "}\n"
 "#galleryprevbtn, #gallerynextbtn {\n"
@@ -2175,11 +2194,11 @@ msgstr ""
 
 #. mouseover_enable_fade.name
 msgid "Enable popup fade"
-msgstr "启用弹出式淡出"
+msgstr "启用弹窗过渡动画"
 
 #. mouseover_enable_fade.description
 msgid "Enables a fade in/out effect when the popup is opened/closed"
-msgstr "当弹出窗口打开/关闭时，启用淡入/淡出效果"
+msgstr "启用弹窗打开/关闭时的淡入/淡出效果"
 
 #. mouseover_enable_zoom_effect.name
 msgid "Enable zoom effect"
@@ -2187,27 +2206,27 @@ msgstr "启用缩放效果"
 
 #. mouseover_enable_zoom_effect.description
 msgid "Toggles whether the popup should 'zoom' when opened/closed"
-msgstr "切换打开/关闭时弹出窗口是否应该“放大”"
+msgstr "切换打开/关闭弹窗时是否有缩放效果"
 
 #. mouseover_zoom_effect_move.name
 msgid "Move from thumbnail when zooming"
-msgstr "缩放时从缩略图移动"
+msgstr "从缩略图中跃出的缩放效果"
 
 #. mouseover_zoom_effect_move.description
 msgid "Moves the popup from the thumbnail to the final location while zooming. The animation can be a little rough"
-msgstr "缩放时将弹出窗口从缩略图移动到最终位置。动画可能有点粗糙"
+msgstr "从缩略图变为弹窗时的缩放动画效果。动画可能有点粗糙"
 
 #. mouseover_fade_time.name
 msgid "Popup animation time"
-msgstr "弹出动画时间"
+msgstr "弹窗动画时长"
 
 #. mouseover_fade_time.description
 msgid "Fade/zoom animation duration (in milliseconds) for the popup"
-msgstr "弹出窗口的淡出/缩放动画持续时间(毫秒)"
+msgstr "弹窗的淡出/缩放动画持续时间（毫秒）"
 
 #. mouseover_enable_mask_styles2.name
 msgid "Enable background CSS"
-msgstr "启用后台 CSS"
+msgstr "启用背景 CSS"
 
 #. mouseover_enable_mask_styles2.description
 msgid "Toggles whether CSS styles for the background when the popup is active is enabled"
@@ -2227,19 +2246,19 @@ msgstr "背景 CSS 样式"
 
 #. mouseover_mask_styles2.description
 msgid "CSS style for the background when the popup is active. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)"
-msgstr "当弹出窗口处于活动状态时，用于背景的 CSS 样式。有关更多信息，请参见“弹出式 CSS 样式”的文档(这里不支持 thumb/full URL 变量)"
+msgstr "弹窗开启时用于背景的 CSS 样式。更多信息详见“弹窗 CSS 样式”文档（此处不支持 thumb/full URL 变量）"
 
 #. mouseover_mask_fade_time.name
 msgid "Background fade"
-msgstr "背景淡出"
+msgstr "背景淡入/淡出"
 
 #. mouseover_mask_fade_time.description
 msgid "Fade in/out time (in milliseconds) for the page background, set to 0 to disable"
-msgstr "页面背景淡入/淡出时间(毫秒) ，设置为0以禁用"
+msgstr "页面背景的淡入/淡出时间（毫秒） ，设为 0 则禁用"
 
 #. retry_503_ms.number_unit, mouseover_notallowed_duration.number_unit, mouseover_hide_cursor_after.number_unit, mouseover_fade_time.number_unit, mouseover_mask_fade_time.number_unit
 msgid "ms"
-msgstr "ms"
+msgstr "毫秒"
 
 #. mouseover_ui_styles.name
 msgid "Button CSS style"
@@ -2247,23 +2266,23 @@ msgstr "按钮 CSS 样式"
 
 #. mouseover_ui_styles.description
 msgid "Custom CSS styles for the popup's UI buttons. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)"
-msgstr "弹出界面按钮的自定义 CSS 样式。有关更多信息，请参见“弹出式 CSS 样式”的文档(这里不支持 thumb/full URL 变量)"
+msgstr "为弹窗中界面的按钮自定义 CSS 样式。更多信息详见“弹窗 CSS 样式”文档（此处不支持 thumb/full URL 变量）"
 
 #. mouseover_apply_blacklist.name
 msgid "Don't popup blacklisted URLs"
-msgstr "不要弹出列入黑名单的 url"
+msgstr "已列入黑名单的网址不要弹窗"
 
 #. mouseover_apply_blacklist.description
 msgid "This option popping up for source media with blacklisted URLs. If this is disabled, the popup will open if the end URL isn't blacklisted, regardless of whether the source is blacklisted."
-msgstr "这个选项弹出的来源媒体与黑名单网址。如果这是禁用的，弹出窗口将打开，如果结束的网址没有被列入黑名单，无论来源是否被列入黑名单。"
+msgstr "如果禁用此选项，即便源地址被列入黑名单，只要末端网址没有列入黑名单，就打开弹窗。"
 
 #. apply_blacklist_host.name
 msgid "Apply blacklist for host websites"
-msgstr "申请主机网站黑名单"
+msgstr "对网站应用黑名单"
 
 #. apply_blacklist_host.description
 msgid "This option prevents the script from opening any popups to host websites that are in the blacklist. For example, adding `twitter.com` to the blacklist would prevent any popup from opening on twitter.com. If disabled, this option only applies to image URLs (such as twimg.com), not host URLs"
-msgstr "这个选项可以防止脚本打开任何弹出窗口来托管黑名单中的网站。例如，将 twitter. com 添加到黑名单中可以防止在 twitter. com 上出现任何弹出窗口。如果禁用，此选项仅适用于图像 url (如 twimg. com) ，而不适用于主机 url"
+msgstr "此选项决定是否不为黑名单中的网站打开任何弹窗。例如，将 twitter.com 添加到黑名单中可以避免在 twitter.com 上出现任何弹窗。如果禁用，黑名单仅应用于图像网址（如 twimg.com）而不针对网页网址"
 
 #. mouseover_matching_media_types.name
 msgid "Don't popup different media type"
@@ -2271,15 +2290,15 @@ msgstr "不要弹出不同的媒体类型"
 
 #. mouseover_matching_media_types.description
 msgid "This option prevents the popup from loading a video when the source was an image or vice-versa"
-msgstr "此选项可以防止当源是图像时弹出窗口加载视频，反之亦然"
+msgstr "此选项可避免源是图像时弹窗加载视频，反之亦然"
 
 #. mouseover_allow_popup_when_fullscreen.name
 msgid "Allow popup when fullscreen"
-msgstr "允许全屏时弹出"
+msgstr "允许全屏时弹窗"
 
 #. mouseover_allow_popup_when_fullscreen.description
 msgid "Allows the popup to open if an element (such as a video player) is fullscreen."
-msgstr "如果元素(例如视频播放器)是全屏的，则允许弹出窗口打开。"
+msgstr "允许存在全屏元素（如视频播放器）时打开弹窗。"
 
 #. mouseover_find_els_mode.name
 msgid "Element finding mode"
@@ -2287,23 +2306,23 @@ msgstr "元素查找模式"
 
 #. mouseover_find_els_mode.description
 msgid "How IMU should find the media element on the page."
-msgstr "IMU 应该如何找到页面上的媒体元素。"
+msgstr "Image Max URL 应如何查找页面上的媒体元素。"
 
 #. mouseover_find_els_mode.warning.full
 msgid ""
 "This will result in a much higher CPU load for websites such as Facebook, and will occasionally return the wrong element.\n"
 "Use this option with caution."
 msgstr ""
-"对于像Facebook这样的网站，这将导致更高的CPU负载，并且偶尔会返回错误的元素。\n"
-"请谨慎使用此选项。"
+"对诸如 Facebook 等网站，这将导致很高的 CPU 负载，且偶尔会返回错误的元素。\n"
+"谨慎使用此选项。"
 
 #. mouseover_find_els_mode.options.full.name
 msgid "Full"
-msgstr "全屏"
+msgstr "全面"
 
 #. mouseover_find_els_mode.options.full.description
 msgid "Manually looks through every element on the page to see if the cursor is above them. This will result in a higher CPU load for websites such as Facebook, and may return the wrong element"
-msgstr "手动查看页面上的每个元素，看看光标是否在它们上面。这将导致更高的CPU负载的网站，如Facebook，并可能返回错误的元素"
+msgstr "逐一检查页面上的每个元素，看鼠标指针是否在上面。这将导致很高的 CPU 负载，且偶尔会返回错误的元素"
 
 #. mouseover_find_els_mode.options.hybrid.name
 msgid "Hybrid"
@@ -2311,7 +2330,7 @@ msgstr "混合"
 
 #. mouseover_find_els_mode.options.hybrid.description
 msgid "Looks manually through every child element of the last element found by `getElementsAtPoint`. Use this option if in doubt, it'll work on most sites"
-msgstr "手动查找由' getElementsAtPoint '找到的最后一个元素的每个子元素。如果有疑问，使用这个选项，它将在大多数网站上工作"
+msgstr "逐一检查用 `getElementsAtPoint` 找到的最后一个元素的每个子元素。如果不了解，使用此选项，它适用于绝大多数网站"
 
 #. mouseover_find_els_mode.options.simple.name
 msgid "Simple"
@@ -2319,7 +2338,7 @@ msgstr "简易"
 
 #. mouseover_find_els_mode.options.simple.description
 msgid "This is the fastest option, which uses the value of `getElementsAtPoint` without modification. Works for sites that don't use pointer-events:none and shadow DOM"
-msgstr "这是最快的选项，它使用' getElementsAtPoint '的值而不进行修改。适用于不使用指针事件的网站:none和shadow DOM"
+msgstr "这是最快的选项，它使用 `getElementsAtPoint` 的值而不做修改。适用于不使用 pointer-events:none 和 shadow DOM 的网站"
 
 #. popup_allow_cache.name
 msgid "Use cache"
@@ -2327,7 +2346,7 @@ msgstr "使用缓存"
 
 #. popup_allow_cache.description
 msgid "Allows use of a media cache for the popup. The cache is currently stored per-page and is not persistent across page reloads."
-msgstr "允许弹出窗口使用媒体缓存。缓存当前按页存储，并且不会跨页重新加载持久化。"
+msgstr "允许弹窗缓存媒体。缓存目前不跨页共享，并且不会持久化（重新加载即失效）。"
 
 #. popup_cache_duration.name
 msgid "Cache duration"
@@ -2335,7 +2354,7 @@ msgstr "缓存持续时间"
 
 #. popup_cache_duration.description
 msgid "How long for media to remain cached. Set to `0` for unlimited."
-msgstr "媒体保持缓存的时间。设置为0，用于无限制。"
+msgstr "媒体被缓存多久。设为 0 则无限制。"
 
 #. popup_cache_duration.number_unit
 msgid "minutes"
@@ -2343,31 +2362,31 @@ msgstr "分钟"
 
 #. popup_cache_itemlimit.name
 msgid "Cache item limit"
-msgstr "缓存项限制"
+msgstr "缓存数量限制"
 
 #. popup_cache_itemlimit.description
 msgid "Maximum number of individual media to remain cached. Set to `0` for unlimited."
-msgstr "可保留缓存的个别媒体的最大数目。设置为0，不设限制。"
+msgstr "最多缓存多少个媒体。设为 0 则无限制。"
 
 #. popup_cache_itemlimit.number_unit
 msgid "items"
-msgstr "项目"
+msgstr "项"
 
 #. popup_cache_resume_video.name
 msgid "Resume videos"
-msgstr "恢复视频"
+msgstr "继续视频"
 
 #. popup_cache_resume_video.description
 msgid "If a video popup was closed then reopened, the video will resume from where it left off"
-msgstr "如果一个视频弹出窗口被关闭然后重新打开，视频将从它停止的地方继续"
+msgstr "如果一个视频弹窗被关闭然后再次打开，该视频将从上次离开的进度继续播放"
 
 #. website_inject_imu.name
 msgid "Use userscript"
-msgstr "使用userscript"
+msgstr "使用用户脚本"
 
 #. website_inject_imu.description
 msgid "Replaces the website's IMU instance with the userscript"
-msgstr "用userscript替换网站的IMU实例"
+msgstr "使用用户脚本替换该网站的 Image Max URL 实例"
 
 #. website_image.name
 msgid "Website image preview"
@@ -2379,31 +2398,31 @@ msgstr "允许在 Image Max URL 网站上预览图片"
 
 #. extension_contextmenu.name
 msgid "IMU entry in context menu"
-msgstr "上下文菜单中的IMU项"
+msgstr "右键菜单中的 Image Max URL 项"
 
 #. extension_contextmenu.description
 msgid "Enables a custom entry for this extension in the right click/context menu"
-msgstr "在右键单击/关联菜单中启用此扩展的自定义条目"
+msgstr "右键菜单/上下文菜单中启用本扩展定义的菜单"
 
 #. extension_hotreload.name
 msgid "Hot (re)load"
-msgstr "热（重）载"
+msgstr "热重载"
 
 #. extension_hotreload.description
 msgid "(Re)loads the extension on all existing pages when installing or updating"
-msgstr "（重新）在安装或更新时，在所有现有页面上加载扩展名"
+msgstr "安装或更新后，热重载现有的全部页面上的本扩展"
 
 #. custom_xhr_for_lib.name
 msgid "Custom XHR for libraries"
-msgstr "图书馆自定义 XHR"
+msgstr "自定义程序库的 XHR"
 
 #. custom_xhr_for_lib.description
 msgid "Allows the use of more powerful XHR (network requests) for 3rd-party libraries. This allows for certain DASH streams to work."
-msgstr "允许第三方库使用更强大的 XHR (网络请求)。这允许某些 DASH 流发挥作用。"
+msgstr "允许第三方库使用更强大的 XHR（网络请求）。某些 DASH 流媒体需要这个。"
 
 #. custom_xhr_for_lib.description_userscript
 msgid "Allows the use of more powerful XHR  (network requests) for 3rd-party libraries. This allows for certain DASH streams to work. Using this with the userscript version currently poses a potential security risk."
-msgstr "允许第三方库使用更强大的 XHR (网络请求)。这允许某些 DASH 流发挥作用。对当前的用户脚本版本使用这种方法会带来潜在的安全风险。"
+msgstr "允许第三方库使用更强大的 XHR（网络请求）。某些 DASH 流媒体需要这个。在目前的用户脚本版本中使用这种方法构成潜在的安全风险。"
 
 #. custom_xhr_for_lib.example_websites[0]
 msgid "Kakao"
@@ -2411,7 +2430,7 @@ msgstr "Kakao"
 
 #. custom_xhr_for_lib.example_websites[1]
 msgid "YouTube"
-msgstr "Kakao"
+msgstr "YouTube"
 
 #. custom_xhr_for_lib.example_websites[2]
 msgid "Instagram (downloading)"
@@ -2419,13 +2438,15 @@ msgstr "Instagram (下载)"
 
 #. use_webarchive_for_lib.name
 msgid "Use Web Archive for libraries"
-msgstr "使用图书馆的网络档案"
+msgstr "为程序库使用 Web Archive 版本"
 
 #. use_webarchive_for_lib.description
 msgid ""
 "Uses archive.org's web archive instead of github for libraries and other script internals (such as the options page).\n"
 "Don't enable this unless you need to."
-msgstr "使用 archive. org 的 web archive 而不是 github 用于库和其他脚本内部(如 options 页面)。除非你需要，否则不要启用它。"
+msgstr ""
+"为程序库和脚本内置的其他文件（如这个选项页面）使用 archive.org 的存档版本而非 github 版本。\n"
+"除非确实需要，否则无需启用。"
 
 #. lib_integrity_check.name
 msgid "Enable integrity checks"
@@ -2433,15 +2454,15 @@ msgstr "启用完整性检查"
 
 #. lib_integrity_check.description
 msgid "Runs integrity checks before loading 3rd-party libraries"
-msgstr "在加载第三方库之前运行完整性检查"
+msgstr "加载第三方库之前运行完整性检查"
 
 #. hls_dash_use_max.name
 msgid "HLS/DASH maximum quality"
-msgstr "HLS/DASH最高质量"
+msgstr "HLS/DASH 最高质量"
 
 #. hls_dash_use_max.description
 msgid "Uses the maximum quality for HLS/DASH streams"
-msgstr "使用HLS/DASH流的最大质量"
+msgstr "对 HLS/DASH 流媒体使用最高质量"
 
 #. max_video_quality.name
 msgid "Maximum video quality"
@@ -2453,7 +2474,7 @@ msgstr "视频的最高质量"
 
 #. max_video_quality.options.unlimited.name
 msgid "(unlimited)"
-msgstr "(unlimited)"
+msgstr "（无限制）"
 
 #. max_video_quality.options.h2160.name
 msgid "4K"
@@ -2477,15 +2498,15 @@ msgstr "480p"
 
 #. allow_watermark.name
 msgid "Larger watermarked images"
-msgstr "更大的水印图片"
+msgstr "较大的带水印图像"
 
 #. allow_watermark.description
 msgid "Enables rules that return larger images that include watermarks"
-msgstr "启用返回包含水印的较大图像的规则"
+msgstr "启用规则：返回包含水印的较大图像"
 
 #. allow_watermark.example_websites[0]
 msgid "Stock photo websites"
-msgstr "股票照片网站"
+msgstr "“图库照片”网站"
 
 #. allow_smaller.name
 msgid "Smaller non-watermarked images"
@@ -2493,31 +2514,31 @@ msgstr "较小的无水印图像"
 
 #. allow_smaller.description
 msgid "Enables rules that return smaller images without watermarks"
-msgstr "启用返回没有水印的小图像的规则"
+msgstr "启用规则：返回无水印的较小图像"
 
 #. allow_possibly_different.name
 msgid "Possibly different images"
-msgstr "可能是不同的图像"
+msgstr "可能不同的图像"
 
 #. allow_possibly_different.description
 msgid "Enables rules that return images that possibly differ, usually due to server-side caching"
-msgstr "启用返回可能不同的映像的规则，通常是由于服务器端缓存"
+msgstr "启用规则：返回可能有所不同的图像，不同通常由于服务器侧缓存"
 
 #. allow_possibly_broken.name
 msgid "Possibly broken images"
-msgstr "可能被破坏的图像"
+msgstr "可能破损的图像"
 
 #. allow_possibly_broken.description
 msgid "Enables rules that return images that are possibly broken"
-msgstr "启用返回可能已损坏的图像的规则"
+msgstr "启用规则：返回可能已损坏的图像"
 
 #. allow_possibly_upscaled.name
 msgid "Possibly upscaled images"
-msgstr "可能是高比例的图片"
+msgstr "可能扩增尺寸的图像"
 
 #. allow_possibly_upscaled.description
 msgid "Enables rules that return images that are possibly upscaled"
-msgstr "启用返回可能升级的图像的规则"
+msgstr "启用规则：返回可能已扩增尺寸的图像"
 
 #. allow_thirdparty.name
 msgid "Rules using 3rd-party websites"
@@ -2525,7 +2546,7 @@ msgstr "使用第三方网站的规则"
 
 #. allow_thirdparty.description
 msgid "Enables rules that use 3rd-party websites"
-msgstr "启用使用第三方网站的规则"
+msgstr "启用基于第三方网站的规则"
 
 #. allow_thirdparty.example_websites[0]
 msgid "Newsen"
@@ -2533,11 +2554,11 @@ msgstr "Newsen"
 
 #. allow_apicalls.name
 msgid "Rules using API calls"
-msgstr "使用 API 调用的规则"
+msgstr "基于 API 调用的规则"
 
 #. allow_apicalls.description
 msgid "Enables rules that use API calls. Strongly recommended to keep this enabled"
-msgstr "启用使用 API 调用的规则。强烈建议保持此启用状态"
+msgstr "启用基于 API 调用的规则。强烈建议保持此项启用"
 
 #. allow_apicalls.example_websites[0]
 msgid "Instagram"
@@ -2553,21 +2574,23 @@ msgstr "..."
 
 #. allow_thirdparty_libs.name
 msgid "Allow 3rd-party libraries"
-msgstr "许第三方库"
+msgstr "允许第三方库"
 
 #. allow_thirdparty_libs.description
 msgid "Enables using 3rd-party libraries. This is both used in rules and as a prerequisite for certain functionality."
-msgstr "可使用第三方库来启用。这既可用于规则中，也可作为某些功能的先决条件。"
+msgstr "启用第三方库的调用。这可能用于规则和某些功能的先决条件。"
 
 #. allow_thirdparty_libs.description_userscript
 msgid ""
 "Enables using 3rd-party libraries. This is both used in rules and as a prerequisite for certain functionality.\n"
 "There is a possible (but unlikely) security risk for the userscript version."
-msgstr "可使用第三方库来启用。这既可用于规则中，也可作为某些功能的先决条件。 用户脚本版本可能存在（但不太可能存在）的安全风险。"
+msgstr ""
+"启用第三方库的调用。这可能用于规则和某些功能的先决条件。\n"
+"这对于用户脚本版来说，有较低的潜在的安全风险。"
 
 #. allow_thirdparty_libs.example_websites[0]
 msgid "Sites using testcookie (slowAES)"
-msgstr "使用testcokie的网站（慢AES）"
+msgstr "使用 testcokie 的网站（慢AES）"
 
 #. allow_thirdparty_code.name
 msgid "Rules executing 3rd-party code"
@@ -2575,59 +2598,59 @@ msgstr "执行第三方代码的规则"
 
 #. allow_thirdparty_code.description
 msgid "Enables rules that execute arbitrary 3rd-party code stored on websites."
-msgstr "启用执行存储在网站上的任意第三方代码的规则。"
+msgstr "启用将执行存储在网站上的任意第三方代码的规则。"
 
 #. allow_thirdparty_code.warning.true
 msgid "This could lead to security risks, please be careful when using this option!"
-msgstr "这可能会导致安全风险，使用此选项时请小心！"
+msgstr "这可能导致安全风险，慎重使用此选项！"
 
 #. allow_bruteforce.name
 msgid "Rules using brute-force"
-msgstr "使用蛮力的规则"
+msgstr "使用暴力破解的规则"
 
 #. allow_bruteforce.description
 msgid "Enables rules that require using brute force (through binary search) to find the original image"
-msgstr "启用需要使用蛮力(通过二进制搜索)才能找到原始图像的规则"
+msgstr "启用需要凭借蛮力（二进制搜索）找到原始图像的规则"
 
 #. allow_bruteforce.example_websites[0]
 msgid "Deezer"
-msgstr "排雷器"
+msgstr "Deezer"
 
 #. browser_cookies.name
 msgid "Use browser cookies"
-msgstr ""
+msgstr "使用浏览器 Cookie"
 
 #. browser_cookies.description
 msgid "Uses the browser's cookies for API calls in order to access otherwise private data"
-msgstr ""
+msgstr "允许 API 调用使用浏览器的 Cookie 来访问非公开数据"
 
 #. browser_cookies.example_websites[0]
 msgid "Private Flickr images"
-msgstr ""
+msgstr "私人 Flickr 图像"
 
 #. deviantart_prefer_size.name
 msgid "DeviantART: Prefer size over original"
-msgstr "偏差艺术: 喜欢大小超过原始"
+msgstr "DeviantART: 尺寸比原版更重要"
 
 #. deviantart_prefer_size.description
 msgid "Prefers a larger (but not upscaled) thumbnail image over a smaller original animated image"
-msgstr "相对于较小的原始动画图像，更喜欢较大的(但不是高比例的)缩略图"
+msgstr "偏好尺寸较大（但非扩增）但非原始尺寸的缩略图图像，而不是原始尺寸但尺寸较小的动画图像"
 
 #. deviantart_support_download.name
 msgid "DeviantART: Use download links"
-msgstr "DeviantART:使用下载链接"
+msgstr "DeviantART: 使用下载链接"
 
 #. deviantart_support_download.description
 msgid "Prefers using the download link (if available) by default. Note that this only works if you're logged in to DeviantART"
-msgstr "默认情况下更喜欢使用下载链接(如果可用的话)。请注意，这只有在登录到 DeviantART 时才有效"
+msgstr "偏好默认使用下载链接（如果可用）。注意，仅在登录 DeviantART 后有效"
 
 #. ehentai_full_image.name
 msgid "E-Hentai: Use full image"
-msgstr "E-Hentai: 使用完整的图片"
+msgstr "E-Hentai: 使用完整图像"
 
 #. ehentai_full_image.description
 msgid "Prefers using full/original images if available (logged in). This is more likely to get you rate limited"
-msgstr "喜欢使用完整的/原始的图片，如果可用的话(登录)。这更有可能使您的利率受限"
+msgstr "偏好使用全尺寸原版图像。需要已登录。使用它将更容易遭遇速率限制"
 
 #. imgur_filename.name
 msgid "Imgur: Use original filename"
@@ -2635,15 +2658,15 @@ msgstr "Imgur: 使用原始文件名"
 
 #. imgur_filename.description
 msgid "If the original filename (the one used to upload the image) is found, use it instead of the image ID"
-msgstr "如果找到了原始文件名(用于上载图像的文件名) ，请使用它而不是图像 ID"
+msgstr "如果找到原始文件名（上传图像时的文件名），使用它代替图像 ID"
 
 #. imgur_source.name
 msgid "Imgur: Use source image"
-msgstr "Imgur: 使用源图片"
+msgstr "Imgur: 使用源图像"
 
 #. imgur_source.description
 msgid "If a source image is found for Imgur, try using it instead. Only works for old-style Imgur webpages (set `postpagebeta=0; postpagebetalogged=0` as cookies)"
-msgstr "如果找到了 Imgur 的源图像，请尝试使用它。只适用于老式的 Imgur 网页(设置延迟 agebata = 0; 延迟 agebatalogged = 0作为 cookies)"
+msgstr "如果找到 Imgur 的源图像，尝试使用它。仅适用于旧版 Imgur 网页（设置 Cookie `postpagebeta=0; postpagebetalogged=0`）"
 
 #. instagram_use_app_api.name
 msgid "Instagram: Use native API"
@@ -2651,39 +2674,39 @@ msgstr "Instagram: 使用原生 API"
 
 #. instagram_use_app_api.description
 msgid "Uses Instagram's native API if possible, requires you to be logged into Instagram. This usually allows for higher resolution images (1440x*) to be returned."
-msgstr "如果可能的话，使用 Instagram 的原生 API，需要你登陆 Instagram。这通常允许返回更高分辨率的图像(1440x *)。"
+msgstr "尽可能使用 Instagram 的原生 API，这需要您已登录 Instagram。通常能返回更高分辨率的图像（1440x*）。"
 
 #. instagram_use_app_api.warning.true
 msgid ""
 "As of a recent (May 2021) Instagram update, this option may flag your account when requesting too often.\n"
 "Please consider using a backup account if enabling this option."
 msgstr ""
-"从最近（2021年5月）的Instagram更新开始，此选项可能会在请求次数过多时标记您的帐户。\n"
-"如果启用此选项，请考虑使用备份帐户。"
+"从最近（2021年5月）的 Instagram 更新开始，此选项可能因请求次数过多而使您的帐户被标记。\n"
+"如果启用此选项，请考虑使用备用帐户。"
 
 #. instagram_dont_use_web.name
 msgid "Instagram: Don't use web API"
-msgstr "Instagram:不要使用网络 API"
+msgstr "Instagram: 不使用 Web API"
 
 #. instagram_dont_use_web.description
 msgid "Avoids using Instagram's web API if possible, which increases performance, but will occasionally sacrifice quality for videos"
-msgstr "尽可能避免使用 Instagram 的 web API，这样可以提高性能，但有时也会牺牲视频的质量"
+msgstr "尽可能不使用 Instagram 的 Web API，这可以提升性能，但偶尔会牺牲视频品质"
 
 #. instagram_prefer_video_quality.name
 msgid "Instagram: Prefer quality over resolution"
-msgstr "Instagram:更喜欢高质量而不是分辨率"
+msgstr "Instagram: 偏好高质量而不是分辨率"
 
 #. instagram_prefer_video_quality.description
 msgid "Prefers lower resolution videos that use a higher bitrate over higher resolution images. This adds a slight performance cost as it needs to fetch headers for multiple videos"
-msgstr "喜欢使用较高比特率的低分辨率视频而不是高分辨率图像。这增加了一个轻微的性能成本，因为它需要获取多个视频头"
+msgstr "偏好高比特率的低分辨率视频，而不是高分辨率图像。这轻微资源消耗，因为需要获取多个视频的头部"
 
 #. instagram_gallery_postlink.name
 msgid "Instagram: Use albums for post thumbnails"
-msgstr "Instagram:使用相册发布缩略图"
+msgstr "Instagram: 为帖子缩略图使用相册"
 
 #. instagram_gallery_postlink.description
 msgid "Queries Instagram for albums when using the popup on a post thumbnail"
-msgstr "当在文章缩略图上使用弹出窗口时，查询 Instagram 相册"
+msgstr "为帖子缩略图使用弹窗时查询 Instagram 相册"
 
 #. snapchat_orig_media.name
 msgid "Snapchat: Use original media without captions"
@@ -2691,30 +2714,33 @@ msgstr "Snapchat: 使用没有标题的原始媒体"
 
 #. snapchat_orig_media.description
 msgid "Prefers using original media instead of media with captions and tags overlayed"
-msgstr "倾向于使用原始媒体，而不是使用标题和标签覆盖的媒体"
+msgstr "倾向于使用原始媒体，而不是有标题和标签覆盖的媒体"
 
 #. tiktok_no_watermarks.name
 msgid "TikTok: Don't use watermarked videos"
-msgstr "TikTok: 不要使用带水印的视频"
+msgstr "TikTok: 不使用带水印的视频"
 
 #. tiktok_no_watermarks.description
 msgid "Uses non-watermarked videos for TikTok if possible. This will introduce an extra delay when loading the video as two extra requests need to be performed. It will also fail for any videos uploaded after ~late July 2020"
-msgstr "如果可能的话，为 TikTok 使用无水印视频。这将引入额外的延迟时，加载视频作为两个额外的请求需要执行。在2020年7月下旬之后上传的任何视频也将失败"
+msgstr "如果可能，为 TikTok 使用无水印视频。加载视频时需执行两个额外的请求，这将增加延迟。对2020年7月左右之后上传的任何视频不起作用"
 
 #. tiktok_thirdparty.name
 msgid "TikTok: 3rd-party watermark removal"
-msgstr "TikTok: 第三方水印删除"
+msgstr "TikTok: 第三方水印去除"
 
 #. tiktok_thirdparty.description
 msgid ""
 "Uses a 3rd-party watermark removal site for TikTok.\n"
 "I do not endorse any of the sites supported. They may log your IP address and videos you submit. Use this option with caution.\n"
 "`LQ` = Low quality, `PL` = Public log"
-msgstr "使用第三方水印删除网站 TikTok.I 不认可任何网站支持。他们可能会记录你的 IP 地址和你提交的视频。谨慎使用此选项。低质量，PL = 公共日志"
+msgstr ""
+"使用一个适用于 TikTok 的第三方水印去除网站。\n"
+"这不代表对该网站的认可。该网站可能记录您的 IP 地址和提交的视频。谨慎使用。\n"
+"`LQ` = 低品质，`PL` = 公众日志"
 
 #. tiktok_thirdparty.options.null.name
 msgid "(none)"
-msgstr "没有"
+msgstr "(无)"
 
 #. tiktok_thirdparty.options.ttloader.com:ttt.name
 msgid "ttloader.com"
@@ -2754,19 +2780,19 @@ msgstr "tikmate.online (LQ)"
 
 #. tumblr_api_key.name
 msgid "Tumblr: API key"
-msgstr "Tumblr: API key"
+msgstr "Tumblr: API 密钥"
 
 #. tumblr_api_key.description
 msgid "API key for finding larger images on Tumblr"
-msgstr "在 Tumblr 上找到更大图片的 API 键"
+msgstr "用于在 Tumblr 上查找更大图片的 API 密钥"
 
 #. twitter_use_ext.name
 msgid "Twitter: Use extension"
-msgstr "使用扩展"
+msgstr "Twitter: 使用扩展名"
 
 #. twitter_use_ext.description
 msgid "Prefers `.jpg?name=orig` over `?format=jpg&name=orig`. This will possibly incur extra requests before succeeding. Note that there is no difference in image quality."
-msgstr "首选`.jpg?name=orig` over `?format=jpg&name=orig`.这可能会在成功之前产生额外的请求。请注意，图像质量上没有差异"
+msgstr "首选 `.jpg?name=orig` 而不是 `?format=jpg&name=orig`。这可能在成功前产生额外的请求。注意，图像质量上没有差异。"
 
 #. bigimage_blacklist.name
 msgid "Blacklist"
@@ -2774,7 +2800,7 @@ msgstr "黑名单"
 
 #. bigimage_blacklist.description
 msgid "A list of URLs (one per line) that are blacklisted from being processed"
-msgstr "处理过程中被列入黑名单的 url 列表(每行一个)"
+msgstr "处理过程的黑名单网址列表（每行一条）"
 
 #. bigimage_blacklist.documentation.value
 msgid ""
@@ -2794,20 +2820,20 @@ msgid ""
 "<li><code>g[0-9]ogle.com</code> will block https://g0ogle.com/, https://g1ogle.com/, etc. (up to https://g9ogle.com/)</li>\n"
 "</ul>"
 msgstr ""
-"下面的示例是为简单(glob)引擎编写的，而不是正则表达式引擎。Glob 引擎通常基于 UNIX glob 语法.<br />\n"
+"下面的示例是为建议（glob）引擎编写，而非正则表达式引擎。Glob 引擎通常基于 UNIX glob 语法。<br />\n"
 "<ul><br />\n"
-"<li><code>google.com</code> will block https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/, etc.</li>\n"
-"<li><code>abc.google.com</code> will block https://abc.google.com/, https://def.abc.google.com/, etc.</li>\n"
-"<li><code>*.google.com</code> will block https://www.google.com/, https://def.abc.google.com/, etc. but not https://google.com/</li>\n"
-"<li><code>google.*/</code> will block https://google.com/, https://www.google.co.uk, etc.</li>\n"
-"<li><code>http://google.com</code> will block http://google.com/, but not https://google.com/, http://www.google.com/, etc.</li>\n"
-"<li><code>google.com/test</code> will block https://google.com/test, https://www.google.com/test/abcdef, but not https://google.com/, etc.</li>\n"
-"<li><code>google.com/*/test</code> will block https://google.com/abc/test, but not https://google.com/test or https://google.com/abc/def/test</li>\n"
-"<li><code>google.com/**/test</code> will block https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, etc. but not https://google.com/test</li>\n"
-"<li><code>g??gle.com</code> will block https://google.com/, https://gaagle.com/, https://goagle.com/, etc.</li>\n"
-"<li><code>google.{com,co.uk}</code> will block https://google.com/ and https://google.co.uk/</li>\n"
-"<li><code>g[oau]ogle.com</code> will block https://google.com/, https://gaogle.com/, and http://www.guogle.com/</li>\n"
-"<li><code>g[0-9]ogle.com</code> will block https://g0ogle.com/, https://g1ogle.com/, etc. (up to https://g9ogle.com/)</li>\n"
+"<li><code>google.com</code> 将屏蔽 https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/ 等。</li>\n"
+"<li><code>abc.google.com</code> 将屏蔽 https://abc.google.com/, https://def.abc.google.com/ 等。</li>\n"
+"<li><code>*.google.com</code> 将屏蔽 https://www.google.com/, https://def.abc.google.com/ 等。但不含 https://google.com/</li>\n"
+"<li><code>google.*/</code> 将屏蔽 https://google.com/, https://www.google.co.uk 等。</li>\n"
+"<li><code>http://google.com</code> 将屏蔽 http://google.com/, but not https://google.com/, http://www.google.com/ 等。</li>\n"
+"<li><code>google.com/test</code> 将屏蔽 https://google.com/test, https://www.google.com/test/abcdef, but not https://google.com/ 等。</li>\n"
+"<li><code>google.com/*/test</code> 将屏蔽 https://google.com/abc/test，但不含 https://google.com/test 或 https://google.com/abc/def/test</li>\n"
+"<li><code>google.com/**/test</code> 将屏蔽 https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test 等。 but not https://google.com/test</li>\n"
+"<li><code>g??gle.com</code> 将屏蔽 https://google.com/, https://gaagle.com/, https://goagle.com/ 等。</li>\n"
+"<li><code>google.{com,co.uk}</code> 将屏蔽 https://google.com/ 和https://google.co.uk/</li>\n"
+"<li><code>g[oau]ogle.com</code> 将屏蔽 https://google.com/, https://gaogle.com/, 和http://www.guogle.com/</li>\n"
+"<li><code>g[0-9]ogle.com</code> 将屏蔽 https://g0ogle.com/, https://g1ogle.com/ 等。 (up to https://g9ogle.com/)</li>\n"
 "</ul>"
 
 #. bigimage_blacklist_engine.name
@@ -2820,7 +2846,7 @@ msgstr "应如何处理黑名单"
 
 #. bigimage_blacklist_engine.options.glob.name
 msgid "Simple (glob)"
-msgstr "简单"
+msgstr "简易 (glob)"
 
 #. bigimage_blacklist_engine.options.regex.name
 msgid "Regex"
@@ -2832,7 +2858,7 @@ msgstr "文件名格式"
 
 #. filename_format.description
 msgid "Format string(s) for the filename"
-msgstr "格式化文件名的字符串"
+msgstr "文件名格式化要用到的字符串"
 
 #. mouseover_styles.documentation.title, bigimage_blacklist.documentation.title, filename_format.documentation.title
 msgid "Documentation"
@@ -2905,69 +2931,69 @@ msgid ""
 "<li><code>..._seconds</code> - Zero-padded seconds (e.g. <code>56</code>)</li>\n"
 "</ul>"
 msgstr ""
-"<p>Variables are specified between curly brackets (<code>{}</code>).</p>\n"
-"<p>Below is a list of valid variables:</p>\n"
+"<p>大括号间可使用的变量（<code>{}</code>）。</p>\n"
+"<p>下述为有效变量列表：</p>\n"
 "<ul><br />\n"
-"<li><code>filename</code> - Original filename (with extension, if applicable)</li>\n"
-"<li><code>filename_noext</code> - Original filename (without extension, if applicable)</li>\n"
-"<li><code>ext</code> - Extension (with <code>.</code> prefixed)</li>\n"
-"<li><code>caption</code> - Popup caption</li>\n"
-"<li><code>author_username</code> - Author's username</li>\n"
-"<li><code>id</code> - Post ID</li>\n"
-"<li><code>host_title</code> - Title of the current tab/window</li>\n"
-"<li><code>host_url</code> - URL of the host webpage</li>\n"
-"<li><code>host_domain</code> - Domain of the host webpage</li>\n"
-"<li><code>host_domain_nosub</code> - Domain (without subdomains) of the host webpage</li>\n"
-"<li><code>url</code> - URL of the media</li>\n"
-"<li><code>domain</code> - Domain of the media</li>\n"
-"<li><code>domain_nosub</code> - Domain (without subdomains) of the media</li>\n"
-"<li><code>is_screenshot</code> - Blank, the line will only be processed when screenshotting a video</li>\n"
-"<li><code>prefix</code>, <code>suffix</code> - Blank by default, these variables will be automatically prefixed/suffixed to the filename if set using <code>:=</code></li>\n"
-"<li><code>created_...</code> - Created date (see note on Date objects below)</li>\n"
-"<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below)</li>\n"
-"<li><code>download_...</code> - Download date (see note on Date objects below)</li>\n"
-"<li><code>date_...</code> - Created/updated date (see note on Date objects below)</li>\n"
+"<li><code>filename</code> - 原始文件名（含扩展名，如适用）</li>\n"
+"<li><code>filename_noext</code> - 原始文件名（无扩展名，如适用）</li>\n"
+"<li><code>ext</code> - 扩展名（含 <code>.</code> 前缀）</li>\n"
+"<li><code>caption</code> - 弹窗的标题</li>\n"
+"<li><code>author_username</code> - 作者的用户名</li>\n"
+"<li><code>id</code> - 帖子 ID</li>\n"
+"<li><code>host_title</code> - 当前标签页/窗口的标题</li>\n"
+"<li><code>host_url</code> - 托管网页的网址</li>\n"
+"<li><code>host_domain</code> - 托管网页的域名</li>\n"
+"<li><code>host_domain_nosub</code> - 托管网页的域名（不含子域名）</li>\n"
+"<li><code>url</code> - 媒体（文件）的网址</li>\n"
+"<li><code>domain</code> - 媒体（文件）的域名</li>\n"
+"<li><code>domain_nosub</code> - 媒体的域名（不含子域名）</li>\n"
+"<li><code>is_screenshot</code> - 空白，此行仅在对视频截图时处理</li>\n"
+"<li><code>prefix</code>, <code>suffix</code> - 默认空白，这些变量在使用 <code>:=</code> 时自动作为文件名的前缀/后缀</li>\n"
+"<li><code>created_...</code> - 创建日期（详见下文“日期”对象）</li>\n"
+"<li><code>updated_...</code> - 更新日期，规则未另行指定时将使用 <code>Last-Modified</code> 头（详见下文“日期”对象）</li>\n"
+"<li><code>download_...</code> - 下载日期（详见下文“日期”对象）</li>\n"
+"<li><code>date_...</code> - 创建/更新日期（详见下文“日期”对象）</li>\n"
 "</ul><br />\n"
-"<p>You can truncate the value of a variable by adding <code>:(number)</code> before the end bracket (<code>}</code>). For example:</p>\n"
+"<p>您可以在变量的右括号（<code>}</code>）前添加 <code>:(number)</code> 来截断值。例如：</p>\n"
 "<ul><br />\n"
-"<li><code>{caption:10}</code> - Truncates the caption to be at most 10 characters long</li>\n"
-"<li><code>{caption:10.}</code> - Same, but will add an ellipsis (…) if the caption was truncated</li>\n"
+"<li><code>{caption:10}</code> - 将标题截断为最多 10 个字符</li>\n"
+"<li><code>{caption:10.}</code> - 同上，但当标题被截断时追加一个省略号（…）</li>\n"
 "</ul><br />\n"
-"<p>If a variable doesn't exist, by default it will ignore the current format string and use the one on the next line, unless <code>?</code> is added before the end bracket. For example:</p>\n"
+"<p>如果变量不存在，默认将忽略当前的格式化字符串，并使用下一行，除非右括号前添加了 <code>?</code>。例如：</p>\n"
 "<ul><br />\n"
-"<li><code>{ext?}</code> - Will be replaced with nothing if <code>ext</code> doesn't exist</li>\n"
-"<li><code>{caption?no caption}</code> - Will be replaced with <code>no caption</code> if <code>caption</code> doesn't exist</li>\n"
+"<li><code>{ext?}</code> - 在 <code>ext</code> 不存在时变为空</li>\n"
+"<li><code>{caption?无标题}</code> - <code>caption</code> 不存在时变为 <code>无标题</code></li>\n"
 "</ul><br />\n"
-"<p>You can check for equality and inequality with <code>==</code> and <code>!=</code> operators respectively. For example:</p>\n"
+"<p>可以分别使用 <code>==</code> 和 <code>!=</code> 操作符检查相等和不等式。例如：</p>\n"
 "<ul><br />\n"
-"<li><code>{domain_nosub==cdninstagram.com}{author_username} {id}</code> - Will only run the current format (<code>{author_username} {id}</code> in this case) if the domain is cdninstagram.com</li>\n"
+"<li><code>{domain_nosub==cdninstagram.com}{author_username} {id}</code> - 仅在域名为 cdninstagram.com 时采用这条格式（<code>{author_username} {id}</code>）</li>\n"
 "</ul><br />\n"
-"<p>You can check if a variable contains a string with <code>/=</code> (<code>!/=</code> for the opposite). It also supports two flags, <code>r</code> (regex) and <code>c</code> (case-sensitive), if added between <code>/</code> and <code>=</code>. For example:</p>\n"
+"<p>可以用 <code>/=</code> 检查变量是否包含指定字符串（<code>!/=</code> 检查是否不包含）。它还支持两个标志，<code>r</code>（正则表达式）和 <code>c</code>（区分大小写），加在 <code>/</code> 与 <code>=</code> 之间。例如：</p>\n"
 "<ul><br />\n"
-"<li><code>{domain/=instagram}{id}</code> - Will only run the current format (<code>{id}</code>) if the domain contains <code>instagram</code></li>\n"
-"<li><code>{domain!/=instagram}{id}</code> - Likewise, but only if the domain does not contain <code>instagram</code></li>\n"
-"<li><code>{domain/r=inst.*ram}{id}</code> - Likewise, but only if the domain matches the regex <code>inst.*ram</code></li>\n"
-"<li><code>{window_title/c=Instagram}{id}</code> - Likewise, but only if the window's title contains <code>Instagram</code> (case-sensitively)</li>\n"
-"<li><code>{window_title!/rc=Inst.*ram}{id}</code> - Likewise, but only if the window's title does not match the case-sensitive regex <code>Inst.*ram</code></li>\n"
+"<li><code>{domain/=instagram}{id}</code> - 仅在域名包含 <code>instagram</code> 时采用格式（<code>{id}</code>）</li>\n"
+"<li><code>{domain!/=instagram}{id}</code> - 仅在域名不包含 <code>instagram</code> 时</li>\n"
+"<li><code>{domain/r=inst.*ram}{id}</code> - 仅在域名匹配正则表达式 <code>inst.*ram</code> 时</li>\n"
+"<li><code>{window_title/c=Instagram}{id}</code> - 仅在窗口标题包含 <code>Instagram</code> 时（区分大小写）</li>\n"
+"<li><code>{window_title!/rc=Inst.*ram}{id}</code> - 仅在窗口标题不匹配区分大小写的正则表达式 <code>Inst.*ram</code> 时</li>\n"
 "</ul><br />\n"
-"<p>You can set a custom variable with <code>:=</code>. For example:</p>\n"
+"<p>可以用 <code>:=</code> 设置一个自定义变量。例如：</p>\n"
 "<ul><br />\n"
-"<li><code>{domain_nosub==cdninstagram.com}{foo:=bar}</code> - Sets the variable <code>foo</code> to <code>bar</code> if the domain is <code>cdninstagram.com</code>. The variable can then be accessed with e.g. <code>{foo}</code></li>\n"
+"<li><code>{domain_nosub==cdninstagram.com}{foo:=bar}</code> - 如果域名是 <code>cdninstagram.com</code>，设置变量 <code>foo</code> 为 <code>bar</code>。变量的访问方式如 <code>{foo}</code></li>\n"
 "</ul><br />\n"
-"<p>Date objects are accessible through a number of properties. Each property can be suffixed with <code>_utc</code> to get the UTC/GMT equivalent.</p>\n"
+"<p>日期对象可通过众多属性访问。每个属性都可以后缀 <code>_utc</code> 来获取等效的 UTC/GMT 时间。</p>\n"
 "<ul><br />\n"
-"<li><code>..._iso</code> - Date in ISO format (e.g. <code>2019-12-31T23-30-56</code>). Note that <code>:</code> is replaced with <code>-</code> to avoid issues with paths under NTFS.</li>\n"
-"<li><code>..._ago</code> - Human-readable representation of the time elapsed since the date (e.g. <code>1 year and 10 months ago</code>, <code>5 months and 20 days ago</code>)</li>\n"
-"<li><code>..._unix</code> - Unix timestamp (e.g. <code>1577912345</code>)</li>\n"
-"<li><code>..._unix_ms</code> - Unix timestamp with millisecond accuracy (e.g. <code>1577912345678</code>)</li>\n"
-"<li><code>..._yyyymmdd</code> - Date in YYYYMMDD format (e.g. <code>20191230</code>)</li>\n"
-"<li><code>..._hhmmss</code> - Time in HHMMSS format (e.g. <code>233056</code>)</li>\n"
-"<li><code>..._year</code> - Full year (e.g. <code>2019</code>)</li>\n"
-"<li><code>..._month</code> - Zero-padded month (e.g. <code>12</code>)</li>\n"
-"<li><code>..._day</code> - Zero-padded day (e.g. <code>31</code>)</li>\n"
-"<li><code>..._hours</code> - Zero-padded hours in military/24-hour format (e.g. <code>23</code>)</li>\n"
-"<li><code>..._minutes</code> - Zero-padded minutes (e.g. <code>30</code>)</li>\n"
-"<li><code>..._seconds</code> - Zero-padded seconds (e.g. <code>56</code>)</li>\n"
+"<li><code>..._iso</code> - ISO 格式的日期（例如 <code>2019-12-31T23-30-56</code>）。注意，<code>:</code> 被替换为 <code>-</code> 以避免违反 NTFS 路径约束。</li>\n"
+"<li><code>..._ago</code> - 易于阅读的已经过时间（例如 <code>1 year and 10 months ago</code>、<code>5 months and 20 days ago</code>）</li>\n"
+"<li><code>..._unix</code> - Unix 时间戳（例如 <code>1577912345</code>）</li>\n"
+"<li><code>..._unix_ms</code> - Unix 时间戳，毫秒精度（例如 <code>1577912345678</code>）</li>\n"
+"<li><code>..._yyyymmdd</code> - YYYYMMDD 格式日期（例如 <code>20191230</code>）</li>\n"
+"<li><code>..._hhmmss</code> - HHMMSS 格式时间（例如 <code>233056</code>）</li>\n"
+"<li><code>..._year</code> - 完整年份（例如 <code>2019</code>）</li>\n"
+"<li><code>..._month</code> - 补零月份（例如 <code>12</code>）</li>\n"
+"<li><code>..._day</code> - 补零的日（例如 <code>31</code>）</li>\n"
+"<li><code>..._hours</code> - 补零的小时，24小时制（例如 <code>23</code>）</li>\n"
+"<li><code>..._minutes</code> - 补零的分钟（例如 <code>30</code>）</li>\n"
+"<li><code>..._seconds</code> - 补零的秒（例如 <code>56</code>）</li>\n"
 "</ul>"
 
 #. filename_replace_special_underscores.name
@@ -2976,11 +3002,11 @@ msgstr "用下划线替换特殊字符"
 
 #. filename_replace_special_underscores.description
 msgid "Replaces characters such as `/` or `\"` with `_` when downloading. Note that browsers will usually do this automatically, this is just to ensure consistent behavior."
-msgstr "下载时将 `/` or `\"` 等字符替换为 `_` 。请注意，浏览器通常会自动这样做，这只是为了确保一致的行为。"
+msgstr "下载时将诸如 `/`、`\"` 等字符替换为 `_` 。浏览器通常会自动这样做，这只是为了确保一致的行为。"
 
 #. replaceimgs_keybinding.description
 msgid "Trigger keybinding that will run the Replace Images function"
-msgstr "触发键绑定，该键绑定将运行 Replace Images 函数"
+msgstr "运行“替换图像”功能的触发键"
 
 #. replaceimgs_auto.name
 msgid "Automatically replace images"
@@ -2988,55 +3014,55 @@ msgstr "自动替换图像"
 
 #. replaceimgs_auto.description
 msgid "Automatically replace images to larger versions on pages you view"
-msgstr "自动将图像替换为您查看的页面上的较大版本"
+msgstr "在您查看的页面上自动将图像替换为较大版本"
 
 #. allow_bruteforce.warning.true, replaceimgs_auto.warning.true
 msgid "This could lead to rate limiting or IP bans"
-msgstr "这可能导致限制网速或禁用IP"
+msgstr "这可能导致速率限制和封禁 IP"
 
 #. replaceimgs_usedata.name
 msgid "Use data URLs"
-msgstr "使用数据网址"
+msgstr "使用 data URL"
 
 #. replaceimgs_usedata.description
 msgid "Uses data:// URLs instead of image links. Disabling this may improve compatibility with some bulk image downloader extensions"
-msgstr "使用data:// URLs而不是图片链接。禁用这个功能可以提高与一些批量图片下载扩展的兼容性"
+msgstr "使用 data:// URL 代替图像链接。禁用此功能可能改善与批量下载图片的扩展的兼容性"
 
 #. replaceimgs_wait_fullyloaded.name
 msgid "Wait until image is fully loaded"
-msgstr "等待直到图像完全加载"
+msgstr "等待至图像完全加载"
 
 #. replaceimgs_wait_fullyloaded.description
 msgid "Waits until the image being replaced is fully loaded before moving on to the next image"
-msgstr "在移动到下一个图像之前，等待被替换的图像完全加载"
+msgstr "移动到下一个图像之前，等待被替换的图像完全加载"
 
 #. replaceimgs_totallimit.name
 msgid "Max images to process at once"
-msgstr "立即处理的最大图像"
+msgstr "一次最多处理图像"
 
 #. replaceimgs_totallimit.description
 msgid "The maximum amount of images to process at once"
-msgstr "一次处理的最大图像数量"
+msgstr "一次最多处理多少个图像"
 
 #. replaceimgs_domainlimit.name
 msgid "Max images per domain at once"
-msgstr "每个域一次获得最大图像"
+msgstr "每个域一次最多图像"
 
 #. replaceimgs_domainlimit.description
 msgid "The maximum amount of images per domain to process at once"
-msgstr "每个域同时处理的最大映像数量"
+msgstr "每个域（名）一次最多处理多少个图像"
 
 #. mouseover_ui_gallerymax.number_unit, replaceimgs_totallimit.number_unit, replaceimgs_domainlimit.number_unit
 msgid "images"
-msgstr "图片"
+msgstr "个图像"
 
 #. replaceimgs_delay.name
 msgid "Delay between same-domain images"
-msgstr "同域图像之间的延迟"
+msgstr "同域图像之间延迟"
 
 #. replaceimgs_delay.description
 msgid "New requests for images in the same domain will be delayed by this amount of seconds. Useful for avoiding rate limits."
-msgstr "对同一域中的图像的新请求将延迟这个时间。有助于避免利率限制。"
+msgstr "对同域图像的新请求将延迟此秒数。有助避免触发频率限制。"
 
 #. redirect_infobox_timeout.number_unit, mouseover_trigger_delay.number_unit, mouseover_video_autoloop_max.number_unit, mouseover_video_seek_amount.number_unit, mouseover_auto_close_popup_time.number_unit, replaceimgs_delay.number_unit
 msgid "seconds"
@@ -3048,7 +3074,7 @@ msgstr "替换图片"
 
 #. replaceimgs_replaceimgs.description
 msgid "Replaces images to their larger versions when the button is pressed"
-msgstr "当按下按钮时，将图像替换为较大的版本"
+msgstr "按下按钮时，将图像替换为较大的版本"
 
 #. replaceimgs_addlinks.name
 msgid "Add links"
@@ -3056,39 +3082,39 @@ msgstr "添加链接"
 
 #. replaceimgs_addlinks.description
 msgid "Adds links around replaced media if a link doesn't already exist"
-msgstr "如果链接不存在，则在替换媒体周围添加链接"
+msgstr "在已替换媒体旁添加链接（如果尚无）"
 
 #. replaceimgs_replacelinks.name
 msgid "Replace links"
-msgstr "更换链接"
+msgstr "替换链接"
 
 #. replaceimgs_replacelinks.description
 msgid "Replaces links if they already exist"
-msgstr "如果链接已经存在，则替换它们"
+msgstr "替换已经存在的链接"
 
 #. replaceimgs_plainlinks.name
 msgid "Plain hyperlinks"
-msgstr "如果链接已经存在，则替换它们"
+msgstr "纯粹超链接"
 
 #. replaceimgs_plainlinks.description
 msgid "How to treat plain (non-media) hyperlinks that link to potential media"
-msgstr "如何处理链接到潜在媒体的普通(非媒体)超链接"
+msgstr "如何处理链接到潜在媒体的纯粹超链接"
 
 #. replaceimgs_plainlinks.options.replace_link_text.name
 msgid "Replace link+text"
-msgstr "替换链接+文本"
+msgstr "替换链接和文本"
 
 #. replaceimgs_plainlinks.options.replace_media.name
 msgid "Replace media"
-msgstr "换媒体"
+msgstr "替换媒体"
 
 #. replaceimgs_links_newtab.name
 msgid "Links open in new tab"
-msgstr "在新选项卡中打开的链接"
+msgstr "在新标签页中打开链接"
 
 #. replaceimgs_links_newtab.description
 msgid "Clicking on a replaced link will open the media in a new tab"
-msgstr "单击已替换的链接将在新选项卡中打开媒体"
+msgstr "单击已替换的链接将在新标签页中打开媒体"
 
 #. replaceimgs_size_constraints.name
 msgid "Size constraints"
@@ -3096,11 +3122,11 @@ msgstr "大小限制"
 
 #. replaceimgs_size_constraints.description
 msgid "Removes or enforces height/width specifiers for replaced media"
-msgstr "移除或强制替换媒体的高度/宽度说明符"
+msgstr "移除或强制应用被替换媒体的高度/宽度说明符"
 
 #. replaceimgs_plainlinks.options.none.name, replaceimgs_size_constraints.options.none.name
 msgid "Ignore"
-msgstr "忽视"
+msgstr "忽略"
 
 #. replaceimgs_size_constraints.options.remove.name
 msgid "Remove"
@@ -3112,19 +3138,19 @@ msgstr "强制"
 
 #. replaceimgs_css.name
 msgid "Replacement CSS"
-msgstr "替换CSS"
+msgstr "替换 CSS"
 
 #. replaceimgs_css.description
 msgid "CSS styles to apply to replaced media. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't yet supported here)"
-msgstr "应用于替换媒体的 CSS 样式。有关更多信息，请参见 poppceschstyle 文档(此处不支持 thumb/full URL 变量)"
+msgstr "应用到已替换媒体的 CSS 样式。更多信息详见“弹窗 CSS 样式”文档（此处不支持 thumb/full URL 变量）"
 
 #. replaceimgs_simple_progress.name
 msgid "Simple progress"
-msgstr "简单的进度条"
+msgstr "简单进度条"
 
 #. replaceimgs_simple_progress.description
 msgid "Uses a simpler progress bar that has a fixed size for all media. This is useful to see how many images are replaced, rather than the ETA"
-msgstr "对所有媒体使用固定大小的简单进度条。这是有用的，看看有多少图像被替换，而不是埃塔"
+msgstr "对所有媒体使用固定大小的简单进度条。这能看到有多少图像已替换，而不是只有剩余时间"
 
 #. replaceimgs_enable_keybinding.name, highlightimgs_enable_keybinding.name
 msgid "Enable trigger key"
@@ -3132,7 +3158,7 @@ msgstr "启用触发键"
 
 #. replaceimgs_enable_keybinding.description, highlightimgs_enable_keybinding.description
 msgid "Enables the use of the trigger key to run it without needing to use the menu"
-msgstr "允许使用触发器键来运行它，而无需使用菜单"
+msgstr "允许使用触发键来运行，无需使用菜单"
 
 #. replaceimgs_keybinding.name, highlightimgs_keybinding.name
 msgid "Trigger key"
@@ -3140,7 +3166,7 @@ msgstr "触发键"
 
 #. highlightimgs_keybinding.description
 msgid "Trigger keybinding that will run the Highlight Images function"
-msgstr "触发键绑定，将运行高亮图像功能"
+msgstr "用来运行“高亮图像”功能的触发键"
 
 #. highlightimgs_enable.name
 msgid "Enable button"
@@ -3152,11 +3178,11 @@ msgstr "启用“高亮图像”按钮"
 
 #. highlightimgs_auto.name
 msgid "Automatically highlight images"
-msgstr "自动突出显示图片"
+msgstr "自动高亮图片"
 
 #. highlightimgs_auto.description
 msgid "Automatically highlights images as you view pages"
-msgstr "在查看页面时自动突出显示图像"
+msgstr "查看页面时自动突出图像"
 
 #. highlightimgs_auto.options.always.name, mouseover_enable_mask_styles2.options.always.name, mouseover_zoom_use_last.options.always.name, scroll_zoomout_pagemiddle.options.always.name, gallery_jd_referer.options.always.name
 msgid "Always"
@@ -3168,7 +3194,7 @@ msgstr "悬停"
 
 #. highlightimgs_auto.options.hover.description
 msgid "When hovering over an image"
-msgstr "当鼠标悬停在图片上方时"
+msgstr "鼠标在图片上悬停时"
 
 #. highlightimgs_auto.options.never.name, mouseover_zoom_use_last.options.never.name, scroll_zoomout_pagemiddle.options.never.name, gallery_jd_referer.options.never.name
 msgid "Never"
@@ -3176,11 +3202,11 @@ msgstr "从不"
 
 #. highlightimgs_onlysupported.name
 msgid "Only explicitly supported images"
-msgstr "只有明确支持的图像"
+msgstr "仅限明确支持的图像"
 
 #. highlightimgs_onlysupported.description
 msgid "Only highlights images that can be made larger or the original version can be found"
-msgstr "只能找到可以放大或者原始版本的高亮图片"
+msgstr "仅突出可以换成更大尺寸的图像"
 
 #. highlightimgs_css.name
 msgid "Highlight CSS"
@@ -3188,28 +3214,28 @@ msgstr "高亮 CSS"
 
 #. highlightimgs_css.description
 msgid "CSS style to apply for highlight. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)"
-msgstr "CSS样式来应用突出显示。有关更多信息，请参见“弹出式 CSS 样式”的文档(这里不支持 thumb/full URL 变量)"
+msgstr "高亮时使用的 CSS 样式。更多信息详见“弹窗 CSS 样式”文档（此处不支持 thumb/full URL 变量）"
 
 #. mouseover_open_behavior.name, t2_mouseover_open_behavior.name, t3_mouseover_open_behavior.name
 #. English: Popup action
 msgid "Mouseover popup action"
-msgstr "移动弹出动作"
+msgstr "移动时弹窗的动作"
 
 #. mouseover_open_behavior.description, t2_mouseover_open_behavior.description, t3_mouseover_open_behavior.description
 msgid "Determines how the mouseover popup will open"
-msgstr "确定鼠标切换器弹出窗口的打开方式"
+msgstr "决定鼠标悬停弹窗将打开"
 
 #. mouseover_open_behavior.options.popup.name, mouseover_close_el_policy.options.popup.name, t2_mouseover_open_behavior.options.popup.name, t3_mouseover_open_behavior.options.popup.name
 msgid "Popup"
-msgstr "弹出"
+msgstr "弹窗"
 
 #. mouseover_open_behavior.options.newtab.name, t2_mouseover_open_behavior.options.newtab.name, t3_mouseover_open_behavior.options.newtab.name
 msgid "New tab"
-msgstr "新选项卡"
+msgstr "新标签页"
 
 #. mouseover_open_behavior.options.newtab_bg.name, t2_mouseover_open_behavior.options.newtab_bg.name, t3_mouseover_open_behavior.options.newtab_bg.name
 msgid "New background tab"
-msgstr "新背景选项卡"
+msgstr "新后台标签页"
 
 #. mouseover_open_behavior.options.download.name, t2_mouseover_open_behavior.options.download.name, t3_mouseover_open_behavior.options.download.name
 msgid "Download"
@@ -3221,7 +3247,7 @@ msgstr "复制链接"
 
 #. mouseover_open_behavior.options.replace.name, t2_mouseover_open_behavior.options.replace.name, t3_mouseover_open_behavior.options.replace.name
 msgid "Replace"
-msgstr "代替"
+msgstr "替换"
 
 #. mouseover_allow_video.name, t2_mouseover_allow_video.name, t3_mouseover_allow_video.name
 msgid "Enable videos"
@@ -3229,7 +3255,7 @@ msgstr "支持视频"
 
 #. mouseover_allow_video.description, t2_mouseover_allow_video.description, t3_mouseover_allow_video.description
 msgid "Allows videos to be popped up"
-msgstr "允许视频弹出"
+msgstr "允许视频弹窗"
 
 #. mouseover_allow_audio.name, t2_mouseover_allow_audio.name, t3_mouseover_allow_audio.name
 msgid "Enable audio"
@@ -3240,16 +3266,16 @@ msgid ""
 "Allows audio to be popped up. Currently experimental.\n"
 "This only applies to audio files. Videos that contains audio are supported regardless of this setting."
 msgstr ""
-"允许音频弹出。目前实验。\n"
-"这只适用于音频文件。包含音频的视频无论如何都支持。"
+"允许音频弹窗。目前处于实验阶段。\n"
+"这仅适用于音频文件。包含音频的视频无关此设置。"
 
 #. mouseover_allow_hlsdash.name, t2_mouseover_allow_hlsdash.name, t3_mouseover_allow_hlsdash.name
 msgid "Allow HLS/DASH streams"
-msgstr "允许HLS/DASH流"
+msgstr "允许 HLS/DASH 流"
 
 #. mouseover_allow_hlsdash.description, t2_mouseover_allow_hlsdash.description, t3_mouseover_allow_hlsdash.description
 msgid "Allows playback of HLS/DASH streams"
-msgstr "允许回放HLS/DASH流"
+msgstr "允许播放 HLS/DASH 流"
 
 #. mouseover_allow_hlsdash.example_websites[0], t2_mouseover_allow_hlsdash.example_websites[0], t3_mouseover_allow_hlsdash.example_websites[0]
 msgid "Dailymotion"
