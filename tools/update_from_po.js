@@ -37,7 +37,7 @@ var parse = function(lines) {
 	for (var i = 0; i < lines.length; i++) {
 		var line = lines[i];
 
-		var match = line.match(/^#\s+(.*)$/);
+		var match = line.match(/^#\.?\s+(.*)$/);
 		if (match) {
 			var comment = match[1];
 			if (current_comment) {
@@ -79,13 +79,13 @@ var parse = function(lines) {
 };
 
 var read_po = function(filename) {
-	var pofile = fs.readFileSync(filename).toString();
+	var pofile = fs.readFileSync(filename).toString().replace(/\r/g, "");
 	return parse(pofile.split("\n"));
 };
 
 var update_userscript_strings = function(newstrings) {
 	var filename = util.ts_userscript_filename;
-	var userscript = fs.readFileSync(filename).toString();
+	var userscript = fs.readFileSync(filename).toString().replace(/\r/g, "");
 	var strings_regex = /(\n\tvar strings = )({[\s\S]+?})(;\n)/;
 
 	var match = userscript.match(strings_regex);
@@ -124,7 +124,7 @@ var update_userscript_strings = function(newstrings) {
 
 var update_userscript_supported_languages = function(supported_languages) {
 	var filename = util.ts_userscript_filename;
-	var userscript = fs.readFileSync(filename).toString();
+	var userscript = fs.readFileSync(filename).toString().replace(/\r/g, "");
 	var strings_regex = /(\n\tvar supported_languages = )(\[[\s\S]+?\])(;\n)/;
 
 	var match = userscript.match(strings_regex);
@@ -145,7 +145,7 @@ var update_userscript_supported_languages = function(supported_languages) {
 
 var update_userscript_language_options = function(languages) {
 	var filename = util.ts_userscript_filename;
-	var userscript = fs.readFileSync(filename).toString();
+	var userscript = fs.readFileSync(filename).toString().replace(/\r/g, "");
 	var strings_regex = /(\n\t\tlanguage: {\n[^}]+?\n\t\t\toptions: )(\{\n\t{4}_type: "combo",(?:\n\t{4}(?:"[^"]+"|[_a-z]+): \{\n\t{5}name: "[^"]+"(?:,\n\t{5}name_gettext: false)?\n\t{4}\},?)*\n\t{3}\})(,\n)/;
 
 	var match = userscript.match(strings_regex);
@@ -173,7 +173,7 @@ var update_userscript_language_options = function(languages) {
 
 var update_userscript_description = function(languages) {
 	var filename = util.ts_userscript_filename;
-	var userscript = fs.readFileSync(filename).toString();
+	var userscript = fs.readFileSync(filename).toString().replace(/\r/g, "");
 
 	for (var key in languages) {
 		var regex = new RegExp("(// @description:" + key + " +).*");
