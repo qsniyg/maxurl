@@ -123,24 +123,21 @@ msgstr "专用规则"
 msgid "category_website"
 msgstr "网站"
 
-#. English: Saved! Refresh the target page for changes to take effect
-msgid "saved_refresh_target"
+msgid "Saved! Refresh the target page for changes to take effect"
 msgstr "已保存，刷新目标页面使更改生效"
 
-#. English: Saved!
-msgid "saved_no_refresh"
+msgid "Saved!"
 msgstr "已保存"
 
 #. English: Save
 msgid "save"
 msgstr "保存"
 
-#. English: Record
-msgid "record"
+# Button name for recording key combinations
+msgid "Record"
 msgstr "录制"
 
-#. English: Cancel
-msgid "cancel"
+msgid "Cancel"
 msgstr "取消"
 
 msgid "Mouseover popup (%%1) is needed to display the original version"
@@ -171,12 +168,10 @@ msgstr "右箭头"
 msgid "subcategory_extension"
 msgstr "扩展"
 
-#. English: Rotate Left
-msgid "rotate_left_btn"
+msgid "Rotate Left"
 msgstr "向左旋转"
 
-#. English: Rotate Right
-msgid "rotate_right_btn"
+msgid "Rotate Right"
 msgstr "向右旋转"
 
 #. English: Buttons

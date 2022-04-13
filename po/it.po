@@ -123,24 +123,21 @@ msgstr ""
 msgid "category_website"
 msgstr ""
 
-#. English: Saved! Refresh the target page for changes to take effect
-msgid "saved_refresh_target"
+msgid "Saved! Refresh the target page for changes to take effect"
 msgstr ""
 
-#. English: Saved!
-msgid "saved_no_refresh"
+msgid "Saved!"
 msgstr ""
 
 #. English: Save
 msgid "save"
 msgstr ""
 
-#. English: Record
-msgid "record"
+# Button name for recording key combinations
+msgid "Record"
 msgstr ""
 
-#. English: Cancel
-msgid "cancel"
+msgid "Cancel"
 msgstr ""
 
 msgid "Mouseover popup (%%1) is needed to display the original version"
@@ -171,12 +168,10 @@ msgstr "Freccia destra"
 msgid "subcategory_extension"
 msgstr ""
 
-#. English: Rotate Left
-msgid "rotate_left_btn"
+msgid "Rotate Left"
 msgstr ""
 
-#. English: Rotate Right
-msgid "rotate_right_btn"
+msgid "Rotate Right"
 msgstr ""
 
 #. English: Buttons

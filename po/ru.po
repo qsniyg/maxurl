@@ -123,24 +123,21 @@ msgstr "Специфика правил"
 msgid "category_website"
 msgstr "Сайт"
 
-#. English: Saved! Refresh the target page for changes to take effect
-msgid "saved_refresh_target"
+msgid "Saved! Refresh the target page for changes to take effect"
 msgstr "Сохранено! Обновите целевую страницу, чтобы применить изменения."
 
-#. English: Saved!
-msgid "saved_no_refresh"
+msgid "Saved!"
 msgstr "Сохранено!"
 
 #. English: Save
 msgid "save"
 msgstr "Сохранить"
 
-#. English: Record
-msgid "record"
+# Button name for recording key combinations
+msgid "Record"
 msgstr "Переназначить"
 
-#. English: Cancel
-msgid "cancel"
+msgid "Cancel"
 msgstr "Отмена"
 
 msgid "Mouseover popup (%%1) is needed to display the original version"
@@ -171,12 +168,10 @@ msgstr "Стрелка вправо"
 msgid "subcategory_extension"
 msgstr "Расширение"
 
-#. English: Rotate Left
-msgid "rotate_left_btn"
+msgid "Rotate Left"
 msgstr "Повернуть влево"
 
-#. English: Rotate Right
-msgid "rotate_right_btn"
+msgid "Rotate Right"
 msgstr "Повернуть вправо"
 
 #. English: Buttons

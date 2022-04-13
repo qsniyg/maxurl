@@ -123,24 +123,21 @@ msgstr ""
 msgid "category_website"
 msgstr "웹사이트"
 
-#. English: Saved! Refresh the target page for changes to take effect
-msgid "saved_refresh_target"
+msgid "Saved! Refresh the target page for changes to take effect"
 msgstr "저장됩니다. 번경사항 적용하려면 대상 웹페이지 다시 로드하십시오"
 
-#. English: Saved!
-msgid "saved_no_refresh"
+msgid "Saved!"
 msgstr "저장됩니다"
 
 #. English: Save
 msgid "save"
 msgstr "저장"
 
-#. English: Record
-msgid "record"
+# Button name for recording key combinations
+msgid "Record"
 msgstr ""
 
-#. English: Cancel
-msgid "cancel"
+msgid "Cancel"
 msgstr "취소"
 
 msgid "Mouseover popup (%%1) is needed to display the original version"
@@ -171,12 +168,10 @@ msgstr "오른쪽 화살표"
 msgid "subcategory_extension"
 msgstr ""
 
-#. English: Rotate Left
-msgid "rotate_left_btn"
+msgid "Rotate Left"
 msgstr ""
 
-#. English: Rotate Right
-msgid "rotate_right_btn"
+msgid "Rotate Right"
 msgstr ""
 
 #. English: Buttons
