@@ -1,17 +1,12 @@
-# Chinese translations for Image Max URL
+# Chinese (Simplified) translations for Image Max URL
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Image Max URL\n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
-"Last-Translator: YFdyh000 <yfdyh000@gmail.com>\n"
-"Language-Team: \n"
-"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.0.1\n"
+"Language: zh_CN\n"
 
 # Native language name (e.g. Français for French, 한국어 for Korean)
 msgid "$language_native$"
@@ -241,8 +236,8 @@ msgid "Русский"
 msgstr "俄语"
 
 #. language.options.zh-CN.name
-msgid "中文"
-msgstr "中文"
+msgid "简体中文"
+msgstr ""
 
 #. dark_mode.name
 msgid "Dark mode"
@@ -1281,7 +1276,6 @@ msgid "Releasing triggers cancels loading"
 msgstr "松开触发器取消加载"
 
 #. mouseover_cancel_popup_when_release.description
-#, fuzzy
 msgid "Cancels the current popup loading if all/any triggers are released (as set by the \"Keep popup open until\" setting)"
 msgstr "如果松开了所有/任何触发器，并且设置了“保持弹窗开启直到”，取消当前的弹窗加载"
 
@@ -1330,7 +1324,6 @@ msgid "Close popup on unhold"
 msgstr "取消保持时关闭弹窗"
 
 #. mouseover_hold_close_unhold.description
-#, fuzzy
 msgid "Closes the popup when the hold key is pressed again, after having previously held the popup"
 msgstr "曾经保持弹窗后，再次按下保持键时关闭弹窗"
 
@@ -1783,7 +1776,6 @@ msgid "Enable downloading HLS/DASH streams"
 msgstr "启用 HLS/DASH 流媒体的下载"
 
 #. enable_stream_download.description
-#, fuzzy
 msgid ""
 "Downloads and muxes the contents of the streams rather than the stream information file.\n"
 "This currently does not work under Firefox."
@@ -1796,7 +1788,6 @@ msgid "Prefer MP4 over MKV"
 msgstr "偏好 MP4 代替 MKV"
 
 #. stream_mux_mp4_over_mkv.description
-#, fuzzy
 msgid "Tries to mux the video into mp4 instead of mkv when required. This may slightly slow down muxing as it currently needs to try muxing both."
 msgstr "请求时尝试用 mp4 代替 mkv。这可能稍微降低组合内容的速度，因为目前需要尝试两组操作。"
 
@@ -2715,6 +2706,14 @@ msgstr "Snapchat: 使用没有标题的原始媒体"
 #. snapchat_orig_media.description
 msgid "Prefers using original media instead of media with captions and tags overlayed"
 msgstr "倾向于使用原始媒体，而不是有标题和标签覆盖的媒体"
+
+#. teddit_redirect_reddit.name
+msgid "Teddit: Use Reddit for media"
+msgstr ""
+
+#. teddit_redirect_reddit.description
+msgid "Redirects media stored on Teddit to Reddit's servers. Disabling this may prevent finding original images because Teddit's image servers will only cache images fetched from posts, which are deleted after a few minutes."
+msgstr ""
 
 #. tiktok_no_watermarks.name
 msgid "TikTok: Don't use watermarked videos"

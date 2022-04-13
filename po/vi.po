@@ -236,7 +236,7 @@ msgid "Русский"
 msgstr ""
 
 #. language.options.zh-CN.name
-msgid "中文"
+msgid "简体中文"
 msgstr ""
 
 #. dark_mode.name
@@ -2647,6 +2647,14 @@ msgstr ""
 
 #. snapchat_orig_media.description
 msgid "Prefers using original media instead of media with captions and tags overlayed"
+msgstr ""
+
+#. teddit_redirect_reddit.name
+msgid "Teddit: Use Reddit for media"
+msgstr ""
+
+#. teddit_redirect_reddit.description
+msgid "Redirects media stored on Teddit to Reddit's servers. Disabling this may prevent finding original images because Teddit's image servers will only cache images fetched from posts, which are deleted after a few minutes."
 msgstr ""
 
 #. tiktok_no_watermarks.name

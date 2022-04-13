@@ -1,4 +1,4 @@
-# Esperanto translations for Image Max URL
+# zh translations for Image Max URL
 #
 msgid ""
 msgstr ""
@@ -6,7 +6,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: eo\n"
+"Language: zh\n"
 
 # Native language name (e.g. Français for French, 한국어 for Korean)
 msgid "$language_native$"
@@ -14,7 +14,7 @@ msgstr ""
 
 #. English: Finds larger or original versions of images and videos for 8000+ websites, including a powerful media popup and download feature
 msgid "$description$"
-msgstr "Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 8000 retejoj"
+msgstr "为8000多个网站查找更大或原始图像"
 
 #. English: Options
 msgid "options_header"
