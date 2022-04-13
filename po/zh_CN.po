@@ -40,13 +40,8 @@ msgstr "需要:"
 msgid "Or:"
 msgstr "或者:"
 
-#. English: Redirection
-msgid "category_redirection"
+msgid "Redirection"
 msgstr "重定向"
-
-#. English: Popup
-msgid "category_popup"
-msgstr "弹窗"
 
 #. English: Updates
 msgid "subcategory_update"
@@ -100,8 +95,7 @@ msgstr "其他"
 msgid "subcategory_cache"
 msgstr "缓存"
 
-#. English: Shortcuts
-msgid "category_keybinds"
+msgid "Shortcuts"
 msgstr "快捷键"
 
 #. English: Popup actions
@@ -111,16 +105,14 @@ msgstr "操作弹窗"
 msgid "Mouse cursor"
 msgstr "鼠标光标"
 
-#. English: Rules
-msgid "category_rules"
+msgid "Rules"
 msgstr "规则"
 
 #. English: Rule-specific
 msgid "subcategory_rule_specific"
 msgstr "专用规则"
 
-#. English: Website
-msgid "category_website"
+msgid "Website"
 msgstr "网站"
 
 msgid "Saved! Refresh the target page for changes to take effect"
@@ -174,8 +166,8 @@ msgstr "向左旋转"
 msgid "Rotate Right"
 msgstr "向右旋转"
 
-#. English: Buttons
-msgid "category_extra"
+# Settings category name for configuring extra functions, such as "Replace Images" and "Highlight Images"
+msgid "Buttons"
 msgstr "其他"
 
 #. English: Replace Images
@@ -186,8 +178,7 @@ msgstr "替换图像"
 msgid "subcategory_highlightimages"
 msgstr "高亮图像"
 
-#. English: General
-msgid "category_general"
+msgid "General"
 msgstr "通用"
 
 #. imu_enabled.name

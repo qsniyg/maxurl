@@ -37,12 +37,7 @@ msgstr ""
 msgid "Or:"
 msgstr ""
 
-#. English: Redirection
-msgid "category_redirection"
-msgstr ""
-
-#. English: Popup
-msgid "category_popup"
+msgid "Redirection"
 msgstr ""
 
 #. English: Updates
@@ -97,8 +92,7 @@ msgstr ""
 msgid "subcategory_cache"
 msgstr ""
 
-#. English: Shortcuts
-msgid "category_keybinds"
+msgid "Shortcuts"
 msgstr ""
 
 #. English: Popup actions
@@ -108,16 +102,14 @@ msgstr ""
 msgid "Mouse cursor"
 msgstr ""
 
-#. English: Rules
-msgid "category_rules"
+msgid "Rules"
 msgstr ""
 
 #. English: Rule-specific
 msgid "subcategory_rule_specific"
 msgstr ""
 
-#. English: Website
-msgid "category_website"
+msgid "Website"
 msgstr ""
 
 msgid "Saved! Refresh the target page for changes to take effect"
@@ -171,8 +163,8 @@ msgstr ""
 msgid "Rotate Right"
 msgstr ""
 
-#. English: Buttons
-msgid "category_extra"
+# Settings category name for configuring extra functions, such as "Replace Images" and "Highlight Images"
+msgid "Buttons"
 msgstr ""
 
 #. English: Replace Images
@@ -183,8 +175,7 @@ msgstr ""
 msgid "subcategory_highlightimages"
 msgstr ""
 
-#. English: General
-msgid "category_general"
+msgid "General"
 msgstr ""
 
 #. imu_enabled.name

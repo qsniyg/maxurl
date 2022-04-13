@@ -40,13 +40,8 @@ msgstr "Требуется:"
 msgid "Or:"
 msgstr "Или:"
 
-#. English: Redirection
-msgid "category_redirection"
+msgid "Redirection"
 msgstr "Перенаправление"
-
-#. English: Popup
-msgid "category_popup"
-msgstr "Всплывающее окно"
 
 #. English: Updates
 msgid "subcategory_update"
@@ -100,8 +95,7 @@ msgstr "Прочее"
 msgid "subcategory_cache"
 msgstr "Кэш"
 
-#. English: Shortcuts
-msgid "category_keybinds"
+msgid "Shortcuts"
 msgstr "Горячие клавиши"
 
 #. English: Popup actions
@@ -111,16 +105,14 @@ msgstr "Действия всплывающего окна"
 msgid "Mouse cursor"
 msgstr "Курсор мыши"
 
-#. English: Rules
-msgid "category_rules"
+msgid "Rules"
 msgstr "Правила"
 
 #. English: Rule-specific
 msgid "subcategory_rule_specific"
 msgstr "Специфика правил"
 
-#. English: Website
-msgid "category_website"
+msgid "Website"
 msgstr "Сайт"
 
 msgid "Saved! Refresh the target page for changes to take effect"
@@ -174,8 +166,8 @@ msgstr "Повернуть влево"
 msgid "Rotate Right"
 msgstr "Повернуть вправо"
 
-#. English: Buttons
-msgid "category_extra"
+# Settings category name for configuring extra functions, such as "Replace Images" and "Highlight Images"
+msgid "Buttons"
 msgstr "Дополнительно"
 
 #. English: Replace Images
@@ -186,8 +178,7 @@ msgstr "Замена изображений"
 msgid "subcategory_highlightimages"
 msgstr "Выделение изображений"
 
-#. English: General
-msgid "category_general"
+msgid "General"
 msgstr "Общие"
 
 #. imu_enabled.name

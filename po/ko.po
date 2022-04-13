@@ -40,13 +40,8 @@ msgstr "요구사항:"
 msgid "Or:"
 msgstr ""
 
-#. English: Redirection
-msgid "category_redirection"
+msgid "Redirection"
 msgstr "리디렉션"
-
-#. English: Popup
-msgid "category_popup"
-msgstr "팝업"
 
 #. English: Updates
 msgid "subcategory_update"
@@ -100,8 +95,7 @@ msgstr ""
 msgid "subcategory_cache"
 msgstr ""
 
-#. English: Shortcuts
-msgid "category_keybinds"
+msgid "Shortcuts"
 msgstr ""
 
 #. English: Popup actions
@@ -111,16 +105,14 @@ msgstr ""
 msgid "Mouse cursor"
 msgstr "마우스 커서"
 
-#. English: Rules
-msgid "category_rules"
+msgid "Rules"
 msgstr "규칙"
 
 #. English: Rule-specific
 msgid "subcategory_rule_specific"
 msgstr ""
 
-#. English: Website
-msgid "category_website"
+msgid "Website"
 msgstr "웹사이트"
 
 msgid "Saved! Refresh the target page for changes to take effect"
@@ -174,8 +166,8 @@ msgstr ""
 msgid "Rotate Right"
 msgstr ""
 
-#. English: Buttons
-msgid "category_extra"
+# Settings category name for configuring extra functions, such as "Replace Images" and "Highlight Images"
+msgid "Buttons"
 msgstr ""
 
 #. English: Replace Images
@@ -186,8 +178,7 @@ msgstr ""
 msgid "subcategory_highlightimages"
 msgstr ""
 
-#. English: General
-msgid "category_general"
+msgid "General"
 msgstr "일반"
 
 #. imu_enabled.name
