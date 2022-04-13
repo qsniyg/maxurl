@@ -37,7 +37,7 @@ var parse = function(lines) {
 	for (var i = 0; i < lines.length; i++) {
 		var line = lines[i];
 
-		var match = line.match(/^#\.?\s+(.*)$/);
+		var match = line.match(/^#\s+(.*)$/);
 		if (match) {
 			var comment = match[1];
 			if (current_comment) {
