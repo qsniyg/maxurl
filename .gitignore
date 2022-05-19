@@ -10,3 +10,4 @@ extension_source.zip
 maxurl.zip
 *.pub
 *.sig
+build/tsout.js
