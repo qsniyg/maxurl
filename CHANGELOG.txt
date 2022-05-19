@@ -1,3 +1,33 @@
+2022.5.0 (in-development)
+
+New features:
+
+ * Chinese (Mandarin) translation by coastline-echo and yfdyh000
+ * Option to toggle logging messages to console (enabled by default, thanks to Michael82548 for the idea)
+ * Option to disable Teddit images redirecting to Reddit (#910, disabled by default, thanks to 07416 for the idea)
+ * The userscript can now be used on the command line. Currently support is very basic, but improvements are planned for future releases
+
+Improvements:
+
+ * Updated Russian translation (thanks to vanja-san)
+ * Various improvements/fixes to existing rules (including Bing, Discord, Instagram, iTunes, Reddit, Snapchat, Twitter)
+ * Support for pause/print screen/scroll lock keys (thanks to Afterpwn on discord for the idea)
+ * Versioning scheme has been modified to use dates instead of arbitrary version numbers
+
+Bugfixes:
+
+ * Various bugfixes, many caught by the TypeScript compiler
+ * Ensure tooltip text color is always white (#849)
+ * Don't add highlight images style element when unneeded (#886, thanks to Stencil on discord for reporting)
+ * Fix unicode characters in filenames failing to download with extension (thanks to I Van on discord for reporting)
+ * Fix userscript for Violentmonkey >2.13.0.* (thanks to tophf, nimuxoha, brian6932)
+ * Fix check for GM.setValue (thanks to ROpdebee for noticing)
+ * Allow the userscript to initialize properly without GM.getValue support (thanks to ROpdebee for noticing)
+
+Special thanks to DevWannabe-dot, yfdyh000, coastline-echo, vanja-san, jonestly, nimbuz, Noodlers, Liz, f2005, elvisef, MinuteAd8502, ayunami2000, Noodlers, robindz, KyuJuEX099, Michael82548, esdemirei, StarCrunchMuncher, Speedy, fireattack, remlap, fedesk, Broly, Afterpwn, rEnr3n, Qwerty, loucasal, 0x464e, dym-sh, Elexid, Shaggy, WmeLuna, Lumbago1337, Knifefed, coolhealer, contextnerror, Stencil, Chris, ggagagg, I Van, ROpdebee, NightSky, secret soup, lrcn80, Nguyen, decembre, CetaceanNation, NekoAlosama, doio, srinac, Steamarino, Michyrr, RolerGames, TheLastZombie, h-h-h-h, cbadoud, resentizised, tophf, brian6932, nimuxoha for their contributions and reports for this release
+
+---
+
 0.19.5
 
 New features:
