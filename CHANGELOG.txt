@@ -10,7 +10,7 @@ New features:
 Improvements:
 
  * Updated Russian translation (thanks to vanja-san)
- * Various improvements/fixes to existing rules (including Bing, Discord, Instagram, iTunes, Reddit, Snapchat, Twitter)
+ * Various improvements/fixes to existing rules (including Bing, Discord, IMDB, Instagram, iTunes, Reddit, Snapchat, Twitter)
  * Support for pause/print screen/scroll lock keys (thanks to Afterpwn on discord for the idea)
  * Versioning scheme has been modified to use dates instead of arbitrary version numbers
 
