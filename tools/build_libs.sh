@@ -21,6 +21,7 @@ node ../tools/patch_libs.js slowaes orig > testcookie_slowaes.js
 node ../tools/patch_libs.js cryptojs_aes orig > cryptojs_aes.js
 node ../tools/patch_libs.js shaka orig > shaka.debug.js
 node ../tools/patch_libs.js jszip orig > jszip.js
+node ../tools/patch_libs.js BigInteger orig > BigInteger.js
 
 # The following libraries are not present in the Firefox version
 

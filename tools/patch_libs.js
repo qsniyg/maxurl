@@ -118,6 +118,14 @@ var patch_lib = null;
 		files: "jszip.js"
 	};
 
+	function patch_biginteger(text) {
+		return libexport_shim(text, "bigInt");
+	}
+	lib_patches["BigInteger"] = {
+		patch: patch_biginteger,
+		files: "BigInteger.min.js"
+	};
+
 	var unwrap_object = function(obj) {
 		var keys = Object.keys(obj);
 		if (keys.length !== 1)

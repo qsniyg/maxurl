@@ -1,6 +1,7 @@
 https://raw.githubusercontent.com/Stuk/jszip/v3.6.0/dist/jszip.js
 https://raw.githubusercontent.com/escolarea-labs/slowaes/f53404fb0aba47fcd336ae32623033bffa1dab41/js/aes.js = slowaes.js
 https://raw.githubusercontent.com/brix/crypto-js/release-3.1.2/build/rollups/aes.js = cryptojs_aes.js
+https://raw.githubusercontent.com/peterolson/BigInteger.js/v1.6.51/BigInteger.min.js
 
 # Built versions for mux.js aren't available on github
 https://unpkg.com/mux.js@5.7.0/dist/mux.js
