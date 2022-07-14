@@ -24,7 +24,7 @@ Bugfixes:
  * Fix check for GM.setValue (thanks to ROpdebee for noticing)
  * Allow the userscript to initialize properly without GM.getValue support (thanks to ROpdebee for noticing)
 
-Special thanks to DevWannabe-dot, yfdyh000, coastline-echo, vanja-san, jonestly, nimbuz, Noodlers, Liz, f2005, elvisef, MinuteAd8502, ayunami2000, Noodlers, robindz, KyuJuEX099, Michael82548, esdemirei, StarCrunchMuncher, Speedy, fireattack, remlap, fedesk, Broly, Afterpwn, rEnr3n, Qwerty, loucasal, 0x464e, dym-sh, Elexid, Shaggy, WmeLuna, Lumbago1337, Knifefed, coolhealer, contextnerror, Stencil, Chris, ggagagg, I Van, ROpdebee, NightSky, secret soup, lrcn80, Nguyen, decembre, CetaceanNation, NekoAlosama, doio, srinac, Steamarino, Michyrr, RolerGames, TheLastZombie, h-h-h-h, cbadoud, resentizised, tophf, brian6932, nimuxoha, Jabster28, aslian, Vuccala, BiZkViT, kellnerd, breadman, GTR8000, llacb47 for their contributions and reports for this release
+Special thanks to DevWannabe-dot, yfdyh000, coastline-echo, vanja-san, jonestly, nimbuz, Noodlers, Liz, f2005, elvisef, MinuteAd8502, ayunami2000, Noodlers, robindz, KyuJuEX099, Michael82548, esdemirei, StarCrunchMuncher, Speedy, fireattack, remlap, fedesk, Broly, Afterpwn, rEnr3n, Qwerty, loucasal, 0x464e, dym-sh, Elexid, Shaggy, WmeLuna, Lumbago1337, Knifefed, coolhealer, contextnerror, Stencil, Chris, ggagagg, I Van, ROpdebee, NightSky, secret soup, lrcn80, Nguyen, decembre, CetaceanNation, NekoAlosama, doio, srinac, Steamarino, Michyrr, RolerGames, TheLastZombie, h-h-h-h, cbadoud, resentizised, tophf, brian6932, nimuxoha, Jabster28, aslian, Vuccala, BiZkViT, kellnerd, breadman, GTR8000, llacb47, Dasbnow for their contributions and reports for this release
 
 ---
 
