@@ -1,0 +1,53 @@
+name: Monthly release
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+
+      # Prepare workspace
+      - name: Check for changes since last release
+        id: changes
+        uses: jsmith/changes-since-last-tag@v0.3.2
+        with:
+          glob: /src/userscript.ts
+      - name: Calculate version string
+        id: version
+        run: echo ::set-output name=version::$(date +%Y.%-m)
+      - name: Check out repository
+        if: steps.changes.outputs.any_changed == true
+        uses: actions/checkout@v3
+      - name: Prepare workspace
+        if: steps.changes.outputs.any_changed == true
+        run: |
+          git clone ${{ github.repositoryUrl }} -b gh-pages --depth 1 site
+          npm install
+          npm install -g uglify-js
+
+      # Update userscript on GitHub
+      - name: Run package-release script
+        if: steps.changes.outputs.any_changed == true
+        run: npm run package-release
+      - name: Update userscript on GitHub
+        if: steps.changes.outputs.any_changed == true
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: ${{ steps.version.outputs.version }}
+          file_pattern: '*.user.js *.meta.js build'
+          tagging_message: v${{ steps.version.outputs.version }}
+
+      # Update GitHub Pages website
+      - name: Copy userscript_smaller.user.js to gh-pages branch
+        if: steps.changes.outputs.any_changed == true
+        run: cp userscript_smaller.user.js site
+      - name: Update GitHub Pages website
+        if: steps.changes.outputs.any_changed == true
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update userscript to ${{ steps.version.outputs.version }}
+          file_pattern: '*.user.js'
+          repository: site
