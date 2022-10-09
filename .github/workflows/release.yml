@@ -27,11 +27,14 @@ jobs:
           git clone ${{ github.repositoryUrl }} -b gh-pages --depth 1 site
           npm install
           npm install -g uglify-js
+          tools/fetch_libs.sh
 
       # Update userscript on GitHub
       - name: Run package-release script
         if: steps.changes.outputs.any_changed == true
-        run: npm run package-release
+        run: |
+          npm run package
+          npm run package-release
       - name: Update userscript on GitHub
         if: steps.changes.outputs.any_changed == true
         uses: stefanzweifel/git-auto-commit-action@v4
