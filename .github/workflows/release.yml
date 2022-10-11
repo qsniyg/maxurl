@@ -33,7 +33,8 @@ jobs:
       - name: Run package-release script
         if: steps.changes.outputs.any_changed == true
         run: |
-          sed 's/"version": ".*\?"/"version": "${{ steps.version.outputs.version }}"/' manifest.json
+          sed -i 's/.* (in-development)/${{ steps.version.outputs.version }}/' CHANGELOG.txt
+          sed -i 's/"version": ".*\?"/"version": "${{ steps.version.outputs.version }}"/' manifest.json
           npm run package
           npm run package-release
       - name: Update userscript on GitHub
