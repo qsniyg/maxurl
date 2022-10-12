@@ -28,6 +28,7 @@ jobs:
           npm install
           npm install -g uglify-js web-ext
           tools/fetch_libs.sh
+          echo "${{ secrets.MAXURL_PEM }}" > maxurl.pem
 
       # Update userscript on GitHub
       - name: Run package-release script
@@ -47,7 +48,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: ${{ steps.version.outputs.version }}
-          file_pattern: '*.user.js *.meta.js extension/updates.xml manifest.json CHANGELOG.txt package.json sites.txt src build :!build/userscript_extr_cat.user.js'
+          file_pattern: '*.user.js *.meta.js extension/updates.xml manifest.json CHANGELOG.txt package.json sites.txt src build :!build/userscript_extr_cat.user.js :!build/ImageMaxURL_crx2.crx :!build/ImageMaxURL_opera.crx'
           tagging_message: v${{ steps.version.outputs.version }}
 
       # Update GitHub Pages website
