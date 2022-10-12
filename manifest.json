@@ -22,7 +22,8 @@
 
   "browser_specific_settings": {
     "gecko": {
-      "id": "maxurl@qsniyg"
+      "id": "maxurl@qsniyg",
+      "update_url": "https://raw.githubusercontent.com/qsniyg/maxurl/master/updates.json"
     }
   },
 
