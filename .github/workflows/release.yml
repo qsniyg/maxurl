@@ -36,7 +36,7 @@ jobs:
           sed -i 's/version=".*\?"/version="${{ steps.version.outputs.version }}"/' extension/updates.xml
           sed -i 's/\(\/\/ @version\s*\).*/\1${{ steps.version.outputs.version }}/' src/userscript.ts
           sed -i 's/.* (in-development)/${{ steps.version.outputs.version }}/' CHANGELOG.txt
-          sed -i 's/"version": ".*\?"/"version": "${{ steps.version.outputs.version }}"/' manifest.json
+          sed -i 's/"version": ".*\?"/"version": "${{ steps.version.outputs.version }}"/' manifest.json package.json
           npm run build
           npm run package
           npm run package-release
@@ -45,7 +45,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: ${{ steps.version.outputs.version }}
-          file_pattern: '*.user.js *.meta.js extension/updates.xml manifest.json CHANGELOG.txt sites.txt src build :!build/userscript_extr_cat.user.js'
+          file_pattern: '*.user.js *.meta.js extension/updates.xml manifest.json CHANGELOG.txt package.json sites.txt src build :!build/userscript_extr_cat.user.js'
           tagging_message: v${{ steps.version.outputs.version }}
 
       # Update GitHub Pages website
