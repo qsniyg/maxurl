@@ -26,7 +26,7 @@ jobs:
         run: |
           git clone ${{ github.repositoryUrl }} -b gh-pages --depth 1 site
           npm install
-          npm install -g uglify-js
+          npm install -g uglify-js web-ext
           tools/fetch_libs.sh
 
       # Update userscript on GitHub
@@ -40,6 +40,8 @@ jobs:
           npm run build
           npm run package
           npm run package-release
+          web-ext sign --channel unlisted --api-key ${{ secrets.API_KEY }} --api-secret ${{ secrets.API_SECRET }}
+          mv web-ext-artifacts/*.xpi build/ImageMaxURL_signed.xpi
       - name: Update userscript on GitHub
         if: steps.changes.outputs.any_changed == true
         uses: stefanzweifel/git-auto-commit-action@v4
