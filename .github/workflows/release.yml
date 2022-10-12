@@ -45,7 +45,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: ${{ steps.version.outputs.version }}
-          file_pattern: '*.user.js *.meta.js updates.xml manifest.json CHANGELOG.txt build'
+          file_pattern: '*.user.js *.meta.js extension/updates.xml manifest.json CHANGELOG.txt sites.txt src build :!build/userscript_extr_cat.user.js'
           tagging_message: v${{ steps.version.outputs.version }}
 
       # Update GitHub Pages website
