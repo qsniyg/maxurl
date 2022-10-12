@@ -34,8 +34,10 @@ jobs:
         if: steps.changes.outputs.any_changed == true
         run: |
           sed -i 's/version=".*\?"/version="${{ steps.version.outputs.version }}"/' extension/updates.xml
+          sed -i 's/\(\/\/ @version\s*\).*/\1${{ steps.version.outputs.version }}/' src/userscript.ts
           sed -i 's/.* (in-development)/${{ steps.version.outputs.version }}/' CHANGELOG.txt
           sed -i 's/"version": ".*\?"/"version": "${{ steps.version.outputs.version }}"/' manifest.json
+          npm run build
           npm run package
           npm run package-release
       - name: Update userscript on GitHub
