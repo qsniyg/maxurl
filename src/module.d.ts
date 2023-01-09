@@ -80,3 +80,7 @@ interface Object {
 declare class SharedArrayBuffer {
 	constructor(n:number)
 }
+
+interface HeaderDict {
+	[key: string]: string;
+}
