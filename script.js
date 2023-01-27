@@ -72,7 +72,7 @@ var decodeuri_ifneeded = function(url) {
 
 // thanks to MillennialDIYer on github for the idea: https://github.com/qsniyg/maxurl/issues/665#url=test
 if (window.location.hash) {
-  var hash_urlmatch = window.location.hash.match(/#url=(https?:.*)$/);
+  var hash_urlmatch = window.location.hash.match(/#url=(https?[:%].*)$/);
   if (hash_urlmatch) {
     inputel.value = decodeuri_ifneeded(hash_urlmatch[1]);
   }
