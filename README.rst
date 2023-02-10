@@ -11,10 +11,11 @@ but it also supports a number of generic engines (such as Wordpress and MediaWik
 
 It is currently released as:
 
-- Userscript: `Greasyfork <https://greasyfork.org/scripts/36662-image-max-url>`__ | `OpenUserJS <https://openuserjs.org/scripts/qsniyg/Image_Max_URL>`__ (most browsers)
+- Userscript: (most browsers)
 
-  - `userscript.user.js <https://github.com/qsniyg/maxurl/blob/master/userscript.user.js>`__ is also the base for everything listed below
-  - It also serves as a node module (used by the reddit bot), and can be embedded in a website
+  - Stable: `userscript_smaller.user.js <https://github.com/qsniyg/maxurl/blob/master/userscript_smaller.user.js?raw=true>`__ or `OpenUserJS <https://openuserjs.org/scripts/qsniyg/Image_Max_URL>`__
+  - Development: `userscript.user.js <https://github.com/qsniyg/maxurl/blob/master/userscript.user.js>`__ (recommended)
+  - It serves as the base for everything listed below. It also serves as a node module (used by the reddit bot), and can be embedded in a website.
 
 - Browser extension: `Firefox Quantum <https://addons.mozilla.org/firefox/addon/image-max-url/>`__ | `Opera Beta/Developer <https://addons.opera.com/en/extensions/details/image-max-url/>`__ (other browsers supporting WebExtensions can sideload the extension through this git repository)
 
