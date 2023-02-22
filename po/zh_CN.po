@@ -2653,14 +2653,6 @@ msgstr "Instagram: 使用原生 API"
 msgid "Uses Instagram's native API if possible, requires you to be logged into Instagram. This usually allows for higher resolution images (1440x*) to be returned."
 msgstr "尽可能使用 Instagram 的原生 API，这需要您已登录 Instagram。通常能返回更高分辨率的图像（1440x*）。"
 
-#. instagram_use_app_api.warning.true
-msgid ""
-"As of a recent (May 2021) Instagram update, this option may flag your account when requesting too often.\n"
-"Please consider using a backup account if enabling this option."
-msgstr ""
-"从最近（2021年5月）的 Instagram 更新开始，此选项可能因请求次数过多而使您的帐户被标记。\n"
-"如果启用此选项，请考虑使用备用帐户。"
-
 #. instagram_dont_use_web.name
 msgid "Instagram: Don't use web API"
 msgstr "Instagram: 不使用 Web API"

@@ -2655,14 +2655,6 @@ msgstr "Instagram: Использовать родной API"
 msgid "Uses Instagram's native API if possible, requires you to be logged into Instagram. This usually allows for higher resolution images (1440x*) to be returned."
 msgstr "Использует родной API Instagram, если это возможно, требует, чтобы вы вошли в Instagram. Обычно это позволяет возвращать изображения с более высоким разрешением (1440x*)."
 
-#. instagram_use_app_api.warning.true
-msgid ""
-"As of a recent (May 2021) Instagram update, this option may flag your account when requesting too often.\n"
-"Please consider using a backup account if enabling this option."
-msgstr ""
-"Согласно недавнему (май 2021 г.) обновлению Instagram, этот параметр может помечать ваш аккаунт при слишком частых запросах.\n"
-"При включении этого параметра следует использовать резервный аккаунт."
-
 #. instagram_dont_use_web.name
 msgid "Instagram: Don't use web API"
 msgstr "Instagram: Без использования веб-API"
