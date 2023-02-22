@@ -8,5 +8,6 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-URL=`curl 'https://addons.mozilla.org/api/v5/addons/addon/image-max-url/versions/' | jq -r '.results[0].files[0].url'`
+#URL=`curl 'https://addons.mozilla.org/api/v5/addons/addon/image-max-url/versions/' | jq -r '.results[0].files[0].url'`
+URL=`curl 'https://addons.mozilla.org/api/v5/addons/addon/image-max-url/versions/' | jq -r '.results[0].file.url'`
 wget $URL -O build/ImageMaxURL_signed.xpi
