@@ -1,4 +1,4 @@
-2023.02.0 (in-development)
+2023.02.0
 
 New features:
 
