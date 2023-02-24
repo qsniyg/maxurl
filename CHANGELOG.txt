@@ -1,3 +1,9 @@
+2023.2.1
+
+Special thanks to jonestly, Puk0 for their contributions and reports for this release
+
+---
+
 2023.2.0
 
 New features:
