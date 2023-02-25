@@ -1,6 +1,6 @@
-2023.2.1
+2023.2.1 (in-development)
 
-Special thanks to jonestly, Puk0 for their contributions and reports for this release
+Special thanks to roi, jonestly, Puk0, sn3akyb3ar for their contributions and reports for this release
 
 ---
 
