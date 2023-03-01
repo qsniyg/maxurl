@@ -1,6 +1,10 @@
 2023.2.1 (in-development)
 
-Special thanks to roi, jonestly, Puk0, sn3akyb3ar for their contributions and reports for this release
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Reddit)
+
+Special thanks to roi, jonestly, Puk0, sn3akyb3ar, pointydev for their contributions and reports for this release
 
 ---
 
