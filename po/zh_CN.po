@@ -1021,6 +1021,14 @@ msgstr "PNG"
 msgid "JPG"
 msgstr "JPG"
 
+#. popup_enable_subtitles.name
+msgid "Enable subtitles"
+msgstr ""
+
+#. popup_enable_subtitles.description
+msgid "Enables subtitles to be overlayed on top of the video"
+msgstr ""
+
 #. mouseover_ui.name
 msgid "Popup UI"
 msgstr "弹窗界面"
