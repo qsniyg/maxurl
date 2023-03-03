@@ -33849,8 +33849,10 @@ var $$IMU_EXPORT$$;
             domain === "img.yavtube.com" ||
             domain === "p8k5i9q7.map2.ssl.hwcdn.net" ||
             domain === "a2h6m3w6.ssl.hwcdn.net" ||
+            domain === "p4y9n2n4.ssl.hwcdn.net" ||
+            domain === "p4k7u4x7.ssl.hwcdn.net" ||
             domain === "c9w8v3m5.ssl.hwcdn.net") {
-            newsrc = src.replace(/(\/content\/+[0-9]+\/+[^/]+-[0-9]+)_[wh][0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+            newsrc = src.replace(/(\/content\/+[0-9]+)(\/+[^/]+-[0-9]+)_([wh][0-9]+|\d{4})(\.[^/.]*)(?:[?#].*)?$/, "$1$2$4");
             if (newsrc !== src)
                 return newsrc;
         }
@@ -65827,7 +65829,7 @@ var $$IMU_EXPORT$$;
                 return add_extensions(newsrc);
             }
         }
-        if (domain_nowww === "kemono.party") {
+        if ((domain_nowww === "kemono.party") || (domain_nowww === "coomer.party")) {
             return src.replace(/\/thumbnail\/+data\/+/, "/data/");
         }
         if (host_domain_nowww === "gloria.tv") {
@@ -65850,6 +65852,11 @@ var $$IMU_EXPORT$$;
         }
         if (domain_nowww === "realbooru.com") {
             newsrc = src.replace(/(\bthumbnails\b)(.*)(thumbnail_)(.*)(.jpg)/, "/images$2$4.jpeg");
+            if (newsrc !== src)
+                return newsrc;
+        }
+        if (domain_nowww === "craigslist.org") {
+            newsrc = src.replace(/(https:\/\/images\.craigslist\.org\/)([a-zA-Z0-9]{5})_(.*)(_300x300\.jpg)/, "$1$2$3_1200x900.jpg");
             if (newsrc !== src)
                 return newsrc;
         }
