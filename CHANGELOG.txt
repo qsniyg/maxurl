@@ -1,10 +1,14 @@
 2023.3.0 (in-development)
 
+New features:
+
+ * Option to toggle video subtitles (enabled by default)
+
 Improvements:
 
  * Various improvements/fixes to existing rules (including Reddit)
 
-Special thanks to roi, jonestly, Puk0, sn3akyb3ar, pointydev, Adrthegamedev, karpuzikov, Broly, contextnerror for their contributions and reports for this release
+Special thanks to roi, jonestly, Puk0, sn3akyb3ar, pointydev, Adrthegamedev, karpuzikov, Broly, contextnerror, tathastu871 for their contributions and reports for this release
 
 ---
 
