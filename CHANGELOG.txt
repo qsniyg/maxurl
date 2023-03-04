@@ -8,7 +8,7 @@ Improvements:
 
  * Various improvements/fixes to existing rules (including Reddit)
 
-Special thanks to roi, jonestly, Puk0, sn3akyb3ar, pointydev, Adrthegamedev, karpuzikov, Broly, contextnerror, tathastu871, jedikalimero, allr8, vscum, aslian, eightyy8, fireattack, ayunami2000 for their contributions and reports for this release
+Special thanks to roi, jonestly, Puk0, sn3akyb3ar, pointydev, Adrthegamedev, karpuzikov, Broly, contextnerror, tathastu871, jedikalimero, allr8, vscum, aslian, eightyy8, fireattack, ayunami2000, TheLastZombie for their contributions and reports for this release
 
 ---
 
