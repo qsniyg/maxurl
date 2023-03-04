@@ -8,7 +8,11 @@ Improvements:
 
  * Various improvements/fixes to existing rules (including Reddit)
 
-Special thanks to roi, jonestly, Puk0, sn3akyb3ar, pointydev, Adrthegamedev, karpuzikov, Broly, contextnerror, tathastu871, jedikalimero, allr8, vscum, aslian, eightyy8, fireattack, ayunami2000, TheLastZombie, Andy8r0X for their contributions and reports for this release
+Bugfixes:
+
+ * Fix audio/video redirects (#1050, thanks to MarvNC on github for reporting)
+
+Special thanks to roi, jonestly, Puk0, sn3akyb3ar, pointydev, Adrthegamedev, karpuzikov, Broly, contextnerror, tathastu871, jedikalimero, allr8, vscum, aslian, eightyy8, fireattack, ayunami2000, TheLastZombie, Andy8r0X, MarvNC for their contributions and reports for this release
 
 ---
 
