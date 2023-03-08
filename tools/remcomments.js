@@ -76,9 +76,24 @@ var normalize_tsstyle = function(script) {
 		.replace(/}\n\s*((?:catch|else)\s)/g, "} $1");
 }
 
+var move_awaiter_generator = function(script) {
+	let ag_regex = /\n(var __awaiter = [\s\S]*?\n};\nvar __generator = [\s\S]*?\n};)\r*\n/;
+	let ag_match = script.match(ag_regex);
+	if (!ag_match) {
+		console.warn("Unable to find __awaiter and __generator");
+		return script;
+	}
+	let ag_script = ag_match[1];
+	script = script
+		.replace(ag_regex, "\n")
+		.replace(/(\n\(function\(\) {\n(?:\s*\/\/.*\r*\n)*)/, "$1" + ag_script + "\n");
+	return script;
+}
+
 function build_userscript_user_js(tsout) {
 	var userscript = fs.readFileSync(tsout).toString();
 	userscript = normalize_tsstyle(userscript);
+	userscript = move_awaiter_generator(userscript);
 	var lines = spaces_to_tabs(userscript.split("\n"));
 
 	var newlines = [];
