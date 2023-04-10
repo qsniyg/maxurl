@@ -89,7 +89,7 @@ perfect though, I often get it wrong myself :) I can fix it up if you make a mis
     ```
 
   - The "format" is quite loose though, don't worry too much about getting it right.
-  - Please avoid adding NSFW test cases if possible.
+  - **Please do not add any NSFW test cases.**
 
 - Regex style
 
