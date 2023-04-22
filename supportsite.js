@@ -24,6 +24,8 @@ function reqsite_simplehash(str) {
     return hash;
 }
 
+// User ID system as a basic protection against abuse (hashes multiple system values together to form a unique user ID)
+// Feel free to override this function locally (e.g. using a userscript), but please don't abuse the request sytem!
 function reqsite_userid() {
     var fields = [
         "userAgent",
@@ -40,7 +42,11 @@ function reqsite_userid() {
         } catch (e) {};
     }
 
-    return reqsite_simplehash(fields_str.join("\n"));
+    try {
+        fields_str.push(new Date().getTimezoneOffset());
+    } catch (e) {}
+
+    return reqsite_simplehash(fields_str.join("\n")).toString(16);
 }
 
 function reqsite_discord(siteurl, extrainfo, cb) {
