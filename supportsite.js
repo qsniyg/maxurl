@@ -57,7 +57,10 @@ function reqsite_discord(siteurl, extrainfo, cb) {
 
     var domain = reqsite_get_domain(siteurl);
 
-    var encodedurl = siteurl.replace(/^http/, "----");
+    // to prevent discord from parsing the links
+    var encodedurl = siteurl
+        .replace(/^([a-z]+):\/\//, "$1...")
+        .replace(/^http/, "----");
     encodedurl = btoa(encodedurl);
 
     var userid = reqsite_userid();
