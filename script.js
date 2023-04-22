@@ -27,6 +27,9 @@ function do_imu(url, cb) {
 // Thanks to /u/GarlicoinAccount for noticing the need to run this
 // separately, as input can be sent before the page is fully loaded
 function process_input() {
+  if (ignore_input)
+    return;
+
   var text = inputel.value;
   if (text.match(/^\s+https?:\/\//)) {
     inputel.value = text.replace(/^\s*/, "");
@@ -70,14 +73,19 @@ var decodeuri_ifneeded = function(url) {
   return url;
 };
 
+var ignore_input = false;
 // thanks to MillennialDIYer on github for the idea: https://github.com/qsniyg/maxurl/issues/665#url=test
 if (window.location.hash) {
   var lochash = window.location.hash;
 
   if (/#imu-request-site&/.test(lochash)) {
-    setTimeout(main_reqsupport, 10);
+    setTimeout(function() {
+      main_reqsupport();
+      ignore_input = false;
+    }, 10);
 
     lochash = lochash.replace(/#imu-request-site&/, "#");
+    ignore_input = true;
   }
 
   var hash_urlmatch = lochash.match(/#url=(https?[:%][^#]*)(?:#.*)?$/);
@@ -156,6 +164,8 @@ function main_reqsupport(e) {
     return;
 
   sending_request = true;
+
+  maxspanel.innerHTML = "Requesting...";
 
   reqsite_discord(url, null, function(status, msg) {
     sent_requests[url] = true;
