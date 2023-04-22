@@ -7,7 +7,7 @@ https://raw.githubusercontent.com/peterolson/BigInteger.js/v1.6.51/BigInteger.mi
 https://unpkg.com/mux.js@5.7.0/dist/mux.js
 
 # Built versions for shaka aren't available on github
-https://ajax.googleapis.com/ajax/libs/shaka-player/3.3.18/shaka-player.compiled.debug.js
+https://ajax.googleapis.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.debug.js
 
 # Libraries below are not included in the firefox extension
 https://unpkg.com/@ffmpeg/ffmpeg@0.9.7/dist/ffmpeg.min.js
