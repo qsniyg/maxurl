@@ -72,7 +72,15 @@ var decodeuri_ifneeded = function(url) {
 
 // thanks to MillennialDIYer on github for the idea: https://github.com/qsniyg/maxurl/issues/665#url=test
 if (window.location.hash) {
-  var hash_urlmatch = window.location.hash.match(/#url=(https?[:%].*)$/);
+  var lochash = window.location.hash;
+
+  if (/#imu-request-site&/.test(lochash)) {
+    setTimeout(main_reqsupport, 10);
+
+    lochash = lochash.replace(/#imu-request-site&/, "#");
+  }
+
+  var hash_urlmatch = lochash.match(/#url=(https?[:%][^#]*)(?:#.*)?$/);
   if (hash_urlmatch) {
     inputel.value = decodeuri_ifneeded(hash_urlmatch[1]);
   }
@@ -126,6 +134,42 @@ function resetels() {
   maxael.innerHTML = "";
   maximgel.src = "";
   origpageel.innerHTML = "";
+}
+
+var sent_requests = {};
+
+var sending_request = false;
+function main_reqsupport(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  var url = inputel.value.replace(/^\s*|\s*$/, "");
+  if (!/^https?:\/\//.test(url))
+    url = null;
+
+  if (!url || url in sent_requests)
+    return;
+
+  if (sending_request)
+    return;
+
+  sending_request = true;
+
+  reqsite_discord(url, null, function(status, msg) {
+    sent_requests[url] = true;
+    sending_request = false;
+
+    if (status) {
+      maxspanel.innerHTML = "Site request sent!";
+    } else {
+      maxspanel.innerHTML = "Failed to send request: " + msg;
+    }
+  });
+
+  if (e)
+    return false;
 }
 
 function set_max(obj) {
@@ -217,7 +261,7 @@ function set_max(obj) {
   }
 
   if (urls.length === 1 && urls[0] === currenturl) {
-    maxspanel.innerHTML = "No larger image found";
+    maxspanel.innerHTML = "<p>No larger image found</p><p><a href=\"#\" onclick=\"main_reqsupport(event)\">Request support for this site</a></p>";
 
     resetels();
     set_orig_page();
