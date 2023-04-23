@@ -43999,7 +43999,7 @@ var $$IMU_EXPORT$$;
 		}
 		if (domain_nowww === "b92.net") return src.replace(/(\/pics\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9]+[0-9a-f]+[0-9]+)_[wh][0-9]+\./, "$1_orig.");
 		if (domain_nosub === "albumoftheyear.org" && /^cdn[0-9]*\./.test(domain)) {
-			return src.replace(/(?:\/[0-9]*x[0-9]*\/+album\/+|\/album\/+thumbs\/+)/, "/album/");
+			return src.replace(/(:\/\/[^/]+\/+)(?:[0-9]+x\/+)?([a-z]+\/+)(?:thumbs\/+)?/, "$1$2");
 		}
 		if (domain_nowww === "rap4ever.org") return src.replace(/(\/uploads\/+albums\/+[^/]*\/+[^/]*?)[0-9]+X[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		if (domain_nowww === "musicmeter.nl") {
@@ -44402,13 +44402,20 @@ var $$IMU_EXPORT$$;
 				can_head: false // 403
 			};
 		}
-		if (domain === "img.omni7.jp") {
+		if (domain_nosub === "omni7.jp") {
+			if (/\/common\/+images\/+material\/+noImage\./.test(src))
+				return {
+					url: src,
+					bad: true
+				};
 			if (/\/common\/+images\/+zoomImage\./.test(src))
 				return {
 					url: src,
 					bad: "mask"
 				};
-			return src.replace(/(\/product\/+[0-9]+\/+[0-9]+\/+image\/+[0-9]+(?:_[0-9]+)?)_(?:main|sub[0-9]*)_[sl](\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			return src
+				.replace(/(\/product\/+[0-9]+\/+[0-9]+\/+image\/+[0-9]+(?:_[0-9]+)?)_(?:main|sub[0-9]*)_el(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
+				.replace(/(\/product\/+[0-9]+\/+[0-9]+\/+image\/+[0-9]+(?:_[0-9]+)?_(?:main|sub[0-9]*))_[sl](\.[^/.]*)(?:[?#].*)?$/, "$1_el$2");
 		}
 		if (domain === "d2jtsb989t238a.cloudfront.net") return src.replace(/(\/p\/+[0-9]+\/+[0-9]+\/+)small(?:[?#].*)?$/, "$1normal");
 		if (domain === "ogre.natalie.mu" && string_indexof(src, "/media/") >= 0) {
@@ -56689,6 +56696,7 @@ var $$IMU_EXPORT$$;
 				}
 			}
 		}
+		if (domain === "dosbg3xlm0x1t.cloudfront.net") return src.replace(/(\/images\/+items\/+[0-9]+\/+)(?:500|240)\/+/, "$11200/");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
