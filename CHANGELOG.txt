@@ -3,6 +3,7 @@
 New features:
 
  * Option to toggle video subtitles (enabled by default)
+ * Userscript menu option to request support for a website
 
 Improvements:
 
