@@ -25083,7 +25083,8 @@ var $$IMU_EXPORT$$;
 			return src.replace(/.*?\/-ip-\//, "");
 		}
 		if (domain === "cdn.mainichi.jp") return src.replace(/\/[0-9]+(\.[^/.]*)$/, "/9$1");
-		if (domain === "img.evbuc.com") {
+		if (domain === "img.evbuc.com" ||
+			domain === "cdn.mall.adeptmind.ai") {
 			return decodeURIComponent(src.replace(/.*:\/\/[^/]*\/([^?]*).*/, "$1"));
 		}
 		if (domain === "img.cdandlp.com") {
@@ -31910,7 +31911,8 @@ var $$IMU_EXPORT$$;
 				.replace(/\/resized\/[0-9]+x(?:[0-9]+)?\//, "/kapanlagi.com/")
 				.replace(/(\/g\/.\/.\/[^/]*\/)t\/([^/]*)$/, "$1$2")
 				.replace(/(\/p\/+[^/]*\/+)[0-9]+x[0-9]+\/+([^/]*$)/, "$1$2")
-				.replace(/\/t\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/$1");
+				.replace(/\/t\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/$1")
+				.replace(/(\/resources\/.*\/)[auto0-9]+x[auto0-9]+-([^/]+)(?:[?#].*)?$/, "$1$2");
 		}
 		if (domain_nosub === "nintendo-europe.com" && /^cdn[0-9]*\./.test(domain)) {
 			return src.replace(/_image[0-9]*[wh](\.[^/.]*)$/, "$1");
@@ -52600,7 +52602,11 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "allafrica.com" && /^cdn[0-9]*\./.test(domain)) {
 			return src.replace(/(\/download\/+pic\/+main\/+main\/+csiid\/+[0-9]+:[0-9a-f]{10,}):[^/?#]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
-		if (domain_nowww === "toledoblade.com") return src.replace(/(\/image\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2})[^/]+\/+([^/]+)(?:[?#].*)?$/, "$1$2");
+		if (domain_nowww === "toledoblade.com" ||
+			domain === "liber.post-gazette.com") {
+			return src.replace(/(\/image\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2})[^/]+\/+([^/]+)(?:[?#].*)?$/, "$1$2");
+		}
+		if (domain === "9b16f79ca967fd0708d1-2713572fef44aa49ec323e813b06d2d9.ssl.cf2.rackcdn.com") return src.replace(/\/[0-9]+x_[^/]+\/([^/]+)(?:[?#].*)?$/, "/1200x/$1");
 		if (domain_nowww === "kstp.com") {
 			return src.replace(/(\/kstpImages\/+repository)Thumbs\/+/, "$1/");
 		}
@@ -54648,6 +54654,7 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 		if ((domain_nosub === "amplience.net" && /^i[0-9]*\./.test(domain)) ||
+			domain === "cdn.media.amplience.net" ||
 			domain === "media.finishline.com" ||
 			domain === "media.jdsports.com") {
 			if (/\/t\/+jpl\/+jd_product_list\?/.test(src)) {
@@ -54655,9 +54662,26 @@ var $$IMU_EXPORT$$;
 				if (queries.plu) {
 					return urljoin(src, "/i/jpl/" + queries.plu, true);
 				}
-			} else {
+			} else if (/\/i\/+jpl\//.test(src)) {
 				return src.replace(/\?.*/, "");
 			}
+		}
+		if (domain === "cdn.media.amplience.net") {
+			var obj_5 = {
+				url: src,
+				bad_if: [{
+						headers: {
+							"x-amp-published": "Sat, 13 Aug 2022 04:11:19 GMT",
+							"x-amp-source-height": "1031",
+							"x-amp-source-width": "1280",
+							"content-length": "11185"
+						}
+					}]
+			};
+			obj_5.url = src
+				.replace(/(\/i\/+harryrosen\/+[0-9]+)_[a-z]+(?:\.[a-z]+)?(?:[?#].*)?$/, "$1")
+				.replace(/(\/s\/+hottopic\/+[0-9]+_hi)(?:_[a-z]+)?(?:\.[a-z]+)?(?:[?#].*)?$/, "$1");
+			return obj_5;
 		}
 		if (domain_nowww === "indigowhitetv.com") {
 			if (/\/assets\/+heart-circle-pink\./.test(src)) {
@@ -56459,7 +56483,8 @@ var $$IMU_EXPORT$$;
 				.replace(/\/images\/+[0-9]+x[0-9]+\/+[0-9]+x\/+[0-9]+\/+([0-9]+\.)/, "/images/$1")
 				.replace(/\?.*/, "");
 		}
-		if (domain === "austin.culturemap.com") {
+		if (domain === "austin.culturemap.com" ||
+			domain_nowww === "blackbeltmag.com") {
 			match = src.match(/\/media-library\/+[^/]*?[?&]id=([0-9]+)/);
 			if (match) {
 				return src.replace(/[?#].*/, "?id=" + match[1]);
@@ -56639,8 +56664,8 @@ var $$IMU_EXPORT$$;
 					var obj = common_functions["get_videotag_obj"](resp);
 					if (!obj)
 						return done(null, false);
-					for (var _i = 0, obj_5 = obj; _i < obj_5.length; _i++) {
-						var sobj = obj_5[_i];
+					for (var _i = 0, obj_6 = obj; _i < obj_6.length; _i++) {
+						var sobj = obj_6[_i];
 						if (sobj.video) {
 							sobj.headers.Referer = null;
 							sobj.headers["Accept-Encoding"] = "identity;q=1, *;q=0";
@@ -56697,6 +56722,9 @@ var $$IMU_EXPORT$$;
 			}
 		}
 		if (domain === "dosbg3xlm0x1t.cloudfront.net") return src.replace(/(\/images\/+items\/+[0-9]+\/+)(?:500|240)\/+/, "$11200/");
+		if (domain === "thumb.viva.id") {
+			return src.replace(/:\/\/[^/]+\/+viva([a-z]+)\/+[0-9]+x[0-9]+\/+/, "://thumbs.vdvc.id/$1/images/original/");
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}

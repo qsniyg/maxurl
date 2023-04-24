@@ -12,7 +12,7 @@ var currenturl = null;
 function do_imu(url, cb) {
   var retval = window.imu_variable(url, {
     fill_object: true,
-   catch_errors: false,
+    catch_errors: false,
     do_request: function() {},
     cb: cb
   });
