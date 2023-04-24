@@ -182,6 +182,18 @@ function main_reqsupport(e) {
     return false;
 }
 
+function get_nolargerimagefound_text() {
+  var base_text = "<p>No larger image found</p>";
+
+  var url = inputel.value.replace(/^\s*|\s*$/, "");
+  if (!reqsite_valid_url(url))
+    return base_text;
+
+  base_text += "<p><a href=\"#\" onclick=\"main_reqsupport(event)\">Request support for this site</a></p>";
+
+  return base_text;
+}
+
 function set_max(obj) {
   var error = true;
 
@@ -271,7 +283,7 @@ function set_max(obj) {
   }
 
   if (urls.length === 1 && urls[0] === currenturl) {
-    maxspanel.innerHTML = "<p>No larger image found</p><p><a href=\"#\" onclick=\"main_reqsupport(event)\">Request support for this site</a></p>";
+    maxspanel.innerHTML = get_nolargerimagefound_text();
 
     resetels();
     set_orig_page();

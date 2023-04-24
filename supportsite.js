@@ -24,6 +24,36 @@ function reqsite_simplehash(str) {
     return hash;
 }
 
+// Commonly requested domains that currently cannot be supported.
+// Please message me if you find a method to support these!
+var reqsite_invalid_domains = [
+    /\.fbcdn\.net$/,
+    /\.cdninstagram\.com$/,
+    /i\.discogs\.com$/
+];
+
+function reqsite_valid_url(url) {
+    if (typeof url !== "string" || !/^https?:\/\/[^/]+\//.test(url))
+        return false;
+
+    // If you self-host this, please don't disable this check unless you intend to update the userscript regularly.
+    if (window.location.host && window.location.host !== "qsniyg.github.io")
+        return false;
+
+    var domain = reqsite_get_domain(url);
+    if (!domain)
+        return false;
+
+    for (var i = 0; i < reqsite_invalid_domains.length; i++) {
+        var invalid_domain = reqsite_invalid_domains[i];
+
+        if (invalid_domain.test(domain))
+            return false;
+    }
+
+    return true;
+}
+
 // User ID system as a basic protection against abuse (hashes multiple system values together to form a unique user ID)
 // Feel free to override this function locally (e.g. using a userscript), but please don't abuse the request sytem!
 function reqsite_userid() {
