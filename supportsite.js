@@ -29,7 +29,8 @@ function reqsite_simplehash(str) {
 var reqsite_invalid_domains = [
     /\.fbcdn\.net$/,
     /\.cdninstagram\.com$/,
-    /i\.discogs\.com$/
+    /i\.discogs\.com$/,
+    /encrypted-tbn[0-9]*\.gstatic\.com$/
 ];
 
 function reqsite_valid_url(url) {
