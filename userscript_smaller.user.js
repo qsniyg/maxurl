@@ -56725,6 +56725,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "thumb.viva.id") {
 			return src.replace(/:\/\/[^/]+\/+viva([a-z]+)\/+[0-9]+x[0-9]+\/+/, "://thumbs.vdvc.id/$1/images/original/");
 		}
+		if (domain === "img.inews.co.id") return src.replace(/\/media\/+[0-9]+\/+files\//, "/files/");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
