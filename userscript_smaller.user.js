@@ -18019,6 +18019,11 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "bridestory.com") {
 			return src.replace(/^[a-z]+:\/\/[^/]+\/+images\/+.*?\/+assets\/+([^/]+)\/+[^/]+(?:[?#].*)?$/, "https://images.bridestory.com/image/upload/assets/$1.jpg");
 		}
+		if (domain === "cloudinary-cdn.ffm.to") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+.*?\/+(https?.*)$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
 		if (domain_nosub === "popsugar-assets.com" ||
 			domain_nosub === "onsugar.com") {
 			newsrc = src.replace(/\/thumbor\/[^/]+\/(?:[0-9]+x[0-9]+:[0-9]+x[0-9]+\/)?(?:fit-in\/)?[^/]+\/(?:filters:[^/]+\/)?/, "/");
@@ -56726,6 +56731,9 @@ var $$IMU_EXPORT$$;
 			return src.replace(/:\/\/[^/]+\/+viva([a-z]+)\/+[0-9]+x[0-9]+\/+/, "://thumbs.vdvc.id/$1/images/original/");
 		}
 		if (domain === "img.inews.co.id") return src.replace(/\/media\/+[0-9]+\/+files\//, "/files/");
+		if (domain === "kbimages1-a.akamaihd.net") {
+			return src.replace(/(\/[-0-9a-f]{20,}\/+)[0-9]+\/+[0-9]+\/+(?:true|false)\/+/i, "$1");
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -57112,7 +57120,7 @@ var $$IMU_EXPORT$$;
 		}
 		if (domain === "files.mastodon.social" ||
 			domain === "cf.mastohost.com" ||
-			src.match(/\/media_attachments\/+files\/+(?:[0-9]{3}\/+){3}[a-z]+\/+[0-9a-f]{16}\.[^/.]*(?:[?#].*)?$/)) {
+			src.match(/\/media_attachments\/+files\/+(?:[0-9]{3}\/+){3,6}[a-z]+\/+[0-9a-f]{16}\.[^/.]*(?:[?#].*)?$/)) {
 			return src.replace(/\/[a-z]+\/([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "/original/$1");
 		}
 		if (domain_nowww === "diasp.org" ||
