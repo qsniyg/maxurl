@@ -19830,6 +19830,7 @@ var $$IMU_EXPORT$$;
 			(domain === "i.gremicdn.pl" && /\/image\/+free\//.test(src)) ||
 			domain === "images.getbento.com" ||
 			(domain_nowww === "christies.com" && string_indexof(src, "/img/") >= 0) ||
+			domain === "bmg-images.forward-publishing.io" ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -40397,7 +40398,8 @@ var $$IMU_EXPORT$$;
 				return decodeuri_ifneeded(newsrc);
 		}
 		if (domain === "i.obozrevatel.com") return src.replace(/(:\/\/[^/]*\/)([0-9]{4}\/+[0-9]{1,2}\/+[0-9]{1,2}\/+[^/?]*)(?:[?#].*)?$/, "$1gallery/$2");
-		if (domain_nowww === "stuttgarter-nachrichten.de") {
+		if (domain_nowww === "stuttgarter-nachrichten.de" ||
+			domain_nowww === "schwarzwaelder-bote.de") {
 			return src.replace(/(:\/\/[^/]*\/media\.media\.[-0-9a-f]+\.)(?:[^/]*\.)?([^/.]*)(?:[?#].*)?$/, "$1original.$2");
 		}
 		if (domain_nosub === "360buyimg.com" &&
@@ -56966,6 +56968,32 @@ var $$IMU_EXPORT$$;
 			}
 		}
 		if (domain_nowww === "ad93.ltd") return src.replace(/-[0-9]+x-q[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1");
+		if (domain === "img.karaoketexty.cz") {
+			return src.replace(/\/thumb\/+([^/]+)-w[0-9]+\./, "/$1.");
+		}
+		if (domain === "search.pabloferreiro.es" ||
+			domain === "librex.zzls.xyz" ||
+			domain_nowww === "librex.me" ||
+			domain === "librex.mikata.ru" ||
+			domain === "search.ahwx.org" ||
+			domain === "search.davidovski.xyz" ||
+			domain === "search.madreyk.xyz" ||
+			domain === "librex.pufe.org" ||
+			domain === "librex.ratakor.com" ||
+			domain === "search.tildevarsh.in" ||
+			domain === "librex.myroware.eu" ||
+			domain === "librex.bloatcat.tk" ||
+			domain === "librex.retro-hax.net" ||
+			domain === "search.funami.tech" ||
+			domain === "search.zeroish.xyz" ||
+			domain === "librex.baczek.me" ||
+			domain === "librex.yogeshlamichhane.com.np" ||
+			domain === "search.spaceint.fr" ||
+			domain === "lx.benike.monster") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+image_proxy\.php\?(?:.*&)?url=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
