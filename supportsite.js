@@ -33,6 +33,10 @@ var reqsite_invalid_domains = [
     /encrypted-tbn[0-9]*\.gstatic\.com$/
 ];
 
+var reqsite_invalid_urls = [
+    /^https?:\/\/i\.redd\.it\/+[0-9a-z]+\.[a-z]+$/
+];
+
 function reqsite_valid_url(url) {
     if (typeof url !== "string" || !/^https?:\/\/[^/]+\//.test(url))
         return false;
@@ -40,6 +44,11 @@ function reqsite_valid_url(url) {
     // If you self-host this, please don't disable this check unless you intend to update the userscript regularly.
     if (window.location.host && window.location.host !== "qsniyg.github.io")
         return false;
+
+    for (var i = 0; i < reqsite_invalid_urls.length; i++) {
+        if (reqsite_invalid_urls[i].test(url))
+            return false;
+    }
 
     var domain = reqsite_get_domain(url);
     if (!domain)
