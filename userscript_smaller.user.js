@@ -20809,6 +20809,15 @@ var $$IMU_EXPORT$$;
 				return string_fromcharcode(parseInt(arguments[1], 16));
 			});
 		}
+		if (domain === "camo.githubusercontent.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+[0-9a-f]+\/+(68747470[0-9a-f]+)(?:[?#].*)?$/);
+			if (match) {
+				var hex = match[1];
+				return hex.replace(/[0-9a-f]{2}/g, function(x) {
+					return string_fromcharcode(parseInt(x, 16));
+				});
+			}
+		}
 		if (host_domain_nosub === "fandom.com" && options.element) {
 			if (src.length < 10 && options.element.hasAttribute("data-src")) {
 				return options.element.getAttribute("data-src");
@@ -55969,10 +55978,11 @@ var $$IMU_EXPORT$$;
 					return "https://ssl.ofdb.de/" + queries.cover;
 			}
 		}
-		if (domain === "cdn.cinematerial.com") return src.replace(/\/p\/+(?:60|136|297)x\/+/, "/p/500x/");
-		if (domain === "oldies-cdn.freetls.fastly.net") {
-			return src.replace(/\/i\/+boxart\/+[wh][0-9]+\/+/, "/i/boxart/original/");
+		if (domain === "cdn.cinematerial.com" ||
+			domain === "media-cache.cinematerial.com") {
+			return src.replace(/\/p\/+(?:60|136|297)x\/+/, "/p/500x/");
 		}
+		if (domain === "oldies-cdn.freetls.fastly.net") return src.replace(/\/i\/+boxart\/+[wh][0-9]+\/+/, "/i/boxart/original/");
 		if (amazon_container === "talentsoup") {
 			return src.replace(/(\/[0-9]{5}\/+[0-9]{10,})-[a-z]+\./, "$1.");
 		}
