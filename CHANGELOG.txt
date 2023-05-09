@@ -7,7 +7,7 @@ New features:
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including Imgur, Reddit)
+ * Various improvements/fixes to existing rules (including Bing, Imgur, Reddit)
 
 Bugfixes:
 
