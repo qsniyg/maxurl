@@ -17832,13 +17832,19 @@ var $$IMU_EXPORT$$;
 		}
 		if (domain === "k.kakaocdn.net") return src.replace(/\/img_[a-z]*\.([^./]*)$/, "/img.$1");
 		if (domain === "images.sportskhan.net" ||
+			domain === "images.khan.co.kr" ||
 			domain === "img.khan.co.kr") {
-			return src
+			newsrc = src
 				.replace(/\/r\/[0-9]+x[0-9]+\//, "/")
 				.replace(/\/[a-z]*_([0-9]+\.[a-z0-9A-Z]*)$/, "/$1")
 				.replace(/\/c\/[0-9]*x[0-9]*\//, "/")
 				.replace(/(\/news\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/[0-9]{8}\.[0-9]+\.[0-9]+)[A-Z](\.[^/.]*)$/, "$1L$2")
+				.replace(/(\/news-p\.v[0-9]+\.[0-9]{8}\.[0-9a-f]{20,})_[A-Z][0-9]+(\.[^/.]*)$/, "$1$2")
 				.replace(/\/photodb\//, "/PhotoDB/");
+			return {
+				url: newsrc,
+				head_wrong_contentlength: true
+			};
 		}
 		if (domain_nosub === "sbs.co.kr" &&
 			domain.match(/^img[0-9]*\.sbs\.co\.kr/)) {
