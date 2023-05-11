@@ -20375,11 +20375,18 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\?[^/]*$/, "");
 		}
 		if (domain === "img.wennermedia.com") return src.replace(/:\/\/img\.wennermedia\.com\/[^?#]*\/([^/]*)$/, "://img.wennermedia.com/$1");
-		if (domain_nosub === "forbesimg.com" && string_indexof(domain, "images.forbesimg.com") >= 0) {
+		if (domain_nosub === "forbesimg.com" ||
+			domain === "imageio.forbes.com") {
 			return {
-				url: src.replace(/\/[0-9]*x[0-9]*\.([^/.?]*)(\?.*)?/, "/0x0.$1"),
+				url: src
+					.replace(/(\/imageserve\/+[0-9a-f]{10,}\/+(?:[^/]+\/+)?)[0-9]+x[0-9]+(\.[^/.?#]+)$/, "$10x0$2")
+					.replace(/(\/imageserve\/+[0-9a-f]{10,}\/+(?:[^/]+\/+)?[0-9]+x[0-9]+\.[^/.?#]+)(?:[?#].*)?$/, "$1"),
 				head_wrong_contentlength: true
 			};
+			/*return {
+				url: src.replace(/\/[0-9]*x[0-9]*\.([^/.?]*)(\?.*)?/, "/0x0.$1"),
+				head_wrong_contentlength: true
+			};*/
 		}
 		if (domain === "pixel.nymag.com") {
 			return src
@@ -23626,7 +23633,9 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 			if (/\/th\/+id\//.test(src)) {
-				return remove_queries(src, ["w", "h", "rs", "qlt"]);
+				newsrc = remove_queries(src, ["w", "h", "rs", "qlt"]);
+				if (newsrc !== src)
+					return newsrc;
 			}
 		}
 		if (domain === "cdn.4archive.org") return src.replace(/(\/img\/[^/.]{7})m(\.[^/.]*)$/, "$1$2");
@@ -57058,6 +57067,10 @@ var $$IMU_EXPORT$$;
 				.replace(/(\/pages\/+[-0-9a-f]+)-at2000\./, "$1-at2400.")
 				.replace(/(\/pages\/+[-0-9a-f]+)-at1600\./, "$1-at2000.")
 				.replace(/(\/pages\/+[-0-9a-f]+)-at(?:200|600|800|1000)\./, "$1-at1600.");
+		}
+		if (domain_nosub === "hosting-media.net") return src.replace(/\/jpgr[0-9]+\/+/, "/jpgr99999/");
+		if (domain === "img.mymusic.net.tw") {
+			return src.replace(/(\/mms\/+album\/+)M\/+/, "$1L/");
 		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
