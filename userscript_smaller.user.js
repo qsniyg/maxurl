@@ -57110,6 +57110,7 @@ var $$IMU_EXPORT$$;
 				};
 			}
 		}
+		if (domain === "img.broadtime.com") return src.replace(/(\/Photo\/+[0-9]+):[0-9]+(?:[?#].*)?$/, "$1");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
