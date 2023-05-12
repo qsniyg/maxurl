@@ -24350,9 +24350,7 @@ var $$IMU_EXPORT$$;
 			string_indexof(src, "/pix/") >= 0) {
 			return src.replace(/_mobi(\.[^/.]*)$/, "$1");
 		}
-		if (domain === "qph.fs.quoracdn.net") {
-			return src.replace(/-[a-z]$/, "");
-		}
+		if (domain_nosub === "quoracdn.net") return src.replace(/(\/main-qimg-[0-9a-f]{10,})-(?:[a-z]|lq)$/, "$1");
 		if (domain_nosub === "haibao.cn" && domain.match(/c[0-9]*\.haibao\.cn/)) {
 			newsrc = src.replace(/:\/\/[^/]*\/(.*)\/+imagecut\/+[0-9]+_[0-9]+\/+/, "://c3.haibao.cn/$1/");
 			if (newsrc !== src) {
@@ -33572,6 +33570,7 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "4wank.com" ||
 			domain_nosub === "fapnado.com" ||
 			domain_nosub === "crazyporn.xxx" ||
+			domain_nowww === "thisvid.com" ||
 			domain_nosub === "mylust.com" ||
 			domain_nosub === "yourlust.com" ||
 			domain_nowww === "pornrewind.com") {
@@ -33674,7 +33673,8 @@ var $$IMU_EXPORT$$;
 				domain_nosub === "videocelebs.net" ||
 				domain_nosub === "pornfappy.com" ||
 				domain_nosub === "theyarehuge.com" ||
-				domain_nosub === "pervclips.com") {
+				domain_nosub === "pervclips.com" ||
+				domain_nosub === "thisvid.com") {
 				videos_component = "embed";
 				addslash = "";
 				a_component = "";
@@ -34074,7 +34074,8 @@ var $$IMU_EXPORT$$;
 						return null;
 					}
 					var jsoned = match[1]
-						.replace(/adv_pre_vast:\s*'[^\\']+?'(?:\s*\+\s*[a-z_]+),/, "") // theyarehuge.com, zbporn.com
+						.replace(/adv_pre_vast(?:_alt)?:\s*'[^\\']+?'(?:\s*\+\s*[a-z_]+),/g, "") // theyarehuge.com, zbporn.com
+						.replace(/adv_pre_vast(?:_alt)?:\s*'[^\\']+?'\s*,/g, "") // thisvid.com
 						.replace(/([{,]\s*)([^"'\s:]+)\s*:/g, "$1\"$2\":")
 						.replace(/:\s*encodeURIComponent\(('[^']+')\)/g, ":$1")
 						.replace(/([^\\])\\'/g, "$1\\u0027")
@@ -41195,6 +41196,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "upinews.kr" ||
 			domain_nowww === "thedrive.co.kr" ||
 			domain_nowww === "k-odyssey.com" ||
+			domain === "idsncdn.iwinv.biz" ||
 			domain_nowww === "newswiz.kr") {
 			regex = /(\/news\/+data\/+[0-9]{8}\/+[a-z]*[0-9]+_[0-9]+)_(?:h[0-9]*|thum)(\.[^/.]*)(?:[?#].*)?$/;
 			var extra = {};
@@ -57077,6 +57079,28 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "hosting-media.net") return src.replace(/\/jpgr[0-9]+\/+/, "/jpgr99999/");
 		if (domain === "img.mymusic.net.tw") {
 			return src.replace(/(\/mms\/+album\/+)M\/+/, "$1L/");
+		}
+		if (domain_nosub === "files.fail" && /^v2-thumbs-/.test(domain)) {
+			newsrc = src.replace(/(:\/\/v2-)thumbs(-[^/]+\/+)jpg\/+([0-9a-f]{10,})\.jpg(?:[?#].*)?$/, "$1videos$2$3.mp4");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					Referer: "https://tik.fail/",
+					video: true
+				};
+		}
+		if (domain === "img.abcdinamo.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(eyJ[^/?#]+)(?:[?#].*)?$/);
+			if (match) {
+				var decoded_3 = base64_decode(match[1]);
+				var json_1 = JSON_parse(decoded_3);
+				if (json_1.bucket && json_1.key)
+					return "https://" + json_1.bucket + ".s3.amazonaws.com/" + json_1.key;
+			}
+		}
+		if (domain_nowww === "society6.com") return src.replace(/(\/cdn\/+[0-9]+\/+p\/+[0-9]+_[0-9]+_)(?:[a-z]|lz)\./, "$1i.");
+		if (domain_nowww === "jazzmusicarchives.com") {
+			return src.replace(/(\/images\/+[^/]+\/+)thumbnails\/+([^/]+)_[0-9]+\./, "$1$2.");
 		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
