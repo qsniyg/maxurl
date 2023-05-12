@@ -57102,6 +57102,14 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "jazzmusicarchives.com") {
 			return src.replace(/(\/images\/+[^/]+\/+)thumbnails\/+([^/]+)_[0-9]+\./, "$1$2.");
 		}
+		if (domain === "central.bac-lac.gc.ca") {
+			if (/^[a-z]+:\/\/[^/]+\/+\.item\?(?:.*&)?id=/.test(src)) {
+				return {
+					url: remove_queries(src, ["op", "width", "height"]),
+					can_head: false // 415
+				};
+			}
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
