@@ -15,7 +15,7 @@ fi
 cp ../userscript_smaller.user.js .
 
 git add userscript_smaller.user.js
-git diff
+git diff --staged
 echo "Continue? (CTRL+C to exit)"
 read
 git commit -m "Update userscript"
