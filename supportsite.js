@@ -34,7 +34,8 @@ var reqsite_invalid_domains = [
 ];
 
 var reqsite_invalid_urls = [
-    /^https?:\/\/i\.redd\.it\/+[0-9a-z]+\.[a-z]+$/
+    /^https?:\/\/i\.redd\.it\/+[0-9a-z]+\.[a-z]+$/,
+    /^https?:\/\/i\.scdn\.co\/+image\/+[0-9a-f]{40}$/
 ];
 
 function reqsite_valid_url(url) {
