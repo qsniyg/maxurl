@@ -25387,7 +25387,8 @@ var $$IMU_EXPORT$$;
 			];
 		}
 		if (domain === "r.ddmcdn.com") return src.replace(/:\/\/[^/]*\/(?:[^/_]*_[^/_]*\/)*/, "://static.ddmcdn.com/");
-		if (domain_nosub === "newegg.com" && domain.match(/images[0-9]*\.newegg\.com/)) {
+		if ((domain_nosub === "newegg.com" && /images[0-9]*\./.test(domain)) ||
+			domain_nosub === "neweggimages.com") {
 			return src.replace(/(:\/\/[^/]*\/)(?:NeweggImage\/)?(?:ProductImage|productimage)[^/]*\//, "$1ProductImageOriginal/");
 		}
 		if (domain === "images.costco-static.com" ||
@@ -56530,7 +56531,8 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/images\/+[^/]+)_(?:thumb|small)\./, "$1.");
 		}
 		if (domain === "i.maniadb.com") return src.replace(/\/images\/+(album|artist)_t\/+[0-9]+\/+/, "/images/$1/");
-		if (domain === "furry34.com") {
+		if (domain === "furry34.com" ||
+			domain === "furry34com.b-cdn.net") {
 			newsrc = src.replace(/(:\/\/[^/]+\/+posts\/+[0-9]+\/+[0-9]+\/+[0-9]+)\.[^/.]+(\.[^/.]+)(?:[?#].*)?$/, "$1.pic$2");
 			if (newsrc !== src) {
 				return add_extensions(newsrc);
