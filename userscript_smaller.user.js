@@ -19884,6 +19884,7 @@ var $$IMU_EXPORT$$;
 		if ((domain_nosub === "tradesy.com" && domain.match(/^item[0-9]*\.tradesy/) && string_indexof(src, "/images/") >= 0) ||
 			(domain_nowww === "birminghamworld.uk" && /\/jpim-static\/+image\//.test(src)) ||
 			(domain_nowww === "nationalworld.com" && /\/jpim-static\/+image\//.test(src)) ||
+			(domain === "digitalcontent.api.tesco.com" && /\/v2\/+media\//.test(src)) ||
 			(domain_nosub === "ztat.net" && /^img[0-9]*\./.test(domain))) {
 			return {
 				url: src.replace(/\?.*$/, ""),
