@@ -57121,6 +57121,11 @@ var $$IMU_EXPORT$$;
 			}
 		}
 		if (domain === "img.broadtime.com") return src.replace(/(\/Photo\/+[0-9]+):[0-9]+(?:[?#].*)?$/, "$1");
+		if (domain === "cdn.twibooru.org") {
+			newsrc = src.replace(/(\/img\/+[0-9]{4}\/+(?:[0-9]{1,2}\/+){2}[0-9]+\/+)(?:thumb|small|medium|large)\./, "$1full.");
+			if (newsrc !== src)
+				return add_extensions_with_jpeg(newsrc);
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
