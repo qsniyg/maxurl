@@ -31275,11 +31275,14 @@ var $$IMU_EXPORT$$;
 			domain === "avatars.yandex.net" ||
 			domain === "avatars.dzeninfra.ru") {
 			obj = {
-				url: src.replace(/\/(?:[a-z]+_(?:[a-z]+_)?|[a-zA-Z])?[0-9]+(?:x[0-9]+)?(?:[A-Za-z_0-9]+)([?&].*)?$/, "/orig$1")
+				url: src.replace(/\/(?:[a-z]+_(?:[a-z]+_)?|[a-zA-Z]|pjpg)?[0-9]+(?:x[0-9]+)?(?:[A-Za-z_0-9]+)([?&].*)?$/, "/orig$1")
 			};
 			match = src.match(/\/get-[^/]+\/+([0-9]+)\/+[^/]+\/+[^/]+(?:[?#].*)?$/);
 			if (match)
 				obj.filename = match[1];
+			newsrc = src.replace(/(:\/\/[^/]+\/+i\?)(?:.*&)?id=([0-9a-f]{10,}[^&#]+)(?:[&#].*)?$/, "$1id=$2&n=13");
+			if (newsrc !== src)
+				return newsrc;
 			return obj;
 		}
 		if (domain_nowww === "t2online.com") return src.replace(/^[a-z]+:\/\/[^/]*\/unsafe\//, "http://");
@@ -57127,6 +57130,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return add_extensions_with_jpeg(newsrc);
 		}
+		if (domain === "media.forgecdn.net") return src.replace(/(\/avatars\/+)thumbnails\/+([0-9]+\/+[0-9]+\/+)[0-9]+\/+[0-9]+\/+/, "$1$2");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
