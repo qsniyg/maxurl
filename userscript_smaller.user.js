@@ -27000,6 +27000,7 @@ var $$IMU_EXPORT$$;
 			domain === "static.footshop.com" ||
 			domain_nowww === "rosendy.com" ||
 			domain_nowww === "ultimateselfcare.com" ||
+			domain_nowww === "tucano.com" ||
 			domain_nowww === "flyhighstore.pl") {
 			newsrc = src.replace(/(\/img\/+p\/+(?:[0-9]\/+){1,}[0-9]+)[-_][^/.]*(\.[^/.]*)$/, "$1$2");
 			if (newsrc !== src)
