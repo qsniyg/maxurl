@@ -21236,7 +21236,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "lastfm-img2.akamaized.net" ||
 			domain === "lastfm.freetls.fastly.net" ||
 			domain_nosub === "lst.fm") {
-			return src.replace(/\/i\/+u\/+(?:avatar)?(?:[0-9]+x[0-9]+|[0-9]+s|arX?L)\//, "/i/u/");
+			return src.replace(/\/i\/+u\/+(?:avatar)?(?:[0-9]+x[0-9]+|[0-9]+s|ar(?:X?L|[0-9]))\//, "/i/u/");
 		}
 		if (domain_nosub === "myspacecdn.com" &&
 			domain.match(/a[0-9](?:\...)?-images\.myspacecdn\.com/)) {
@@ -56648,6 +56648,7 @@ var $$IMU_EXPORT$$;
 				.replace(/\?.*/, "");
 		}
 		if (domain === "austin.culturemap.com" ||
+			domain_nowww === "indy100.com" ||
 			domain_nowww === "blackbeltmag.com") {
 			match = src.match(/\/media-library\/+[^/]*?[?&]id=([0-9]+)/);
 			if (match) {
@@ -57132,6 +57133,22 @@ var $$IMU_EXPORT$$;
 				return add_extensions_with_jpeg(newsrc);
 		}
 		if (domain === "media.forgecdn.net") return src.replace(/(\/avatars\/+)thumbnails\/+([0-9]+\/+[0-9]+\/+)[0-9]+\/+[0-9]+\/+/, "$1$2");
+		if (domain_nowww === "alamy.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+aggregator-api\/+download\/+\?(?:.*&)?url=(http[^&]+)(?:[&#].*)?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+		if (domain_nowww === "snapxcdn.com") {
+			match = src.match(/[?&]token=eyJ[^.&]+\.(eyJ[^.&]+)\./);
+			if (match) {
+				var splitted_1 = match[1].split("_");
+				var jsonstr_1 = base64_decode(splitted_1[0]);
+				if (splitted_1[1])
+					jsonstr_1 += "?" + base64_decode(splitted_1[1]);
+				var json_2 = JSON_parse(jsonstr_1);
+				return json_2.url;
+			}
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
