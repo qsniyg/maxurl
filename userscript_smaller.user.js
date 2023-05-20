@@ -40272,7 +40272,9 @@ var $$IMU_EXPORT$$;
 		}
 		if (domain === "di2ponv0v5otw.cloudfront.net" ||
 			domain === "dtpmhvbsmffsz.cloudfront.net") {
-			return src.replace(/(\/[a-z]+\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9a-f]+\/+)[a-z]_([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			newsrc = src.replace(/(\/[a-z]+\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9a-f]+\/+)[a-z]_(?:wp_)?([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return add_extensions(newsrc);
 		}
 		if ((domain_nosub === "freeasianpics.net" && domain.match(/^cdn[0-9]*\./)) ||
 			domain === "th.sexhotpictures.net") {
@@ -41233,7 +41235,11 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "nijie.net") && domain.match(/^pic[0-9]*\./)) {
 			return src.replace(/\/__rs_[a-z]*[0-9]+x[0-9]+\/+/, "/");
 		}
-		if (domain === "cdn-img.jamendo.com") return src.replace(/(\/[0-9]+\.)[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$10$2");
+		if (domain === "cdn-img.jamendo.com" ||
+			domain === "images.jamendo.com") {
+			return src.replace(/(\/s[0-9]+\/+[0-9]+\/+[a-z]+\/+[0-9]+\.)[0-9]+\./, "$10.");
+		}
+		if (domain === "usercontent.jamendo.com") return src.replace(/(\?(?:.*&)?width=)[0-9]+([&#].*)?$/, "$10$2");
 		if (domain_nowww === "cdbaby.name") {
 			return src.replace(/(\/[0-9a-z]+)(?:_[a-z]+)?(\.[^/.]*)(?:[?#].*)?$/, "$1_large$2");
 		}
@@ -57149,6 +57155,7 @@ var $$IMU_EXPORT$$;
 				return json_2.url;
 			}
 		}
+		if (domain_nowww === "pictures.immobilienscout24.de") return src.replace(/(\/listings\/+[-0-9a-f]+-[0-9]+\.[^/.]+)\/.*$/, "$1");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
