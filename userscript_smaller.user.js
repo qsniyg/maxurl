@@ -17896,9 +17896,11 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "minutemediacdn.com" && /^images[0-9]*\./.test(domain)) ||
 			domain === "imagecache.365scores.com" ||
 			domain === "images.taboola.com" ||
-			/\/image\/+fetch\/+.*?\/+https?:\/\//.test(src)) {
+			domain === "c.neevacdn.net" ||
+			/\/image\/+fetch\/+.*?\/+https?(?::|%3A)\/\//.test(src)) {
 			if (src.search(/:\/\/[^/]*\/(?:[^/]*\/+)?(?:image\/+)?fetch\//) >= 0) {
 				newsrc = src.replace(/.*?:\/\/[^/]*\/(?:[^/]*\/)?(?:image\/+)?fetch\/(?:.*?(?:\/|%2F))?([^/%]*(?::|%3A)(?:\/|%2F).*)/, "$1");
+				newsrc = newsrc.replace(/\?savepath=[^&#?]+$/, "");
 				if (/^[^/:]*%3A/.test(newsrc) ||
 					(string_indexof(newsrc, "?") < 0 && string_indexof(newsrc, "%3F") >= 0))
 					newsrc = decodeURIComponent(newsrc);
@@ -19838,6 +19840,7 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "christies.com" && string_indexof(src, "/img/") >= 0) ||
 			domain === "bmg-images.forward-publishing.io" ||
 			(domain === "image-via.katsomo.fi" && /\/api\/+v2\/+img\//.test(src)) ||
+			(domain === "img.plasmic.app" && /\/img-optimizer\/+v1\//.test(src)) ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -24132,6 +24135,9 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 		if (domain_nowww === "ekstrabladet.dk") return src.replace(/\/IMAGE_ALTERNATES\/+[^/]*\/+/, "/IMAGE_BINARY/original/");
+		if (domain_nowww === "tvn.pl") {
+			return src.replace(/\/alternates\/+[A-Z]+_[0-9]+(\/.*)?$/, "/BINARY$1");
+		}
 		if (domain === "images.fandango.com" ||
 			domain_nowww === "statf.com") {
 			newsrc = src.replace(/\/ImageRenderer\/.*?\/images\//, "/images/");
@@ -34930,7 +34936,7 @@ var $$IMU_EXPORT$$;
 		}
 		if (domain_nosub === "lmstube.com") return src.replace(/\/[0-9]+x[0-9]+\/([^/]*)$/, "/$1");
 		if (domain === "assets.mubi.com") {
-			return src.replace(/(\/images?)-[a-z0-9]+(\.[^/.]*)$/, "$1-original$2");
+			return src.replace(/(\/images?)-[a-z0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1-original$2");
 		}
 		if (domain_nowww === "fundir.org") return src.replace(/(:\/\/[^/]*\/)th\//, "$1img/");
 		if (domain_nowww === "spletnik.ru") {
@@ -37575,7 +37581,7 @@ var $$IMU_EXPORT$$;
 		}
 		if (domain_nowww === "stickpng.com") return src.replace(/\/+assets\/+[a-z]+\/+([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "/assets/images/$1");
 		if (domain === "media.bizj.us") {
-			return src.replace(/(\/view\/img\/[0-9]+\/[^/*]*)\*[^/.]*(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			return src.replace(/(\/view\/img\/[0-9]+\/[^/*]*)(?:\*|%2A)[^/.]*(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 		if (domain === "assets.becomegorgeous.com") return src.replace(/:\/\/[^/]*\/+assets\/+(static\.becomegorgeous\.com\/)/, "://$1");
 		if (domain === "static.becomegorgeous.com") {
@@ -55479,13 +55485,14 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return add_http(newsrc);
 		}
+		if (domain_nowww === "zdnet.com") return src.replace(/(\/a\/+img\/+)resize\/+[0-9a-f]{10,}\/+(.*?)\?.*$/, "$1$2");
 		if (domain_nowww === "cnet.com") {
 			newsrc = src.replace(/(\/a\/+img\/+)resize\/+(.*?)\?.*$/, "$1$2");
 			if (newsrc !== src)
 				return newsrc;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+a\/+img\/+/, "/");
 			if (newsrc) {
-				return urljoin("https://www.cnet.com/a/", common_functions["get_thumbor_url"](newsrc), true);
+				return urljoin("https://" + domain + "/a/", common_functions["get_thumbor_url"](newsrc), true);
 			}
 		}
 		if (domain === "japan.cnet.com") return src.replace(/(\/storage\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9a-f]{30,}\/+)t\/+[0-9]+\/+[0-9]+\/+d\/+([^/]+)(?:[?#].*)?$/, "$1$2");
