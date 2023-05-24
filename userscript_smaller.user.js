@@ -21218,6 +21218,7 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "mzstatic.com" && /^[as][0-9]+\./.test(domain)) {
 			return src.replace(/(\/v4\/+(?:[a-f0-9]{2}\/+){3}[-0-9a-f]{20,}\/+)[^/]+(?:[?#].*)?$/, "$1source");
 		}
+		if (domain === "images.moviesrankings.com") return src.replace(/^[a-z]+:\/\/[^/]+\/+/, "https://is3-ssl.mzstatic.com/");
 		if (domain === "img-tmdetail.alicdn.com") {
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+bao\/+uploaded\/+([^/]+\.[^/]+\/+)/, "$1");
 			if (newsrc !== src)
@@ -60039,6 +60040,7 @@ var $$IMU_EXPORT$$;
 					if (!is_extension || settings.redirect_disable_for_responseheader) {
 						if (obj.forces_download || ((content_type.match(/(?:binary|application|multipart|text)\//) ||
 							content_type === "image/tiff" ||
+							content_type === "image/lsr" ||
 							// such as [image/png] (server bug)
 							content_type.match(/^ *\[/)) && !obj.head_wrong_contenttype) ||
 							(headers["content-disposition"] &&
