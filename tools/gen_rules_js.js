@@ -68,6 +68,7 @@ var variables_list = [
 	"add_extensions_gif",
 	"add_extensions_upper",
 	"add_extensions_upper_jpeg",
+	"add_extensions_from_webp",
 	"add_http",
 	"force_https",
 	"decodeuri_ifneeded",
