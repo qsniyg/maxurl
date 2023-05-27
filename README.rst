@@ -14,7 +14,7 @@ It is currently released as:
 - Userscript: (most browsers)
 
   - Stable: `userscript_smaller.user.js <https://github.com/qsniyg/maxurl/blob/master/userscript_smaller.user.js?raw=true>`__ or `OpenUserJS <https://openuserjs.org/scripts/qsniyg/Image_Max_URL>`__
-  - Development: `userscript.user.js <https://github.com/qsniyg/maxurl/blob/master/userscript.user.js>`__ (recommended)
+  - Development: `userscript.user.js <https://github.com/qsniyg/maxurl/blob/master/userscript.user.js?raw=true>`__ (recommended)
   - It serves as the base for everything listed below. It also serves as a node module (used by the reddit bot), and can be embedded in a website.
 
 - Browser extension: `Firefox Quantum <https://addons.mozilla.org/firefox/addon/image-max-url/>`__ | `Opera Beta/Developer <https://addons.opera.com/en/extensions/details/image-max-url/>`__ (other browsers supporting WebExtensions can sideload the extension through this git repository)
