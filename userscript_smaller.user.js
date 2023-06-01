@@ -37274,6 +37274,7 @@ var $$IMU_EXPORT$$;
 			domain === "cdn.okjeok.hr") {
 			return src.replace(/\/_resampled\/(?:Set(?:Width|Height)|resizedimage)[0-9]+-([^/]*)$/, "/$1");
 		}
+		if (domain_nowww === "haltadefinizione.com") return src.replace(/\/_resampled\/+Scale(?:Width|Height)[^/]+\/+/, "/");
 		if (domain === "images.sex.com") {
 			match = src.match(/(\/images\/pinporn\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/)[0-9]+(?:x[0-9]+)?\/([0-9]+\.[^/.?#]+)(?:[?#],*)?$/);
 			if (match) {
@@ -40960,6 +40961,7 @@ var $$IMU_EXPORT$$;
 		}
 		if (domain === "d1kls9wq53whe1.cloudfront.net") return src.replace(/(\/articles\/+[0-9]+\/+)[0-9]+x[0-9]+\/+/, "$1ORG/");
 		if (domain === "images.animageplus.jp" ||
+			domain === "images.rollingstonejapan.com" ||
 			domain === "images.entamenext.com") {
 			return src.replace(/(\/articles(?:_photos)?\/+[0-9]+\/+[0-9]+\/+)[0-9]+x[0-9]+\/+/, "$1ORG/");
 		}
@@ -57213,6 +57215,11 @@ var $$IMU_EXPORT$$;
 			return src
 				.replace(/(:\/\/[^/]+\/+[0-9]+\/+[0-9]+\/+[0-9]+_[0-9]+_x\.[^/.?#]+)(?:[?#].*)?$/, "$1?quality=100")
 				.replace(/(:\/\/[^/]+\/+[0-9]+\/+[0-9]+\/+[0-9]+_[0-9]+_)[a-z]+\./, "$1x.");
+		}
+		if (domain === "d2i8ejbvsgsqtt.cloudfront.net") return src.replace(/(\/gallery\/.*\/)(?:med|thumbnails)(\/+[^/]+)(?:[?#].*)?$/, "$1hires$2");
+		if (domain_nosub === "tapas.io" ||
+			domain === "d30womf5coomej.cloudfront.net") {
+			return src.replace(/(\/[a-z]{2}\/+[0-9a-f]{2}\/+[-0-9a-f]{10,})_[a-z]\./, "$1.");
 		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
