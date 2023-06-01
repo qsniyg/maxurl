@@ -18020,6 +18020,7 @@ var $$IMU_EXPORT$$;
 			domain === "media.istra24.hr" ||
 			(domain_nosub === "itc.cn" && /^p[0-9]*\./.test(domain) && /\/images[0-9]+\//.test(src)) ||
 			domain === "assets.simpleviewinc.com" ||
+			domain === "img.guess.com" ||
 			domain === "resource.logitechg.com") {
 			newsrc = src
 				.replace(/%2C/g, ",")
@@ -21151,7 +21152,8 @@ var $$IMU_EXPORT$$;
 		(string_indexof(src, "/images/") >= 0 ||
 		 string_indexof(src, "/image/") >= 0 ||
 		 string_indexof(src, "/user_images/") >= 0)*/) {
-			if (/\/resource\/+image\/+web\/+(?:artist|main)\/+/.test(src)) {
+			if (/\/resource\/+image\/+web\/+(?:artist|main)\/+/.test(src) ||
+				/\/resource\/+image\/+cmt\/+web\/+common\/+bg_frame/.test(src)) {
 				return {
 					url: src,
 					bad: "mask"
@@ -38007,7 +38009,8 @@ var $$IMU_EXPORT$$;
 				src.replace(regex, "$1-7$2"),
 				src.replace(regex, "$1-6$2"),
 				src.replace(regex, "$1-5$2"),
-				src.replace(regex, "$1-4$2")
+				src.replace(regex, "$1-4$2"),
+				src.replace(regex, "$1-3$2")
 			], {
 				bad_if: [{
 						headers: {
@@ -57220,6 +57223,15 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "tapas.io" ||
 			domain === "d30womf5coomej.cloudfront.net") {
 			return src.replace(/(\/[a-z]{2}\/+[0-9a-f]{2}\/+[-0-9a-f]{10,})_[a-z]\./, "$1.");
+		}
+		if (domain_nowww === "jokejive.com") return src.replace(/(\/images\/+jokejive\/+)s_([0-9]+\/+)/, "$1$2");
+		if (amazon_container === "brandarmy-prod") {
+			return src.replace(/(\/[0-9a-z]+\/+images\/+)thumbs\/+/, "$1");
+		}
+		if (domain === "am-a.akamaihd.net") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+image\?(?:.*&)?f=(http[^&]+)(?:[&#].*)?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
