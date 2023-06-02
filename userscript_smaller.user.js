@@ -48106,7 +48106,16 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "filmix.co") {
 			return src.replace(/(\/uploads\/+frames\/+[0-9]+\/+[^/]+)_small(\.[^/.]+)(?:[?#].*)?$/, "$1_original$2");
 		}
-		if (domain === "thumbs.filmix.co") return src.replace(/\/posters\/+thumbs\/+[wh][0-9]+\/+/, "/posters/orig/");
+		if (domain === "thumbs.filmix.co" ||
+			domain === "thumbs.filmix.ac") {
+			return src.replace(/\/thumbs\/+[wh][0-9]+\/+/, "/orig/");
+		}
+		if (domain === "img.filmix.ac" ||
+			domain_nowww === "filmix.ac") {
+			return src
+				.replace(/(\/(?:posters|frames)\/+[0-9]+\/+[a-z][0-9]+-[^/]+)_small\./, "$1_original.")
+				.replace(/(\/sliderPics\/+[^/]+)_thumb\./, "$1.");
+		}
 		if (domain_nowww === "5tv5.ru") {
 			return src
 				.replace(/\/smallposters\/+/, "/posters/")
