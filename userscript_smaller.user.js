@@ -28988,6 +28988,7 @@ var $$IMU_EXPORT$$;
 			domain === "kep.cdn.indexvas.hu") {
 			return src.replace(/_(?:[a-z]|wm)(\.[^/.]*)$/, "_o$1");
 		}
+		if (domain === "galeria.cdn.index.hu") return src.replace(/_[a-z](\.[a-z]+)(?:[?#].*)?$/, "$1");
 		if ((domain_nosub === "sportsworldi.com" ||
 			domain_nosub === "segye.com") &&
 			string_indexof(src, "/content/image/") >= 0) {
@@ -29153,6 +29154,7 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "miaminewtimes.com" ||
 			domain_nosub === "houstonpress.com" ||
 			domain_nosub === "laweekly.com" ||
+			domain_nosub === "cltampa.com" ||
 			domain_nosub === "phoenixnewtimes.com") &&
 			domain.match(/^(?:images|media)[0-9]*\./)) {
 			newsrc = src.replace(/\/imager\/u\/[^/]*\/([0-9]+\/[^/]*)(?:\/.*)?/, "/imager/u/original/$1");
@@ -40878,7 +40880,9 @@ var $$IMU_EXPORT$$;
 		}
 		if (domain_nowww === "kinofuxy.tv") return src.replace(/\/thumbs\/+(uploads\/+posts\/+[0-9]{4}-[0-9]{2}\/+)[0-9]+_(?:no|y)_(?:no|y)_/, "/$1");
 		if (domain_nosub === "web.de" && domain.match(/^i[0-9]*\./)) {
-			return src.replace(/(\/image\/+[0-9]+\/+[0-9]+)[^/]*?((?:,|%2[cC])pd=[0-9]+)[^/]*\/+/, "$1$2/");
+			return src
+				.replace(/(\/image\/+[0-9]+\/+[0-9]+)[^/]*?((?:,|%2[cC])pd=[0-9]+)[^/]*(\/+.*)?$/, "$1$2$3")
+				.replace(/(\/image\/+[0-9]+\/[^/]+)$/, "$1/a.png");
 		}
 		if (domain === "img.culturacolectiva.com" ||
 			domain_nowww === "daz3d.com" ||
@@ -45422,7 +45426,8 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/images\/+gamestar\/+)[0-9]+\/+/, "$14/");
 		}
 		if (domain === "assets.folhavitoria.com.br") return src.replace(/(\/images\/+[-0-9a-f]{30,})--(?:(?:[a-z][^-_/.]+_)*[a-z][^-_/.]+)(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
-		if (domain === "dnh0aphdpud22.cloudfront.net") {
+		if (domain === "dnh0aphdpud22.cloudfront.net" ||
+			domain === "d320y51nxi12gs.cloudfront.net") {
 			return src.replace(/(\/sized\/+[0-9a-f]+-[A-Z]+[0-9]+\/+)med_thumbnail(\.[^/.]*)(?:[?#].*)?$/, "$1high_res$2");
 		}
 		if (domain_nowww === "iansphoto.in") return src.replace(/(\/photoimages_new\/+)[0-9]+\/+([0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+)/, "$1$2");
@@ -57378,6 +57383,22 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/r\/+.*?\/+(p-[a-z]+)\/+/, "/r/$1/");
 		}
 		if (domain_nowww === "ososedki.com") return src.replace(/\/images\/+a\/+604\/+/, "/images/a/1280/");
+		if (digitalocean_container === "immub-space") {
+			return src.replace(/\/thumbnails\/+t_/, "/");
+		}
+		if (domain === "d1o6h00a1h5k7q.cloudfront.net") return src.replace(/(\/imagens\/+img_)[pm]\/+/, "$1g/");
+		if (domain === "img.newspapers.com") {
+			return src.replace(/\/img\/+img\?(?:.*&)?(clippingId=[0-9]+)(?:&.*)?$/, "/img/img?$1");
+		}
+		if (domain_nowww === "devkis.club") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+pict\.php\?(?:.*&)?src=(http[^&]+)(?:[&#].*)?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+		if (domain === "community.adobe.com") return src.replace(/(\/image-id\/+[0-9]+i[0-9A-F]{16}\/+).*/, "$1");
+		if (domain === "d1u0ygfig6vnfa.cloudfront.net") {
+			return src.replace(/(\/gallery-artwork\/+)_galleryThumb\/+/, "$1");
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -57863,6 +57884,7 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "unifr.ch" && string_indexof(src, "/loris/") >= 0) ||
 			domain === "iiif.irht.cnrs.fr" ||
 			domain === "gallica.bnf.fr" ||
+			domain === "iiif.wellcomecollection.org" ||
 			/\/(?:iiif|loris)\/+(?:.*\/)?[^/]+\/+(?:full|square|(?:pct:)?[0-9.]+(?:,[0-9.]+){3})\/+(?:full|max|[0-9.]+,|,[0-9.]+|!?[0-9.]+,[0-9.]+|pct:[0-9.]+)\/+!?[0-9.]+\/+(?:color|gray|bitonal|default|native)\.(?:jpg|tif|png|gif|jp2|pdf|webp)(?:[?#].*)?$/.test(src)) {
 			obj = {
 				url: src
@@ -57871,7 +57893,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 			var prefix = "(?:iiif|loris)";
-			if (domain === "iiif.library.ubc.ca" || domain === "iiif.library.utoronto.ca") {
+			if (domain === "iiif.library.ubc.ca" || domain === "iiif.library.utoronto.ca" || domain === "iiif.wellcomecollection.org") {
 				obj.head_wrong_contenttype = true; // text/html
 				prefix = "image";
 			}
