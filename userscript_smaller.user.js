@@ -26432,6 +26432,7 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "photoloading.com" && string_indexof(src, "/images/") >= 0) ||
 			(domain_nosub === "lensdump.com" && /^i[0-9]*\./.test(domain)) ||
 			domain === "i.pixl.li" ||
+			(domain_nosub === "picturedent.org" && string_indexof(src, "/images/") >= 0) ||
 			domain_nowww === "image-bugs.com") {
 			return src.replace(/\.(?:th|md)(\.[^/.]*)$/, "$1");
 		}
@@ -34819,8 +34820,9 @@ var $$IMU_EXPORT$$;
 		if (domain === "media.raccweb.com") return src.replace(/^[a-z]+:\/\/[^/]+\/+(__sized__\/+)/, "https://www.racctrusted.com/media/$1");
 		if (domain === "music.librepunk.club" ||
 			domain_nowww === "racctrusted.com" ||
+			domain === "d16kd6gzalkogb.cloudfront.net" ||
 			domain === "audio.gafamfree.party") {
-			return src.replace(/(:\/\/[^/]*\/+media\/+)__sized__\/+(.*)-(?:thumbnail|crop-c[0-9]+-[0-9]+__[0-9]+-[0-9]+)-[0-9]+x[0-9]+(?:-[0-9]+)?(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
+			return src.replace(/(:\/\/[^/]*\/+(?:media\/+)?)__sized__\/+(.*)-(?:thumbnail|crop-c[0-9]+-[0-9]+__[0-9]+-[0-9]+)-[0-9]+x[0-9]+(?:-[0-9]+)?(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
 		}
 		if (domain_nowww === "mormonnewsroom.org" ||
 			domain === "newsroom.churchofjesuschrist.org") {
@@ -35256,6 +35258,9 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/)thumbs\//, "$1img/");
 		}
 		if (domain === "images.apina.biz") return src.replace(/(:\/\/[^/]*\/)[a-z]+\/[a-z]+_([0-9]+\.[^/.]*)$/, "$1full/$2");
+		if (domain_nowww === "wallpaperaccess.com") {
+			return src.replace(/\/thumb\/+([0-9]+\.)/, "/full/$1");
+		}
 		if (domain_nowww === "pluska.sk" ||
 			domain_nosub === "casopiszdravie.sk") {
 			return src.replace(/\/thumb\/images\/(.*?)(?:[?#].*)?$/, "/images/$1");
@@ -57398,6 +57403,15 @@ var $$IMU_EXPORT$$;
 		if (domain === "community.adobe.com") return src.replace(/(\/image-id\/+[0-9]+i[0-9A-F]{16}\/+).*/, "$1");
 		if (domain === "d1u0ygfig6vnfa.cloudfront.net") {
 			return src.replace(/(\/gallery-artwork\/+)_galleryThumb\/+/, "$1");
+		}
+		if (domain_nowww === "vgmsite.com") return src.replace(/\/thumbs\/+([^/]+)(?:[?#].*)?$/, "/$1");
+		if (domain === "statics.indozone.news") {
+			return src.replace(/(\/content\/+[0-9]{4}\/+.*)_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+		if (domain_nowww === "atomgallery.co.uk") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+images\/+resize\.php\?(?:.*&)?src=([^&]+)(?:[&#].*)?$/, "$1");
+			if (newsrc !== src)
+				return urljoin(src, decodeuri_ifneeded(newsrc), true);
 		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
