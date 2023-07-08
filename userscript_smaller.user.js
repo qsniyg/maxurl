@@ -18133,51 +18133,12 @@ var $$IMU_EXPORT$$;
 				return decodeURIComponent(newsrc);
 		}
 		if (domain_nosub === "photoshelter.com") {
-			newsrc = src
+			return src
 				.replace(/\/img-get2\/([^/]*)\/(?:[a-z]+=[^/]*\/)*([^/]*)$/, "/img-get2/$1/fit=99999999999/$2")
 				.replace(/\/img-get\/([^/]*)(?:\/[ts]\/[0-9]+\/(?:[0-9]+\/)?)?([^/]*)$/, "/img-get2/$1/fit=99999999999/$2")
 				.replace(/\/+fit=[0-9x]+\/+fit=[0-9x]+/, "/fit=99999999999");
-			if (newsrc !== src)
-				return newsrc;
-			match = src.match(/\/img-get2\/+(I[^/]{10,})\//);
-			if (match && options.force_page) {
-				id = match[1];
-				var cache_key = "photoshelter_page:" + id;
-				api_cache.fetch(cache_key, function(data) {
-					if (data) {
-						return options.cb({
-							url: src,
-							extra: {
-								page: data
-							}
-						});
-					} else {
-						return options.cb(null);
-					}
-				}, function(done) {
-					options.do_request({
-						url: "https://www.photoshelter.com/image/" + id,
-						method: "GET",
-						onload: function(resp) {
-							if (resp.readyState < 4)
-								return;
-							if (resp.status !== 200) {
-								return done(null, false);
-							}
-							var url = resp.finalUrl;
-							if (url.match(/\.photoshelter\.com\/+image\/+/)) {
-								return done(url, 12 * 60 * 60);
-							} else {
-								return done(null, false);
-							}
-						}
-					});
-				});
-				return {
-					waiting: true
-				};
-			}
 		}
+		if (domain_nowww === "marcusgetta.photography") return src.replace(/^[a-z]+:\/\/[^/]+\/+(img-get2\/)/, "https://ssl.c.photoshelter.com/$1");
 		if (domain_nowww === "celebzz.com" &&
 			string_indexof(src, "/wp-content/uploads/") >= 0) {
 			newsrc = src.replace(/_thumbnail(\.[^/.]*)$/, "$1");
@@ -22645,7 +22606,8 @@ var $$IMU_EXPORT$$;
 				};
 		}
 		if ((domain_nosub === "shopify.com" && /^cdn[0-9]*\./.test(domain)) ||
-			domain_nowww === "fellowproducts.com") {
+			domain_nowww === "fellowproducts.com" ||
+			domain_nowww === "roguewavecoffee.ca") {
 			if (/\/assets\/+product-highlight-color-hover\.svg(?:[?#].*)?$/.test(src)) {
 				return {
 					url: src,
@@ -39328,7 +39290,10 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 		}
-		if (domain === "image.wisetrail.com") return src.replace(/(\/bookmark[0-9]+\/+[^/]*)_small(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		if (domain === "image.wisetrail.com" ||
+			amazon_container === "image.wisetrail.com") {
+			return src.replace(/(\/bookmark[0-9]+\/+[^/]*)_small(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
 		if (domain_nowww === "internationallovescout.com") {
 			return src
 				.replace(/(\/entries\/+[0-9]+\/+)thumb_/, "$1")
@@ -42187,6 +42152,9 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/img\/+products\/+.*?\/+photos\/+)w_([^/]*)(?:[?#].*)?$/, "$1$2");
 		}
 		if (domain === "cdn.dribbble.com") {
+			newsrc = src.replace(/\?.*/, "");
+			if (newsrc !== src)
+				return newsrc;
 			newsrc = src.replace(/(\/users\/+[0-9]+\/+screenshots\/+[0-9]+\/+[^/]+)_(?:[0-9]+x|teaser)(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 			obj = {
 				url: newsrc
@@ -57413,6 +57381,13 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return urljoin(src, decodeuri_ifneeded(newsrc), true);
 		}
+		if (domain === "img.tineye.com") {
+			return {
+				url: src.replace(/(\/result\/+[0-9a-f]+-[0-9]+)(?:[?#].*)?$/, "$1?size=9999"),
+				head_wrong_contenttype: true
+			};
+		}
+		if (domain === "bu.azureedge.net") return src.replace(/(\/m2img\/+)(?:small_)?image\//, "$1image/");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
