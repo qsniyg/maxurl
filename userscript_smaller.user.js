@@ -12510,7 +12510,8 @@ var $$IMU_EXPORT$$;
 		if (typeof id === "string" && /^[a-z0-9]+$/.test(id) && id.length === 7 && id[0] === "d") {
 			// 28298170368.toString(36) = "d000000"
 			var numerical_id = parseInt(id, 36) - 28298170368;
-			return cb("https://deviantart.com/a/art/" + numerical_id);
+			//return cb("https://deviantart.com/a/art/" + numerical_id);
+			return common_functions["deviantart_url_from_id"](do_request, api_cache, numerical_id, cb);
 		} else {
 			real_api_query(api_cache, do_request, "deviantart_url_from_id:" + id, {
 				method: "HEAD",
@@ -12683,7 +12684,7 @@ var $$IMU_EXPORT$$;
 					console.error(e, { initialstate: initialstate, result: result });
 					throw e;
 				}
-				//console_log(initialstate);
+				console_log(initialstate);
 				try {
 					var entities = initialstate["@@entities"];
 					var deviation = entities.deviation[deviationid];
@@ -12718,7 +12719,7 @@ var $$IMU_EXPORT$$;
 								tokenid = types[i].r;
 							var tokenq = "?token=" + deviation.media.token[tokenid];
 							if (types[i].c) {
-								link = deviation.media.baseUri + "/" + types[i].c.replace("<prettyName>", deviation.media.prettyName) + tokenq;
+								link = deviation.media.baseUri + "/" + types[i].c.replace("<prettyName>", deviation.media.prettyName).replace(/^\/+/, "") + tokenq;
 							} else if (types[i].b) { // e.g. animated gifs
 								link = types[i].b + tokenq;
 							} else if (types[i].t === "fullview" && "r" in types[i]) {
@@ -13006,6 +13007,23 @@ var $$IMU_EXPORT$$;
 		// is this needed to avoid throttling?
 		//obj.max_chunks = 1;
 		return obj;
+	};
+	var instagram_shortcode_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+	common_functions["instagram_shortcode_to_id"] = function(shortcode, cb) {
+		common_functions["get_bigint"](do_request, function(bigint) {
+			if (!bigint) {
+				return cb(null);
+			}
+			shortcode = shortcode.substring(0, 11); // truncate for private ids
+			var base = bigint.create(0);
+			var sixtyfour = bigint.create(64);
+			for (var i = 0; i < shortcode.length; i++) {
+				var index = bigint.create(string_indexof(instagram_shortcode_table, shortcode[i]));
+				base = bigint.mul(base, sixtyfour);
+				base = bigint.add(base, index);
+			}
+			return cb(bigint.stringify(base));
+		});
 	};
 	common_functions["instagram_parse_el_info"] = function(api_cache, do_request, use_app_api, dont_use_web, prefer_video_quality, info, host_url, cb) {
 		var host_is_ig = /^[a-z]+:\/\/[^/]*\.instagram\.com\//.test(host_url);
@@ -19427,7 +19445,7 @@ var $$IMU_EXPORT$$;
 			/*domain.indexOf("www.telegraph.co.uk") >= 0 ||
 			domain === "subscriber.telegraph.co.uk" ||
 			string_indexof(domain, "aws.telegraph.co.uk") >= 0 ||*/
-			(domain_nosub === "telegraph.co.uk" && string_indexof(src, "/content/dam/") >= 0) ||
+			(domain_nosub === "telegraph.co.uk" && /\/(?:content\/+dam|multimedia\/+archive)\//.test(src)) ||
 			domain === "img.buzzfeed.com" ||
 			(domain_nosub === "126.net" && domain.match(/^p[0-9]*\.music\.126\.net/)) ||
 			domain === "stat.profile.ameba.jp" ||
@@ -19838,6 +19856,7 @@ var $$IMU_EXPORT$$;
 			domain === "uploads.dailydot.com" ||
 			domain === "images.audacy2-prod.ext.audacy.com" ||
 			domain === "phinf.wevpstatic.net" ||
+			domain === "prod-images.tcm.com" ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -20247,7 +20266,6 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "okdiario.com" && string_indexof(src, "/img/") >= 0) ||
 			(amazon_container === "static-spin-com" && string_indexof(src, "/files/") >= 0) ||
 			(domain_nowww === "lapisrelights.com" && /\/assets\/+img\/+uploads\//.test(src)) ||
-			(domain === "linkstorage.linkfire.com" && /\/medialinks\/+images\//.test(src)) ||
 			((domain_nowww === "wbbjtv.com" ||
 				domain_nowww === "channel3000.com" ||
 				domain_nowww === "9and10news.com" ||
@@ -22860,6 +22878,7 @@ var $$IMU_EXPORT$$;
 				can_head: false
 			};
 		}
+		if (domain === "media.cnn.com") return src.replace(/(\/api\/+v1\/+images\/[^?#]+)(?:[?#].*)?$/, "$1?c=original");
 		if (domain === "ugc.kn3.net" /* &&
 			string_indexof(src, "/i/origin/") >= 0*/) {
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/i\/(?:c_)?[0-9a-z]+\//, "");
@@ -55261,8 +55280,13 @@ var $$IMU_EXPORT$$;
 			if (newsrc)
 				return newsrc;
 		}
-		if (domain_nosub === "optimole.com" && /^[a-z0-9]+\.i\./.test(domain)) {
+		if ((domain_nosub === "optimole.com" && /^[a-z0-9]+\.i\./.test(domain))) {
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+[^/]+\/+(?:[a-z]{1,3}(?::(?:[a-z]+|[0-9.]+))+\/+)*(https?:\/\/)/, "$1");
+			if (newsrc !== src)
+				return newsrc;
+		}
+		if (domain === "bordalo.observador.pt") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+v2\/+.*?\/+(https?:\/\/)/, "$1");
 			if (newsrc !== src)
 				return newsrc;
 		}
@@ -56082,10 +56106,12 @@ var $$IMU_EXPORT$$;
 				}
 			};
 		}
-		if (domain === "dfocupmdlnlkc.cloudfront.net") return src.replace(/(\/original\/+[-0-9a-f]{10,})_[0-9]+x[0-9]+\./, "$1_99999x99999.");
-		if (domain_nowww === "akcijeikatalozi.ba") {
-			return src.replace(/(\/media\/+[^/]+\/+)[0-9]+\/+/, "$1");
+		if (domain === "dfocupmdlnlkc.cloudfront.net") {
+			return src
+				.replace(/(\/original\/+[-0-9a-f]{10,})_[0-9]+x[0-9]+(?:q[0-9]+)?\./, "$1_99999x99999.")
+				.replace(/_(jpg)\.webp(?:[?#].*)?$/, ".$1");
 		}
+		if (domain_nowww === "akcijeikatalozi.ba") return src.replace(/(\/media\/+[^/]+\/+)[0-9]+\/+/, "$1");
 		if (domain === "static.pantaflix.com" ||
 			amazon_container === "static.pantaflix.com") {
 			return src
@@ -57388,6 +57414,222 @@ var $$IMU_EXPORT$$;
 			};
 		}
 		if (domain === "bu.azureedge.net") return src.replace(/(\/m2img\/+)(?:small_)?image\//, "$1image/");
+		if (domain_nowww === "threads.net" && options && options.do_request && options.cb) {
+			var threads_get_lsd_token_1 = function(cb) {
+				api_query("threads:lsd", {
+					url: "https://www.threads.net/"
+				}, cb, function(done, resp, cache_key) {
+					var lsdmatch = resp.responseText.match(/\["LSD",\[\],{"token":("[^"]+")}/);
+					if (!lsdmatch) {
+						console_error(cache_key, "Unable to find LSD token match", resp);
+						return done(null, false);
+					}
+					var token = JSON_parse(lsdmatch[1]);
+					return done(token, 60 * 60);
+				});
+			};
+			var threads_get_best_image_1 = function(candidates) {
+				var has_nonsquare = false;
+				for (var _i = 0, candidates_1 = candidates; _i < candidates_1.length; _i++) {
+					var candidate = candidates_1[_i];
+					if (candidate.width !== candidate.height)
+						has_nonsquare = true;
+				}
+				var new_candidates = shallowcopy(candidates);
+				new_candidates.sort(function(a, b) {
+					var a_total = a.width * a.height;
+					var b_total = b.width * b.height;
+					return b_total - a_total;
+				});
+				for (var _a = 0, new_candidates_1 = new_candidates; _a < new_candidates_1.length; _a++) {
+					var candidate = new_candidates_1[_a];
+					if (has_nonsquare && candidate.width === candidate.height)
+						continue;
+					return candidate;
+				}
+				return candidates[0];
+			};
+			var threads_apicall_1 = function(query, cb) {
+				threads_get_lsd_token_1(function(token) {
+					if (!query.lsd)
+						query.lsd = token;
+					if (!("server_timestamps" in query))
+						query.server_timestamps = true;
+					if (query.variables && typeof query.variables !== "string") {
+						query.variables = JSON_stringify(query.variables);
+					}
+					options.do_request({
+						url: "https://www.threads.net/api/graphql",
+						method: "POST",
+						data: stringify_queries(query),
+						imu_mode: "xhr",
+						headers: {
+							Accept: "*/*",
+							"Content-Type": "application/x-www-form-urlencoded",
+							Origin: "https://www.threads.net",
+							Referer: "https://www.threads.net/",
+							"Sec-Fetch-Dest": "empty",
+							"Sec-Fetch-Mode": "cors",
+							"Sec-Fetch-Site": "same-origin",
+							"X-Asbd-Id": "129477",
+							"X-Fb-Friendly-Name": query.fb_api_req_friendly_name,
+							"X-Fb-Lsd": token,
+							"X-Ig-App-Id": "238260118697367"
+						},
+						onload: function(resp) {
+							if (resp.status !== 200) {
+								console_error("threads: Unable to query", query, resp);
+								return cb(null);
+							}
+							var json = null;
+							try {
+								json = JSON_parse(resp.responseText);
+							} catch (e) {
+								console_error("threads: Unable to parse JSON for", resp, query);
+								return cb(null);
+							}
+							return cb(json);
+						}
+					});
+				});
+			};
+			var threads_query_post_1 = function(postid, cb) {
+				var cache_key = "threads:post:" + postid;
+				api_cache.fetch(cache_key, cb, function(done) {
+					threads_apicall_1({
+						fb_api_req_friendly_name: "BarcelonaPostPageQuery",
+						doc_id: "6529829603744567",
+						variables: { "postID": postid }
+					}, function(data) {
+						if (!data) {
+							return done(null, false);
+						}
+						var thread_items = data.data.data.containing_thread.thread_items;
+						for (var _i = 0, thread_items_1 = thread_items; _i < thread_items_1.length; _i++) {
+							var item = thread_items_1[_i];
+							if (item.post.pk === postid) {
+								return done(item.post, 60 * 60);
+							}
+						}
+						return done(null, false);
+					});
+				});
+			};
+			var threads_query_post_by_shortcode_1 = function(shortcode, cb) {
+				common_functions["instagram_shortcode_to_id"](shortcode, function(id) {
+					threads_query_post_1(id, cb);
+				});
+			};
+			newsrc = website_query({
+				website_regex: /^https?:\/\/[^/]+\/+(?:t\/+|@[^/]+\/+post\/+)([-_A-Za-z0-9]+)\/*(?:[?#].*)?$/,
+				run: function(cb, match) {
+					threads_query_post_by_shortcode_1(match[1], function(result) {
+						var baseobj = {
+							extra: {
+								page: "https://www.threads.net/t/" + result.code,
+								caption: result.caption.text,
+								created_date: result.taken_at * 1000
+							},
+							headers: {
+								Referer: "https://www.threads.net/"
+							}
+						};
+						var best_image_obj = threads_get_best_image_1(result.image_versions2.candidates);
+						var urls = [];
+						if (result.video_versions && is_array(result.video_versions) && result.video_versions.length > 0)
+							urls.push({
+								url: result.video_versions[0].url,
+								video: true
+							});
+						if (best_image_obj)
+							urls.push(best_image_obj.url);
+						return cb(fillobj_urls(urls, baseobj));
+					});
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (host_domain_nowww === "threads.net" && options.element && options.do_request && options.cb) {
+			var threads_el_is_miniavatar = function(el) {
+				if (el.tagName !== "IMG")
+					return false;
+				var height = el.getAttribute("height");
+				if (!height)
+					return false;
+				return parse_int(height) <= 20;
+			};
+			var threads_get_post_root_el = function(el) {
+				var current = el;
+				while (current = current.parentElement) {
+					if (current.tagName === "DIV" && current.getAttribute("data-pressable-container"))
+						return current;
+				}
+				return null;
+			};
+			if (!threads_el_is_miniavatar(options.element)) {
+				if (options.element.tagName === "IMG" &&
+					options.element.parentElement && options.element.parentElement.tagName === "DIV" &&
+					options.element.parentElement.parentElement && options.element.parentElement.parentElement.tagName === "A") {
+					var dblparent = options.element.parentElement.parentElement;
+					var href_1 = dblparent.href;
+					if (/\/@[^/]+\/*(?:[?#].*)?$/.test(href_1)) {
+						return {
+							url: dblparent.href,
+							is_pagelink: true
+						};
+					}
+				}
+				var post_root = threads_get_post_root_el(options.element);
+				if (post_root) {
+					var thread_a = post_root.querySelector('a[href*="/t/"]');
+					if (!thread_a)
+						thread_a = post_root.querySelector('a[href*="/post/"]');
+					console_log(options.element, post_root, thread_a);
+					if (thread_a) {
+						return {
+							url: thread_a.href,
+							is_pagelink: true
+						};
+					}
+				}
+			}
+		}
+		if (domain_nowww === "toolboxrecords.com") return src.replace(/(\/public\/+images\/.*\/)(?:small|medium|large)\./, "$1big.");
+		if (domain === "api.roughtrade.com") {
+			return src.replace(/\/media\/+thumbnails\/+(products\/+[0-9]+_[0-9a-f]+)_thumbnail_[0-9]+\.webp(?:[?#].*)?$/, "/media/$1.jpg");
+		}
+		if (domain === "linkstorage.linkfire.com") {
+			match = src.match(/^([a-z]+:\/\/[^/]+\/+medialinks\/+images\/+[^/]+\/+[^/]+)-[0-9]+x[0-9]+(\.[^/.?#]+)(?:[?#].*)?$/);
+			if (match) {
+				return [
+					match[1] + match[2],
+					match[1]
+				];
+			}
+		}
+		if (domain === "i.jpgjet.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+cache\.php\?(?:.*&)?url=([^&#]+)(?:[&#].*)?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+		if (domain === "vp.nyt.com") {
+			match = src.match(/^([a-z]+:\/\/[^/]+\/+video\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[^/]+)_[0-9]+p(\.mp4)(?:[?#].*)?$/);
+			if (match) {
+				return fillobj_urls(replace_sizes(src, [
+					match[1] + "_2160p" + match[2],
+					match[1] + "_1440p" + match[2],
+					match[1] + "_1080p" + match[2],
+					match[1] + "_720p" + match[2],
+					match[1] + "_480p" + match[2],
+					match[1] + "_360p" + match[2],
+					match[1] + "_240p" + match[2]
+				]), {
+					video: true
+				});
+			}
+		}
+		if (domain === "static-cdn.strpst.com") return src.replace(/(\/avatars\/+(?:[0-9a-f]\/+){3}[0-9a-f]{10,})-[a-z]+(?:[?#].*)?$/, "$1");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
