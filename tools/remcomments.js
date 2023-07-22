@@ -246,7 +246,12 @@ function update() {
 
 	var newcontents = newlines.join("\n");
 
-	newcontents = newcontents.replace(/(\n\t\tif \(domain(?:_[a-z]+)? === "[^"]+"\)) {\n\t\t\t(return src\.replace\(\/[\S]+\/, "[^"]+"\);)\n\t\t}\n/g, "$1 $2\n");
+	while (true) {
+		let newcontents1 = newcontents.replace(/(\n\t\tif \(domain(?:_[a-z]+)? === "[^"]+"\)) {\n\t\t\t(return src\.replace\(\/[\S]+\/, "[^"]+"\);)\n\t\t}\n/g, "$1 $2\n");
+		if (newcontents1 === newcontents)
+			break;
+		newcontents = newcontents1;
+	}
 
 	fs.writeFileSync("userscript_smaller.user.js", newcontents);
 
