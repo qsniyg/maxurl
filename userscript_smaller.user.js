@@ -18128,6 +18128,11 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 			return src.replace(/\/-mm-\/.*?\/-\//, "/");
 		}
+		if (domain_nowww === "usatoday.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+gcdn\/+/, "https://www.gannett-cdn.com/");
+			if (newsrc !== src)
+				return newsrc;
+		}
 		if (domain_nosub === "aolcdn.com") {
 			var regex1 = /.*image_uri=([^&]*).*/;
 			if (src.match(regex1)) {
@@ -26414,6 +26419,7 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "lensdump.com" && /^i[0-9]*\./.test(domain)) ||
 			domain === "i.pixl.li" ||
 			(domain_nosub === "picturedent.org" && string_indexof(src, "/images/") >= 0) ||
+			(domain_nosub === "media-storage.net" && /^s[0-9]\./.test(domain)) ||
 			domain_nowww === "image-bugs.com") {
 			return src.replace(/\.(?:th|md)(\.[^/.]*)$/, "$1");
 		}
@@ -57630,6 +57636,9 @@ var $$IMU_EXPORT$$;
 			}
 		}
 		if (domain === "static-cdn.strpst.com") return src.replace(/(\/avatars\/+(?:[0-9a-f]\/+){3}[0-9a-f]{10,})-[a-z]+(?:[?#].*)?$/, "$1");
+		if (domain === "media.e-talenta.eu") {
+			return src.replace(/\/foto\/+[0-9]+\/+[0-9]+\/+/, "/foto/");
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
