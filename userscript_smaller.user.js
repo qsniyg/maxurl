@@ -16614,29 +16614,97 @@ var $$IMU_EXPORT$$;
 	common_functions["multidomain__nitter"] = function(domain, domain_nowww) {
 		return domain_nowww === "nitter.net" ||
 			// https://github.com/zedeus/nitter/wiki/Instances
+			// sorting same as instance list in case we need to add new ones from it
+			domain === "nitter.lacontrevoie.fr" ||
+			domain === "nitter.nixnet.services" ||
+			domain === "nitter.fdn.fr" ||
+			domain === "nitter.1d4.us" ||
+			domain === "nitter.kavin.rocks" ||
+			domain === "nitter.unixfox.eu" ||
+			domain === "nitter.domain.glass" ||
+			domain === "birdsite.xanny.family" ||
+			domain === "nitter.moomoo.me" ||
+			domain === "bird.trom.tf" ||
+			domain === "nitter.it" ||
+			domain === "nitter.weiler.rocks" ||
+			domain === "nitter.sethforprivacy.com" ||
+			domain === "nitter.nl" ||
+			domain === "nitter.mint.lgbt" ||
+			domain === "nitter.esmailelbob.xyz" ||
+			domain === "tw.artemislena.eu" ||
+			domain === "nitter.tiekoetter.com" ||
+			domain === "nitter.privacy.com.de" ||
+			domain === "nitter.bird.froth.zone" ||
+			domain === "nitter.cz" ||
+			domain === "nitter.privacydev.net" ||
+			domain === "tweet.lambda.dance" ||
+			domain === "nitter.kylrth.com" ||
+			domain === "unofficialbird.com" ||
+			domain === "nitter.projectsegfau.lt" ||
+			domain === "nitter.eu.projectsegfau.lt" ||
+			domain === "nitter.in.projectsegfau.lt" ||
+			domain === "singapore.unofficialbird.com" ||
+			domain === "canada.unofficialbird.com" ||
+			domain === "india.unofficialbird.com" ||
+			domain === "nederland.unofficialbird.com" ||
+			domain === "uk.unofficialbird.com" ||
+			domain === "nitter.soopy.moe" ||
+			domain === "nitter.qwik.space" ||
+			domain === "read.whatever.social" ||
+			domain === "nitter.rawbit.ninja" ||
+			domain === "nt.vern.cc" ||
+			domain === "n.sneed.network" ||
+			domain === "nitter.smnz.de" ||
+			domain === "nitter.twei.space" ||
+			domain === "nitter.inpt.fr" ||
+			domain === "nitter.d420.de" ||
+			domain === "nitter.caioalonso.com" ||
+			domain === "nitter.at" ||
+			domain === "nitter.nicfab.eu" ||
+			domain === "bird.habedieeh.re" ||
+			domain === "nitter.hostux.net" ||
+			domain === "nitter.adminforge.de" ||
+			domain === "nitter.platypush.tech" ||
+			domain === "nitter.us.projectsegfau.lt" ||
+			domain === "t.com.sb" ||
+			domain === "nitter.kling.gg" ||
+			domain === "nitter.riverside.rocks" ||
+			domain === "nitter.lunar.icu" ||
+			domain === "twitter.moe.ngo" ||
+			domain === "nitter.freedit.eu" ||
+			domain === "n.opnxng.com" ||
+			domain === "nitter.tux.pizza" ||
+			domain === "nitter.altgr.xyz" ||
+			domain === "jote.lile.cl" ||
+			domain === "nitter.one" ||
+			domain === "nitter.io.lol" ||
+			domain === "nitter.no-logs.com" ||
+			domain === "tweet.whateveritworks.org" ||
+			domain === "nitter.fediflix.org" ||
+			domain === "nitter.nohost.network" ||
+			domain === "nitter.simpleprivacy.fr" ||
+			domain === "nitter.onthescent.xyz" ||
+			domain === "nitter.x86-64-unknown-linux-gnu.zip" ||
+			domain === "nitter.private.coffee" ||
+			domain === "nitter.oksocial.net" ||
+			domain === "nitter.services.woodland.cafe" ||
+			domain === "nitter.dafriser.be" ||
+			domain === "nitter.catsarch.com" ||
 			//domain === "nitter.13ad.de" ||
 			//domain === "tw.openalgeria.org" ||
 			domain === "nitter.42l.fr" ||
 			domain === "nitter.pussthecat.org" ||
-			domain === "nitter.nixnet.services" ||
 			//domain === "nitter.mastodont.cat" ||
 			domain === "nitter.tedomum.net" ||
-			domain === "nitter.fdn.fr" ||
-			domain === "nitter.1d4.us" ||
-			domain === "nitter.kavin.rocks" ||
 			domain === "nitter-home.kavin.rocks" ||
-			domain === "tweet.lambda.dance" ||
 			domain === "nitter.cc" ||
 			domain === "nitter.vxempire.xyz" ||
-			domain === "nitter.unixfox.eu" ||
-			domain === "nitter.domain.glass" ||
 			domain === "nitter.eu" ||
 			domain === "nitter.ethibox.fr" ||
 			domain === "nitter.namazso.eu" ||
 			domain === "nitter.mailstation.de" ||
 			domain === "nitter.actionsack.com" ||
 			domain === "nitter.cattube.org" ||
-			domain === "birdsite.xanny.family" ||
 			domain === "nitter.40two.app" ||
 			domain === "nitter.skrep.in" ||
 			domain === "nitter.hu" ||
@@ -18874,29 +18942,97 @@ var $$IMU_EXPORT$$;
 		}
 		if ((domain_nowww === "nitter.net" ||
 			// https://github.com/zedeus/nitter/wiki/Instances
+			// sorting same as instance list in case we need to add new ones from it
+			domain === "nitter.lacontrevoie.fr" ||
+			domain === "nitter.nixnet.services" ||
+			domain === "nitter.fdn.fr" ||
+			domain === "nitter.1d4.us" ||
+			domain === "nitter.kavin.rocks" ||
+			domain === "nitter.unixfox.eu" ||
+			domain === "nitter.domain.glass" ||
+			domain === "birdsite.xanny.family" ||
+			domain === "nitter.moomoo.me" ||
+			domain === "bird.trom.tf" ||
+			domain === "nitter.it" ||
+			domain === "nitter.weiler.rocks" ||
+			domain === "nitter.sethforprivacy.com" ||
+			domain === "nitter.nl" ||
+			domain === "nitter.mint.lgbt" ||
+			domain === "nitter.esmailelbob.xyz" ||
+			domain === "tw.artemislena.eu" ||
+			domain === "nitter.tiekoetter.com" ||
+			domain === "nitter.privacy.com.de" ||
+			domain === "nitter.bird.froth.zone" ||
+			domain === "nitter.cz" ||
+			domain === "nitter.privacydev.net" ||
+			domain === "tweet.lambda.dance" ||
+			domain === "nitter.kylrth.com" ||
+			domain === "unofficialbird.com" ||
+			domain === "nitter.projectsegfau.lt" ||
+			domain === "nitter.eu.projectsegfau.lt" ||
+			domain === "nitter.in.projectsegfau.lt" ||
+			domain === "singapore.unofficialbird.com" ||
+			domain === "canada.unofficialbird.com" ||
+			domain === "india.unofficialbird.com" ||
+			domain === "nederland.unofficialbird.com" ||
+			domain === "uk.unofficialbird.com" ||
+			domain === "nitter.soopy.moe" ||
+			domain === "nitter.qwik.space" ||
+			domain === "read.whatever.social" ||
+			domain === "nitter.rawbit.ninja" ||
+			domain === "nt.vern.cc" ||
+			domain === "n.sneed.network" ||
+			domain === "nitter.smnz.de" ||
+			domain === "nitter.twei.space" ||
+			domain === "nitter.inpt.fr" ||
+			domain === "nitter.d420.de" ||
+			domain === "nitter.caioalonso.com" ||
+			domain === "nitter.at" ||
+			domain === "nitter.nicfab.eu" ||
+			domain === "bird.habedieeh.re" ||
+			domain === "nitter.hostux.net" ||
+			domain === "nitter.adminforge.de" ||
+			domain === "nitter.platypush.tech" ||
+			domain === "nitter.us.projectsegfau.lt" ||
+			domain === "t.com.sb" ||
+			domain === "nitter.kling.gg" ||
+			domain === "nitter.riverside.rocks" ||
+			domain === "nitter.lunar.icu" ||
+			domain === "twitter.moe.ngo" ||
+			domain === "nitter.freedit.eu" ||
+			domain === "n.opnxng.com" ||
+			domain === "nitter.tux.pizza" ||
+			domain === "nitter.altgr.xyz" ||
+			domain === "jote.lile.cl" ||
+			domain === "nitter.one" ||
+			domain === "nitter.io.lol" ||
+			domain === "nitter.no-logs.com" ||
+			domain === "tweet.whateveritworks.org" ||
+			domain === "nitter.fediflix.org" ||
+			domain === "nitter.nohost.network" ||
+			domain === "nitter.simpleprivacy.fr" ||
+			domain === "nitter.onthescent.xyz" ||
+			domain === "nitter.x86-64-unknown-linux-gnu.zip" ||
+			domain === "nitter.private.coffee" ||
+			domain === "nitter.oksocial.net" ||
+			domain === "nitter.services.woodland.cafe" ||
+			domain === "nitter.dafriser.be" ||
+			domain === "nitter.catsarch.com" ||
 			//domain === "nitter.13ad.de" ||
 			//domain === "tw.openalgeria.org" ||
 			domain === "nitter.42l.fr" ||
 			domain === "nitter.pussthecat.org" ||
-			domain === "nitter.nixnet.services" ||
 			//domain === "nitter.mastodont.cat" ||
 			domain === "nitter.tedomum.net" ||
-			domain === "nitter.fdn.fr" ||
-			domain === "nitter.1d4.us" ||
-			domain === "nitter.kavin.rocks" ||
 			domain === "nitter-home.kavin.rocks" ||
-			domain === "tweet.lambda.dance" ||
 			domain === "nitter.cc" ||
 			domain === "nitter.vxempire.xyz" ||
-			domain === "nitter.unixfox.eu" ||
-			domain === "nitter.domain.glass" ||
 			domain === "nitter.eu" ||
 			domain === "nitter.ethibox.fr" ||
 			domain === "nitter.namazso.eu" ||
 			domain === "nitter.mailstation.de" ||
 			domain === "nitter.actionsack.com" ||
 			domain === "nitter.cattube.org" ||
-			domain === "birdsite.xanny.family" ||
 			domain === "nitter.40two.app" ||
 			domain === "nitter.skrep.in" ||
 			domain === "nitter.hu" ||
@@ -18942,29 +19078,97 @@ var $$IMU_EXPORT$$;
 		if (options.element &&
 			(host_domain_nowww === "nitter.net" ||
 			// https://github.com/zedeus/nitter/wiki/Instances
+			// sorting same as instance list in case we need to add new ones from it
+			host_domain === "nitter.lacontrevoie.fr" ||
+			host_domain === "nitter.nixnet.services" ||
+			host_domain === "nitter.fdn.fr" ||
+			host_domain === "nitter.1d4.us" ||
+			host_domain === "nitter.kavin.rocks" ||
+			host_domain === "nitter.unixfox.eu" ||
+			host_domain === "nitter.domain.glass" ||
+			host_domain === "birdsite.xanny.family" ||
+			host_domain === "nitter.moomoo.me" ||
+			host_domain === "bird.trom.tf" ||
+			host_domain === "nitter.it" ||
+			host_domain === "nitter.weiler.rocks" ||
+			host_domain === "nitter.sethforprivacy.com" ||
+			host_domain === "nitter.nl" ||
+			host_domain === "nitter.mint.lgbt" ||
+			host_domain === "nitter.esmailelbob.xyz" ||
+			host_domain === "tw.artemislena.eu" ||
+			host_domain === "nitter.tiekoetter.com" ||
+			host_domain === "nitter.privacy.com.de" ||
+			host_domain === "nitter.bird.froth.zone" ||
+			host_domain === "nitter.cz" ||
+			host_domain === "nitter.privacydev.net" ||
+			host_domain === "tweet.lambda.dance" ||
+			host_domain === "nitter.kylrth.com" ||
+			host_domain === "unofficialbird.com" ||
+			host_domain === "nitter.projectsegfau.lt" ||
+			host_domain === "nitter.eu.projectsegfau.lt" ||
+			host_domain === "nitter.in.projectsegfau.lt" ||
+			host_domain === "singapore.unofficialbird.com" ||
+			host_domain === "canada.unofficialbird.com" ||
+			host_domain === "india.unofficialbird.com" ||
+			host_domain === "nederland.unofficialbird.com" ||
+			host_domain === "uk.unofficialbird.com" ||
+			host_domain === "nitter.soopy.moe" ||
+			host_domain === "nitter.qwik.space" ||
+			host_domain === "read.whatever.social" ||
+			host_domain === "nitter.rawbit.ninja" ||
+			host_domain === "nt.vern.cc" ||
+			host_domain === "n.sneed.network" ||
+			host_domain === "nitter.smnz.de" ||
+			host_domain === "nitter.twei.space" ||
+			host_domain === "nitter.inpt.fr" ||
+			host_domain === "nitter.d420.de" ||
+			host_domain === "nitter.caioalonso.com" ||
+			host_domain === "nitter.at" ||
+			host_domain === "nitter.nicfab.eu" ||
+			host_domain === "bird.habedieeh.re" ||
+			host_domain === "nitter.hostux.net" ||
+			host_domain === "nitter.adminforge.de" ||
+			host_domain === "nitter.platypush.tech" ||
+			host_domain === "nitter.us.projectsegfau.lt" ||
+			host_domain === "t.com.sb" ||
+			host_domain === "nitter.kling.gg" ||
+			host_domain === "nitter.riverside.rocks" ||
+			host_domain === "nitter.lunar.icu" ||
+			host_domain === "twitter.moe.ngo" ||
+			host_domain === "nitter.freedit.eu" ||
+			host_domain === "n.opnxng.com" ||
+			host_domain === "nitter.tux.pizza" ||
+			host_domain === "nitter.altgr.xyz" ||
+			host_domain === "jote.lile.cl" ||
+			host_domain === "nitter.one" ||
+			host_domain === "nitter.io.lol" ||
+			host_domain === "nitter.no-logs.com" ||
+			host_domain === "tweet.whateveritworks.org" ||
+			host_domain === "nitter.fediflix.org" ||
+			host_domain === "nitter.nohost.network" ||
+			host_domain === "nitter.simpleprivacy.fr" ||
+			host_domain === "nitter.onthescent.xyz" ||
+			host_domain === "nitter.x86-64-unknown-linux-gnu.zip" ||
+			host_domain === "nitter.private.coffee" ||
+			host_domain === "nitter.oksocial.net" ||
+			host_domain === "nitter.services.woodland.cafe" ||
+			host_domain === "nitter.dafriser.be" ||
+			host_domain === "nitter.catsarch.com" ||
 			//host_domain === "nitter.13ad.de" ||
 			//host_domain === "tw.openalgeria.org" ||
 			host_domain === "nitter.42l.fr" ||
 			host_domain === "nitter.pussthecat.org" ||
-			host_domain === "nitter.nixnet.services" ||
 			//host_domain === "nitter.mastodont.cat" ||
 			host_domain === "nitter.tedomum.net" ||
-			host_domain === "nitter.fdn.fr" ||
-			host_domain === "nitter.1d4.us" ||
-			host_domain === "nitter.kavin.rocks" ||
 			host_domain === "nitter-home.kavin.rocks" ||
-			host_domain === "tweet.lambda.dance" ||
 			host_domain === "nitter.cc" ||
 			host_domain === "nitter.vxempire.xyz" ||
-			host_domain === "nitter.unixfox.eu" ||
-			host_domain === "nitter.domain.glass" ||
 			host_domain === "nitter.eu" ||
 			host_domain === "nitter.ethibox.fr" ||
 			host_domain === "nitter.namazso.eu" ||
 			host_domain === "nitter.mailstation.de" ||
 			host_domain === "nitter.actionsack.com" ||
 			host_domain === "nitter.cattube.org" ||
-			host_domain === "birdsite.xanny.family" ||
 			host_domain === "nitter.40two.app" ||
 			host_domain === "nitter.skrep.in" ||
 			host_domain === "nitter.hu" ||
@@ -38770,6 +38974,8 @@ var $$IMU_EXPORT$$;
 			domain === "d3m3u5a3.ssl.hwcdn.net" ||
 			domain_nowww === "nextdoortease.com" ||
 			domain_nowww === "foxhq.com" ||
+			domain_nowww === "bunnylust.com" ||
+			domain === "f2h3f6e6.ssl.hwcdn.net" ||
 			domain === "a2w8r2x2.ssl.hwcdn.net") {
 			newsrc = src.replace(/\/smallimage([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
 			if (newsrc !== src)
@@ -56280,6 +56486,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "media.e-talenta.eu") return src.replace(/\/foto\/+[0-9]+\/+[0-9]+\/+/, "/foto/");
 		if (domain === "cdn.chili.com") return src.replace(/(\/images\/+public\/+cms\/.*?)(?:[?#].*)?$/, "$1?width=0");
 		if (domain === "img-cdn-p.ekstrabladet.dk") return src.replace(/(\/image\/+[^/]+\/+[0-9]+\/+)[a-zA-Z]+_?[0-9]+\/+/, "$1original/");
+		if (domain === "cdn.v2ex.com") return src.replace(/(\/avatar\/.*)_(?:normal|x{0,2}large)(\.[^/.]+(?:[?#].*)?)$/, "$1_xxxlarge$2");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -57598,29 +57805,97 @@ var $$IMU_EXPORT$$;
 		if (false && (common_functions["is_pinterest_domain"](host_domain) ||
 			(host_domain_nowww === "nitter.net" ||
 			// https://github.com/zedeus/nitter/wiki/Instances
+			// sorting same as instance list in case we need to add new ones from it
+			host_domain === "nitter.lacontrevoie.fr" ||
+			host_domain === "nitter.nixnet.services" ||
+			host_domain === "nitter.fdn.fr" ||
+			host_domain === "nitter.1d4.us" ||
+			host_domain === "nitter.kavin.rocks" ||
+			host_domain === "nitter.unixfox.eu" ||
+			host_domain === "nitter.domain.glass" ||
+			host_domain === "birdsite.xanny.family" ||
+			host_domain === "nitter.moomoo.me" ||
+			host_domain === "bird.trom.tf" ||
+			host_domain === "nitter.it" ||
+			host_domain === "nitter.weiler.rocks" ||
+			host_domain === "nitter.sethforprivacy.com" ||
+			host_domain === "nitter.nl" ||
+			host_domain === "nitter.mint.lgbt" ||
+			host_domain === "nitter.esmailelbob.xyz" ||
+			host_domain === "tw.artemislena.eu" ||
+			host_domain === "nitter.tiekoetter.com" ||
+			host_domain === "nitter.privacy.com.de" ||
+			host_domain === "nitter.bird.froth.zone" ||
+			host_domain === "nitter.cz" ||
+			host_domain === "nitter.privacydev.net" ||
+			host_domain === "tweet.lambda.dance" ||
+			host_domain === "nitter.kylrth.com" ||
+			host_domain === "unofficialbird.com" ||
+			host_domain === "nitter.projectsegfau.lt" ||
+			host_domain === "nitter.eu.projectsegfau.lt" ||
+			host_domain === "nitter.in.projectsegfau.lt" ||
+			host_domain === "singapore.unofficialbird.com" ||
+			host_domain === "canada.unofficialbird.com" ||
+			host_domain === "india.unofficialbird.com" ||
+			host_domain === "nederland.unofficialbird.com" ||
+			host_domain === "uk.unofficialbird.com" ||
+			host_domain === "nitter.soopy.moe" ||
+			host_domain === "nitter.qwik.space" ||
+			host_domain === "read.whatever.social" ||
+			host_domain === "nitter.rawbit.ninja" ||
+			host_domain === "nt.vern.cc" ||
+			host_domain === "n.sneed.network" ||
+			host_domain === "nitter.smnz.de" ||
+			host_domain === "nitter.twei.space" ||
+			host_domain === "nitter.inpt.fr" ||
+			host_domain === "nitter.d420.de" ||
+			host_domain === "nitter.caioalonso.com" ||
+			host_domain === "nitter.at" ||
+			host_domain === "nitter.nicfab.eu" ||
+			host_domain === "bird.habedieeh.re" ||
+			host_domain === "nitter.hostux.net" ||
+			host_domain === "nitter.adminforge.de" ||
+			host_domain === "nitter.platypush.tech" ||
+			host_domain === "nitter.us.projectsegfau.lt" ||
+			host_domain === "t.com.sb" ||
+			host_domain === "nitter.kling.gg" ||
+			host_domain === "nitter.riverside.rocks" ||
+			host_domain === "nitter.lunar.icu" ||
+			host_domain === "twitter.moe.ngo" ||
+			host_domain === "nitter.freedit.eu" ||
+			host_domain === "n.opnxng.com" ||
+			host_domain === "nitter.tux.pizza" ||
+			host_domain === "nitter.altgr.xyz" ||
+			host_domain === "jote.lile.cl" ||
+			host_domain === "nitter.one" ||
+			host_domain === "nitter.io.lol" ||
+			host_domain === "nitter.no-logs.com" ||
+			host_domain === "tweet.whateveritworks.org" ||
+			host_domain === "nitter.fediflix.org" ||
+			host_domain === "nitter.nohost.network" ||
+			host_domain === "nitter.simpleprivacy.fr" ||
+			host_domain === "nitter.onthescent.xyz" ||
+			host_domain === "nitter.x86-64-unknown-linux-gnu.zip" ||
+			host_domain === "nitter.private.coffee" ||
+			host_domain === "nitter.oksocial.net" ||
+			host_domain === "nitter.services.woodland.cafe" ||
+			host_domain === "nitter.dafriser.be" ||
+			host_domain === "nitter.catsarch.com" ||
 			//host_domain === "nitter.13ad.de" ||
 			//host_domain === "tw.openalgeria.org" ||
 			host_domain === "nitter.42l.fr" ||
 			host_domain === "nitter.pussthecat.org" ||
-			host_domain === "nitter.nixnet.services" ||
 			//host_domain === "nitter.mastodont.cat" ||
 			host_domain === "nitter.tedomum.net" ||
-			host_domain === "nitter.fdn.fr" ||
-			host_domain === "nitter.1d4.us" ||
-			host_domain === "nitter.kavin.rocks" ||
 			host_domain === "nitter-home.kavin.rocks" ||
-			host_domain === "tweet.lambda.dance" ||
 			host_domain === "nitter.cc" ||
 			host_domain === "nitter.vxempire.xyz" ||
-			host_domain === "nitter.unixfox.eu" ||
-			host_domain === "nitter.domain.glass" ||
 			host_domain === "nitter.eu" ||
 			host_domain === "nitter.ethibox.fr" ||
 			host_domain === "nitter.namazso.eu" ||
 			host_domain === "nitter.mailstation.de" ||
 			host_domain === "nitter.actionsack.com" ||
 			host_domain === "nitter.cattube.org" ||
-			host_domain === "birdsite.xanny.family" ||
 			host_domain === "nitter.40two.app" ||
 			host_domain === "nitter.skrep.in" ||
 			host_domain === "nitter.hu" ||
