@@ -1,4 +1,4 @@
-2023.7.0 (in-development)
+2023.8.0 (in-development)
 
 New features:
 
