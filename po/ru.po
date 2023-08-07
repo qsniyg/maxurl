@@ -12,9 +12,9 @@ msgstr ""
 msgid "$language_native$"
 msgstr "Русский"
 
-#. English: Finds larger or original versions of images and videos for 8200+ websites, including a powerful media popup and download feature
+#. English: Finds larger or original versions of images and videos for 8800+ websites, including a powerful media popup and download feature
 msgid "$description$"
-msgstr "Находит увеличенные или оригинальные версии изображений и видео для 8200+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов."
+msgstr "Находит увеличенные или оригинальные версии изображений и видео для 8800+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов."
 
 #. English: Options
 msgid "options_header"
@@ -722,38 +722,6 @@ msgstr "Длительность курсора `запрещено`"
 #. mouseover_notallowed_duration.description
 msgid "How long the `not-allowed` cursor should last"
 msgstr "Как долго отображается курсор `запрещено`"
-
-#. mouseover_exclude_page_bg.name
-msgid "Exclude page background"
-msgstr "Исключать фон страницы"
-
-#. mouseover_exclude_page_bg.description
-msgid "Excludes the page background for the popup"
-msgstr "Исключает фон страницы для всплывающего окна."
-
-#. mouseover_minimum_size.name
-msgid "Minimum size"
-msgstr "Минимальный размер"
-
-#. mouseover_minimum_size.description
-msgid "Smallest size acceptable for the popup to open (this option is ignored for background images). This refers to the size of the media to be popped up, which may differ from the source media."
-msgstr "Наименьший размер, допустимый для открытия всплывающего окна (этот параметр игнорируется для фоновых изображений). Это относится к размеру всплывающего медиа, который может отличаться от оригинала."
-
-#. popup_maximum_source_size.name
-msgid "Maximum source size"
-msgstr "Максимальный размер источника"
-
-#. popup_maximum_source_size.description
-msgid "Maximum size (width/height) for the source media to allow popping up (this option is ignored for background images). Set to `0` for any size."
-msgstr "Максимальный размер (ширина/высота) исходного медиафайла для разрешения всплытия (этот параметр игнорируется для фоновых изображений). `0` - любой размер."
-
-#. mouseover_exclude_backgroundimages.name
-msgid "Exclude `background-image`s"
-msgstr "Исключать `background-image`"
-
-#. mouseover_exclude_backgroundimages.description
-msgid "Excludes `background-image`s for the popup. Might prevent the popup from working on many images"
-msgstr "Исключает `background-image` для всплывающего окна. Это может помешать всплывающему окну работать со многими изображениями."
 
 #. mouseover_exclude_imagetab.name
 msgid "Exclude image tabs"
@@ -1490,10 +1458,6 @@ msgstr "Минимальное количество для перетаскив�
 #. mouseover_drag_min.description
 msgid "How many pixels the mouse should move to start a drag"
 msgstr "На сколько пикселей мышь должна переместиться, чтобы начать перетаскивание."
-
-#. mouseover_minimum_size.number_unit, mouseover_jitter_threshold.number_unit, mouseover_drag_min.number_unit, popup_maximum_source_size.number_unit
-msgid "pixels"
-msgstr "пикс."
 
 #. mouseover_scrolly_behavior.name
 msgid "Vertical scroll action"
@@ -2527,6 +2491,18 @@ msgstr "Возможно, увеличенные изображения"
 msgid "Enables rules that return images that are possibly upscaled"
 msgstr "Включает правила, возвращающие изображения, которые могут быть увеличены."
 
+#. allow_uncropped.name
+msgid "Uncropped images"
+msgstr ""
+
+#. allow_uncropped.description
+msgid "Enables rules that return possibly undesirable uncropped images"
+msgstr ""
+
+#. allow_uncropped.example_websites[0]
+msgid "Mobile wallpaper websites (returns the full version of the wallpaper image)"
+msgstr ""
+
 #. allow_thirdparty.name
 msgid "Rules using 3rd-party websites"
 msgstr "Правила использования сторонних сайтов"
@@ -3235,6 +3211,42 @@ msgstr "Копировать ссылку"
 #. mouseover_open_behavior.options.replace.name, t2_mouseover_open_behavior.options.replace.name, t3_mouseover_open_behavior.options.replace.name
 msgid "Replace"
 msgstr "Заменить"
+
+#. mouseover_exclude_page_bg.name, t2_mouseover_exclude_page_bg.name, t3_mouseover_exclude_page_bg.name
+msgid "Exclude page background"
+msgstr "Исключать фон страницы"
+
+#. mouseover_exclude_page_bg.description, t2_mouseover_exclude_page_bg.description, t3_mouseover_exclude_page_bg.description
+msgid "Excludes the page background for the popup"
+msgstr "Исключает фон страницы для всплывающего окна."
+
+#. mouseover_minimum_size.name, t2_mouseover_minimum_size.name, t3_mouseover_minimum_size.name
+msgid "Minimum size"
+msgstr "Минимальный размер"
+
+#. mouseover_minimum_size.description, t2_mouseover_minimum_size.description, t3_mouseover_minimum_size.description
+msgid "Smallest size acceptable for the popup to open (this option is ignored for background images). This refers to the size of the media to be popped up, which may differ from the source media."
+msgstr "Наименьший размер, допустимый для открытия всплывающего окна (этот параметр игнорируется для фоновых изображений). Это относится к размеру всплывающего медиа, который может отличаться от оригинала."
+
+#. popup_maximum_source_size.name, t2_popup_maximum_source_size.name, t3_popup_maximum_source_size.name
+msgid "Maximum source size"
+msgstr "Максимальный размер источника"
+
+#. popup_maximum_source_size.description, t2_popup_maximum_source_size.description, t3_popup_maximum_source_size.description
+msgid "Maximum size (width/height) for the source media to allow popping up (this option is ignored for background images). Set to `0` for any size."
+msgstr "Максимальный размер (ширина/высота) исходного медиафайла для разрешения всплытия (этот параметр игнорируется для фоновых изображений). `0` - любой размер."
+
+#. mouseover_minimum_size.number_unit, mouseover_jitter_threshold.number_unit, mouseover_drag_min.number_unit, popup_maximum_source_size.number_unit, t2_mouseover_minimum_size.number_unit, t3_mouseover_minimum_size.number_unit, t2_popup_maximum_source_size.number_unit, t3_popup_maximum_source_size.number_unit
+msgid "pixels"
+msgstr "пикс."
+
+#. mouseover_exclude_backgroundimages.name, t2_mouseover_exclude_backgroundimages.name, t3_mouseover_exclude_backgroundimages.name
+msgid "Exclude `background-image`s"
+msgstr "Исключать `background-image`"
+
+#. mouseover_exclude_backgroundimages.description, t2_mouseover_exclude_backgroundimages.description, t3_mouseover_exclude_backgroundimages.description
+msgid "Excludes `background-image`s for the popup. Might prevent the popup from working on many images"
+msgstr "Исключает `background-image` для всплывающего окна. Это может помешать всплывающему окну работать со многими изображениями."
 
 #. mouseover_allow_video.name, t2_mouseover_allow_video.name, t3_mouseover_allow_video.name
 msgid "Enable videos"

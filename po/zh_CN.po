@@ -12,7 +12,7 @@ msgstr ""
 msgid "$language_native$"
 msgstr "简体中文"
 
-#. English: Finds larger or original versions of images and videos for 8200+ websites, including a powerful media popup and download feature
+#. English: Finds larger or original versions of images and videos for 8800+ websites, including a powerful media popup and download feature
 msgid "$description$"
 msgstr "在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能"
 
@@ -720,38 +720,6 @@ msgstr "“禁止”指针持续时间"
 #. mouseover_notallowed_duration.description
 msgid "How long the `not-allowed` cursor should last"
 msgstr "“禁止”指针的显示持续多久"
-
-#. mouseover_exclude_page_bg.name
-msgid "Exclude page background"
-msgstr "排除页面背景"
-
-#. mouseover_exclude_page_bg.description
-msgid "Excludes the page background for the popup"
-msgstr "避免为页面背景显示弹窗"
-
-#. mouseover_minimum_size.name
-msgid "Minimum size"
-msgstr "最小尺寸"
-
-#. mouseover_minimum_size.description
-msgid "Smallest size acceptable for the popup to open (this option is ignored for background images). This refers to the size of the media to be popped up, which may differ from the source media."
-msgstr "允许多小的图像显示弹窗。背景图像不被此选项涵盖。这指将要弹窗显示的媒体大小，这可能与源媒体不同。"
-
-#. popup_maximum_source_size.name
-msgid "Maximum source size"
-msgstr "最大源尺寸"
-
-#. popup_maximum_source_size.description
-msgid "Maximum size (width/height) for the source media to allow popping up (this option is ignored for background images). Set to `0` for any size."
-msgstr "以源媒体显示弹窗的最大尺寸（宽度/高度）（对背景图像来说此选项无效)。设为 0 表示任意大小。"
-
-#. mouseover_exclude_backgroundimages.name
-msgid "Exclude `background-image`s"
-msgstr "排除背景图像"
-
-#. mouseover_exclude_backgroundimages.description
-msgid "Excludes `background-image`s for the popup. Might prevent the popup from working on many images"
-msgstr "不为背景图像显示弹窗。可能使很多图像上不显示弹窗"
 
 #. mouseover_exclude_imagetab.name
 msgid "Exclude image tabs"
@@ -1488,10 +1456,6 @@ msgstr "最小拖拽起始"
 #. mouseover_drag_min.description
 msgid "How many pixels the mouse should move to start a drag"
 msgstr "鼠标移动多少像素才开始拖拽"
-
-#. mouseover_minimum_size.number_unit, mouseover_jitter_threshold.number_unit, mouseover_drag_min.number_unit, popup_maximum_source_size.number_unit
-msgid "pixels"
-msgstr "像素"
 
 #. mouseover_scrolly_behavior.name
 msgid "Vertical scroll action"
@@ -2525,6 +2489,18 @@ msgstr "可能扩增尺寸的图像"
 msgid "Enables rules that return images that are possibly upscaled"
 msgstr "启用规则：返回可能已扩增尺寸的图像"
 
+#. allow_uncropped.name
+msgid "Uncropped images"
+msgstr ""
+
+#. allow_uncropped.description
+msgid "Enables rules that return possibly undesirable uncropped images"
+msgstr ""
+
+#. allow_uncropped.example_websites[0]
+msgid "Mobile wallpaper websites (returns the full version of the wallpaper image)"
+msgstr ""
+
 #. allow_thirdparty.name
 msgid "Rules using 3rd-party websites"
 msgstr "使用第三方网站的规则"
@@ -3233,6 +3209,42 @@ msgstr "复制链接"
 #. mouseover_open_behavior.options.replace.name, t2_mouseover_open_behavior.options.replace.name, t3_mouseover_open_behavior.options.replace.name
 msgid "Replace"
 msgstr "替换"
+
+#. mouseover_exclude_page_bg.name, t2_mouseover_exclude_page_bg.name, t3_mouseover_exclude_page_bg.name
+msgid "Exclude page background"
+msgstr "排除页面背景"
+
+#. mouseover_exclude_page_bg.description, t2_mouseover_exclude_page_bg.description, t3_mouseover_exclude_page_bg.description
+msgid "Excludes the page background for the popup"
+msgstr "避免为页面背景显示弹窗"
+
+#. mouseover_minimum_size.name, t2_mouseover_minimum_size.name, t3_mouseover_minimum_size.name
+msgid "Minimum size"
+msgstr "最小尺寸"
+
+#. mouseover_minimum_size.description, t2_mouseover_minimum_size.description, t3_mouseover_minimum_size.description
+msgid "Smallest size acceptable for the popup to open (this option is ignored for background images). This refers to the size of the media to be popped up, which may differ from the source media."
+msgstr "允许多小的图像显示弹窗。背景图像不被此选项涵盖。这指将要弹窗显示的媒体大小，这可能与源媒体不同。"
+
+#. popup_maximum_source_size.name, t2_popup_maximum_source_size.name, t3_popup_maximum_source_size.name
+msgid "Maximum source size"
+msgstr "最大源尺寸"
+
+#. popup_maximum_source_size.description, t2_popup_maximum_source_size.description, t3_popup_maximum_source_size.description
+msgid "Maximum size (width/height) for the source media to allow popping up (this option is ignored for background images). Set to `0` for any size."
+msgstr "以源媒体显示弹窗的最大尺寸（宽度/高度）（对背景图像来说此选项无效)。设为 0 表示任意大小。"
+
+#. mouseover_minimum_size.number_unit, mouseover_jitter_threshold.number_unit, mouseover_drag_min.number_unit, popup_maximum_source_size.number_unit, t2_mouseover_minimum_size.number_unit, t3_mouseover_minimum_size.number_unit, t2_popup_maximum_source_size.number_unit, t3_popup_maximum_source_size.number_unit
+msgid "pixels"
+msgstr "像素"
+
+#. mouseover_exclude_backgroundimages.name, t2_mouseover_exclude_backgroundimages.name, t3_mouseover_exclude_backgroundimages.name
+msgid "Exclude `background-image`s"
+msgstr "排除背景图像"
+
+#. mouseover_exclude_backgroundimages.description, t2_mouseover_exclude_backgroundimages.description, t3_mouseover_exclude_backgroundimages.description
+msgid "Excludes `background-image`s for the popup. Might prevent the popup from working on many images"
+msgstr "不为背景图像显示弹窗。可能使很多图像上不显示弹窗"
 
 #. mouseover_allow_video.name, t2_mouseover_allow_video.name, t3_mouseover_allow_video.name
 msgid "Enable videos"
