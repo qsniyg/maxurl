@@ -31,8 +31,8 @@
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 8200+ websites, including a powerful media popup and download feature
-// @description:en    Finds larger or original versions of images and videos for 8200+ websites, including a powerful media popup and download feature
+// @description       Finds larger or original versions of images and videos for 8800+ websites, including a powerful media popup and download feature
+// @description:en    Finds larger or original versions of images and videos for 8800+ websites, including a powerful media popup and download feature
 // @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 8800 موقع ويب
 // @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 8800 webů
 // @description:da    Finder større eller originale versioner af billeder og videoer til mere end 8800 websteder
