@@ -33,40 +33,40 @@
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 8200+ websites, including a powerful media popup and download feature
-// @description:en    Finds larger or original versions of images and videos for 8200+ websites, including a powerful media popup and download feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 8200 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 8200 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 8200 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 8200 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 8200 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 8200 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 8200 sitios
-// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 8200 verkkosivustolle
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 200 sites web, y compris une puissante fonction de popup média
-// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 200 sites web, y compris une puissante fonction de popup média
-// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-8200 אתרים
-// @description:hi    8200 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
-// @description:hu    Több mint 8200 webhely képének és videóinak nagyobb vagy eredeti változatát találja
-// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 8200 situs web
-// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 8200 siti web
-// @description:ja    8200以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ko    8200개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 8200 nettsteder
-// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 8200 websites
-// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 8200 stron internetowych
-// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 8200 sites
-// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 8200+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 8200 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 8200 веб-сайтів
-// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 8200 งเว็บไซต์
-// @description:tr    8200'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
-// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 8200 trang web
+// @description       Finds larger or original versions of images and videos for 8800+ websites, including a powerful media popup and download feature
+// @description:en    Finds larger or original versions of images and videos for 8800+ websites, including a powerful media popup and download feature
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 8800 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 8800 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 8800 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 8800 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 8800 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 8800 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 8800 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 8800 verkkosivustolle
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 800 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 800 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-8800 אתרים
+// @description:hi    8800 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
+// @description:hu    Több mint 8800 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 8800 situs web
+// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 8800 siti web
+// @description:ja    8800以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ko    8800개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 8800 nettsteder
+// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 8800 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 8800 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 8800 sites
+// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 8800+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 8800 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 8800 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 8800 งเว็บไซต์
+// @description:tr    8800'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 8800 trang web
 // @description:zh-CN 在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能
-// @description:zh-TW 為8200多個網站查找更大或原始圖像
-// @description:zh-HK 為8200多個網站查找更大或原始圖像
+// @description:zh-TW 為8800多個網站查找更大或原始圖像
+// @description:zh-HK 為8800多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2023.3.0
+// @version           2023.8.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -3638,42 +3638,6 @@ var $$IMU_EXPORT$$;
 			"ru": "\u041A\u0430\u043A \u0434\u043E\u043B\u0433\u043E \u043E\u0442\u043E\u0431\u0440\u0430\u0436\u0430\u0435\u0442\u0441\u044F \u043A\u0443\u0440\u0441\u043E\u0440 `\u0437\u0430\u043F\u0440\u0435\u0449\u0435\u043D\u043E`",
 			"zh-CN": "\u201C\u7981\u6B62\u201D\u6307\u9488\u7684\u663E\u793A\u6301\u7EED\u591A\u4E45"
 		},
-		"Exclude page background": {
-			"ko": "\uD398\uC774\uC9C0 \uBC30\uACBD \uC81C\uC678",
-			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0442\u044C \u0444\u043E\u043D \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B",
-			"zh-CN": "\u6392\u9664\u9875\u9762\u80CC\u666F"
-		},
-		"Excludes the page background for the popup": {
-			"ko": "\uD31D\uC5C5\uC5D0 \uB300\uD55C \uD398\uC774\uC9C0 \uBC30\uACBD \uC81C\uC678",
-			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0435\u0442 \u0444\u043E\u043D \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u0434\u043B\u044F \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043E\u043A\u043D\u0430.",
-			"zh-CN": "\u907F\u514D\u4E3A\u9875\u9762\u80CC\u666F\u663E\u793A\u5F39\u7A97"
-		},
-		"Minimum size": {
-			"ru": "\u041C\u0438\u043D\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u0440\u0430\u0437\u043C\u0435\u0440",
-			"zh-CN": "\u6700\u5C0F\u5C3A\u5BF8"
-		},
-		"Smallest size acceptable for the popup to open (this option is ignored for background images). This refers to the size of the media to be popped up, which may differ from the source media.": {
-			"ru": "\u041D\u0430\u0438\u043C\u0435\u043D\u044C\u0448\u0438\u0439 \u0440\u0430\u0437\u043C\u0435\u0440, \u0434\u043E\u043F\u0443\u0441\u0442\u0438\u043C\u044B\u0439 \u0434\u043B\u044F \u043E\u0442\u043A\u0440\u044B\u0442\u0438\u044F \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043E\u043A\u043D\u0430 (\u044D\u0442\u043E\u0442 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440 \u0438\u0433\u043D\u043E\u0440\u0438\u0440\u0443\u0435\u0442\u0441\u044F \u0434\u043B\u044F \u0444\u043E\u043D\u043E\u0432\u044B\u0445 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0439). \u042D\u0442\u043E \u043E\u0442\u043D\u043E\u0441\u0438\u0442\u0441\u044F \u043A \u0440\u0430\u0437\u043C\u0435\u0440\u0443 \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043C\u0435\u0434\u0438\u0430, \u043A\u043E\u0442\u043E\u0440\u044B\u0439 \u043C\u043E\u0436\u0435\u0442 \u043E\u0442\u043B\u0438\u0447\u0430\u0442\u044C\u0441\u044F \u043E\u0442 \u043E\u0440\u0438\u0433\u0438\u043D\u0430\u043B\u0430.",
-			"zh-CN": "\u5141\u8BB8\u591A\u5C0F\u7684\u56FE\u50CF\u663E\u793A\u5F39\u7A97\u3002\u80CC\u666F\u56FE\u50CF\u4E0D\u88AB\u6B64\u9009\u9879\u6DB5\u76D6\u3002\u8FD9\u6307\u5C06\u8981\u5F39\u7A97\u663E\u793A\u7684\u5A92\u4F53\u5927\u5C0F\uFF0C\u8FD9\u53EF\u80FD\u4E0E\u6E90\u5A92\u4F53\u4E0D\u540C\u3002"
-		},
-		"Maximum source size": {
-			"ru": "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u0440\u0430\u0437\u043C\u0435\u0440 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0430",
-			"zh-CN": "\u6700\u5927\u6E90\u5C3A\u5BF8"
-		},
-		"Maximum size (width/height) for the source media to allow popping up (this option is ignored for background images). Set to `0` for any size.": {
-			"ru": "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u0440\u0430\u0437\u043C\u0435\u0440 (\u0448\u0438\u0440\u0438\u043D\u0430/\u0432\u044B\u0441\u043E\u0442\u0430) \u0438\u0441\u0445\u043E\u0434\u043D\u043E\u0433\u043E \u043C\u0435\u0434\u0438\u0430\u0444\u0430\u0439\u043B\u0430 \u0434\u043B\u044F \u0440\u0430\u0437\u0440\u0435\u0448\u0435\u043D\u0438\u044F \u0432\u0441\u043F\u043B\u044B\u0442\u0438\u044F (\u044D\u0442\u043E\u0442 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440 \u0438\u0433\u043D\u043E\u0440\u0438\u0440\u0443\u0435\u0442\u0441\u044F \u0434\u043B\u044F \u0444\u043E\u043D\u043E\u0432\u044B\u0445 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0439). `0` - \u043B\u044E\u0431\u043E\u0439 \u0440\u0430\u0437\u043C\u0435\u0440.",
-			"zh-CN": "\u4EE5\u6E90\u5A92\u4F53\u663E\u793A\u5F39\u7A97\u7684\u6700\u5927\u5C3A\u5BF8\uFF08\u5BBD\u5EA6/\u9AD8\u5EA6\uFF09\uFF08\u5BF9\u80CC\u666F\u56FE\u50CF\u6765\u8BF4\u6B64\u9009\u9879\u65E0\u6548)\u3002\u8BBE\u4E3A 0 \u8868\u793A\u4EFB\u610F\u5927\u5C0F\u3002"
-		},
-		"Exclude `background-image`s": {
-			"ko": "\uBC30\uACBD \uC774\uBBF8\uC9C0 \uC81C\uC678",
-			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0442\u044C `background-image`",
-			"zh-CN": "\u6392\u9664\u80CC\u666F\u56FE\u50CF"
-		},
-		"Excludes `background-image`s for the popup. Might prevent the popup from working on many images": {
-			"ko": "\uD31D\uC5C5\uC758 \uBC30\uACBD \uC774\uBBF8\uC9C0 \uC81C\uC678. \uD31D\uC5C5\uC774 \uB9CE\uC740 \uC774\uBBF8\uC9C0\uC5D0\uC11C \uC791\uB3D9\uD558\uC9C0 \uC54A\uC744 \uC218 \uC788\uC74C",
-			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0435\u0442 `background-image` \u0434\u043B\u044F \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043E\u043A\u043D\u0430. \u042D\u0442\u043E \u043C\u043E\u0436\u0435\u0442 \u043F\u043E\u043C\u0435\u0448\u0430\u0442\u044C \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u043C\u0443 \u043E\u043A\u043D\u0443 \u0440\u0430\u0431\u043E\u0442\u0430\u0442\u044C \u0441\u043E \u043C\u043D\u043E\u0433\u0438\u043C\u0438 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u044F\u043C\u0438.",
-			"zh-CN": "\u4E0D\u4E3A\u80CC\u666F\u56FE\u50CF\u663E\u793A\u5F39\u7A97\u3002\u53EF\u80FD\u4F7F\u5F88\u591A\u56FE\u50CF\u4E0A\u4E0D\u663E\u793A\u5F39\u7A97"
-		},
 		"Exclude image tabs": {
 			"ko": "\uC774\uBBF8\uC9C0 \uD0ED \uC81C\uC678",
 			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0442\u044C \u0432\u043A\u043B\u0430\u0434\u043A\u0438 \u0441 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u044F\u043C\u0438",
@@ -4433,10 +4397,6 @@ var $$IMU_EXPORT$$;
 		"How many pixels the mouse should move to start a drag": {
 			"ru": "\u041D\u0430 \u0441\u043A\u043E\u043B\u044C\u043A\u043E \u043F\u0438\u043A\u0441\u0435\u043B\u0435\u0439 \u043C\u044B\u0448\u044C \u0434\u043E\u043B\u0436\u043D\u0430 \u043F\u0435\u0440\u0435\u043C\u0435\u0441\u0442\u0438\u0442\u044C\u0441\u044F, \u0447\u0442\u043E\u0431\u044B \u043D\u0430\u0447\u0430\u0442\u044C \u043F\u0435\u0440\u0435\u0442\u0430\u0441\u043A\u0438\u0432\u0430\u043D\u0438\u0435.",
 			"zh-CN": "\u9F20\u6807\u79FB\u52A8\u591A\u5C11\u50CF\u7D20\u624D\u5F00\u59CB\u62D6\u62FD"
-		},
-		"pixels": {
-			"ru": "\u043F\u0438\u043A\u0441.",
-			"zh-CN": "\u50CF\u7D20"
 		},
 		"Vertical scroll action": {
 			"ru": "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435 \u0432\u0435\u0440\u0442\u0438\u043A\u0430\u043B\u044C\u043D\u043E\u0439 \u043F\u0440\u043E\u043A\u0440\u0443\u0442\u043A\u0438",
@@ -5998,6 +5958,46 @@ var $$IMU_EXPORT$$;
 		"Replace": {
 			"ru": "\u0417\u0430\u043C\u0435\u043D\u0438\u0442\u044C",
 			"zh-CN": "\u66FF\u6362"
+		},
+		"Exclude page background": {
+			"ko": "\uD398\uC774\uC9C0 \uBC30\uACBD \uC81C\uC678",
+			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0442\u044C \u0444\u043E\u043D \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B",
+			"zh-CN": "\u6392\u9664\u9875\u9762\u80CC\u666F"
+		},
+		"Excludes the page background for the popup": {
+			"ko": "\uD31D\uC5C5\uC5D0 \uB300\uD55C \uD398\uC774\uC9C0 \uBC30\uACBD \uC81C\uC678",
+			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0435\u0442 \u0444\u043E\u043D \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u0434\u043B\u044F \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043E\u043A\u043D\u0430.",
+			"zh-CN": "\u907F\u514D\u4E3A\u9875\u9762\u80CC\u666F\u663E\u793A\u5F39\u7A97"
+		},
+		"Minimum size": {
+			"ru": "\u041C\u0438\u043D\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u0440\u0430\u0437\u043C\u0435\u0440",
+			"zh-CN": "\u6700\u5C0F\u5C3A\u5BF8"
+		},
+		"Smallest size acceptable for the popup to open (this option is ignored for background images). This refers to the size of the media to be popped up, which may differ from the source media.": {
+			"ru": "\u041D\u0430\u0438\u043C\u0435\u043D\u044C\u0448\u0438\u0439 \u0440\u0430\u0437\u043C\u0435\u0440, \u0434\u043E\u043F\u0443\u0441\u0442\u0438\u043C\u044B\u0439 \u0434\u043B\u044F \u043E\u0442\u043A\u0440\u044B\u0442\u0438\u044F \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043E\u043A\u043D\u0430 (\u044D\u0442\u043E\u0442 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440 \u0438\u0433\u043D\u043E\u0440\u0438\u0440\u0443\u0435\u0442\u0441\u044F \u0434\u043B\u044F \u0444\u043E\u043D\u043E\u0432\u044B\u0445 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0439). \u042D\u0442\u043E \u043E\u0442\u043D\u043E\u0441\u0438\u0442\u0441\u044F \u043A \u0440\u0430\u0437\u043C\u0435\u0440\u0443 \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043C\u0435\u0434\u0438\u0430, \u043A\u043E\u0442\u043E\u0440\u044B\u0439 \u043C\u043E\u0436\u0435\u0442 \u043E\u0442\u043B\u0438\u0447\u0430\u0442\u044C\u0441\u044F \u043E\u0442 \u043E\u0440\u0438\u0433\u0438\u043D\u0430\u043B\u0430.",
+			"zh-CN": "\u5141\u8BB8\u591A\u5C0F\u7684\u56FE\u50CF\u663E\u793A\u5F39\u7A97\u3002\u80CC\u666F\u56FE\u50CF\u4E0D\u88AB\u6B64\u9009\u9879\u6DB5\u76D6\u3002\u8FD9\u6307\u5C06\u8981\u5F39\u7A97\u663E\u793A\u7684\u5A92\u4F53\u5927\u5C0F\uFF0C\u8FD9\u53EF\u80FD\u4E0E\u6E90\u5A92\u4F53\u4E0D\u540C\u3002"
+		},
+		"Maximum source size": {
+			"ru": "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u0440\u0430\u0437\u043C\u0435\u0440 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0430",
+			"zh-CN": "\u6700\u5927\u6E90\u5C3A\u5BF8"
+		},
+		"Maximum size (width/height) for the source media to allow popping up (this option is ignored for background images). Set to `0` for any size.": {
+			"ru": "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u0440\u0430\u0437\u043C\u0435\u0440 (\u0448\u0438\u0440\u0438\u043D\u0430/\u0432\u044B\u0441\u043E\u0442\u0430) \u0438\u0441\u0445\u043E\u0434\u043D\u043E\u0433\u043E \u043C\u0435\u0434\u0438\u0430\u0444\u0430\u0439\u043B\u0430 \u0434\u043B\u044F \u0440\u0430\u0437\u0440\u0435\u0448\u0435\u043D\u0438\u044F \u0432\u0441\u043F\u043B\u044B\u0442\u0438\u044F (\u044D\u0442\u043E\u0442 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440 \u0438\u0433\u043D\u043E\u0440\u0438\u0440\u0443\u0435\u0442\u0441\u044F \u0434\u043B\u044F \u0444\u043E\u043D\u043E\u0432\u044B\u0445 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0439). `0` - \u043B\u044E\u0431\u043E\u0439 \u0440\u0430\u0437\u043C\u0435\u0440.",
+			"zh-CN": "\u4EE5\u6E90\u5A92\u4F53\u663E\u793A\u5F39\u7A97\u7684\u6700\u5927\u5C3A\u5BF8\uFF08\u5BBD\u5EA6/\u9AD8\u5EA6\uFF09\uFF08\u5BF9\u80CC\u666F\u56FE\u50CF\u6765\u8BF4\u6B64\u9009\u9879\u65E0\u6548)\u3002\u8BBE\u4E3A 0 \u8868\u793A\u4EFB\u610F\u5927\u5C0F\u3002"
+		},
+		"pixels": {
+			"ru": "\u043F\u0438\u043A\u0441.",
+			"zh-CN": "\u50CF\u7D20"
+		},
+		"Exclude `background-image`s": {
+			"ko": "\uBC30\uACBD \uC774\uBBF8\uC9C0 \uC81C\uC678",
+			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0442\u044C `background-image`",
+			"zh-CN": "\u6392\u9664\u80CC\u666F\u56FE\u50CF"
+		},
+		"Excludes `background-image`s for the popup. Might prevent the popup from working on many images": {
+			"ko": "\uD31D\uC5C5\uC758 \uBC30\uACBD \uC774\uBBF8\uC9C0 \uC81C\uC678. \uD31D\uC5C5\uC774 \uB9CE\uC740 \uC774\uBBF8\uC9C0\uC5D0\uC11C \uC791\uB3D9\uD558\uC9C0 \uC54A\uC744 \uC218 \uC788\uC74C",
+			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0435\u0442 `background-image` \u0434\u043B\u044F \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043E\u043A\u043D\u0430. \u042D\u0442\u043E \u043C\u043E\u0436\u0435\u0442 \u043F\u043E\u043C\u0435\u0448\u0430\u0442\u044C \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u043C\u0443 \u043E\u043A\u043D\u0443 \u0440\u0430\u0431\u043E\u0442\u0430\u0442\u044C \u0441\u043E \u043C\u043D\u043E\u0433\u0438\u043C\u0438 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u044F\u043C\u0438.",
+			"zh-CN": "\u4E0D\u4E3A\u80CC\u666F\u56FE\u50CF\u663E\u793A\u5F39\u7A97\u3002\u53EF\u80FD\u4F7F\u5F88\u591A\u56FE\u50CF\u4E0A\u4E0D\u663E\u793A\u5F39\u7A97"
 		},
 		"Enable videos": {
 			"ru": "\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u0432\u0438\u0434\u0435\u043E",
@@ -61287,6 +61287,20 @@ var $$IMU_EXPORT$$;
 	function serialize_value(value) {
 		return JSON_stringify(value);
 	}
+	// needed for guerillajs (pale moon)
+	var gm_nonexistent_is_null = null;
+	function gm_check_nonexistent() {
+		if (gm_nonexistent_is_null !== null)
+			return gm_nonexistent_is_null;
+		gm_nonexistent_is_null = GM_getValue("nonexistent_value_abcdefg", void 0) === null;
+		return gm_nonexistent_is_null;
+	}
+	function gm_getvalue_wrap(key) {
+		var value = GM_getValue(key, void 0);
+		if (value === null && gm_check_nonexistent())
+			value = void 0;
+		return value;
+	}
 	function get_values(keys, cb) {
 		if (is_extension) {
 			extension_send_message({
@@ -61306,7 +61320,7 @@ var $$IMU_EXPORT$$;
 			userscript_manager !== "FireMonkey") {
 			var response = {};
 			array_foreach(keys, function(key) {
-				response[key] = parse_value(GM_getValue(key, void 0));
+				response[key] = parse_value(gm_getvalue_wrap(key));
 			});
 			return cb(response);
 		} else if (typeof GM !== "undefined" && GM.getValue) {
@@ -70571,15 +70585,6 @@ var $$IMU_EXPORT$$;
 			}
 			return do_event_return(event, ret);
 		};
-		var eventlistener_opts = {
-			capture: true,
-			passive: false
-		};
-		our_addEventListener(document, 'keydown', keydown_cb, eventlistener_opts);
-		our_addEventListener(document, 'mousedown', keydown_cb, eventlistener_opts);
-		our_addEventListener(document, 'contextmenu', keydown_cb, eventlistener_opts);
-		our_addEventListener(document.body, 'contextmenu', keydown_cb, eventlistener_opts);
-		our_addEventListener(document, 'wheel', keydown_cb, eventlistener_opts);
 		var keyup_cb = function(event) {
 			if (_nir_debug_) nir_debug("input", "keyup_cb", event);
 			if (!mouseover_base_enabled())
@@ -70632,8 +70637,6 @@ var $$IMU_EXPORT$$;
 			}
 			return do_event_return(event, ret);
 		};
-		our_addEventListener(document, 'keyup', keyup_cb, eventlistener_opts);
-		our_addEventListener(document, 'mouseup', keyup_cb, eventlistener_opts);
 		function scrollLeft() {
 			var doc = document.documentElement;
 			var body = document.body;
@@ -70882,31 +70885,44 @@ var $$IMU_EXPORT$$;
 				handle_remote_event(event.data[imu_message_key]);
 			}, false);
 		}
-		our_addEventListener(document, 'contextmenu', update_contextmenu_pos);
 		var last_remote_mousemove = 0;
 		var last_remote_mousemove_timer = null;
 		var last_remote_mousemove_event = null;
-		var wheel_cb = function(event) {
-			if (settings.scroll_override_page && popups_active && popup_wheel_cb) {
-				return popup_wheel_cb(event, true);
+		onload(function() {
+			var eventlistener_opts = {
+				capture: true,
+				passive: false
+			};
+			our_addEventListener(document, 'keydown', keydown_cb, eventlistener_opts);
+			our_addEventListener(document, 'mousedown', keydown_cb, eventlistener_opts);
+			our_addEventListener(document, 'contextmenu', keydown_cb, eventlistener_opts);
+			our_addEventListener(document.body, 'contextmenu', keydown_cb, eventlistener_opts);
+			our_addEventListener(document, 'wheel', keydown_cb, eventlistener_opts);
+			our_addEventListener(document, 'keyup', keyup_cb, eventlistener_opts);
+			our_addEventListener(document, 'mouseup', keyup_cb, eventlistener_opts);
+			our_addEventListener(document, 'contextmenu', update_contextmenu_pos);
+			var wheel_cb = function(event) {
+				if (settings.scroll_override_page && popups_active && popup_wheel_cb) {
+					return popup_wheel_cb(event, true);
+				}
+			};
+			our_addEventListener(document, "wheel", wheel_cb, { passive: false });
+			// https://github.com/qsniyg/maxurl/issues/771
+			// seems to be a bug in chrome. if both a "wheel" and a "mousewheel" (deprecated) event are set on document, it will not fire the mousewheel event
+			if (host_domain_nosub === "bilibili.com" && navigator.userAgent.indexOf("Chrome/") >= 0) {
+				our_addEventListener(document, "wheel", function(e) {
+					var ev = document.createEvent("MouseEvents");
+					ev.initEvent("mousewheel", true, true);
+					//ev.originalEvent = e.originalEvent || e;
+					ev.wheelDelta = e.wheelDelta;
+					ev.detail = e.detail;
+					ev.deltaMode = e.deltaMode;
+					ev.target = e.target;
+					ev.srcElement = e.srcElement;
+					document.dispatchEvent(ev);
+				});
 			}
-		};
-		our_addEventListener(document, "wheel", wheel_cb, { passive: false });
-		// https://github.com/qsniyg/maxurl/issues/771
-		// seems to be a bug in chrome. if both a "wheel" and a "mousewheel" (deprecated) event are set on document, it will not fire the mousewheel event
-		if (host_domain_nosub === "bilibili.com" && navigator.userAgent.indexOf("Chrome/") >= 0) {
-			our_addEventListener(document, "wheel", function(e) {
-				var ev = document.createEvent("MouseEvents");
-				ev.initEvent("mousewheel", true, true);
-				//ev.originalEvent = e.originalEvent || e;
-				ev.wheelDelta = e.wheelDelta;
-				ev.detail = e.detail;
-				ev.deltaMode = e.deltaMode;
-				ev.target = e.target;
-				ev.srcElement = e.srcElement;
-				document.dispatchEvent(ev);
-			});
-		}
+		});
 		var update_mouse_from_event = function(event) {
 			if (event.pageX === null && event.clientX !== null) {
 				// commenting out because unused and sets global variables
@@ -71094,7 +71110,7 @@ var $$IMU_EXPORT$$;
 				}
 			}
 		};
-		our_addEventListener(document, 'mousemove', mousemove_cb);
+		onload(function() { return our_addEventListener(document, 'mousemove', mousemove_cb); });
 		(function() {
 			register_menucommand("Report issue", github_issues_page);
 		})();
