@@ -15,14 +15,20 @@ get_userscript_version() {
 
 USERVERSION=`get_userscript_version userscript.user.js`
 MANIFESTVERSION=`cat manifest.json | grep '"version": *"[0-9.]*", *$' | sed 's/.*"version": *"\([0-9.]*\)", *$/\1/g'`
+PACKAGEVERSION=`cat package.json | grep '"version": *"[0-9.]*", *$' | sed 's/.*"version": *"\([0-9.]*\)", *$/\1/g'`
 
-if [ -z "$USERVERSION" -o -z "$MANIFESTVERSION" ]; then
+if [ -z "$USERVERSION" -o -z "$MANIFESTVERSION" -o -z "$PACKAGEVERSION" ]; then
     echo Broken version regex
     exit 1
 fi
 
 if [ "$USERVERSION" != "$MANIFESTVERSION" ]; then
     echo 'Conflicting versions (userscript and manifest)'
+    exit 1
+fi
+
+if [ "$USERVERSION" != "$PACKAGEVERSION" ]; then
+    echo 'Conflicting versions (userscript and npm package)'
     exit 1
 fi
 
@@ -358,7 +364,7 @@ if [ ! -z $RELEASE ]; then
     echo ' * Ensure translation strings are updated'
     echo ' * Ensure xx00+ count is updated (userscript - greasyfork/oujs, reddit post, mozilla/opera, website)'
     echo ' * Ensure CHANGELOG.txt is updated'
-    echo ' * git add userscript.user.js userscript_smaller.user.js userscript.meta.js CHANGELOG.txt build/userscript_extr.user.js build/userscript_extr_min.user.js build/ImageMaxURL_crx3.crx build/ImageMaxURL_unsigned.xpi extension/updates.xml manifest.json sites.txt'
+    echo ' * git add userscript.user.js userscript_smaller.user.js userscript.meta.js CHANGELOG.txt build/userscript_extr.user.js build/userscript_extr_min.user.js build/ImageMaxURL_crx3.crx build/ImageMaxURL_unsigned.xpi extension/updates.xml manifest.json package.json sites.txt'
     echo ' * git commit ('$USERVERSION')'
     echo ' * Update greasyfork, oujs, firefox, opera, changelog.txt'
     echo ' * git tag v'$USERVERSION
