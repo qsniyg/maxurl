@@ -1,7 +1,8 @@
-2023.8.0 (in-development)
+2023.8.0
 
 New features:
 
+ * Support ~550 new websites (using ~200 new rules)
  * Option to toggle video subtitles (enabled by default)
  * Option to control returning uncropped images (enabled by default)
  * Userscript menu option to request support for a website

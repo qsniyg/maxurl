@@ -33,38 +33,38 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @description       Finds larger or original versions of images and videos for 8200+ websites, including a powerful media popup and download feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 8200 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 8200 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 8200 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 8200 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 8200 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 8200 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 8200 sitios
-// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 8200 verkkosivustolle
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 200 sites web, y compris une puissante fonction de popup média
-// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 200 sites web, y compris une puissante fonction de popup média
-// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-8200 אתרים
-// @description:hi    8200 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
-// @description:hu    Több mint 8200 webhely képének és videóinak nagyobb vagy eredeti változatát találja
-// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 8200 situs web
-// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 8200 siti web
-// @description:ja    8200以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ko    8200개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 8200 nettsteder
-// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 8200 websites
-// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 8200 stron internetowych
-// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 8200 sites
-// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 8200+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 8200 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 8200 веб-сайтів
-// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 8200 งเว็บไซต์
-// @description:tr    8200'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
-// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 8200 trang web
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 8800 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 8800 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 8800 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 8800 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 8800 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 8800 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 8800 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 8800 verkkosivustolle
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 800 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 800 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-8800 אתרים
+// @description:hi    8800 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
+// @description:hu    Több mint 8800 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 8800 situs web
+// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 8800 siti web
+// @description:ja    8800以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ko    8800개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 8800 nettsteder
+// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 8800 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 8800 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 8800 sites
+// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 8800+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 8800 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 8800 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 8800 งเว็บไซต์
+// @description:tr    8800'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 8800 trang web
 // @description:zh-CN 在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能
-// @description:zh-TW 為8200多個網站查找更大或原始圖像
-// @description:zh-HK 為8200多個網站查找更大或原始圖像
+// @description:zh-TW 為8800多個網站查找更大或原始圖像
+// @description:zh-HK 為8800多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2023.2.0
+// @version           2023.8.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -96,11 +96,11 @@
 // @downloadURL       https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript_smaller.user.js
 //
 //  Greasyfork and OpenUserJS have 2MB and 1MB limits for userscripts (respectively).
-//  Because of this, the rules (~1.5MB) have been split into a separate file, linked below.
+//  Because of this, the rules (~1.6MB) have been split into a separate file, linked below.
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@2feb27dda4dd283167f9006a5f4314976666299b/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@4ea8f2494f1c4efb70f0ebef7a463bb663b4c28d/build/rules.js
 // ==/UserScript==
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
 //   * Detecting whether or not the destination URL exists before redirecting
@@ -141,10 +141,10 @@ var $$IMU_EXPORT$$;
 			no_recurse: false,
 			no_redirect: true,
 			// channels
-			map: true,
-			cache: true,
+			map: false,
+			cache: false,
 			bigimage_recursive: true,
-			input: true,
+			input: false,
 			check_image_get: true,
 			find_source: true
 		};
@@ -1224,7 +1224,7 @@ var $$IMU_EXPORT$$;
 		if (amount <= 0)
 			return;
 		for (var i = 0; i < amount; i++) {
-			array.push(0);
+			array.push("0");
 		}
 	};
 	function version_compare(a, b) {
@@ -1638,6 +1638,12 @@ var $$IMU_EXPORT$$;
 		}
 		if (open_in_tab !== common_functions["nullfunc"]) {
 			register_menucommand("Options", get_options_page());
+			register_menucommand("Request support for this page", function() {
+				if (is_in_iframe)
+					return;
+				var location = window.location.href;
+				open_in_tab("https://qsniyg.github.io/maxurl/#imu-request-site&url=" + encodeURIComponent(location));
+			});
 		}
 	}
 	var open_in_tab_imu = function(imu, bg, cb) {
@@ -3634,42 +3640,6 @@ var $$IMU_EXPORT$$;
 			"ru": "\u041A\u0430\u043A \u0434\u043E\u043B\u0433\u043E \u043E\u0442\u043E\u0431\u0440\u0430\u0436\u0430\u0435\u0442\u0441\u044F \u043A\u0443\u0440\u0441\u043E\u0440 `\u0437\u0430\u043F\u0440\u0435\u0449\u0435\u043D\u043E`",
 			"zh-CN": "\u201C\u7981\u6B62\u201D\u6307\u9488\u7684\u663E\u793A\u6301\u7EED\u591A\u4E45"
 		},
-		"Exclude page background": {
-			"ko": "\uD398\uC774\uC9C0 \uBC30\uACBD \uC81C\uC678",
-			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0442\u044C \u0444\u043E\u043D \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B",
-			"zh-CN": "\u6392\u9664\u9875\u9762\u80CC\u666F"
-		},
-		"Excludes the page background for the popup": {
-			"ko": "\uD31D\uC5C5\uC5D0 \uB300\uD55C \uD398\uC774\uC9C0 \uBC30\uACBD \uC81C\uC678",
-			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0435\u0442 \u0444\u043E\u043D \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u0434\u043B\u044F \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043E\u043A\u043D\u0430.",
-			"zh-CN": "\u907F\u514D\u4E3A\u9875\u9762\u80CC\u666F\u663E\u793A\u5F39\u7A97"
-		},
-		"Minimum size": {
-			"ru": "\u041C\u0438\u043D\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u0440\u0430\u0437\u043C\u0435\u0440",
-			"zh-CN": "\u6700\u5C0F\u5C3A\u5BF8"
-		},
-		"Smallest size acceptable for the popup to open (this option is ignored for background images). This refers to the size of the media to be popped up, which may differ from the source media.": {
-			"ru": "\u041D\u0430\u0438\u043C\u0435\u043D\u044C\u0448\u0438\u0439 \u0440\u0430\u0437\u043C\u0435\u0440, \u0434\u043E\u043F\u0443\u0441\u0442\u0438\u043C\u044B\u0439 \u0434\u043B\u044F \u043E\u0442\u043A\u0440\u044B\u0442\u0438\u044F \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043E\u043A\u043D\u0430 (\u044D\u0442\u043E\u0442 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440 \u0438\u0433\u043D\u043E\u0440\u0438\u0440\u0443\u0435\u0442\u0441\u044F \u0434\u043B\u044F \u0444\u043E\u043D\u043E\u0432\u044B\u0445 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0439). \u042D\u0442\u043E \u043E\u0442\u043D\u043E\u0441\u0438\u0442\u0441\u044F \u043A \u0440\u0430\u0437\u043C\u0435\u0440\u0443 \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043C\u0435\u0434\u0438\u0430, \u043A\u043E\u0442\u043E\u0440\u044B\u0439 \u043C\u043E\u0436\u0435\u0442 \u043E\u0442\u043B\u0438\u0447\u0430\u0442\u044C\u0441\u044F \u043E\u0442 \u043E\u0440\u0438\u0433\u0438\u043D\u0430\u043B\u0430.",
-			"zh-CN": "\u5141\u8BB8\u591A\u5C0F\u7684\u56FE\u50CF\u663E\u793A\u5F39\u7A97\u3002\u80CC\u666F\u56FE\u50CF\u4E0D\u88AB\u6B64\u9009\u9879\u6DB5\u76D6\u3002\u8FD9\u6307\u5C06\u8981\u5F39\u7A97\u663E\u793A\u7684\u5A92\u4F53\u5927\u5C0F\uFF0C\u8FD9\u53EF\u80FD\u4E0E\u6E90\u5A92\u4F53\u4E0D\u540C\u3002"
-		},
-		"Maximum source size": {
-			"ru": "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u0440\u0430\u0437\u043C\u0435\u0440 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0430",
-			"zh-CN": "\u6700\u5927\u6E90\u5C3A\u5BF8"
-		},
-		"Maximum size (width/height) for the source media to allow popping up (this option is ignored for background images). Set to `0` for any size.": {
-			"ru": "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u0440\u0430\u0437\u043C\u0435\u0440 (\u0448\u0438\u0440\u0438\u043D\u0430/\u0432\u044B\u0441\u043E\u0442\u0430) \u0438\u0441\u0445\u043E\u0434\u043D\u043E\u0433\u043E \u043C\u0435\u0434\u0438\u0430\u0444\u0430\u0439\u043B\u0430 \u0434\u043B\u044F \u0440\u0430\u0437\u0440\u0435\u0448\u0435\u043D\u0438\u044F \u0432\u0441\u043F\u043B\u044B\u0442\u0438\u044F (\u044D\u0442\u043E\u0442 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440 \u0438\u0433\u043D\u043E\u0440\u0438\u0440\u0443\u0435\u0442\u0441\u044F \u0434\u043B\u044F \u0444\u043E\u043D\u043E\u0432\u044B\u0445 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0439). `0` - \u043B\u044E\u0431\u043E\u0439 \u0440\u0430\u0437\u043C\u0435\u0440.",
-			"zh-CN": "\u4EE5\u6E90\u5A92\u4F53\u663E\u793A\u5F39\u7A97\u7684\u6700\u5927\u5C3A\u5BF8\uFF08\u5BBD\u5EA6/\u9AD8\u5EA6\uFF09\uFF08\u5BF9\u80CC\u666F\u56FE\u50CF\u6765\u8BF4\u6B64\u9009\u9879\u65E0\u6548)\u3002\u8BBE\u4E3A 0 \u8868\u793A\u4EFB\u610F\u5927\u5C0F\u3002"
-		},
-		"Exclude `background-image`s": {
-			"ko": "\uBC30\uACBD \uC774\uBBF8\uC9C0 \uC81C\uC678",
-			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0442\u044C `background-image`",
-			"zh-CN": "\u6392\u9664\u80CC\u666F\u56FE\u50CF"
-		},
-		"Excludes `background-image`s for the popup. Might prevent the popup from working on many images": {
-			"ko": "\uD31D\uC5C5\uC758 \uBC30\uACBD \uC774\uBBF8\uC9C0 \uC81C\uC678. \uD31D\uC5C5\uC774 \uB9CE\uC740 \uC774\uBBF8\uC9C0\uC5D0\uC11C \uC791\uB3D9\uD558\uC9C0 \uC54A\uC744 \uC218 \uC788\uC74C",
-			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0435\u0442 `background-image` \u0434\u043B\u044F \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043E\u043A\u043D\u0430. \u042D\u0442\u043E \u043C\u043E\u0436\u0435\u0442 \u043F\u043E\u043C\u0435\u0448\u0430\u0442\u044C \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u043C\u0443 \u043E\u043A\u043D\u0443 \u0440\u0430\u0431\u043E\u0442\u0430\u0442\u044C \u0441\u043E \u043C\u043D\u043E\u0433\u0438\u043C\u0438 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u044F\u043C\u0438.",
-			"zh-CN": "\u4E0D\u4E3A\u80CC\u666F\u56FE\u50CF\u663E\u793A\u5F39\u7A97\u3002\u53EF\u80FD\u4F7F\u5F88\u591A\u56FE\u50CF\u4E0A\u4E0D\u663E\u793A\u5F39\u7A97"
-		},
 		"Exclude image tabs": {
 			"ko": "\uC774\uBBF8\uC9C0 \uD0ED \uC81C\uC678",
 			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0442\u044C \u0432\u043A\u043B\u0430\u0434\u043A\u0438 \u0441 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u044F\u043C\u0438",
@@ -4429,10 +4399,6 @@ var $$IMU_EXPORT$$;
 		"How many pixels the mouse should move to start a drag": {
 			"ru": "\u041D\u0430 \u0441\u043A\u043E\u043B\u044C\u043A\u043E \u043F\u0438\u043A\u0441\u0435\u043B\u0435\u0439 \u043C\u044B\u0448\u044C \u0434\u043E\u043B\u0436\u043D\u0430 \u043F\u0435\u0440\u0435\u043C\u0435\u0441\u0442\u0438\u0442\u044C\u0441\u044F, \u0447\u0442\u043E\u0431\u044B \u043D\u0430\u0447\u0430\u0442\u044C \u043F\u0435\u0440\u0435\u0442\u0430\u0441\u043A\u0438\u0432\u0430\u043D\u0438\u0435.",
 			"zh-CN": "\u9F20\u6807\u79FB\u52A8\u591A\u5C11\u50CF\u7D20\u624D\u5F00\u59CB\u62D6\u62FD"
-		},
-		"pixels": {
-			"ru": "\u043F\u0438\u043A\u0441.",
-			"zh-CN": "\u50CF\u7D20"
 		},
 		"Vertical scroll action": {
 			"ru": "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435 \u0432\u0435\u0440\u0442\u0438\u043A\u0430\u043B\u044C\u043D\u043E\u0439 \u043F\u0440\u043E\u043A\u0440\u0443\u0442\u043A\u0438",
@@ -5995,6 +5961,46 @@ var $$IMU_EXPORT$$;
 			"ru": "\u0417\u0430\u043C\u0435\u043D\u0438\u0442\u044C",
 			"zh-CN": "\u66FF\u6362"
 		},
+		"Exclude page background": {
+			"ko": "\uD398\uC774\uC9C0 \uBC30\uACBD \uC81C\uC678",
+			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0442\u044C \u0444\u043E\u043D \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B",
+			"zh-CN": "\u6392\u9664\u9875\u9762\u80CC\u666F"
+		},
+		"Excludes the page background for the popup": {
+			"ko": "\uD31D\uC5C5\uC5D0 \uB300\uD55C \uD398\uC774\uC9C0 \uBC30\uACBD \uC81C\uC678",
+			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0435\u0442 \u0444\u043E\u043D \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u0434\u043B\u044F \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043E\u043A\u043D\u0430.",
+			"zh-CN": "\u907F\u514D\u4E3A\u9875\u9762\u80CC\u666F\u663E\u793A\u5F39\u7A97"
+		},
+		"Minimum size": {
+			"ru": "\u041C\u0438\u043D\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u0440\u0430\u0437\u043C\u0435\u0440",
+			"zh-CN": "\u6700\u5C0F\u5C3A\u5BF8"
+		},
+		"Smallest size acceptable for the popup to open (this option is ignored for background images). This refers to the size of the media to be popped up, which may differ from the source media.": {
+			"ru": "\u041D\u0430\u0438\u043C\u0435\u043D\u044C\u0448\u0438\u0439 \u0440\u0430\u0437\u043C\u0435\u0440, \u0434\u043E\u043F\u0443\u0441\u0442\u0438\u043C\u044B\u0439 \u0434\u043B\u044F \u043E\u0442\u043A\u0440\u044B\u0442\u0438\u044F \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043E\u043A\u043D\u0430 (\u044D\u0442\u043E\u0442 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440 \u0438\u0433\u043D\u043E\u0440\u0438\u0440\u0443\u0435\u0442\u0441\u044F \u0434\u043B\u044F \u0444\u043E\u043D\u043E\u0432\u044B\u0445 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0439). \u042D\u0442\u043E \u043E\u0442\u043D\u043E\u0441\u0438\u0442\u0441\u044F \u043A \u0440\u0430\u0437\u043C\u0435\u0440\u0443 \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043C\u0435\u0434\u0438\u0430, \u043A\u043E\u0442\u043E\u0440\u044B\u0439 \u043C\u043E\u0436\u0435\u0442 \u043E\u0442\u043B\u0438\u0447\u0430\u0442\u044C\u0441\u044F \u043E\u0442 \u043E\u0440\u0438\u0433\u0438\u043D\u0430\u043B\u0430.",
+			"zh-CN": "\u5141\u8BB8\u591A\u5C0F\u7684\u56FE\u50CF\u663E\u793A\u5F39\u7A97\u3002\u80CC\u666F\u56FE\u50CF\u4E0D\u88AB\u6B64\u9009\u9879\u6DB5\u76D6\u3002\u8FD9\u6307\u5C06\u8981\u5F39\u7A97\u663E\u793A\u7684\u5A92\u4F53\u5927\u5C0F\uFF0C\u8FD9\u53EF\u80FD\u4E0E\u6E90\u5A92\u4F53\u4E0D\u540C\u3002"
+		},
+		"Maximum source size": {
+			"ru": "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u0440\u0430\u0437\u043C\u0435\u0440 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0430",
+			"zh-CN": "\u6700\u5927\u6E90\u5C3A\u5BF8"
+		},
+		"Maximum size (width/height) for the source media to allow popping up (this option is ignored for background images). Set to `0` for any size.": {
+			"ru": "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u0440\u0430\u0437\u043C\u0435\u0440 (\u0448\u0438\u0440\u0438\u043D\u0430/\u0432\u044B\u0441\u043E\u0442\u0430) \u0438\u0441\u0445\u043E\u0434\u043D\u043E\u0433\u043E \u043C\u0435\u0434\u0438\u0430\u0444\u0430\u0439\u043B\u0430 \u0434\u043B\u044F \u0440\u0430\u0437\u0440\u0435\u0448\u0435\u043D\u0438\u044F \u0432\u0441\u043F\u043B\u044B\u0442\u0438\u044F (\u044D\u0442\u043E\u0442 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440 \u0438\u0433\u043D\u043E\u0440\u0438\u0440\u0443\u0435\u0442\u0441\u044F \u0434\u043B\u044F \u0444\u043E\u043D\u043E\u0432\u044B\u0445 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0439). `0` - \u043B\u044E\u0431\u043E\u0439 \u0440\u0430\u0437\u043C\u0435\u0440.",
+			"zh-CN": "\u4EE5\u6E90\u5A92\u4F53\u663E\u793A\u5F39\u7A97\u7684\u6700\u5927\u5C3A\u5BF8\uFF08\u5BBD\u5EA6/\u9AD8\u5EA6\uFF09\uFF08\u5BF9\u80CC\u666F\u56FE\u50CF\u6765\u8BF4\u6B64\u9009\u9879\u65E0\u6548)\u3002\u8BBE\u4E3A 0 \u8868\u793A\u4EFB\u610F\u5927\u5C0F\u3002"
+		},
+		"pixels": {
+			"ru": "\u043F\u0438\u043A\u0441.",
+			"zh-CN": "\u50CF\u7D20"
+		},
+		"Exclude `background-image`s": {
+			"ko": "\uBC30\uACBD \uC774\uBBF8\uC9C0 \uC81C\uC678",
+			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0442\u044C `background-image`",
+			"zh-CN": "\u6392\u9664\u80CC\u666F\u56FE\u50CF"
+		},
+		"Excludes `background-image`s for the popup. Might prevent the popup from working on many images": {
+			"ko": "\uD31D\uC5C5\uC758 \uBC30\uACBD \uC774\uBBF8\uC9C0 \uC81C\uC678. \uD31D\uC5C5\uC774 \uB9CE\uC740 \uC774\uBBF8\uC9C0\uC5D0\uC11C \uC791\uB3D9\uD558\uC9C0 \uC54A\uC744 \uC218 \uC788\uC74C",
+			"ru": "\u0418\u0441\u043A\u043B\u044E\u0447\u0430\u0435\u0442 `background-image` \u0434\u043B\u044F \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043E\u043A\u043D\u0430. \u042D\u0442\u043E \u043C\u043E\u0436\u0435\u0442 \u043F\u043E\u043C\u0435\u0448\u0430\u0442\u044C \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u043C\u0443 \u043E\u043A\u043D\u0443 \u0440\u0430\u0431\u043E\u0442\u0430\u0442\u044C \u0441\u043E \u043C\u043D\u043E\u0433\u0438\u043C\u0438 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u044F\u043C\u0438.",
+			"zh-CN": "\u4E0D\u4E3A\u80CC\u666F\u56FE\u50CF\u663E\u793A\u5F39\u7A97\u3002\u53EF\u80FD\u4F7F\u5F88\u591A\u56FE\u50CF\u4E0A\u4E0D\u663E\u793A\u5F39\u7A97"
+		},
 		"Enable videos": {
 			"ru": "\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u0432\u0438\u0434\u0435\u043E",
 			"zh-CN": "\u652F\u6301\u89C6\u9891"
@@ -6259,6 +6265,7 @@ var $$IMU_EXPORT$$;
 		mouseover_video_screenshot_key: ["shift", "s"],
 		// thanks to remlap for the idea: https://github.com/qsniyg/maxurl/issues/666
 		popup_video_screenshot_format: "png",
+		popup_enable_subtitles: true,
 		mouseover_ui: true,
 		// thanks to Runakanta on discord for the idea
 		mouseover_ui_toggle_key: ["u"],
@@ -6405,6 +6412,7 @@ var $$IMU_EXPORT$$;
 		allow_possibly_different: false,
 		allow_possibly_broken: false,
 		allow_possibly_upscaled: false,
+		allow_uncropped: true,
 		allow_thirdparty: false,
 		allow_apicalls: true,
 		allow_thirdparty_libs: is_userscript ? false : true,
@@ -7146,6 +7154,7 @@ var $$IMU_EXPORT$$;
 				mouseover: true,
 				mouseover_exclude_backgroundimages: false
 			},
+			profiled: true,
 			category: "popup",
 			subcategory: "source"
 		},
@@ -7155,6 +7164,7 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover: true
 			},
+			profiled: true,
 			type: "number",
 			number_min: 0,
 			number_unit: "pixels",
@@ -7167,6 +7177,7 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover: true
 			},
+			profiled: true,
 			type: "number",
 			number_min: 0,
 			number_unit: "pixels",
@@ -7179,6 +7190,7 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover: true
 			},
+			profiled: true,
 			disabled_if: {
 				mouseover_trigger_mouseover: true
 			},
@@ -7562,6 +7574,16 @@ var $$IMU_EXPORT$$;
 				jpg: {
 					name: "JPG"
 				}
+			},
+			category: "popup",
+			subcategory: "video"
+		},
+		popup_enable_subtitles: {
+			name: "Enable subtitles",
+			description: "Enables subtitles to be overlayed on top of the video",
+			requires: {
+				_condition: "action:popup",
+				mouseover_allow_video: true
 			},
 			category: "popup",
 			subcategory: "video"
@@ -9342,6 +9364,15 @@ var $$IMU_EXPORT$$;
 			category: "rules",
 			onupdate: update_rule_setting
 		},
+		allow_uncropped: {
+			name: "Uncropped images",
+			description: "Enables rules that return possibly undesirable uncropped images",
+			example_websites: [
+				"Mobile wallpaper websites (returns the full version of the wallpaper image)"
+			],
+			category: "rules",
+			onupdate: update_rule_setting
+		},
 		allow_thirdparty: {
 			name: "Rules using 3rd-party websites",
 			description: "Enables rules that use 3rd-party websites",
@@ -9585,12 +9616,15 @@ var $$IMU_EXPORT$$;
 				try {
 					errordiv = document.querySelector("#option_bigimage_blacklist .error");
 					errordiv.innerText = "";
+					errordiv.classList.add("hidden");
 				} catch (e) {
 				}
 				if (errors) {
 					for (var i = 0; i < errors.length; i++) {
-						if (errordiv)
+						if (errordiv) {
 							errordiv.innerText += errors[i].message + "\n";
+							errordiv.classList.remove("hidden");
+						}
 						console.error(errors[i]);
 					}
 				}
@@ -9967,7 +10001,8 @@ var $$IMU_EXPORT$$;
 		allow_possibly_different: "possibly_different",
 		allow_possibly_broken: "possibly_broken",
 		allow_possibly_upscaled: "possibly_upscaled",
-		allow_bruteforce: "bruteforce"
+		allow_bruteforce: "bruteforce",
+		allow_uncropped: "uncropped"
 	};
 	var categories = {
 		"general": "General",
@@ -10743,6 +10778,13 @@ var $$IMU_EXPORT$$;
 	};
 	var add_extensions_upper_jpeg = function(url) {
 		return add_full_extensions(url, ["jpg", "jpeg", "png", "JPG", "JPEG", "PNG"]);
+	};
+	var add_extensions_from_webp = function(url) {
+		if (/\.webp(?:[?#].*)?$/.test(url)) {
+			return add_extensions(url);
+		} else {
+			return url;
+		}
 	};
 	var add_http = function(url) {
 		if (!url.match(/^[a-z]+:\/\//))
@@ -11620,11 +11662,11 @@ var $$IMU_EXPORT$$;
 		},
 		"shaka": {
 			name: "shaka.debug",
-			url: "https://raw.githubusercontent.com/qsniyg/maxurl/588bef6bf443ee9b00f07ce77638c1bf435101c6/lib/shaka.debug.js",
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/a4ca480a6cc503792762b4343f2f855cdf9cf48a/lib/shaka.debug.js",
 			archive_time: "20210215220612",
-			size: 1067495,
-			crc32: 2828102141,
-			crc32_size: 3777086751,
+			size: 1270454,
+			crc32: 2187951259,
+			crc32_size: 3680154806,
 			xhr: true
 		},
 		"cryptojs_aes": {
@@ -11887,7 +11929,7 @@ var $$IMU_EXPORT$$;
 		return array;
 	};
 	var parse_tag_def = function(tag) {
-		var match = tag.match(/^<([-a-zA-Z0-9]+)((?:\s+[-a-z0-9A-Z]+(?:=(?:"[^"]+"|'[^']+'|[-_a-zA-Z0-9]+))?)*)\s*(\/?)>/);
+		var match = tag.match(/^<([-a-zA-Z0-9]+)((?:\s+[-a-z0-9A-Z]+(?:=(?:"[^"]*"|'[^']*'|[-_a-zA-Z0-9]+))?)*)\s*(\/?)>/);
 		if (!match) {
 			return null;
 		}
@@ -12410,6 +12452,10 @@ var $$IMU_EXPORT$$;
 					json.hash = json.id;
 				}
 			}
+			if (!baseobj.headers)
+				baseobj.headers = { Referer: null };
+			if (!baseobj.referer_ok)
+				baseobj.referer_ok = { same_domain_nosub: true };
 			baseobj.extra.page = "https://imgur.com/" + json.hash;
 			if (json.ext) {
 				// v1?
@@ -12433,9 +12479,9 @@ var $$IMU_EXPORT$$;
 				if (/^video\//.test(mimetype)) {
 					obj.video = true;
 					retobj.push(obj);
-					var obj = deepcopy(base1obj);
-					obj.url = "https://i.imgur.com/" + json.hash + ".jpg";
-					retobj.push(obj);
+					var obj1 = deepcopy(base1obj);
+					obj1.url = "https://i.imgur.com/" + json.hash + ".jpg";
+					retobj.push(obj1);
 				} else {
 					// Prefer video if possible
 					var animated = metadata.is_animated || json.animated;
@@ -12450,7 +12496,8 @@ var $$IMU_EXPORT$$;
 				}
 			}
 			// (old) webpage
-			if (json.source && /^https?:\/\//.test(json.source)) {
+			// doesn't work anymore
+			if (false && json.source && /^https?:\/\//.test(json.source)) {
 				if (!("rule_specific" in options) || !("imgur_source" in options.rule_specific) || options.rule_specific.imgur_source === true) {
 					retobj.unshift({ url: json.source });
 				}
@@ -12465,7 +12512,8 @@ var $$IMU_EXPORT$$;
 		if (typeof id === "string" && /^[a-z0-9]+$/.test(id) && id.length === 7 && id[0] === "d") {
 			// 28298170368.toString(36) = "d000000"
 			var numerical_id = parseInt(id, 36) - 28298170368;
-			return cb("https://deviantart.com/a/art/" + numerical_id);
+			//return cb("https://deviantart.com/a/art/" + numerical_id);
+			return common_functions["deviantart_url_from_id"](do_request, api_cache, numerical_id, cb);
 		} else {
 			real_api_query(api_cache, do_request, "deviantart_url_from_id:" + id, {
 				method: "HEAD",
@@ -12638,7 +12686,7 @@ var $$IMU_EXPORT$$;
 					console.error(e, { initialstate: initialstate, result: result });
 					throw e;
 				}
-				//console_log(initialstate);
+				console_log(initialstate);
 				try {
 					var entities = initialstate["@@entities"];
 					var deviation = entities.deviation[deviationid];
@@ -12673,7 +12721,7 @@ var $$IMU_EXPORT$$;
 								tokenid = types[i].r;
 							var tokenq = "?token=" + deviation.media.token[tokenid];
 							if (types[i].c) {
-								link = deviation.media.baseUri + "/" + types[i].c.replace("<prettyName>", deviation.media.prettyName) + tokenq;
+								link = deviation.media.baseUri + "/" + types[i].c.replace("<prettyName>", deviation.media.prettyName).replace(/^\/+/, "") + tokenq;
 							} else if (types[i].b) { // e.g. animated gifs
 								link = types[i].b + tokenq;
 							} else if (types[i].t === "fullview" && "r" in types[i]) {
@@ -12725,6 +12773,64 @@ var $$IMU_EXPORT$$;
 			}
 			return cb(fillobj_urls(urls, obj));
 		});
+	};
+	common_functions["getty_image_info"] = function(url) {
+		if (!/^[a-z]+:\/\/media\.gettyimages\.com\//.test(url)) {
+			return null;
+		}
+		var info = {};
+		var match = url.match(/:\/\/[^/]+\/+id\/+([0-9]+)\/(?:[a-z]{2}\/+)?([a-z]+)\/+([^/.]+)\.([a-z]+)/);
+		if (match) {
+			info["id"] = match[1];
+			info["category"] = match[2];
+			info["filename"] = match[3];
+			info["ext"] = match[4];
+		} else {
+			match = url.match(/\/([a-z]+?)s?\/+([^/.]*?)-id([0-9]+)(?:[?#].*)?$/);
+			if (match) {
+				info["id"] = match[3];
+				info["category"] = match[1];
+				info["filename"] = match[2];
+				info["ext"] = "jpg";
+			}
+		}
+		if (!info["id"])
+			return null;
+		var queries = get_queries(url);
+		if (!queries) {
+			queries = {};
+		}
+		if (!queries.s) {
+			info["size"] = 1024;
+			info["size2"] = 1024 * 1024;
+		} else {
+			var sizematch = (queries.s + "").match(/^([0-9]+)x([0-9]+)$/);
+			if (sizematch) {
+				var size1 = parse_int(sizematch[1]);
+				var size2 = parse_int(sizematch[2]);
+				info["size"] = Math_max(size1, size2);
+				info["size2"] = size1 * size2;
+			} else {
+				info["size"] = 0;
+				info["size2"] = 0;
+			}
+		}
+		if (queries.w) {
+			if (queries.w === "0")
+				info["watermark"] = false;
+			else
+				info["watermark"] = queries.w;
+		} else {
+			if (info["size"] <= 170) {
+				info["watermark"] = false;
+			} else {
+				info["watermark"] = "gi";
+			}
+		}
+		return info;
+	};
+	common_functions["getty_transform_url"] = function(url) {
+		return url.replace(/\/id\/+([0-9]+)\/+(photo|vector)\/+([^/.?#]+)(?:[?#.].*)?$/, "/$2s/$3-id$1");
 	};
 	common_functions["get_testcookie_cookie"] = function(options, api_cache, site, cb) {
 		var cache_key = "testcookie_cookie:" + site;
@@ -12903,6 +13009,23 @@ var $$IMU_EXPORT$$;
 		// is this needed to avoid throttling?
 		//obj.max_chunks = 1;
 		return obj;
+	};
+	var instagram_shortcode_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+	common_functions["instagram_shortcode_to_id"] = function(shortcode, cb) {
+		common_functions["get_bigint"](do_request, function(bigint) {
+			if (!bigint) {
+				return cb(null);
+			}
+			shortcode = shortcode.substring(0, 11); // truncate for private ids
+			var base = bigint.create(0);
+			var sixtyfour = bigint.create(64);
+			for (var i = 0; i < shortcode.length; i++) {
+				var index = bigint.create(string_indexof(instagram_shortcode_table, shortcode[i]));
+				base = bigint.mul(base, sixtyfour);
+				base = bigint.add(base, index);
+			}
+			return cb(bigint.stringify(base));
+		});
 	};
 	common_functions["instagram_parse_el_info"] = function(api_cache, do_request, use_app_api, dont_use_web, prefer_video_quality, info, host_url, cb) {
 		var host_is_ig = /^[a-z]+:\/\/[^/]*\.instagram\.com\//.test(host_url);
@@ -15585,6 +15708,8 @@ var $$IMU_EXPORT$$;
 	common_functions["create_dash_stream"] = function(data) {
 		var header = "<?xml version=\"1.0\"?>\n";
 		header += "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\" type=\"static\"";
+		header += " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"";
+		header += " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\"";
 		var get_attrib = function(attrib, value) {
 			if (value === void 0)
 				return "";
@@ -15596,8 +15721,9 @@ var $$IMU_EXPORT$$;
 			var seconds = data.duration % 60;
 			header += get_attrib("mediaPresentationDuration", "PT" + hours + "H" + minutes + "M" + seconds + "S");
 		}
-		header += " profiles=\"urn:mpeg:dash:profile:isoff-main:2011\">\n";
-		header += "<Period>\n";
+		header += " profiles=\"urn:mpeg:dash:profile:isoff-main:2011\"";
+		//header += " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\"";
+		header += ">\n<Period>\n";
 		var get_range_str = function(range) {
 			return range.start + "-" + range.end;
 		};
@@ -15613,7 +15739,8 @@ var $$IMU_EXPORT$$;
 			rep += "    <BaseURL>" + encode_entities(representation.url) + "</BaseURL>\n";
 			if (representation.index_range || representation.init_range) {
 				rep += "    <SegmentBase";
-				rep += get_attrib("indexRange", get_range_str(representation.index_range));
+				if (representation.index_range)
+					rep += get_attrib("indexRange", get_range_str(representation.index_range));
 				rep += ">\n";
 				if (representation.init_range) {
 					rep += "      <Initialization";
@@ -15626,11 +15753,12 @@ var $$IMU_EXPORT$$;
 			return rep;
 		};
 		var create_adaptationset = function(mime, items) {
-			var as = "<AdaptationSet mimeType=\"" + mime + "\">\n";
+			var as = "  <AdaptationSet mimeType=\"" + mime + "\"";
+			as += ">\n";
 			array_foreach(items, function(item) {
-				as += create_representation(item) + "\n";
+				as += create_representation(item).replace(/^/mg, "  ") + "\n";
 			});
-			as += "</AdaptationSet>";
+			as += "  </AdaptationSet>";
 			return as;
 		};
 		if (!data.mimes) {
@@ -15644,10 +15772,13 @@ var $$IMU_EXPORT$$;
 						if (ext !== item.url) {
 							if (!item.codecs) {
 								// https://cconcolato.github.io/media-mime-support/
-								if (ext === "mp4")
-									item.codecs = "avc1.640028";
-								else if (ext === "mp3")
+								if (ext === "mp4") {
+									//item.codecs = "avc1.640028";
+									item.codecs = "avc1.4d401f";
+								} else if (ext === "mp3") {
 									item.codecs = "mp3";
+									//item.codecs = "mp4a.40.2";
+								}
 							}
 							if (ext === "mp3")
 								ext = "mp4";
@@ -15692,6 +15823,7 @@ var $$IMU_EXPORT$$;
 			return null;
 		}
 		var add_source = function(parsed) {
+			parsed.name = parsed.args.title || null;
 			parsed.url = parsed.args.src;
 			sources.video.push(parsed);
 		};
@@ -15716,6 +15848,15 @@ var $$IMU_EXPORT$$;
 			}
 			if (parsed.args.src)
 				add_source(parsed);
+		});
+		sources.video.sort(function(a, b) {
+			if (!a.name || !b.name)
+				return 0;
+			var amatch = a.name.match(/^([0-9]+)p$/);
+			var bmatch = b.name.match(/^([0-9]+)p$/);
+			if (!amatch || !bmatch)
+				return 0;
+			return parse_int(bmatch[1]) - parse_int(amatch[1]);
 		});
 		return _sources_or_null(sources);
 	};
@@ -16475,29 +16616,97 @@ var $$IMU_EXPORT$$;
 	common_functions["multidomain__nitter"] = function(domain, domain_nowww) {
 		return domain_nowww === "nitter.net" ||
 			// https://github.com/zedeus/nitter/wiki/Instances
+			// sorting same as instance list in case we need to add new ones from it
+			domain === "nitter.lacontrevoie.fr" ||
+			domain === "nitter.nixnet.services" ||
+			domain === "nitter.fdn.fr" ||
+			domain === "nitter.1d4.us" ||
+			domain === "nitter.kavin.rocks" ||
+			domain === "nitter.unixfox.eu" ||
+			domain === "nitter.domain.glass" ||
+			domain === "birdsite.xanny.family" ||
+			domain === "nitter.moomoo.me" ||
+			domain === "bird.trom.tf" ||
+			domain === "nitter.it" ||
+			domain === "nitter.weiler.rocks" ||
+			domain === "nitter.sethforprivacy.com" ||
+			domain === "nitter.nl" ||
+			domain === "nitter.mint.lgbt" ||
+			domain === "nitter.esmailelbob.xyz" ||
+			domain === "tw.artemislena.eu" ||
+			domain === "nitter.tiekoetter.com" ||
+			domain === "nitter.privacy.com.de" ||
+			domain === "nitter.bird.froth.zone" ||
+			domain === "nitter.cz" ||
+			domain === "nitter.privacydev.net" ||
+			domain === "tweet.lambda.dance" ||
+			domain === "nitter.kylrth.com" ||
+			domain === "unofficialbird.com" ||
+			domain === "nitter.projectsegfau.lt" ||
+			domain === "nitter.eu.projectsegfau.lt" ||
+			domain === "nitter.in.projectsegfau.lt" ||
+			domain === "singapore.unofficialbird.com" ||
+			domain === "canada.unofficialbird.com" ||
+			domain === "india.unofficialbird.com" ||
+			domain === "nederland.unofficialbird.com" ||
+			domain === "uk.unofficialbird.com" ||
+			domain === "nitter.soopy.moe" ||
+			domain === "nitter.qwik.space" ||
+			domain === "read.whatever.social" ||
+			domain === "nitter.rawbit.ninja" ||
+			domain === "nt.vern.cc" ||
+			domain === "n.sneed.network" ||
+			domain === "nitter.smnz.de" ||
+			domain === "nitter.twei.space" ||
+			domain === "nitter.inpt.fr" ||
+			domain === "nitter.d420.de" ||
+			domain === "nitter.caioalonso.com" ||
+			domain === "nitter.at" ||
+			domain === "nitter.nicfab.eu" ||
+			domain === "bird.habedieeh.re" ||
+			domain === "nitter.hostux.net" ||
+			domain === "nitter.adminforge.de" ||
+			domain === "nitter.platypush.tech" ||
+			domain === "nitter.us.projectsegfau.lt" ||
+			domain === "t.com.sb" ||
+			domain === "nitter.kling.gg" ||
+			domain === "nitter.riverside.rocks" ||
+			domain === "nitter.lunar.icu" ||
+			domain === "twitter.moe.ngo" ||
+			domain === "nitter.freedit.eu" ||
+			domain === "n.opnxng.com" ||
+			domain === "nitter.tux.pizza" ||
+			domain === "nitter.altgr.xyz" ||
+			domain === "jote.lile.cl" ||
+			domain === "nitter.one" ||
+			domain === "nitter.io.lol" ||
+			domain === "nitter.no-logs.com" ||
+			domain === "tweet.whateveritworks.org" ||
+			domain === "nitter.fediflix.org" ||
+			domain === "nitter.nohost.network" ||
+			domain === "nitter.simpleprivacy.fr" ||
+			domain === "nitter.onthescent.xyz" ||
+			domain === "nitter.x86-64-unknown-linux-gnu.zip" ||
+			domain === "nitter.private.coffee" ||
+			domain === "nitter.oksocial.net" ||
+			domain === "nitter.services.woodland.cafe" ||
+			domain === "nitter.dafriser.be" ||
+			domain === "nitter.catsarch.com" ||
 			//domain === "nitter.13ad.de" ||
 			//domain === "tw.openalgeria.org" ||
 			domain === "nitter.42l.fr" ||
 			domain === "nitter.pussthecat.org" ||
-			domain === "nitter.nixnet.services" ||
 			//domain === "nitter.mastodont.cat" ||
 			domain === "nitter.tedomum.net" ||
-			domain === "nitter.fdn.fr" ||
-			domain === "nitter.1d4.us" ||
-			domain === "nitter.kavin.rocks" ||
 			domain === "nitter-home.kavin.rocks" ||
-			domain === "tweet.lambda.dance" ||
 			domain === "nitter.cc" ||
 			domain === "nitter.vxempire.xyz" ||
-			domain === "nitter.unixfox.eu" ||
-			domain === "nitter.domain.glass" ||
 			domain === "nitter.eu" ||
 			domain === "nitter.ethibox.fr" ||
 			domain === "nitter.namazso.eu" ||
 			domain === "nitter.mailstation.de" ||
 			domain === "nitter.actionsack.com" ||
 			domain === "nitter.cattube.org" ||
-			domain === "birdsite.xanny.family" ||
 			domain === "nitter.40two.app" ||
 			domain === "nitter.skrep.in" ||
 			domain === "nitter.hu" ||
@@ -16509,6 +16718,27 @@ var $$IMU_EXPORT$$;
 			//domain === "t.maisputain.ovh" ||
 			//domain === "nitter.weaponizedhumiliation.com" ||
 			domain === "nitter.snopyta.org";
+	};
+	common_functions["multidomain__teddit"] = function(domain, domain_nowww) {
+		return domain_nowww === "teddit.net" ||
+			domain === "teddit.froth.zone" ||
+			domain === "teddit.zaggy.nl" ||
+			domain === "teddit.pussthecat.org" ||
+			domain === "teddit.sethforprivacy.com" ||
+			domain === "teddit.totaldarkness.net" ||
+			domain === "teddit.adminforge.de" ||
+			domain === "teddit.bus-hit.me" ||
+			domain === "rdt.trom.tf" ||
+			domain === "i.opnxng.com" ||
+			domain === "teddit.garudalinux.org" ||
+			domain === "tedd.it" ||
+			domain === "teddit.privacytools.io" ||
+			domain === "td.vern.cc" ||
+			domain === "teddit.rawbit.ninja" ||
+			domain === "teddit.artemislena.eu" ||
+			domain === "teddit.manasiwibi.com" ||
+			domain === "teddit.hostux.net" ||
+			domain === "reddit.lurkmore.com";
 	};
 	common_functions["multidomain__xhamster"] = function(domain_nosub) {
 		// trustURLs in initials object
@@ -16837,6 +17067,7 @@ var $$IMU_EXPORT$$;
 	    	'add_extensions_gif': add_extensions_gif,
 	    	'add_extensions_upper': add_extensions_upper,
 	    	'add_extensions_upper_jpeg': add_extensions_upper_jpeg,
+	    	'add_extensions_from_webp': add_extensions_from_webp,
 	    	'add_http': add_http,
 	    	'force_https': force_https,
 	    	'decodeuri_ifneeded': decodeuri_ifneeded,
@@ -16898,13 +17129,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "mo2amg3427m5apmj") {
+	            } else if (bigimage_obj.nonce !== "1gbam1f2gkdpe02p") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "mo2amg3427m5apmj"
+	                    message: "Bad nonce, expected: " + "1gbam1f2gkdpe02p"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -17574,7 +17805,110 @@ var $$IMU_EXPORT$$;
 		}
 		// no longer necessary due to blob being supported
 		if (false && (common_functions["is_pinterest_domain"](host_domain) ||
-			common_functions["multidomain__nitter"](host_domain, host_domain_nowww) ||
+			(host_domain_nowww === "nitter.net" ||
+			// https://github.com/zedeus/nitter/wiki/Instances
+			// sorting same as instance list in case we need to add new ones from it
+			host_domain === "nitter.lacontrevoie.fr" ||
+			host_domain === "nitter.nixnet.services" ||
+			host_domain === "nitter.fdn.fr" ||
+			host_domain === "nitter.1d4.us" ||
+			host_domain === "nitter.kavin.rocks" ||
+			host_domain === "nitter.unixfox.eu" ||
+			host_domain === "nitter.domain.glass" ||
+			host_domain === "birdsite.xanny.family" ||
+			host_domain === "nitter.moomoo.me" ||
+			host_domain === "bird.trom.tf" ||
+			host_domain === "nitter.it" ||
+			host_domain === "nitter.weiler.rocks" ||
+			host_domain === "nitter.sethforprivacy.com" ||
+			host_domain === "nitter.nl" ||
+			host_domain === "nitter.mint.lgbt" ||
+			host_domain === "nitter.esmailelbob.xyz" ||
+			host_domain === "tw.artemislena.eu" ||
+			host_domain === "nitter.tiekoetter.com" ||
+			host_domain === "nitter.privacy.com.de" ||
+			host_domain === "nitter.bird.froth.zone" ||
+			host_domain === "nitter.cz" ||
+			host_domain === "nitter.privacydev.net" ||
+			host_domain === "tweet.lambda.dance" ||
+			host_domain === "nitter.kylrth.com" ||
+			host_domain === "unofficialbird.com" ||
+			host_domain === "nitter.projectsegfau.lt" ||
+			host_domain === "nitter.eu.projectsegfau.lt" ||
+			host_domain === "nitter.in.projectsegfau.lt" ||
+			host_domain === "singapore.unofficialbird.com" ||
+			host_domain === "canada.unofficialbird.com" ||
+			host_domain === "india.unofficialbird.com" ||
+			host_domain === "nederland.unofficialbird.com" ||
+			host_domain === "uk.unofficialbird.com" ||
+			host_domain === "nitter.soopy.moe" ||
+			host_domain === "nitter.qwik.space" ||
+			host_domain === "read.whatever.social" ||
+			host_domain === "nitter.rawbit.ninja" ||
+			host_domain === "nt.vern.cc" ||
+			host_domain === "n.sneed.network" ||
+			host_domain === "nitter.smnz.de" ||
+			host_domain === "nitter.twei.space" ||
+			host_domain === "nitter.inpt.fr" ||
+			host_domain === "nitter.d420.de" ||
+			host_domain === "nitter.caioalonso.com" ||
+			host_domain === "nitter.at" ||
+			host_domain === "nitter.nicfab.eu" ||
+			host_domain === "bird.habedieeh.re" ||
+			host_domain === "nitter.hostux.net" ||
+			host_domain === "nitter.adminforge.de" ||
+			host_domain === "nitter.platypush.tech" ||
+			host_domain === "nitter.us.projectsegfau.lt" ||
+			host_domain === "t.com.sb" ||
+			host_domain === "nitter.kling.gg" ||
+			host_domain === "nitter.riverside.rocks" ||
+			host_domain === "nitter.lunar.icu" ||
+			host_domain === "twitter.moe.ngo" ||
+			host_domain === "nitter.freedit.eu" ||
+			host_domain === "n.opnxng.com" ||
+			host_domain === "nitter.tux.pizza" ||
+			host_domain === "nitter.altgr.xyz" ||
+			host_domain === "jote.lile.cl" ||
+			host_domain === "nitter.one" ||
+			host_domain === "nitter.io.lol" ||
+			host_domain === "nitter.no-logs.com" ||
+			host_domain === "tweet.whateveritworks.org" ||
+			host_domain === "nitter.fediflix.org" ||
+			host_domain === "nitter.nohost.network" ||
+			host_domain === "nitter.simpleprivacy.fr" ||
+			host_domain === "nitter.onthescent.xyz" ||
+			host_domain === "nitter.x86-64-unknown-linux-gnu.zip" ||
+			host_domain === "nitter.private.coffee" ||
+			host_domain === "nitter.oksocial.net" ||
+			host_domain === "nitter.services.woodland.cafe" ||
+			host_domain === "nitter.dafriser.be" ||
+			host_domain === "nitter.catsarch.com" ||
+			//host_domain === "nitter.13ad.de" ||
+			//host_domain === "tw.openalgeria.org" ||
+			host_domain === "nitter.42l.fr" ||
+			host_domain === "nitter.pussthecat.org" ||
+			//host_domain === "nitter.mastodont.cat" ||
+			host_domain === "nitter.tedomum.net" ||
+			host_domain === "nitter-home.kavin.rocks" ||
+			host_domain === "nitter.cc" ||
+			host_domain === "nitter.vxempire.xyz" ||
+			host_domain === "nitter.eu" ||
+			host_domain === "nitter.ethibox.fr" ||
+			host_domain === "nitter.namazso.eu" ||
+			host_domain === "nitter.mailstation.de" ||
+			host_domain === "nitter.actionsack.com" ||
+			host_domain === "nitter.cattube.org" ||
+			host_domain === "nitter.40two.app" ||
+			host_domain === "nitter.skrep.in" ||
+			host_domain === "nitter.hu" ||
+			host_domain === "nitter.database.red" ||
+			host_domain === "nitter.exonip.de" ||
+			host_domain === "twitr.gq" ||
+			host_domain === "nitter.koyu.space" ||
+			host_domain === "nitter.dark.fail" ||
+			//host_domain === "t.maisputain.ovh" ||
+			//host_domain === "nitter.weaponizedhumiliation.com" ||
+			host_domain === "nitter.snopyta.org") ||
 			host_domain_nowww === "nrk.no" ||
 			host_domain_nowww === "local12.com" ||
 			host_domain_nowww === "dailymotion.com" ||
@@ -18060,7 +18394,7 @@ var $$IMU_EXPORT$$;
 					important_properties.fake = pastobjs[0].fake;
 				array_foreach(copy_props, function(prop) {
 					//console_log(prop, deepcopy(pastobjs[0]));
-					if (prop in pastobjs[0]) {
+					if (prop in pastobjs[0] && pastobjs[0][prop]) {
 						important_properties[prop] = deepcopy(pastobjs[0][prop]);
 					}
 				});
@@ -18068,6 +18402,7 @@ var $$IMU_EXPORT$$;
 			var objified = fillobj(deepcopy(newhref1), important_properties);
 			if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage (objified)", deepcopy(objified));
 			for (var i = 0; i < objified.length; i++) {
+				objified[i] = deepcopy(objified[i]); // ensure no references are kept between objects
 				var obj = objified[i];
 				var remove_obj = function() {
 					objified.splice(i, 1);
@@ -19099,6 +19434,7 @@ var $$IMU_EXPORT$$;
 					if (!is_extension || settings.redirect_disable_for_responseheader) {
 						if (obj.forces_download || ((content_type.match(/(?:binary|application|multipart|text)\//) ||
 							content_type === "image/tiff" ||
+							content_type === "image/lsr" ||
 							// such as [image/png] (server bug)
 							content_type.match(/^ *\[/)) && !obj.head_wrong_contenttype) ||
 							(headers["content-disposition"] &&
@@ -19215,10 +19551,15 @@ var $$IMU_EXPORT$$;
 			}
 			var new_newhref = [];
 			for (var i = 0; i < newhref.length; i++) {
-				if (!settings.redirect_video && is_probably_video(newhref[i]))
+				// is_probably_video and is_probably_audio have some overlap, so check them both
+				if (!settings.redirect_video && is_probably_video(newhref[i]) &&
+					!(settings.redirect_audio && is_probably_audio(newhref[i]))) {
 					continue;
-				if (!settings.redirect_audio && is_probably_audio(newhref[i]))
+				}
+				if (!settings.redirect_audio && is_probably_audio(newhref[i]) &&
+					!(settings.redirect_video && is_probably_video(newhref[i]))) {
 					continue;
+				}
 				new_newhref.push(newhref[i]);
 			}
 			var no_infobox = settings.redirect_to_no_infobox;
@@ -20820,6 +21161,7 @@ var $$IMU_EXPORT$$;
 			}
 			var errordiv = document_createElement("div");
 			errordiv.classList.add("error");
+			errordiv.classList.add("hidden");
 			option.appendChild(errordiv);
 			if (meta.category) {
 				var subcat = meta.category;
@@ -20891,6 +21233,20 @@ var $$IMU_EXPORT$$;
 	function serialize_value(value) {
 		return JSON_stringify(value);
 	}
+	// needed for guerillajs (pale moon)
+	var gm_nonexistent_is_null = null;
+	function gm_check_nonexistent() {
+		if (gm_nonexistent_is_null !== null)
+			return gm_nonexistent_is_null;
+		gm_nonexistent_is_null = GM_getValue("nonexistent_value_abcdefg", void 0) === null;
+		return gm_nonexistent_is_null;
+	}
+	function gm_getvalue_wrap(key) {
+		var value = GM_getValue(key, void 0);
+		if (value === null && gm_check_nonexistent())
+			value = void 0;
+		return value;
+	}
 	function get_values(keys, cb) {
 		if (is_extension) {
 			extension_send_message({
@@ -20910,7 +21266,7 @@ var $$IMU_EXPORT$$;
 			userscript_manager !== "FireMonkey") {
 			var response = {};
 			array_foreach(keys, function(key) {
-				response[key] = parse_value(GM_getValue(key, void 0));
+				response[key] = parse_value(gm_getvalue_wrap(key));
 			});
 			return cb(response);
 		} else if (typeof GM !== "undefined" && GM.getValue) {
@@ -23437,9 +23793,10 @@ var $$IMU_EXPORT$$;
 							}
 						}
 						var text_tracks = player.getTextTracks();
-						if (text_tracks && text_tracks.length)
+						if (text_tracks && text_tracks.length) {
 							player.selectTextTrack(text_tracks[0]); // TODO
-						player.setTextTrackVisibility(true);
+						}
+						player.setTextTrackVisibility(!!settings.popup_enable_subtitles);
 						var variants = player.getVariantTracks();
 						if (settings.hls_dash_use_max) {
 							variants.sort(function(a, b) {
@@ -23608,9 +23965,12 @@ var $$IMU_EXPORT$$;
 			var style_blocks = parse_styles(str, true);
 			if (!style_blocks)
 				return;
-			var oldstyle = el.getAttribute("style");
-			if (oldstyle) {
-				el.setAttribute("data-imu-oldstyle", oldstyle);
+			// currently unused because revert_styles isn't used anywhere
+			if (options.allow_revert) {
+				var oldstyle = el.getAttribute("style"); // this can be expensive for `all: initial` styles
+				if (oldstyle) {
+					el.setAttribute("data-imu-oldstyle", oldstyle);
+				}
 			}
 			var styles = {};
 			if ("default" in style_blocks)
@@ -26401,11 +26761,11 @@ var $$IMU_EXPORT$$;
 				if (_nir_debug_) nir_debug("find_source", "find_source: invalid src", result);
 				return ret_bad();
 			}
-			var thresh = parse_int(settings.mouseover_minimum_size);
+			var thresh = parse_int(get_tprofile_setting("mouseover_minimum_size"));
 			// if it can be imu'd, ignore the treshold because the image could be any size
 			if (isNaN(thresh) || result.imu)
 				thresh = 0;
-			var maxThresh = parse_int(settings.popup_maximum_source_size);
+			var maxThresh = parse_int(get_tprofile_setting("popup_maximum_source_size"));
 			if (isNaN(maxThresh))
 				maxThresh = 0;
 			if (!isNaN(result.width) && !isNaN(result.height) && result.width > 0 && result.height > 0) {
@@ -26433,7 +26793,7 @@ var $$IMU_EXPORT$$;
 			var layers = [];
 			var ok_els_set = new_set();
 			var id = 0;
-			var thresh = parse_int(settings.mouseover_minimum_size);
+			var thresh = parse_int(get_tprofile_setting("mouseover_minimum_size"));
 			if (isNaN(thresh))
 				thresh = 0;
 			var helpers = do_get_helpers({});
@@ -26540,7 +26900,7 @@ var $$IMU_EXPORT$$;
 				if (!options) {
 					options = {};
 				}
-				if (options.isbg && settings.mouseover_exclude_backgroundimages) {
+				if (options.isbg && get_tprofile_setting("mouseover_exclude_backgroundimages")) {
 					return false;
 				}
 				var imucheck = imu_check(src, el);
@@ -26966,7 +27326,7 @@ var $$IMU_EXPORT$$;
 			}
 			function addElement(el, layer) {
 				if (_nir_debug_) nir_debug("find_source", "_find_source (addElement)", el, layer);
-				if (settings.mouseover_exclude_page_bg && el.tagName === "BODY") {
+				if (get_tprofile_setting("mouseover_exclude_page_bg") && el.tagName === "BODY") {
 					return;
 				}
 				if (typeof layer === "undefined")
@@ -30171,15 +30531,6 @@ var $$IMU_EXPORT$$;
 			}
 			return do_event_return(event, ret);
 		};
-		var eventlistener_opts = {
-			capture: true,
-			passive: false
-		};
-		our_addEventListener(document, 'keydown', keydown_cb, eventlistener_opts);
-		our_addEventListener(document, 'mousedown', keydown_cb, eventlistener_opts);
-		our_addEventListener(document, 'contextmenu', keydown_cb, eventlistener_opts);
-		our_addEventListener(document.body, 'contextmenu', keydown_cb, eventlistener_opts);
-		our_addEventListener(document, 'wheel', keydown_cb, eventlistener_opts);
 		var keyup_cb = function(event) {
 			if (_nir_debug_) nir_debug("input", "keyup_cb", event);
 			if (!mouseover_base_enabled())
@@ -30232,8 +30583,6 @@ var $$IMU_EXPORT$$;
 			}
 			return do_event_return(event, ret);
 		};
-		our_addEventListener(document, 'keyup', keyup_cb, eventlistener_opts);
-		our_addEventListener(document, 'mouseup', keyup_cb, eventlistener_opts);
 		function scrollLeft() {
 			var doc = document.documentElement;
 			var body = document.body;
@@ -30482,31 +30831,44 @@ var $$IMU_EXPORT$$;
 				handle_remote_event(event.data[imu_message_key]);
 			}, false);
 		}
-		our_addEventListener(document, 'contextmenu', update_contextmenu_pos);
 		var last_remote_mousemove = 0;
 		var last_remote_mousemove_timer = null;
 		var last_remote_mousemove_event = null;
-		var wheel_cb = function(event) {
-			if (settings.scroll_override_page && popups_active && popup_wheel_cb) {
-				return popup_wheel_cb(event, true);
+		onload(function() {
+			var eventlistener_opts = {
+				capture: true,
+				passive: false
+			};
+			our_addEventListener(document, 'keydown', keydown_cb, eventlistener_opts);
+			our_addEventListener(document, 'mousedown', keydown_cb, eventlistener_opts);
+			our_addEventListener(document, 'contextmenu', keydown_cb, eventlistener_opts);
+			our_addEventListener(document.body, 'contextmenu', keydown_cb, eventlistener_opts);
+			our_addEventListener(document, 'wheel', keydown_cb, eventlistener_opts);
+			our_addEventListener(document, 'keyup', keyup_cb, eventlistener_opts);
+			our_addEventListener(document, 'mouseup', keyup_cb, eventlistener_opts);
+			our_addEventListener(document, 'contextmenu', update_contextmenu_pos);
+			var wheel_cb = function(event) {
+				if (settings.scroll_override_page && popups_active && popup_wheel_cb) {
+					return popup_wheel_cb(event, true);
+				}
+			};
+			our_addEventListener(document, "wheel", wheel_cb, { passive: false });
+			// https://github.com/qsniyg/maxurl/issues/771
+			// seems to be a bug in chrome. if both a "wheel" and a "mousewheel" (deprecated) event are set on document, it will not fire the mousewheel event
+			if (host_domain_nosub === "bilibili.com" && navigator.userAgent.indexOf("Chrome/") >= 0) {
+				our_addEventListener(document, "wheel", function(e) {
+					var ev = document.createEvent("MouseEvents");
+					ev.initEvent("mousewheel", true, true);
+					//ev.originalEvent = e.originalEvent || e;
+					ev.wheelDelta = e.wheelDelta;
+					ev.detail = e.detail;
+					ev.deltaMode = e.deltaMode;
+					ev.target = e.target;
+					ev.srcElement = e.srcElement;
+					document.dispatchEvent(ev);
+				});
 			}
-		};
-		our_addEventListener(document, "wheel", wheel_cb, { passive: false });
-		// https://github.com/qsniyg/maxurl/issues/771
-		// seems to be a bug in chrome. if both a "wheel" and a "mousewheel" (deprecated) event are set on document, it will not fire the mousewheel event
-		if (host_domain_nosub === "bilibili.com" && navigator.userAgent.indexOf("Chrome/") >= 0) {
-			our_addEventListener(document, "wheel", function(e) {
-				var ev = document.createEvent("MouseEvents");
-				ev.initEvent("mousewheel", true, true);
-				//ev.originalEvent = e.originalEvent || e;
-				ev.wheelDelta = e.wheelDelta;
-				ev.detail = e.detail;
-				ev.deltaMode = e.deltaMode;
-				ev.target = e.target;
-				ev.srcElement = e.srcElement;
-				document.dispatchEvent(ev);
-			});
-		}
+		});
 		var update_mouse_from_event = function(event) {
 			if (event.pageX === null && event.clientX !== null) {
 				// commenting out because unused and sets global variables
@@ -30694,7 +31056,7 @@ var $$IMU_EXPORT$$;
 				}
 			}
 		};
-		our_addEventListener(document, 'mousemove', mousemove_cb);
+		onload(function() { return our_addEventListener(document, 'mousemove', mousemove_cb); });
 		(function() {
 			register_menucommand("Report issue", github_issues_page);
 		})();
@@ -30875,12 +31237,70 @@ var $$IMU_EXPORT$$;
 		}
 		do_userscript_page(imgel, latest_version);
 	};
+	var parse_node_args = function(args_info) {
+		var parsed = { _positional: [] };
+		for (var i = 2; i < process.argv.length; i++) {
+			var arg = process.argv[i];
+			if (arg[0] !== '-') {
+				parsed["_positional"].push(arg);
+				continue;
+			}
+			if (arg === '--') {
+				array_extend(parsed._positional, process.argv.slice(i + 1));
+				break;
+			}
+			var shortarg = null;
+			var longarg = null;
+			var argval = null;
+			if (arg[1] === '-') {
+				longarg = arg.substr(2);
+			} else {
+				// TODO: support chained args (-abc == -a -b -c)
+				shortarg = arg.substr(1);
+			}
+			var our_arg = null;
+			for (var _i = 0, args_info_1 = args_info; _i < args_info_1.length; _i++) {
+				var arg_info = args_info_1[_i];
+				if (shortarg) {
+					if (arg_info.short === shortarg) {
+						our_arg = arg_info;
+						break;
+					}
+				}
+				if (longarg) {
+					if (arg_info.long === longarg) {
+						our_arg = arg_info;
+						break;
+					}
+				}
+			}
+			if (!our_arg) {
+				console.error("Unable to find argument:", process.argv[i]);
+				return null;
+			}
+			if (our_arg.needs_arg) {
+				i++;
+				if (i >= process.argv.length) {
+					console.error("Argument", process.argv[i - 1], "needs an argument");
+					return null;
+				}
+				argval = process.argv[i];
+			} else {
+				argval = true;
+			}
+			parsed[our_arg.name] = argval;
+		}
+		return parsed;
+	};
 	var do_node_main = function() {
-		var url = process.argv[2];
-		if (!url) {
+		var parsed = parse_node_args({});
+		if (!parsed)
+			return;
+		if (!parsed._positional.length) {
 			console.error("Usage:", process.argv[0], process.argv[1], "url");
 			return;
 		}
+		var url = parsed._positional[0];
 		bigimage_recursive(url, {
 			fill_object: true,
 			cb: function(obj) {
