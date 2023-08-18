@@ -30,6 +30,7 @@ var reqsite_invalid_domains = [
     /\.fbcdn\.net$/,
     /\.cdninstagram\.com$/,
     /i\.discogs\.com$/,
+    /www\.discogs\.com$/,
     /encrypted-tbn[0-9]*\.gstatic\.com$/
 ];
 
