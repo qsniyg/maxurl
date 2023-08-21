@@ -2,9 +2,9 @@
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including Instagram)
+ * Various improvements/fixes to existing rules (including Flickr, Instagram)
 
-Special thanks to Flame, TheOne for their contributions and reports for this release
+Special thanks to Flame, TheOne, fyhtma for their contributions and reports for this release
 
 ---
 
