@@ -20132,6 +20132,7 @@ var $$IMU_EXPORT$$;
 			domain === "media.redbullmusicacademy.com" ||
 			(domain === "s3media.247sports.com" && string_indexof(src, "/Uploads/") >= 0) ||
 			(domain_nowww === "eva.ru" && string_indexof(src, "/imgix/") >= 0) ||
+			domain === "assets.goal.com" ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -22899,6 +22900,7 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "fellowproducts.com" ||
 				domain === "store.mossyoak.com" ||
 				domain_nosub === "ecoflow.com" ||
+				domain_nowww === "levitation.fm" ||
 				domain_nowww === "roguewavecoffee.ca") && /\/cdn\/+shop\//.test(src)) {
 			if (/\/assets\/+product-highlight-color-hover\.svg(?:[?#].*)?$/.test(src)) {
 				return {
@@ -26931,6 +26933,8 @@ var $$IMU_EXPORT$$;
 			domain === "p16-va-default.akamaized.net" ||
 			((domain_nosub === "tiktokcdn.com" ||
 				domain_nosub === "tiktokmusic.me" ||
+				domain_nosub === "resso.me" ||
+				domain_nosub === "tiktokcdn-us.com" ||
 				domain_nosub === "hypstarcdn.com") &&
 				(/^p[0-9]+(?:-[^/]+)?\./.test(domain) && !/-sign[-.]/.test(domain))) ||
 			domain === "p16-hypstarcdn-com.akamaized.net" ||
@@ -26949,7 +26953,7 @@ var $$IMU_EXPORT$$;
 				.replace(/(~[^/.:]+-[^/.:]+):[0-9]+:[0-9]+(\.webp)(?:[?#].*)?$/, "$1:0:0$2")
 				.replace(/(:\/\/[^/]+\/+origin\/.*\.[a-z]+)\.[a-z]+(?:[?#].*)?$/, "$1")
 				.replace(/(:\/\/[^/]+\/+)(?:medium|large|obj|img|aweme|list)\/+(?:[0-9]+x[0-9]+\/+)?((?:.*?\/+)?[^/~]+)(?:~noop)?(\.[^/.]+)?(?:[?#].*)?$/, "$1origin/$2$3")
-				.replace(/(:\/\/[^/]+\/+)((?:(?:tos|musically)-(?:maliva|cn)-[^/]+|tiktok-obj|web\.[^/]+)\/+.*)$/, "$1img/$2")
+				.replace(/(:\/\/[^/]+\/+)((?:(?:tos|musically)-(?:maliva|cn|us[a-z]+[0-9]*)-[^/]+|tiktok-obj|web\.[^/]+)\/+.*)$/, "$1img/$2")
 				.replace(/(:\/\/[^/]+\/+.*?)\.image(?:[?#].*)?$/, "$1.png")
 				.replace(/\/details\/+v1\/+[wh][0-9]+\/+/, "/origin/")
 				.replace(/~[^/.?#:]+:0:0(\.[^/.?#]+)$/, "~noop$1")
@@ -26979,6 +26983,9 @@ var $$IMU_EXPORT$$;
 		}
 		if (domain_nosub === "tiktokcdn.com" && /^p[0-9]*-sign-(?:va|sg)\./.test(domain)) {
 			return src.replace(/:\/\/[^/]+\/+([^?#&]+)(?:[?#].*)?$/, "://p16-amd-va.tiktokcdn.com/$1");
+		}
+		if (domain_nosub === "tiktokcdn-us.com" && /^p[0-9]*-sign/.test(domain)) {
+			return src.replace(/:\/\/(p[0-9]+)-sign(?:-[^/.]+)?(\.[^?#]+)(?:[?#].*)?$/, "://$1$2");
 		}
 		if (domain_nosub === "bcyimg.com" && /^p[0-9]*-bcy-sign\./.test(domain)) {
 			return src.replace(/:\/\/[^/]+\/+(banciyuan\/[^?#&]+)(?:[?#].*)?$/, "://p1-bcy.byteimg.com/img/$1");
@@ -27217,10 +27224,12 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "dagbladet.no" ||
 			domain_nowww === "seher.no" ||
 			domain === "image.underdusken.no" ||
+			domain === "image.seiska.fi" ||
 			domain_nowww === "dbstatic.no") {
 			newsrc = src
 				.replace(/(:\/\/[^/]+\/+(?:images\/+)?[0-9]+\.[^/.?#]*)(?:[?#].*)?$/, "$1?width=-1&height=-1")
-				.replace(/\/(?:images)?\?(?:.*&)?imageId=([0-9]+).*/, "/?imageId=$1&height=-1");
+				.replace(/\/(?:images)?\?(?:.*&)?imageId=([0-9]+).*/, "/?imageId=$1&height=-1")
+				.replace(/(\/[0-9]+\.webp\?width=-1&height=-1)$/, "$1&format=jpg");
 			if (newsrc !== src)
 				return newsrc;
 		}
@@ -28417,6 +28426,7 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 		if ((domain_nosub === "staticflickr.com" ||
+			domain === "static.flickr.com" ||
 			(domain_nosub === "flickr.com" && string_indexof(domain, ".static.flickr.com") >= 0)) &&
 			(src.match(/\/[0-9]+_[0-9a-f]+(?:_[a-z0-9]*)?\.[a-z]+.*$/) || /\/video\/+[0-9]+\/+[0-9a-f]+\/+/.test(src)) &&
 			options && options.do_request && options.cb) {
@@ -56658,6 +56668,8 @@ var $$IMU_EXPORT$$;
 				return add_full_extensions(newsrc);
 			}
 		}
+		if (domain_nowww === "absolutearts.com") return src.replace(/(\/portfolio3\/+.\/+[^/]+\/+[^/.]+-[0-9]{5,})(?:st|mt?|lt)?\./, "$1l.");
+		if (domain === "img.allzip.org") return src.replace(/\/thumbs\/+([0-9]+(?:_[0-9]+)?\.)/, "/orig/$1");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
