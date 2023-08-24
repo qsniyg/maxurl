@@ -22897,11 +22897,13 @@ var $$IMU_EXPORT$$;
 				};
 		}
 		if ((domain_nosub === "shopify.com" && /^cdn[0-9]*\./.test(domain)) ||
-			(domain_nowww === "fellowproducts.com" ||
+			((domain_nowww === "fellowproducts.com" ||
 				domain === "store.mossyoak.com" ||
 				domain_nosub === "ecoflow.com" ||
 				domain_nowww === "levitation.fm" ||
-				domain_nowww === "roguewavecoffee.ca") && /\/cdn\/+shop\//.test(src)) {
+				domain_nowww === "mariahcarey.store" ||
+				domain_nowww === "roguewavecoffee.ca") && /\/cdn\/+shop\//.test(src)) ||
+			/^[a-z]+:\/\/[^/]+\/+cdn\/+shop\/+(?:products|collections|files)\/+[^/.?#]+_[^/.?#]+\.[a-z]+(?:[?#].*)?$/.test(src)) {
 			if (/\/assets\/+product-highlight-color-hover\.svg(?:[?#].*)?$/.test(src)) {
 				return {
 					url: src,
@@ -56701,6 +56703,13 @@ var $$IMU_EXPORT$$;
 			}
 		}
 		if (domain === "img-cdn.dnes.bg") return src.replace(/(\/images\/+photos\/+[^/]+\/+[0-9]+)-(?:lifestyle3?|article2|developing|fbh|middle|category)\./, "$1-exclusive.");
+		if (domain_nowww === "oldbookillustrations.com") return src.replace(/(\/site\/+assets\/+files\/+[0-9]+\/+[^/.]+\.)[0-9]+x[0-9]+\./, "$1");
+		if (domain === "imageprocessor.digital.vistaprint.com") {
+			return src
+				.replace(/^[a-z]+:\/\/[^/]+\/+([a-z]+:\/\/.*)/, "$1")
+				.replace(/^[a-z]+:\/\/[^/]+\/+(stockservice\.digital\.vistaprint\.com\/)/, "https://$1")
+				.replace(/^([a-z]+:\/\/[^/]+\/+)(?:(?:crop|width|height|max(?:Width|Height))\/+[^/]+|png)\/+/, "$1");
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -57304,6 +57313,7 @@ var $$IMU_EXPORT$$;
 			domain === "dieta.pourfemme.it" ||
 			domain_nowww === "ellahoy.es" ||
 			domain_nowww === "allgirlannihilation.net" ||
+			domain === "stockservice.digital.vistaprint.com" ||
 			domain === "cdn.akb48.co.jp") {
 			return {
 				url: src,
