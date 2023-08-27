@@ -1,10 +1,14 @@
 2023.8.1
 
+New features:
+
+ * Option to allow rules to be run under archive.org's Wayback Machine (disabled by default)
+
 Improvements:
 
- * Various improvements/fixes to existing rules (including Flickr, Instagram)
+ * Various improvements/fixes to existing rules (including Flickr, Instagram, Shopify, TikTok)
 
-Special thanks to Flame, TheOne, fyhtma for their contributions and reports for this release
+Special thanks to Flame, TheOne, fyhtma, Tenome for their contributions and reports for this release
 
 ---
 
