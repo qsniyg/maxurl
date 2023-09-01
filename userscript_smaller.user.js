@@ -20679,6 +20679,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[Pp]ictures\/)[0-9any]+x[0-9any]+(?:[a-z]+)?\//, "$199999999x99999999/");
 		}
 		if (domain === "static.gofugyourself.com" ||
+			(domain_nowww === "kencarson.xyz" && string_indexof(src, "/files/") >= 0) ||
 			domain === "static.stereogum.com") {
 			return src.replace(/-(?:[0-9]+x[0-9]+|compressed)(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
@@ -40861,7 +40862,10 @@ var $$IMU_EXPORT$$;
 			domain === "cdn.nsfw.exchange") {
 			return add_full_extensions(src.replace(/(\/media\/+[0-9]+-[0-9]+\/+)conversions\/+([0-9a-zA-Z]+)-[^-/.]*(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3"));
 		}
-		if (domain_nowww === "echosrecordbar.co.za") return src.replace(/(\/storage\/+[0-9]+\/+)conversions\/+([0-9]+)-[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
+		if (domain_nowww === "echosrecordbar.co.za" ||
+			amazon_container === "echosrecordbar") {
+			return src.replace(/(\/[0-9]+\/+)conversions\/+([0-9]+)-[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
+		}
 		if (domain === "m.blog.hu") return src.replace(/(\/image\/+[^/]*\/+[^/]*\/+)(?:smnxs-([^/]*)|([0-9]+)sm)(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3$4");
 		if (domain_nowww === "gosee.de") {
 			return src
@@ -56800,6 +56804,7 @@ var $$IMU_EXPORT$$;
 				return add_extensions(newsrc);
 		}
 		if (domain === "media.comikey.com") return src.replace(/:\/\/[^/]+\/+gazo\/+[0-9]+\/+[a-z]+\/+/, "://comikey.com/media/");
+		if (domain_nowww === "wright20.com") return src.replace(/\/items\/+index\/+[0-9]+\/+/, "/items/index/0/");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
