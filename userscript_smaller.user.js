@@ -56885,6 +56885,12 @@ var $$IMU_EXPORT$$;
 		if (domain === "assets.privy.com") return src.replace(/(\/picture_photos\/+[0-9]+\/+)[a-z]+\/+/, "$1original/");
 		if (domain_nowww === "produce101.jp") return src.replace(/(\/static\/+produce101s3\/+)([^/]+)(\/+[^/]+\/+)thumbnail\/+/, "$1$2$3$2/");
 		if (domain_nowww === "fapello.com") return src.replace(/(\/content\/+.*)_[0-9]+px\./, "$1.");
+		if (domain === "api-cdn.arte.tv") return src.replace(/(\/img\/+v2\/+image\/+[^/]+\/+)[0-9]+x[0-9]+(?:[?#].*)?$/, "$10x0");
+		if (domain_nowww === "androidauthority.com") {
+			return src
+				.replace(/(\.(?:jpe?g|png))\.webp(?:[?#].*)?$/i, "$1")
+				.replace(/(\/wp-content\/+uploads\/.*)-[0-9]+w-[0-9]+h\./, "$1.");
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
