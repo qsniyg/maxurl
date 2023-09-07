@@ -27952,8 +27952,8 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "userstyles.org") {
 			return src.replace("/style_screenshot_thumbnails/", "/style_screenshots/");
 		}
-		if (domain_nosub === "narvii.com" &&
-			domain.match(/^[a-z]+[0-9]*\./)) {
+		if ((domain_nosub === "narvii.com" ||
+			domain_nosub === "aminoapps.com") && /^[a-z]+[0-9]*\./.test(domain)) {
 			regex = /(\/[0-9a-z]+(?:-[-0-9a-z]+)?_)[^/.]*(\.[^/.]*)/;
 			return [
 				src.replace(regex, "$1uhq$2"),
@@ -29313,6 +29313,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 		}
+		if (domain === "thumb.modcdn.io") return src.replace(/:\/\/thumb\.(.*\/)(?:crop|thumb)_[0-9]+x[0-9]+\/+/, "://image.$1");
 		if (domain === "static.gamefront.com" ||
 			domain_nowww === "wallpaperawesome.com" ||
 			(domain_nowww === "ukstockingsex.com" && string_indexof(src, "/galleries/") >= 0) ||
@@ -40560,6 +40561,7 @@ var $$IMU_EXPORT$$;
 			domain === "cdn.myfonts.net" ||
 			domain_nowww === "theplan.it" ||
 			domain_nowww === "economist.com" ||
+			domain === "img.mylibrary.digital" ||
 			domain === "images.psmcdn.net") {
 			newsrc = src.replace(/^([a-z]+:\/\/[^/]+\/+(?:cdn-cgi\/+)?image\/+[^/]*=[^/]*),(https?:\/\/)/, "$1/$2");
 			if (newsrc !== src)
@@ -43570,6 +43572,14 @@ var $$IMU_EXPORT$$;
 			});
 			if (newsrc)
 				return newsrc;
+		}
+		if (domain_nowww === "istockphoto.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+[^?#]+-gm([0-9]{5,})-[0-9]+(?:[?#].*)?$/);
+			if (match)
+				return {
+					url: "https://www.gettyimages.com/detail/a/a/" + match[1],
+					is_pagelink: true
+				};
 		}
 		if (domain === "media.gettyimages.com" ||
 			domain === "media.istockphoto.com") {
@@ -56891,6 +56901,16 @@ var $$IMU_EXPORT$$;
 				.replace(/(\.(?:jpe?g|png))\.webp(?:[?#].*)?$/i, "$1")
 				.replace(/(\/wp-content\/+uploads\/.*)-[0-9]+w-[0-9]+h\./, "$1.");
 		}
+		if (domain_nowww === "normanrecords.com") return src.replace(/\/artwork\/+(?:small|medium)\/+/, "/artwork/large/");
+		if (domain === "ic.od-cdn.com") {
+			match = src.match(/\/resize\?(?:.*&)?url=([^&]+)(?:[&#].*)?$/);
+			if (match) {
+				return urljoin("https://img1.od-cdn.com/", decodeURIComponent(match[1]), true);
+			}
+		}
+		if (domain_nosub === "od-cdn.com" && /^img[0-9]*\./.test(domain)) {
+			return src.replace(/\/ImageType-(?:150|[24]00)(\/.*)IMG(?:150|[24]00)\./i, "/ImageType-100$1IMG100.");
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -57412,6 +57432,7 @@ var $$IMU_EXPORT$$;
 			(domain === "cms3.ots.at" && /\/ots\/+files\//.test(src)) ||
 			domain == "media.socastsrm.com" ||
 			domain === "sports.inquirer.net" ||
+			digitalocean_container === "saywhofr" ||
 			/(\/wp-content\/+uploads\/+(?:sites\/+[0-9]+\/+)?[0-9]{4}\/+[0-9]{2}\/+.*)-(?:scaled|e[0-9]{10,})(\.[^/.]+)(?:[?#].*)?$/.test(src)) {
 			return src.replace(/((?:(?:\/wp-content)?\/+uploads(?:\/+sites\/+[0-9]+)?)?\/+[0-9]{4}\/+[0-9]{2}\/+[^?#]*?)(?:-(?:scaled|e[0-9]{10,}|[0-9]+x[0-9]+))*(\.[^/.?]+)(?:[?#].*)?$/, "$1$2");
 		}
