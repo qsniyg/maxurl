@@ -4,10 +4,11 @@ New features:
 
  * Support for images stored within SVG tags (#268)
  * Option to allow rules to be run under archive.org's Wayback Machine (disabled by default)
+ * Option to bypass CSP restrictions when loading 3rd-party libraries from the userscript (disabled by default)
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including Flickr, Instagram, Shopify, TikTok, Twitch)
+ * Various improvements/fixes to existing rules (including Flickr, Instagram, Shopify, Snapchat, TikTok, Twitch)
 
 Special thanks to Flame, TheOne, fyhtma, Tenome, Freso, IZeeLikeEyeZee, TristanWasTaken, sn3akyb3ar, remlap for their contributions and reports for this release
 
