@@ -13,6 +13,7 @@ Improvements:
 Bugfixes:
 
  * Fix delay on initial load when HLS/DASH stream quality is changed
+ * Fix subtitles for HLS/DASH streams
 
 Special thanks to Flame, TheOne, fyhtma, Tenome, Freso, IZeeLikeEyeZee, TristanWasTaken, sn3akyb3ar, remlap for their contributions and reports for this release
 
