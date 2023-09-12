@@ -10,6 +10,10 @@ Improvements:
 
  * Various improvements/fixes to existing rules (including Flickr, Instagram, Shopify, Snapchat, TikTok, Twitch)
 
+Bugfixes:
+
+ * Fix delay on initial load when HLS/DASH stream quality is changed
+
 Special thanks to Flame, TheOne, fyhtma, Tenome, Freso, IZeeLikeEyeZee, TristanWasTaken, sn3akyb3ar, remlap for their contributions and reports for this release
 
 ---
