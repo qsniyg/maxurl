@@ -16,7 +16,7 @@ Bugfixes:
  * Fix subtitles for HLS/DASH streams
  * Fix iframes crashing when the userscript is enabled on some websites (#1213, thanks to fireattack on discord for reporting)
 
-Special thanks to Flame, TheOne, fyhtma, Tenome, Freso, IZeeLikeEyeZee, TristanWasTaken, sn3akyb3ar, remlap, fireattack for their contributions and reports for this release
+Special thanks to Flame, TheOne, fyhtma, Tenome, Freso, IZeeLikeEyeZee, TristanWasTaken, sn3akyb3ar, remlap, fireattack, ValiumBear for their contributions and reports for this release
 
 ---
 
