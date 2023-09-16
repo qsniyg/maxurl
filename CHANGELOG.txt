@@ -8,14 +8,15 @@ New features:
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including Flickr, Instagram, Shopify, Snapchat, TikTok, Twitch)
+ * Various improvements/fixes to existing rules (including Flickr, Instagram, Reddit, Shopify, Snapchat, TikTok, Twitch)
 
 Bugfixes:
 
  * Fix delay on initial load when HLS/DASH stream quality is changed
  * Fix subtitles for HLS/DASH streams
+ * Fix iframes crashing when the userscript is enabled on some websites (#1213, thanks to fireattack on discord for reporting)
 
-Special thanks to Flame, TheOne, fyhtma, Tenome, Freso, IZeeLikeEyeZee, TristanWasTaken, sn3akyb3ar, remlap for their contributions and reports for this release
+Special thanks to Flame, TheOne, fyhtma, Tenome, Freso, IZeeLikeEyeZee, TristanWasTaken, sn3akyb3ar, remlap, fireattack for their contributions and reports for this release
 
 ---
 
