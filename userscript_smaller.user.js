@@ -57474,6 +57474,43 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9a-f]{2}\/+)(?:pics|large)\/+/, "$1original/");
 		}
 		if (domain === "lovestories.xcdn.nl") return src.replace(/(:\/\/[^/]+\/+)[^/]+\/+[^/]+\/+(catalog\/+product\/)/, "$1-/-/$2");
+		if (domain_nosub === "kkmh.com" && /^tn[0-9]*-f[0-9]*\./.test(domain)) {
+			return src.replace(/(\/image\/+[0-9]+\/+[^/.?#]+\.[a-z]+)-[^/]+(?:[?#].*)?$/, "$1");
+		}
+		if (domain_nowww === "tweakers.net") {
+			match = src.match(/(\/i\/+[0-9]+\.[a-z]+)(?:[?#].*)?$/);
+			if (match) {
+				return "https://tweakers.net/ext" + match[1];
+			}
+		}
+		if (domain_nowww === "dilvin.com.tr" ||
+			domain === "kvyfm6d9dll6.merlincdn.net") {
+			return src.replace(/(\/productimages\/+[0-9]+\/+)[a-z]+\/+/, "$1original/");
+		}
+		if (domain_nowww === "evbazaaravm.com") return src.replace(/(\/assets\/+images\/+products\/+)thumb\/+/, "$1large/");
+		if (domain === "ffo3gv1cf3ir.merlincdn.net") {
+			return {
+				url: src.replace(/(\/SiteAssets\/.*\/crop\/+cg\/+[^/]+\/+[0-9]+-[0-9]+)\/+[^/.]+(\.[a-z]+)(?:[?#].*)?$/, "$1$2"),
+				head_wrong_contenttype: true // text/html
+			};
+		}
+		if (domain === "qpzgjzffeg4d.merlincdn.net") return src.replace(/(\/i\/+)[sm](\/+[0-9]+\/+)/, "$1l$2");
+		if (domain === "images.gamebanana.com") return src.replace(/(\/img\/+ss\/+[^/]+\/+)[0-9]+-[0-9]+_([0-9a-f]+\.)/, "$1$2");
+		if (host_domain_nowww === "sfmoma.org" && options.element) {
+			if (options.element.tagName === "CANVAS" && options.element.matches("#artworkimage > .openseadragon-container .openseadragon-canvas > canvas")) {
+				var parent_4 = common_functions["get_parent_el_matching"](options.element, function(x) { return x.matches("#artworkimage"); });
+				if (parent_4) {
+					var imgel = parent_4.querySelector("img.artworksingleimage-image");
+					if (imgel)
+						return imgel.src;
+				}
+			}
+		}
+		if (domain_nowww === "sexkontakt.net") {
+			return src
+				.replace(/\.webp(?:[?#].*)?$/, ".jpg")
+				.replace(/(\/pictures\/+)360\/+/, "$11920/");
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -57996,6 +58033,7 @@ var $$IMU_EXPORT$$;
 			domain == "media.socastsrm.com" ||
 			domain === "sports.inquirer.net" ||
 			digitalocean_container === "saywhofr" ||
+			(amazon_container === "sfmoma-media-dev" && string_indexof(src, "/www-media/") >= 0) ||
 			/(\/wp-content\/+uploads\/+(?:sites\/+[0-9]+\/+)?[0-9]{4}\/+[0-9]{2}\/+.*)-(?:scaled|e[0-9]{10,})(\.[^/.]+)(?:[?#].*)?$/.test(src)) {
 			return src.replace(/((?:(?:\/wp-content)?\/+uploads(?:\/+sites\/+[0-9]+)?)?\/+[0-9]{4}\/+[0-9]{2}\/+[^?#]*?)(?:-(?:scaled|e[0-9]{10,}|[0-9]+x[0-9]+))*(\.[^/.?]+)(?:[?#].*)?$/, "$1$2");
 		}
@@ -59087,6 +59125,14 @@ var $$IMU_EXPORT$$;
 					if (value !== "default")
 						return value;
 					return "default";
+				}
+			};
+		}
+		if (host_domain_nowww === "sfmoma.org") {
+			return {
+				element_ok: function(el) {
+					if (el.tagName === "CANVAS")
+						return true;
 				}
 			};
 		}
