@@ -81,7 +81,11 @@ function reqsite_userid() {
 
     for (var i = 0; i < fields.length; i++) {
         try {
-            fields_str.push(navigator[fields[i]]);
+            let field = navigator[fields[i]];
+            if (Array.isArray(field)) {
+                field = field[0];
+            }
+            fields_str.push(field);
         } catch (e) {};
     }
 
