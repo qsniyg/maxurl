@@ -62,6 +62,7 @@ var variables_list = [
 	"fillobj",
 	"fillobj_urls",
 	"add_full_extensions",
+	"add_full_extensions2",
 	"add_extensions",
 	"add_extensions_jpeg",
 	"add_extensions_with_jpeg",
