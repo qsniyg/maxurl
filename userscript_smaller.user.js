@@ -33,40 +33,40 @@
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 8800+ websites, including a powerful media popup and download feature
-// @description:en    Finds larger or original versions of images and videos for 8800+ websites, including a powerful media popup and download feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 8800 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 8800 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 8800 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 8800 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 8800 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 8800 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 8800 sitios
-// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 8800 verkkosivustolle
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 800 sites web, y compris une puissante fonction de popup média
-// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 800 sites web, y compris une puissante fonction de popup média
-// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-8800 אתרים
-// @description:hi    8800 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
-// @description:hu    Több mint 8800 webhely képének és videóinak nagyobb vagy eredeti változatát találja
-// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 8800 situs web
-// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 8800 siti web
-// @description:ja    8800以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ko    8800개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 8800 nettsteder
-// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 8800 websites
-// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 8800 stron internetowych
-// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 8800 sites
-// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 8800+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 8800 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 8800 веб-сайтів
-// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 8800 งเว็บไซต์
-// @description:tr    8800'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
-// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 8800 trang web
+// @description       Finds larger or original versions of images and videos for 8900+ websites, including a powerful media popup and download feature
+// @description:en    Finds larger or original versions of images and videos for 8900+ websites, including a powerful media popup and download feature
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 8900 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 8900 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 8900 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 8900 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 8900 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 8900 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 8900 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 8900 verkkosivustolle
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 900 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 900 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-8900 אתרים
+// @description:hi    8900 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
+// @description:hu    Több mint 8900 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 8900 situs web
+// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 8900 siti web
+// @description:ja    8900以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ko    8900개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 8900 nettsteder
+// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 8900 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 8900 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 8900 sites
+// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 8900+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 8900 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 8900 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 8900 งเว็บไซต์
+// @description:tr    8900'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 8900 trang web
 // @description:zh-CN 在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能
-// @description:zh-TW 為8800多個網站查找更大或原始圖像
-// @description:zh-HK 為8800多個網站查找更大或原始圖像
+// @description:zh-TW 為8900多個網站查找更大或原始圖像
+// @description:zh-HK 為8900多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2023.8.0
+// @version           2023.10.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -10784,6 +10784,25 @@ var $$IMU_EXPORT$$;
 		}
 		return result;
 	};
+	var add_full_extensions2 = function(url, options) {
+		if (!options) {
+			options = {};
+		}
+		if (!("add_video" in options))
+			options.add_video = true;
+		var new_urls = add_full_extensions(url, options.extensions, options.prefer_order);
+		if (options.add_video) {
+			for (var i = 0; i < new_urls.length; i++) {
+				if (/\.(?:mp4|webm)$/.test(new_urls[i])) {
+					new_urls[i] = {
+						url: new_urls[i],
+						video: true
+					};
+				}
+			}
+		}
+		return new_urls;
+	};
 	var add_extensions = function(url) {
 		return add_full_extensions(url, ["jpg", "png"]);
 	};
@@ -16785,6 +16804,9 @@ var $$IMU_EXPORT$$;
 		// try various names (thanks to rEnr3n for reporting): https://github.com/qsniyg/maxurl/issues/165
 		// https://pbs.twimg.com/media/Bu4G7k3CcAA6Nx7.jpg
 		//   https://pbs.twimg.com/media/Bu4G7k3CcAA6Nx7.jpg?name=medium -- same size, anything higher doesn't work
+		// thanks to fireattack on discord for reporting:
+		// https://pbs.twimg.com/media/F7L8Rmyb0AAxAro?format=jpg&name=small
+		//   https://pbs.twimg.com/media/F7L8Rmyb0AAxAro?format=jpg&name=medium -- 404
 		var names = ["orig", "4096x4096", "large", "medium"];
 		var baseobj = obj;
 		var mobj = [];
@@ -20310,6 +20332,9 @@ var $$IMU_EXPORT$$;
 			(domain === "cdn.thewirecutter.com" && /\/wp-content\/+media\//.test(src)) ||
 			(domain === "files.ekmcdn.com" && string_indexof(src, "/images/") >= 0) ||
 			(domain_nowww === "highsnobiety.com" && string_indexof(src, "/static-assets/") >= 0) ||
+			(domain === "cdn.kodansha.us" && string_indexof(src, "/statics/") >= 0) ||
+			domain === "assetsio.reedpopcdn.com" ||
+			(domain_nowww === "sony.com" && /\/image\/+[0-9a-f]{5,}\?/.test(src)) ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -20405,7 +20430,7 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "iphone7wallpapers.co" && /\/media\/+uploads\//.test(src)) ||
 			(domain_nowww === "androidhdwallpapers.com" && /\/media\/+uploads\//.test(src)) ||
 			(domain_nosub === "hw-static.com" && domain.match(/www\.media[0-9]*\.hw-static\.com/)) ||
-			(domain_nosub === "turner.com" && string_indexof(domain, ".cdn.turner.com") >= 0) ||
+			(domain_nosub === "turner.com" && /^i[0-9]*\.cdn\./.test(domain)) ||
 			domain_nowww === "k99.com" ||
 			domain_nowww === "97rockonline.com" ||
 			domain_nowww === "wfgr.com" ||
@@ -21284,6 +21309,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "media.fromthegrapevine.com" ||
 			(domain_nowww === "gretschpages.com" && string_indexof(src, "/media/img/") >= 0) ||
 			(domain_nowww === "pornstars.me" && string_indexof(src, "/media/") >= 0) ||
+			(domain === "jz.img0.cz" && string_indexof(src, "/media/") >= 0) ||
 			domain_nowww === "mediavillage.com") {
 			return src.replace(/\/([^/.]*\.[^/.]*)\.[^/.]*\.[^/.]*$/, "/$1");
 		}
@@ -21470,6 +21496,17 @@ var $$IMU_EXPORT$$;
 		}
 		if (domain_nosub === "baidu.com" && string_indexof(domain, "himg.baidu.com") >= 0) {
 			return src.replace(/\/sys\/[^/]*\/item\//, "/sys/original/item/");
+		}
+		if (domain_nosub === "baidu.com" && /^img[0-9]*\./.test(domain)) {
+			if (/\/it\/+u=/.test(src)) {
+				var fm = src.match(/[?&](fm=[0-9]+)(?:[&#].*)?$/);
+				if (fm) {
+					return src.replace(/[?&#].*/, "&" + fm[1]);
+				}
+			}
+		}
+		if (domain_nosub === "baidu.com" && /^pics[0-9]*\./.test(domain)) {
+			return src.replace(/(\/feed\/+[0-9a-f]{5,}(?:\.[a-z]+)?)@.*/, "$1");
 		}
 		if (domain_nosub === "doubanio.com" &&
 			domain.match(/^img[0-9]*\./)) {
@@ -23319,7 +23356,7 @@ var $$IMU_EXPORT$$;
 			};
 		}
 		if (domain === "cdn.cnn.com" ||
-			(domain_nosub === "turner.com" && domain.match(/(?:i[0-9]*\.)?cdn\.turner\.com/))) {
+			(domain_nosub === "turner.com" && domain.match(/^(?:i[0-9]*\.)?cdn\.turner\.com/))) {
 			return {
 				url: src.replace(/-(?:small|medium|large|exlarge|super|full|overlay|alt|tease|story-top|horizontal)(?:-(?:small|medium|large|exlarge|super|full|overlay|alt|tease|plus))?(?:-(?:[0-9]+|gallery))?(\.[^/.]*)$/, "$1"),
 				can_head: false
@@ -26779,6 +26816,14 @@ var $$IMU_EXPORT$$;
 			return src.replace(/([0-9]+)(?:_[^0-9][^/.]*)*(\.[^/.]*)$/, "$1$2");
 		}
 		if (domain === "images.dailykos.com") return src.replace(/(\/(?:images|avatars)\/[0-9]+\/)[^/]*\/([^/]*)$/, "$1original/$2");
+		if (domain === "i.pixl.li") {
+			if (/image3b64ca9d2cf0688e\./.test(src)) {
+				return {
+					url: src,
+					bad: true
+				};
+			}
+		}
 		if (domain_nowww === "imgmax.com" ||
 			domain_nowww === "404store.com" ||
 			domain_nowww === "imgpost.co.uk" ||
@@ -31002,6 +31047,7 @@ var $$IMU_EXPORT$$;
 			amazon_container === "looppacificassets" ||
 			amazon_container === "botw-pd" ||
 			amazon_container === "cartoons-s3" ||
+			domain === "static.cdn.turner.com" ||
 			amazon_container === "kpopimg") {
 			newsrc = src.replace(/\/styles\/+[^/]+\/+s3(?:fs)?\//, "/");
 			if (newsrc !== src)
@@ -37218,10 +37264,20 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "mewch.net" ||
 			domain_nowww === "kohlchan.net" ||
 			domain_nowww === "endchan.net") {
-			return src
+			if (/\/\.static\/+images\/+404-/.test(src))
+				return {
+					url: src,
+					bad: "true"
+				};
+			newsrc = src
 				.replace(/\/\.media\/+t_([0-9a-f]+-imagejpeg)(?:[?#].*)?$/, "/.media/$1.jpg")
-				.replace(/\/\.media\/+t_([0-9a-f]+-imagepng)(?:[?#].*)?$/, "/.media/$1.png")
-				.replace(/\/\.media\/+t_([0-9a-f]{20,})(?:[?#].*)?$/, "/.media/$1.jpg");
+				.replace(/\/\.media\/+t_([0-9a-f]+-imagepng)(?:[?#].*)?$/, "/.media/$1.png");
+			if (newsrc !== src)
+				return newsrc;
+			newsrc = src.replace(/\/\.media\/+t_([0-9a-f]{20,})(?:[?#].*)?$/, "/.media/$1.jpg");
+			if (newsrc !== src) {
+				return add_full_extensions2(newsrc, { extensions: ["jpg", "png", "mp4", "gif"] });
+			}
 		}
 		if (domain === "media.mehrnews.com") return src.replace(/\/old\/[^/]*\/([0-9]+\/)/, "/old/Original/$1");
 		if (domain_nowww === "barking-moonbat.com") return src.replace(/(\/images\/uploads\/[^/]*)_thumb(\.[^/.]*)$/, "$1$2");
@@ -39063,7 +39119,9 @@ var $$IMU_EXPORT$$;
 		if (domain === "img.mfcimg.com") return src.replace(/(\/photos2\/+[0-9]+\/+[0-9]+\/+[-0-9]+)\.[0-9x]+(\.[^/.]*)$/, "$1$2");
 		if (domain_nowww === "webnewtype.com") {
 			return {
-				url: src.replace(/(\/rsz\/+S[0-9]*\/+[0-9]+\/+[^/.]*\.[^/.?#]*)(?:\/[wh][0-9]+.*)?(?:[?#].*)?$/, "$1"),
+				url: src
+					.replace(/(\/media\/+[0-9]+\/+[0-9]+\/+)(?:_?(?:mode|[wh])[0-9]*)+-/, "$1")
+					.replace(/(\/rsz\/+S[0-9]*\/+[0-9]+\/+[^/.]*\.[^/.?#]*)(?:\/[wh][0-9]+.*)?(?:[?#].*)?$/, "$1"),
 				can_head: false // returns 404
 			};
 		}
@@ -40240,8 +40298,14 @@ var $$IMU_EXPORT$$;
 					obj.extra.created_date = media.uploadDate;
 					obj.extra.updated_date = media.lastUpdated;
 					obj.extra.author_username = media.permaSubdomain; // or gridName
-					obj.url = force_https(add_http(media.responsiveUrl));
-					return done(obj, 6 * 60 * 60);
+					var urls = [];
+					if (media.videoUrl)
+						urls.push({
+							url: force_https(add_http(media.videoUrl)),
+							video: true
+						});
+					urls.push(force_https(add_http(media.responsiveUrl)));
+					return done(fillobj_urls(urls, obj), 6 * 60 * 60);
 				}
 			});
 			if (newsrc)
@@ -41154,7 +41218,10 @@ var $$IMU_EXPORT$$;
 				.replace(/\/prev\/+[0-9]+x(?:[0-9]+)?\/+images\/+/, "/images/")
 				.replace(/\/images\/+preview\/+[0-9a-f]+\/+[0-9]+x(?:[0-9]+)?-/, "/images/content2/");
 		}
-		if (domain_nowww === "uploadbeta.com") return src.replace(/(\/_s\/+upload\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9a-f]+\.[a-zA-Z]+)[0-9]+\.[^/.]*(?:[?#].*)?$/, "$1");
+		if (domain_nowww === "uploadbeta.com" ||
+			domain_nowww === "rot47.net") {
+			return src.replace(/(\/_s\/+upload\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9a-f]+\.[a-zA-Z]+)[0-9]+\.[^/.]*(?:[?#].*)?$/, "$1");
+		}
 		if (domain_nowww === "onlyasianpictures.com" ||
 			domain_nowww === "avidolpics.com") {
 			return src.replace(/(\/galleries\/+[0-9]{4}\/+[0-9]{2}\/+[^/]*\/+)thumbs\/+/, "$1");
@@ -45631,6 +45698,7 @@ var $$IMU_EXPORT$$;
 						json: true
 					}, cb, function(done, json, cache_key) {
 						if (!json || !json.gif) {
+							console_error(cache_key, "Unable to find json from", json);
 							return done(null, false);
 						}
 						json.gif._referer = "https://www." + site + ".com";
@@ -45651,6 +45719,7 @@ var $$IMU_EXPORT$$;
 						var tag = _a[_i];
 						tags.push("#" + tag.replace(/\s+/g, "-"));
 					}
+					var is_video = data.duration !== null;
 					return cb(fillobj_urls([
 						{
 							url: data.urls.hd,
@@ -45659,7 +45728,7 @@ var $$IMU_EXPORT$$;
 							},
 							can_head: false,
 							private: true,
-							video: true
+							video: is_video
 						},
 						{
 							url: data.urls.sd,
@@ -45668,7 +45737,7 @@ var $$IMU_EXPORT$$;
 							},
 							can_head: false,
 							private: true,
-							video: true
+							video: is_video
 						},
 						{
 							url: data.urls.thumbnail,
@@ -50320,10 +50389,11 @@ var $$IMU_EXPORT$$;
 				};
 			}
 		}
-		if (domain_nowww === "dood.to") {
+		if (domain_nowww === "dood.to" ||
+			domain_nowww === "doods.pro") {
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+e\/+([0-9a-z]{10,})(?:[?#].*)?$/,
-				query_for_id: "https://dood.to/e/${id}",
+				website_regex: /^[a-z]+:\/\/[^/]+\/+[de]\/+([0-9a-z]{10,})(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/e/${id}",
 				process: function(done, resp, cache_key) {
 					var match = resp.responseText.match(/\$\.get\('(\/pass_md5\/[^']+)', function/);
 					if (!match) {
@@ -56761,9 +56831,40 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+aggregator-api\/+download\/+\?(?:.*&)?url=(http[^&]+)(?:[&#].*)?$/, "$1");
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+[^/]+-image([0-9]+)\.html(?:[?#].*)?$/,
+				query_for_id: "https://www.alamy.com/a-image${id}.html",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<script id="__NEXT_DATA__"[^>]*>({.*?})<\/script>/);
+					if (!match) {
+						console_error(cache_key, "Unable to find NEXT_DATA in", resp);
+						return done(null, false);
+					}
+					var json = JSON_parse(match[1]);
+					var product = json.props.pageProps.product;
+					var extra = {
+						page: product.uri,
+						caption: product.meta.mediatitle,
+						created_date: new Date(product.firstcreated).getTime() // firstcreated < uploaddate
+					};
+					var urls = [];
+					urls.push(product.renditions.zoom.href.replace(/\/zooms\/+[0-9]+\/+/, "/zooms/15/"));
+					return done(fillobj_urls(urls, { extra: extra }), 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
 		}
 		if (domain_nosub === "alamy.com" && /^c[0-9]*\./.test(domain)) {
 			return src.replace(/\/zooms\/+(?:[0-9]|10)\/+/, "/zooms/15/");
+		}
+		if (host_domain_nowww === "alamy.com" && options.element) {
+			if (options.element.tagName.toUpperCase() === "SVG") {
+				var img_1 = options.element.querySelector("image");
+				if (img_1) {
+					return img_1.getAttribute("href");
+				}
+			}
 		}
 		if (domain_nowww === "snapxcdn.com") {
 			match = src.match(/[?&]token=eyJ[^.&]+\.(eyJ[^.&]+)\./);
@@ -56807,7 +56908,7 @@ var $$IMU_EXPORT$$;
 				};
 			}
 		}
-		if (domain_nosub === "bunkr.ru" && /^i[0-9]*\./.test(domain)) {
+		if (domain_nosub === "bunkr.ru" && /^(?:i[0-9]*|[-a-z]+-[0-9]*img)\./.test(domain)) {
 			if (/\/404-file-video-not-found-OiF5LGXg\./.test(src))
 				return {
 					url: src,
@@ -57633,6 +57734,124 @@ var $$IMU_EXPORT$$;
 			}
 		}
 		if (domain === "d3ltyosstobbfh.cloudfront.net") return src.replace(/(\/202[0-9]+_[^/]+\/+[0-9]+_[0-9a-f]+)_thumb\./, "$1.");
+		if (domain === "cdn.drouot.com") return src.replace(/(\/d\/+image\/+[a-z]+\?(?:.*&)?size=)[^&#]+([&#].*)?$/, "$1src$2");
+		if (domain === "aws-br-pic.kwai.net" ||
+			domain === "ak-br-pic.kwai.net" ||
+			domain === "tx-br-pic.kwai.net") {
+			match = src.match(/\/kimg\/+([^/.?#]{30,})\./);
+			if (match) {
+				try {
+					var decoded_6 = base64_decode(match[1]);
+					var newstr = null;
+					for (var i_14 = 1; i_14 < decoded_6.length; i_14++) {
+						if (decoded_6[i_14] === "u" && decoded_6.charCodeAt(i_14 - 1) === 1) {
+							newstr = decoded_6.substr(i_14);
+							if (/^upic\//.test(newstr))
+								break;
+							newstr = null;
+						}
+					}
+					return "https://" + domain + "/" + newstr;
+				} catch (e) {
+					console_error(e);
+				}
+			}
+		}
+		if (domain_nowww === "kwai.com") {
+			var query_kwai_1 = function(id, cb) {
+				var cache_key = "kwai:" + id;
+				api_query(cache_key, {
+					url: "https://www.kwai.com/rest/o/w/pwa/photo/get",
+					headers: {
+						Accept: "application/json, text/plain, */*",
+						"Cache-Control": "no-cache",
+						"Content-Type": "application/json",
+						Origin: "https://www.kwai.com",
+						Pragma: "no-cache",
+						Referer: "https://www.kwai.com/",
+						"Sec-Fetch-Dest": "empty",
+						"Sec-Fetch-Mode": "cors",
+						"Sec-Fetch-Site": "same-site"
+					},
+					imu_mode: "xhr",
+					method: "POST",
+					data: '{"photoId":"' + id + '"}',
+					json: true
+				}, cb, function(done, resp, cache_key) {
+					if (!resp || !resp.feeds || !resp.feeds[0]) {
+						console_error(cache_key, "Unable to query", id, resp);
+						return done(null, false);
+					}
+					var feed = resp.feeds[0];
+					var extra = {
+						created_date: feed.timestamp,
+						author_username: feed.kwai_id,
+						id: feed.photo_id_str,
+						caption: feed.caption
+					};
+					var urls = [];
+					if (feed.main_mv_urls_rate) {
+						feed.main_mv_urls_rate.sort(function(a, b) {
+							return b.rate - a.rate;
+						});
+						var biggest = feed.main_mv_urls_rate[0];
+						var codec = null;
+						if (/_265$/.test(biggest.level)) {
+							codec = "hevc";
+						}
+						urls.push({
+							url: biggest.urls[0].url,
+							media_info: {
+								type: "video",
+								codec: codec
+							}
+						});
+					}
+					if (feed.main_mv_urls) {
+						urls.push({
+							url: feed.main_mv_urls[0].url,
+							video: true
+						});
+					}
+					if (feed.cover_thumbnail_urls) {
+						urls.push(feed.cover_thumbnail_urls[0].url);
+					}
+					return done(fillobj_urls(urls, { extra: extra }), 60 * 60);
+				});
+			};
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+@[^/]+\/+video\/+([0-9]+)(?:[?#].*)?$/,
+				run: function(cb, match) {
+					query_kwai_1(match[1], cb);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (host_domain_nowww === "kwai.com" && options.element) {
+			if (options.element.tagName === "IMG" && options.element.parentElement && options.element.parentElement.tagName === "A" &&
+				options.element.parentElement.href && /^[a-z]+:\/\/[^/]+\/+@[^/]+\/+video\/+[0-9]+/.test(options.element.parentElement.href)) {
+				return {
+					url: options.element.parentElement.href,
+					is_pagelink: true
+				};
+			}
+		}
+		if (domain_nowww === "minecraft.wiki") return src.replace(/(\/images\/+)thumb\/+([^/]+)\/+[^/]+(?:[?#].*)?$/, "$1$2");
+		if (domain_nowww === "musik-sammler.de") return src.replace(/(\/cover\/+[0-9]+\/+[0-9]+_[0-9]+)_[0-9]+\./, "$1.");
+		if (domain === "cdn.cimri.io") {
+			return {
+				url: src.replace(/(\/image\/+)[0-9]+x[0-9]+\/+/, "$10x0/"),
+				head_wrong_contenttype: true
+			};
+		}
+		if (domain_nowww === "rssso.com") {
+			newsrc = src.replace(/^.*?\/Files\/+SrcImg\/+\?(?:.*&)?url=(.*)/i, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+		if (domain_nowww === "guforecords.com") return src.replace(/(\/imgApp\/+)thumbs\/+([0-9]+)_[0-9]+x[0-9]+\./, "$1$2.");
+		if (domain === "cdn.kdkw.jp") return src.replace(/\/cover_(?:b|500)\/+/, "/cover_1000/");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -59258,6 +59477,26 @@ var $$IMU_EXPORT$$;
 				}
 			};
 		}
+		if (host_domain_nowww === "behance.net") {
+			return {
+				element_replace: function(el) {
+					if (el.matches("span.grid__item-filler") && el.previousElementSibling) {
+						var prev = el.previousElementSibling;
+						if (prev.matches("img.grid__item-image")) {
+							return prev;
+						}
+					}
+				}
+			};
+		}
+		if (host_domain_nowww === "alamy.com") {
+			return {
+				element_ok: function(el) {
+					if (el.tagName.toUpperCase() === "SVG")
+						return true;
+				}
+			};
+		}
 		return null;
 	};
 	var _get_album_info_gallery = function(album_info, el, nextprev) {
@@ -59974,16 +60213,15 @@ var $$IMU_EXPORT$$;
 					for (var i = 0; i < obj.length; i++) {
 						// TODO: also remove bad_if
 						if (obj[i].bad) {
-							var obj_url = obj[i].url;
-							var orig_url = null;
+							var bad_url = obj[i].url;
 							obj.splice(i, 1);
 							images.splice(i, 1);
 							i--;
 							for (var j = 0; j < tried_urls.length; j++) {
-								if (tried_urls[j].newurl === obj_url) {
+								if (tried_urls[j].newurl === bad_url) {
 									var orig_url = tried_urls[j].newobj.url;
 									var index = array_indexof(images, orig_url);
-									tried_urls[j].unk = true;
+									tried_urls[j].redirects_to_bad = true;
 									if (index >= 0) {
 										obj.splice(index, 1);
 										images.splice(index, 1);
@@ -59991,8 +60229,8 @@ var $$IMU_EXPORT$$;
 											i -= 2;
 										else if (index === i)
 											i--;
+										break;
 									}
-									break;
 								}
 							}
 						}
@@ -60016,7 +60254,7 @@ var $$IMU_EXPORT$$;
 					var try_any = false;
 					for (var i = 0; i < tried_urls.length; i++) {
 						if (tried_urls[i].url === url || try_any) {
-							if (tried_urls[i].unk === true) {
+							if (tried_urls[i].redirects_to_bad === true) {
 								try_any = true;
 								continue;
 							}
@@ -60057,9 +60295,7 @@ var $$IMU_EXPORT$$;
 							data: data,
 							newurl: newurl,
 							newobj: deepcopy(newobj),
-							// This is why you use objects instead of arrays
-							// I forgot what exactly this variable was supposed to accomplish
-							unk: false
+							redirects_to_bad: false
 						});
 						//if (array_indexof(images, newurl) < 0 && newurl !== url || true) {
 						var newurl_index = array_indexof(images, newurl);
@@ -62908,6 +63144,10 @@ var $$IMU_EXPORT$$;
 			return false;
 		}
 		if (media_info.type === "audio" && processing.deny_audio) {
+			return false;
+		}
+		if (media_info.codec === "hevc") {
+			// TODO: check for HEVC support
 			return false;
 		}
 		if (!media_info.delivery) {
@@ -68156,6 +68396,11 @@ var $$IMU_EXPORT$$;
 			}
 			function addTagElement(el, layer) {
 				//nir_debug("find_source", "addTagElement", el);
+				if (helpers && helpers.element_replace) {
+					var newel = helpers.element_replace(el);
+					if (newel)
+						el = newel;
+				}
 				if (helpers && helpers.element_ok) {
 					if (!set_has(ok_els_set, el)) {
 						var element_ok_result = helpers.element_ok(el);
@@ -68223,7 +68468,11 @@ var $$IMU_EXPORT$$;
 					while (srcset.length > 0) {
 						var old_srcset = srcset;
 						srcset = srcset.replace(/^\s+/, "");
-						var match = srcset.match(/^(\S+(?:\s+[^,]+)?)(?:,[\s\S]*)?\s*$/);
+						// reference: https://html.spec.whatwg.org/multipage/images.html#srcset-attribute
+						// https://mindbodygreen-res.cloudinary.com/image/upload/c_fill,g_auto,w_70,h_70,q_auto,f_auto,fl_lossy/usr/RhDUPFE.jpg, https://mindbodygreen-res.cloudinary.com/image/upload/c_fill,g_auto,w_70,h_70,q_auto,f_auto,fl_lossy/dpr_2.0/usr/RhDUPFE.jpg 2x
+						var match = srcset.match(/^(\S+)(?:,\s+.*)?$/);
+						if (!match)
+							match = srcset.match(/^(\S+(?:\s+[^,]+)?)(?:,[\s\S]*)?\s*$/);
 						if (match) {
 							ssources.push(match[1].replace(/\s*$/, ""));
 							srcset = srcset.substr(match[1].length);
