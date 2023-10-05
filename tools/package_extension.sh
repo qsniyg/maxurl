@@ -370,13 +370,13 @@ if [ ! -z $RELEASE ]; then
     echo ' * Ensure translation strings are updated'
     echo ' * Ensure xx00+ count is updated (userscript - greasyfork/oujs, reddit post, mozilla/opera, website)'
     echo ' * Ensure CHANGELOG.txt is updated'
-    echo ' * git add userscript.user.js userscript_smaller.user.js userscript.meta.js CHANGELOG.txt build/userscript_extr.user.js build/userscript_extr_min.user.js build/ImageMaxURL_crx3.crx build/ImageMaxURL_unsigned.xpi extension/updates.xml manifest.json package.json sites.txt'
+    echo ' * git add src/userscript.ts userscript.user.js userscript_smaller.user.js userscript.meta.js CHANGELOG.txt build/userscript_extr.user.js build/userscript_extr_min.user.js build/ImageMaxURL_crx3.crx build/ImageMaxURL_unsigned.xpi extension/updates.xml manifest.json package.json sites.txt'
     echo ' * git commit ('$USERVERSION')'
-    echo ' * Update greasyfork, oujs, firefox, opera, changelog.txt'
-    echo ' * git tag v'$USERVERSION
+    echo ' * Update firefox, oujs'
     echo ' * Update userscript.user.js for site (but check about.js for site count before)'
     echo ' * Update Discord changelog'
     echo ' * Update build/ImageMaxURL_signed.xpi'
+    echo ' * git tag v'$USERVERSION
 else
     echo
     echo "Non-maintainer build finished"
