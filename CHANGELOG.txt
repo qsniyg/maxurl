@@ -1,7 +1,8 @@
-2023.9.0 (dev)
+2023.10.0
 
 New features:
 
+ * Support for ~135 new websites (using ~100 new rules)
  * Support for images stored within SVG tags (#268)
  * Option to allow rules to be run under archive.org's Wayback Machine (disabled by default)
  * Option to bypass CSP restrictions when loading 3rd-party libraries from the userscript (disabled by default)
