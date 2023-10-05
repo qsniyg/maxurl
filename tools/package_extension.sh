@@ -16,6 +16,7 @@ get_userscript_version() {
 USERVERSION=`get_userscript_version userscript.user.js`
 MANIFESTVERSION=`cat manifest.json | grep '"version": *"[0-9.]*", *$' | sed 's/.*"version": *"\([0-9.]*\)", *$/\1/g'`
 PACKAGEVERSION=`cat package.json | grep '"version": *"[0-9.]*", *$' | sed 's/.*"version": *"\([0-9.]*\)", *$/\1/g'`
+CHANGELOGVERSION=`cat CHANGELOG.txt | head -n1`
 
 if [ -z "$USERVERSION" -o -z "$MANIFESTVERSION" -o -z "$PACKAGEVERSION" ]; then
     echo Broken version regex
@@ -29,6 +30,11 @@ fi
 
 if [ "$USERVERSION" != "$PACKAGEVERSION" ]; then
     echo 'Conflicting versions (userscript and npm package)'
+    exit 1
+fi
+
+if [ "$USERVERSION" != "$CHANGELOGVERSION" ]; then
+    echo 'Conflicting versions (userscript and changelog)'
     exit 1
 fi
 
