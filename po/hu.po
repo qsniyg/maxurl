@@ -2333,6 +2333,27 @@ msgstr ""
 msgid "Instagram (downloading)"
 msgstr ""
 
+#. bypass_csp_for_lib.name
+msgid "Bypass CSP for libraries"
+msgstr ""
+
+#. bypass_csp_for_lib.description
+msgid ""
+"Tries loading the 3rd-party libraries using a `<script>` tag if a page's CSP prevents it from being loaded normally.\n"
+"This option currently carries an increased security risk when combined with \"Custom XHR for libraries\", and should only be enabled if absolutely necessary."
+msgstr ""
+
+#. bypass_csp_for_lib.warning.true
+msgid ""
+"This can potentially be extremely insecure if \"Custom XHR for libraries\" is also enabled.\n"
+"A malicious website could gain extension-level permissions and perform arbitrary requests (your online accounts could get hacked).\n"
+"If you need to use this option, please disable it as soon as possible."
+msgstr ""
+
+#. bypass_csp_for_lib.example_websites[0]
+msgid "Snapchat"
+msgstr ""
+
 #. use_webarchive_for_lib.name
 msgid "Use Web Archive for libraries"
 msgstr ""
@@ -2519,6 +2540,14 @@ msgstr ""
 
 #. allow_bruteforce.example_websites[0]
 msgid "Deezer"
+msgstr ""
+
+#. allow_webarchive.name
+msgid "Web Archive support"
+msgstr ""
+
+#. allow_webarchive.description
+msgid "Allows rules to be run under archive.org's Wayback Machine."
 msgstr ""
 
 #. browser_cookies.name
