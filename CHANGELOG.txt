@@ -1,6 +1,6 @@
 2023.10.1 (in-dev)
 
-Special thanks to sn3akyb3ar, fireattack for their contributions and reports for this release
+Special thanks to sn3akyb3ar, fireattack, oifj34f34f, doio for their contributions and reports for this release
 
 ---
 
