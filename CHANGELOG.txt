@@ -1,6 +1,10 @@
 2023.10.1 (in-dev)
 
-Special thanks to sn3akyb3ar, fireattack, oifj34f34f, doio for their contributions and reports for this release
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Cloudinary, Google, Nitter, PeerTube)
+
+Special thanks to sn3akyb3ar, fireattack, oifj34f34f, doio, Rotes!, ValiumBear, bigdiff for their contributions and reports for this release
 
 ---
 
