@@ -32,39 +32,39 @@
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 8900+ websites, including a powerful media popup and download feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 8900 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 8900 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 8900 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 8900 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 8900 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 8900 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 8900 sitios
-// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 8900 verkkosivustolle
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 900 sites web, y compris une puissante fonction de popup média
-// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 8 900 sites web, y compris une puissante fonction de popup média
-// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-8900 אתרים
-// @description:hi    8900 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
-// @description:hu    Több mint 8900 webhely képének és videóinak nagyobb vagy eredeti változatát találja
-// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 8900 situs web
-// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 8900 siti web
-// @description:ja    8900以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ko    8900개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 8900 nettsteder
-// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 8900 websites
-// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 8900 stron internetowych
-// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 8900 sites
-// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 8900+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 8900 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 8900 веб-сайтів
-// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 8900 งเว็บไซต์
-// @description:tr    8900'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
-// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 8900 trang web
+// @description       Finds larger or original versions of images and videos for 9000+ websites, including a powerful media popup and download feature
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 9000 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 9000 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 9000 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 9000 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 9000 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 9000 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 9000 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 9000 verkkosivustolle
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 000 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 000 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-9000 אתרים
+// @description:hi    9000 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
+// @description:hu    Több mint 9000 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 9000 situs web
+// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 9000 siti web
+// @description:ja    9000以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ko    9000개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 9000 nettsteder
+// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 9000 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 9000 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 9000 sites
+// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 9000+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 9000 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 9000 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 9000 งเว็บไซต์
+// @description:tr    9000'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 9000 trang web
 // @description:zh-CN 在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能
-// @description:zh-TW 為8900多個網站查找更大或原始圖像
-// @description:zh-HK 為8900多個網站查找更大或原始圖像
+// @description:zh-TW 為9000多個網站查找更大或原始圖像
+// @description:zh-HK 為9000多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2023.10.0
+// @version           2023.11.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -100,7 +100,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@872ad8d72458bce8e80910bf570ab66522239116/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@2b670c5daf82b8e600591b8fbdb8fc7a22a16a8d/build/rules.js
 // ==/UserScript==
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
 //   * Detecting whether or not the destination URL exists before redirecting
@@ -145,8 +145,8 @@ var $$IMU_EXPORT$$;
 			cache: false,
 			bigimage_recursive: true,
 			input: false,
-			check_image_get: true,
-			find_source: true
+			check_image_get: false,
+			find_source: false
 		};
 		console.log("Loaded");
 	}
@@ -11870,16 +11870,16 @@ var $$IMU_EXPORT$$;
 		},
 		"jszip": {
 			name: "jszip",
-			url: "https://raw.githubusercontent.com/qsniyg/maxurl/04ded19e6a25408d7a272420778a2147983949bc/lib/jszip.js",
-			archive_time: "20210403204254",
-			size: 99574,
-			crc32: 2493372642,
-			crc32_size: 624003151
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/3d8d6b4415b8dd58cb405910647c940ea122b3a0/lib/jszip.js",
+			archive_time: "20231116183309",
+			size: 99559,
+			crc32: 2407465226,
+			crc32_size: 689840937
 		},
 		"BigInteger": {
 			name: "BigInteger",
 			url: "https://raw.githubusercontent.com/qsniyg/maxurl/b0a4ba6c28f0c0b7c665e76e3767bde59e900ab6/lib/BigInteger.js",
-			archive_time: " 20220629185936",
+			archive_time: "20231116183440",
 			size: 21482,
 			crc32: 337445473,
 			crc32_size: 2641711624
@@ -17392,13 +17392,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "mb6do52ep3ffof7k") {
+	            } else if (bigimage_obj.nonce !== "kh295h2llmfh12hl") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "mb6do52ep3ffof7k"
+	                    message: "Bad nonce, expected: " + "kh295h2llmfh12hl"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -18707,6 +18707,7 @@ var $$IMU_EXPORT$$;
 				objified[i] = deepcopy(objified[i]); // ensure no references are kept between objects
 				var obj = objified[i];
 				var remove_obj = function() {
+					if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage (removing obj)");
 					objified.splice(i, 1);
 					if (is_array(newhref1)) {
 						newhref1.splice(i, 1);
@@ -18800,18 +18801,13 @@ var $$IMU_EXPORT$$;
 								});
 							});
 						};
-						// commenting out because apply doesn't exist
-						/*
-						// fixme: apply doesn't exist??
-						apply(newhref);
+						_apply(newhref);
 						// strikinglycdn needs newhref1 to be applied, because it has two rules, the cloudinary one, then the {url: src, can_head: false} one
 						// the second one is only set in newhref1, not newhref
-						apply(newhref1);
-
-						// this also needs to be commented out, because normally "apply" not existing would throw an error, preventing this from running.
+						_apply(newhref1);
+						// _apply is also needed for bigimage'd album_links
 						newhref = null;
 						currentobj = pastobjs[0];
-						*/
 					}
 					if (false) {
 						if (!cond) {
