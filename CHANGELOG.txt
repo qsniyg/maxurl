@@ -1,9 +1,13 @@
-2023.10.1 (in-dev)
+2023.11.0 (in-dev)
+
+New features:
+
+ * Support for ~60 new websites (using ~40 new rules)
 
 Improvements:
 
  * Various improvements/fixes to existing rules (including Cloudinary, Google, Nitter, Patreon, PeerTube)
- * Improve zipping time
+ * Significantly improve zip performance
 
 Special thanks to sn3akyb3ar, fireattack, oifj34f34f, doio, Rotes!, ValiumBear, bigdiff, remlap, Flame, puddyplexer, Anon_Ymou5 for their contributions and reports for this release
 
