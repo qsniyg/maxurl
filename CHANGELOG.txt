@@ -1,3 +1,13 @@
+2023.11.1 (in-dev)
+
+Bugfixes:
+
+ * Fix the info object not being filled in some cases (thanks to fireattack on discord for reporting)
+
+Special thanks to jonestly, fireattack, karpuzikov, ljcool2006 for their contributions and reports for this release
+
+---
+
 2023.11.0
 
 New features:
