@@ -82,7 +82,7 @@ perfect though, I often get it wrong myself :) I can fix it up if you make a mis
 
   - The general format is:
 
-    ```
+    ```ts
     // https://img1.example.com/thumbs/image.jpg -- smaller image (-- denotes a comment)
     //   https://img1.example.com/medium/image.jpg -- a larger image of the one above available on the website that this rule also works for
     //   https://img1.example.com/images/image.jpg -- largest image returned by this rule from any of the above (/medium/ or /thumbs/)
@@ -97,7 +97,7 @@ perfect though, I often get it wrong myself :) I can fix it up if you make a mis
   - Account for query strings or hash strings possibly including a /. The way I usually do it is to add `(?:[?#].*)?$` at the end
   - Try to keep the rule as tight as possible (within reason). For example:
 
-    ```
+    ```ts
     // https://www.example.com/images/image_500.jpg
     //   https://www.example.com/images/image.jpg
     return src.replace(/(\/images\/+[^/?#]+)_[0-9]+(\.[^/.]+(?:[?#].*)?)$/, "$1$2"); // good
@@ -106,11 +106,6 @@ perfect though, I often get it wrong myself :) I can fix it up if you make a mis
 
   - While not a strict rule, I don't use `\d` or `\w` as I find that specifying exactly which characters are allowed allows it to be easier
     to understand and modify. Your choice though :)
-
-- Ensure that no modern JS (ES2015+) is used, at least without a fallback that should work on all browsers.
-
-  - The only exception to this that comes to mind is requiring `BigInt` for certain calculations. However, note that the `n` suffix is not used, and it is surrounded by a try/catch block. This is to ensure the rest of the script will work, even if that one particular section doesn't.
-    - Note that implementing a `BigInt` fallback for older browsers isn't out of scope, just low priority.
 
 - You'll probably see that a lot of the rules don't follow many of the guidelines above. More recent rules tend to follow the guidelines better, but older
   rules haven't been updated, and are often either too specific or too generic as a result. I try to update them as I see them, but since there are literally thousands
@@ -144,6 +139,7 @@ There are a few considerations for implementing rules that use API calls:
 - Return `{waiting: true}` at the end of the function if the result will be returned in a callback (`options.cb`).
 
   - Otherwise it will result in inconsistent behavior (such as multiple popups).
+  - Think of this like returning a Promise.
 
 - Use `api_cache` wherever possible in order to reduce duplicate API calls.
 
@@ -163,7 +159,7 @@ The idea behind pagelink rules is to support a public-facing URL, generally (alw
 
 To document it, I'll give an example with an imaginary social network:
 
-```
+```ts
 if (domain_nowww === "mysocialnetwork.com") {
   // https://mysocialnetwork.com/post/123
 
@@ -202,6 +198,7 @@ if (domain_nowww === "mysocialnetwork.com") {
           caption: title
         }
       }, 6*60*60);
+      // Though it's arbitrary, 6*60*60 (6 hours measured in seconds) is used for images that will not expire.
     }
   });
 
