@@ -7,7 +7,7 @@
   "devDependencies": {
     "concurrently": "^7.0.0",
     "crx3": "^1.1.3",
-    "typescript": "^5.3"
+    "typescript": "~5.3"
   },
   "scripts": {
     "watch-tsc": "./tools/watch_tsc.sh",
