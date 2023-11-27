@@ -1736,10 +1736,8 @@ msgstr "启用 HLS/DASH 流媒体的下载"
 #. enable_stream_download.description
 msgid ""
 "Downloads and muxes the contents of the streams rather than the stream information file.\n"
-"This currently does not work under Firefox."
+"This currently does not work under modern browsers due to `SharedArrayBuffer` restrictions."
 msgstr ""
-"下载和组合流的内容，代替流信息文件。\n"
-"目前不能在 Firefox 中使用。"
 
 #. stream_mux_mp4_over_mkv.name
 msgid "Prefer MP4 over MKV"

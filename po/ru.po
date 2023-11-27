@@ -1738,10 +1738,8 @@ msgstr "Включить скачивание потоков HLS/DASH"
 #. enable_stream_download.description
 msgid ""
 "Downloads and muxes the contents of the streams rather than the stream information file.\n"
-"This currently does not work under Firefox."
+"This currently does not work under modern browsers due to `SharedArrayBuffer` restrictions."
 msgstr ""
-"Скачивает и мультиплексирует содержимое потоков, а не информационный файл потока.\n"
-"В настоящее время не работает в Firefox."
 
 #. stream_mux_mp4_over_mkv.name
 msgid "Prefer MP4 over MKV"

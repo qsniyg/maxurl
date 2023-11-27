@@ -1709,7 +1709,7 @@ msgstr ""
 #. enable_stream_download.description
 msgid ""
 "Downloads and muxes the contents of the streams rather than the stream information file.\n"
-"This currently does not work under Firefox."
+"This currently does not work under modern browsers due to `SharedArrayBuffer` restrictions."
 msgstr ""
 
 #. stream_mux_mp4_over_mkv.name
