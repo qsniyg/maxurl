@@ -21,6 +21,7 @@ var variables_list = [
 	"JSON_stringify",
 	"JSON_parse",
 	"base64_decode",
+	"base64_decode_urlsafe",
 	"base64_encode",
 	"is_array",
 	"array_indexof",
