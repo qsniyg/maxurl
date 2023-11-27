@@ -2,9 +2,9 @@
 
 Bugfixes:
 
- * Fix the info object not being filled in some cases (thanks to fireattack on discord for reporting)
+ * Fix endless loading cursor in some cases (thanks to fireattack and oifj34f34f for reporting)
 
-Special thanks to jonestly, fireattack, karpuzikov, ljcool2006 for their contributions and reports for this release
+Special thanks to jonestly, fireattack, karpuzikov, ljcool2006, meloner, oifj34f34f for their contributions and reports for this release
 
 ---
 
