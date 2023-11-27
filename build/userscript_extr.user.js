@@ -64,7 +64,7 @@
 // @description:zh-TW 為9000多個網站查找更大或原始圖像
 // @description:zh-HK 為9000多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2023.11.0
+// @version           2023.11.1
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -100,7 +100,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@2b670c5daf82b8e600591b8fbdb8fc7a22a16a8d/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@bde224060ecd1b6cf6d1d18ba2bc9d865e7016b6/build/rules.js
 // ==/UserScript==
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
 //   * Detecting whether or not the destination URL exists before redirecting
@@ -445,6 +445,30 @@ var $$IMU_EXPORT$$;
 		}
 		return floor;
 	};
+	// https://stackoverflow.com/a/15016605
+	// unminified version: https://stackoverflow.com/a/3058974
+	var base64_decode_base = function(s, dict) {
+		var e = {}, i, b = 0, c, x, l = 0, a, r = '', w = string_fromcharcode, L = s.length;
+		if (!dict)
+			dict = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+		var A = dict;
+		for (i = 0; i < 64; i++) {
+			e[string_charat(A, i)] = i;
+		}
+		for (x = 0; x < L; x++) {
+			c = e[string_charat(s, x)];
+			b = (b << 6) + c;
+			l += 6;
+			while (l >= 8) {
+				((a = (b >>> (l -= 8)) & 0xff) || (x < (L - 2))) && (r += w(a));
+			}
+		}
+		return r;
+	};
+	// RFC 4648 section 5
+	var base64_decode_urlsafe = function(s) {
+		return base64_decode_base(s, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_");
+	};
 	var base64_decode, base64_encode, is_array, array_indexof, string_indexof, 
 	// https://www.bing.com/ overrides Blob
 	// https://www.dpreview.com/ overrides URL
@@ -654,23 +678,8 @@ var $$IMU_EXPORT$$;
 			if (is_node)
 				return;
 			// Some websites replace atob, so we have to provide our own implementation in those cases
-			// https://stackoverflow.com/a/15016605
-			// unminified version: https://stackoverflow.com/a/3058974
 			var base64_decode_correct = function(s) {
-				var e = {}, i, b = 0, c, x, l = 0, a, r = '', w = string_fromcharcode, L = s.length;
-				var A = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-				for (i = 0; i < 64; i++) {
-					e[string_charat(A, i)] = i;
-				}
-				for (x = 0; x < L; x++) {
-					c = e[string_charat(s, x)];
-					b = (b << 6) + c;
-					l += 6;
-					while (l >= 8) {
-						((a = (b >>> (l -= 8)) & 0xff) || (x < (L - 2))) && (r += w(a));
-					}
-				}
-				return r;
+				return base64_decode_base(s);
 			};
 			var base64_decode_test = function(func) {
 				if (func("dGVzdA==") === "test") {
@@ -1083,7 +1092,7 @@ var $$IMU_EXPORT$$;
 		};
 		return {
 			arch: vm_arch,
-			op_start: 4,
+			op_start: 4, // first 4 are push/pop
 			total_instrs: Object.keys(vm_arch).length,
 			run: run_vm
 		};
@@ -1459,7 +1468,7 @@ var $$IMU_EXPORT$$;
 				finalUrl: xhr.responseURL,
 				responseHeaders: xhr.getAllResponseHeaders(),
 				responseType: xhr.responseType,
-				status: xhr.status,
+				status: xhr.status, // file:// returns 0, tracking protection also returns 0
 				statusText: xhr.statusText,
 				timeout: xhr.timeout
 			};
@@ -2530,11 +2539,11 @@ var $$IMU_EXPORT$$;
 		bad_if: [],
 		fake: false,
 		media_info: {
-			type: "image",
-			delivery: null,
+			type: "image", // "image" or "video"
+			delivery: null, // "hls" or "dash"
 			is_live: false
 		},
-		video: false,
+		video: false, // deprecated
 		album_info: null,
 		headers: {},
 		// host url to copy cookies from
@@ -4693,10 +4702,6 @@ var $$IMU_EXPORT$$;
 			"ru": "\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u0441\u043A\u0430\u0447\u0438\u0432\u0430\u043D\u0438\u0435 \u043F\u043E\u0442\u043E\u043A\u043E\u0432 HLS/DASH",
 			"zh-CN": "\u542F\u7528 HLS/DASH \u6D41\u5A92\u4F53\u7684\u4E0B\u8F7D"
 		},
-		"Downloads and muxes the contents of the streams rather than the stream information file.\nThis currently does not work under Firefox.": {
-			"ru": "\u0421\u043A\u0430\u0447\u0438\u0432\u0430\u0435\u0442 \u0438 \u043C\u0443\u043B\u044C\u0442\u0438\u043F\u043B\u0435\u043A\u0441\u0438\u0440\u0443\u0435\u0442 \u0441\u043E\u0434\u0435\u0440\u0436\u0438\u043C\u043E\u0435 \u043F\u043E\u0442\u043E\u043A\u043E\u0432, \u0430 \u043D\u0435 \u0438\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0438\u043E\u043D\u043D\u044B\u0439 \u0444\u0430\u0439\u043B \u043F\u043E\u0442\u043E\u043A\u0430.\n\u0412 \u043D\u0430\u0441\u0442\u043E\u044F\u0449\u0435\u0435 \u0432\u0440\u0435\u043C\u044F \u043D\u0435 \u0440\u0430\u0431\u043E\u0442\u0430\u0435\u0442 \u0432 Firefox.",
-			"zh-CN": "\u4E0B\u8F7D\u548C\u7EC4\u5408\u6D41\u7684\u5185\u5BB9\uFF0C\u4EE3\u66FF\u6D41\u4FE1\u606F\u6587\u4EF6\u3002\n\u76EE\u524D\u4E0D\u80FD\u5728 Firefox \u4E2D\u4F7F\u7528\u3002"
-		},
 		"Prefer MP4 over MKV": {
 			"ru": "\u041F\u0440\u0435\u0434\u043F\u043E\u0447\u0438\u0442\u0430\u0442\u044C MP4, \u0430 \u043D\u0435 MKV",
 			"zh-CN": "\u504F\u597D MP4 \u4EE3\u66FF MKV"
@@ -6847,7 +6852,7 @@ var $$IMU_EXPORT$$;
 			name: "Disable when response headers need modifying",
 			description: "This option works around Chrome's migration to manifest v3, redirecting some images to being force-downloaded",
 			extension_only: true,
-			hidden: true,
+			hidden: true, // Doesn't seem to be needed?
 			category: "redirection",
 			advanced: true
 		},
@@ -8446,7 +8451,7 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover_position: "beside_cursor"
 			},
-			hidden: true,
+			hidden: true, // no longer applicable with new beside_cursor implementation
 			category: "popup",
 			subcategory: "open_behavior"
 		},
@@ -8536,7 +8541,7 @@ var $$IMU_EXPORT$$;
 		},
 		enable_stream_download: {
 			name: "Enable downloading HLS/DASH streams",
-			description: "Downloads and muxes the contents of the streams rather than the stream information file.\nThis currently does not work under Firefox.",
+			description: "Downloads and muxes the contents of the streams rather than the stream information file.\nThis currently does not work under modern browsers due to `SharedArrayBuffer` restrictions.",
 			requires: {
 				_condition: "action:popup",
 				mouseover_allow_hlsdash: true
@@ -9375,7 +9380,7 @@ var $$IMU_EXPORT$$;
 			name: "Possibly broken images",
 			description: "Enables rules that return images that are possibly broken",
 			category: "rules",
-			hidden: true,
+			hidden: true, // not currently used
 			onupdate: update_rule_setting
 		},
 		allow_possibly_upscaled: {
@@ -12704,7 +12709,7 @@ var $$IMU_EXPORT$$;
 		} else {
 			real_api_query(api_cache, do_request, "deviantart_url_from_id:" + id, {
 				method: "HEAD",
-				url: "http://fav.me/" + id,
+				url: "http://fav.me/" + id, // https doesn't work
 				cookie_url: "https://www.deviantart.com/" // workaround
 			}, cb, function(done, resp, cache_key) {
 				done(resp.finalUrl, 6 * 60 * 60);
@@ -13454,11 +13459,11 @@ var $$IMU_EXPORT$$;
 				// https://www.instagram.com/static/bundles/es6/ConsumerLibCommons.js/...
 				var headers = {
 					"Accept": "*/*",
-					"X-ASBD-ID": "198387",
+					"X-ASBD-ID": "198387", // .ASBD_ID, todo: fetch! -- same as of june 28 2022
 					// not always sent though?
 					// id as of august 10 2023: 129477
 					// TODO: x-csrftoken (csrftoken cookie)
-					"X-IG-App-ID": "936619743392459",
+					"X-IG-App-ID": "936619743392459", // instagramWebDesktopFBAppId
 					"Origin": "https://www.instagram.com",
 					"Referer": "https://www.instagram.com/",
 					"Sec-Fetch-Site": "same-site",
@@ -14839,7 +14844,7 @@ var $$IMU_EXPORT$$;
 			caption = caption.replace(/^\s*([\s\S]*)\s*$/, "$1");
 		}
 		var obj = {
-			url: snap.media.mediaUrl,
+			url: snap.media.mediaUrl, //snap.snapUrls.mediaUrl,
 			extra: {
 				caption: caption || null
 			},
@@ -15147,7 +15152,7 @@ var $$IMU_EXPORT$$;
 			api_cache.fetch(cache_key, cb, function(done) {
 				// first query is to populate the cookies
 				do_request({
-					url: "https://snaptik.app/",
+					url: "https://snaptik.app/", //pre_download.php?aweme_id=" + urlparts.web_vid,
 					imu_mode: "document",
 					method: "GET",
 					onload: function(resp) {
@@ -15392,7 +15397,7 @@ var $$IMU_EXPORT$$;
 					"Sec-Fetch-Site": "same-origin",
 					"Sec-Fetch-User": "?1"
 				},
-				cookie_url: "https://" + site + "/",
+				cookie_url: "https://" + site + "/", // otherwise it'll get overridden
 				can_head: false,
 				//content_type: "video/mp4", // otherwise it downloads as 'text/html; charset=UTF-8', which cannot be played. fixme: is this really needed?
 				video: true
@@ -17284,6 +17289,7 @@ var $$IMU_EXPORT$$;
 	    	'JSON_stringify': JSON_stringify,
 	    	'JSON_parse': JSON_parse,
 	    	'base64_decode': base64_decode,
+	    	'base64_decode_urlsafe': base64_decode_urlsafe,
 	    	'base64_encode': base64_encode,
 	    	'is_array': is_array,
 	    	'array_indexof': array_indexof,
@@ -17392,13 +17398,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "kh295h2llmfh12hl") {
+	            } else if (bigimage_obj.nonce !== "2p2p7602iji08fng") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "kh295h2llmfh12hl"
+	                    message: "Bad nonce, expected: " + "2p2p7602iji08fng"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -18782,7 +18788,7 @@ var $$IMU_EXPORT$$;
 					var cond = !options.fill_object || (newhref[0].waiting === true && !objified[0].waiting);
 					if (cond) {
 						newhref = objified;
-					} else {
+					} else if (pastobjs.length) {
 						// TODO: refactor
 						var _apply = function(newobj) {
 							array_foreach(basic_fillobj(newobj), function(sobj, i) {
@@ -18791,14 +18797,15 @@ var $$IMU_EXPORT$$;
 								if (!sobj.url) {
 									sobj.url = currenthref;
 								}
-								array_foreach(pastobjs, function(psobj) {
+								for (var _i = 0, pastobjs_1 = pastobjs; _i < pastobjs_1.length; _i++) {
+									var psobj = pastobjs_1[_i];
 									if (psobj.url === sobj.url) {
 										for (prop in sobj) {
 											psobj[prop] = sobj[prop];
 										}
-										return false;
+										break;
 									}
-								});
+								}
 							});
 						};
 						_apply(newhref);
@@ -18806,6 +18813,9 @@ var $$IMU_EXPORT$$;
 						// the second one is only set in newhref1, not newhref
 						_apply(newhref1);
 						// _apply is also needed for bigimage'd album_links
+						// thanks to fireattack on discord for reporting:
+						// https://repotama.com/wp-content/uploads/2023/11/am_gakusai2023_01.jpg without audio redirection enabled crashes because the object isn't filled
+						// pastobjs.length check is needed because pastobjs = [] in this case
 						newhref = null;
 						currentobj = pastobjs[0];
 					}
@@ -19304,7 +19314,7 @@ var $$IMU_EXPORT$$;
 		var src = get_img_src(el);
 		var options = {
 			fill_object: true,
-			exclude_problems: [],
+			exclude_problems: [], // todo: use settings' exclude_problems instead
 			use_cache: "read",
 			//use_cache: false,
 			use_api_cache: false,
@@ -22591,7 +22601,7 @@ var $$IMU_EXPORT$$;
 						var module = mediadelivery_support[media_info.delivery];
 						if (module.active()) {
 							module.el_init({
-								success: function() { },
+								success: function() { }, // todo?
 								fail: err_cb,
 								info_obj: obj[0],
 								el: el,
@@ -24595,7 +24605,7 @@ var $$IMU_EXPORT$$;
 				hours: ((delta / 60 / 60) | 0) % 24,
 				days: ((delta / 60 / 60 / 24) | 0),
 				//weeks: ((delta / 60 / 60 / 24 / 7)|0), // is this really needed?
-				months: ((delta / 60 / 60 / 24 / 30.4375) | 0),
+				months: ((delta / 60 / 60 / 24 / 30.4375) | 0), // (365 * 3 + 366) / (12 * 4)
 				years: ((delta / 60 / 60 / 24 / 365.25) | 0) // (365 * 3 + 366) / 4
 			};
 			var mod_units = {
@@ -29738,7 +29748,7 @@ var $$IMU_EXPORT$$;
 							multi: true,
 							use_head: false,
 							incomplete_image: false,
-							incomplete_video: true,
+							incomplete_video: true, // hack to force request_chunked
 							deny_nondirect_delivery: true,
 							deny_cache: true,
 							null_if_no_change: !settings.gallery_download_unchanged,

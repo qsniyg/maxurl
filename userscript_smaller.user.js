@@ -66,7 +66,7 @@
 // @description:zh-TW 為9000多個網站查找更大或原始圖像
 // @description:zh-HK 為9000多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2023.11.0
+// @version           2023.11.1
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -443,6 +443,30 @@ var $$IMU_EXPORT$$;
 		}
 		return floor;
 	};
+	// https://stackoverflow.com/a/15016605
+	// unminified version: https://stackoverflow.com/a/3058974
+	var base64_decode_base = function(s, dict) {
+		var e = {}, i, b = 0, c, x, l = 0, a, r = '', w = string_fromcharcode, L = s.length;
+		if (!dict)
+			dict = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+		var A = dict;
+		for (i = 0; i < 64; i++) {
+			e[string_charat(A, i)] = i;
+		}
+		for (x = 0; x < L; x++) {
+			c = e[string_charat(s, x)];
+			b = (b << 6) + c;
+			l += 6;
+			while (l >= 8) {
+				((a = (b >>> (l -= 8)) & 0xff) || (x < (L - 2))) && (r += w(a));
+			}
+		}
+		return r;
+	};
+	// RFC 4648 section 5
+	var base64_decode_urlsafe = function(s) {
+		return base64_decode_base(s, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_");
+	};
 	var base64_decode, base64_encode, is_array, array_indexof, string_indexof, 
 	// https://www.bing.com/ overrides Blob
 	// https://www.dpreview.com/ overrides URL
@@ -652,23 +676,8 @@ var $$IMU_EXPORT$$;
 			if (is_node)
 				return;
 			// Some websites replace atob, so we have to provide our own implementation in those cases
-			// https://stackoverflow.com/a/15016605
-			// unminified version: https://stackoverflow.com/a/3058974
 			var base64_decode_correct = function(s) {
-				var e = {}, i, b = 0, c, x, l = 0, a, r = '', w = string_fromcharcode, L = s.length;
-				var A = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-				for (i = 0; i < 64; i++) {
-					e[string_charat(A, i)] = i;
-				}
-				for (x = 0; x < L; x++) {
-					c = e[string_charat(s, x)];
-					b = (b << 6) + c;
-					l += 6;
-					while (l >= 8) {
-						((a = (b >>> (l -= 8)) & 0xff) || (x < (L - 2))) && (r += w(a));
-					}
-				}
-				return r;
+				return base64_decode_base(s);
 			};
 			var base64_decode_test = function(func) {
 				if (func("dGVzdA==") === "test") {
@@ -1081,7 +1090,7 @@ var $$IMU_EXPORT$$;
 		};
 		return {
 			arch: vm_arch,
-			op_start: 4,
+			op_start: 4, // first 4 are push/pop
 			total_instrs: Object.keys(vm_arch).length,
 			run: run_vm
 		};
@@ -1457,7 +1466,7 @@ var $$IMU_EXPORT$$;
 				finalUrl: xhr.responseURL,
 				responseHeaders: xhr.getAllResponseHeaders(),
 				responseType: xhr.responseType,
-				status: xhr.status,
+				status: xhr.status, // file:// returns 0, tracking protection also returns 0
 				statusText: xhr.statusText,
 				timeout: xhr.timeout
 			};
@@ -2528,11 +2537,11 @@ var $$IMU_EXPORT$$;
 		bad_if: [],
 		fake: false,
 		media_info: {
-			type: "image",
-			delivery: null,
+			type: "image", // "image" or "video"
+			delivery: null, // "hls" or "dash"
 			is_live: false
 		},
-		video: false,
+		video: false, // deprecated
 		album_info: null,
 		headers: {},
 		// host url to copy cookies from
@@ -4691,10 +4700,6 @@ var $$IMU_EXPORT$$;
 			"ru": "\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u0441\u043A\u0430\u0447\u0438\u0432\u0430\u043D\u0438\u0435 \u043F\u043E\u0442\u043E\u043A\u043E\u0432 HLS/DASH",
 			"zh-CN": "\u542F\u7528 HLS/DASH \u6D41\u5A92\u4F53\u7684\u4E0B\u8F7D"
 		},
-		"Downloads and muxes the contents of the streams rather than the stream information file.\nThis currently does not work under Firefox.": {
-			"ru": "\u0421\u043A\u0430\u0447\u0438\u0432\u0430\u0435\u0442 \u0438 \u043C\u0443\u043B\u044C\u0442\u0438\u043F\u043B\u0435\u043A\u0441\u0438\u0440\u0443\u0435\u0442 \u0441\u043E\u0434\u0435\u0440\u0436\u0438\u043C\u043E\u0435 \u043F\u043E\u0442\u043E\u043A\u043E\u0432, \u0430 \u043D\u0435 \u0438\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0438\u043E\u043D\u043D\u044B\u0439 \u0444\u0430\u0439\u043B \u043F\u043E\u0442\u043E\u043A\u0430.\n\u0412 \u043D\u0430\u0441\u0442\u043E\u044F\u0449\u0435\u0435 \u0432\u0440\u0435\u043C\u044F \u043D\u0435 \u0440\u0430\u0431\u043E\u0442\u0430\u0435\u0442 \u0432 Firefox.",
-			"zh-CN": "\u4E0B\u8F7D\u548C\u7EC4\u5408\u6D41\u7684\u5185\u5BB9\uFF0C\u4EE3\u66FF\u6D41\u4FE1\u606F\u6587\u4EF6\u3002\n\u76EE\u524D\u4E0D\u80FD\u5728 Firefox \u4E2D\u4F7F\u7528\u3002"
-		},
 		"Prefer MP4 over MKV": {
 			"ru": "\u041F\u0440\u0435\u0434\u043F\u043E\u0447\u0438\u0442\u0430\u0442\u044C MP4, \u0430 \u043D\u0435 MKV",
 			"zh-CN": "\u504F\u597D MP4 \u4EE3\u66FF MKV"
@@ -6845,7 +6850,7 @@ var $$IMU_EXPORT$$;
 			name: "Disable when response headers need modifying",
 			description: "This option works around Chrome's migration to manifest v3, redirecting some images to being force-downloaded",
 			extension_only: true,
-			hidden: true,
+			hidden: true, // Doesn't seem to be needed?
 			category: "redirection",
 			advanced: true
 		},
@@ -8444,7 +8449,7 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover_position: "beside_cursor"
 			},
-			hidden: true,
+			hidden: true, // no longer applicable with new beside_cursor implementation
 			category: "popup",
 			subcategory: "open_behavior"
 		},
@@ -8534,7 +8539,7 @@ var $$IMU_EXPORT$$;
 		},
 		enable_stream_download: {
 			name: "Enable downloading HLS/DASH streams",
-			description: "Downloads and muxes the contents of the streams rather than the stream information file.\nThis currently does not work under Firefox.",
+			description: "Downloads and muxes the contents of the streams rather than the stream information file.\nThis currently does not work under modern browsers due to `SharedArrayBuffer` restrictions.",
 			requires: {
 				_condition: "action:popup",
 				mouseover_allow_hlsdash: true
@@ -9373,7 +9378,7 @@ var $$IMU_EXPORT$$;
 			name: "Possibly broken images",
 			description: "Enables rules that return images that are possibly broken",
 			category: "rules",
-			hidden: true,
+			hidden: true, // not currently used
 			onupdate: update_rule_setting
 		},
 		allow_possibly_upscaled: {
@@ -12702,7 +12707,7 @@ var $$IMU_EXPORT$$;
 		} else {
 			real_api_query(api_cache, do_request, "deviantart_url_from_id:" + id, {
 				method: "HEAD",
-				url: "http://fav.me/" + id,
+				url: "http://fav.me/" + id, // https doesn't work
 				cookie_url: "https://www.deviantart.com/" // workaround
 			}, cb, function(done, resp, cache_key) {
 				done(resp.finalUrl, 6 * 60 * 60);
@@ -13452,11 +13457,11 @@ var $$IMU_EXPORT$$;
 				// https://www.instagram.com/static/bundles/es6/ConsumerLibCommons.js/...
 				var headers = {
 					"Accept": "*/*",
-					"X-ASBD-ID": "198387",
+					"X-ASBD-ID": "198387", // .ASBD_ID, todo: fetch! -- same as of june 28 2022
 					// not always sent though?
 					// id as of august 10 2023: 129477
 					// TODO: x-csrftoken (csrftoken cookie)
-					"X-IG-App-ID": "936619743392459",
+					"X-IG-App-ID": "936619743392459", // instagramWebDesktopFBAppId
 					"Origin": "https://www.instagram.com",
 					"Referer": "https://www.instagram.com/",
 					"Sec-Fetch-Site": "same-site",
@@ -14837,7 +14842,7 @@ var $$IMU_EXPORT$$;
 			caption = caption.replace(/^\s*([\s\S]*)\s*$/, "$1");
 		}
 		var obj = {
-			url: snap.media.mediaUrl,
+			url: snap.media.mediaUrl, //snap.snapUrls.mediaUrl,
 			extra: {
 				caption: caption || null
 			},
@@ -15145,7 +15150,7 @@ var $$IMU_EXPORT$$;
 			api_cache.fetch(cache_key, cb, function(done) {
 				// first query is to populate the cookies
 				do_request({
-					url: "https://snaptik.app/",
+					url: "https://snaptik.app/", //pre_download.php?aweme_id=" + urlparts.web_vid,
 					imu_mode: "document",
 					method: "GET",
 					onload: function(resp) {
@@ -15390,7 +15395,7 @@ var $$IMU_EXPORT$$;
 					"Sec-Fetch-Site": "same-origin",
 					"Sec-Fetch-User": "?1"
 				},
-				cookie_url: "https://" + site + "/",
+				cookie_url: "https://" + site + "/", // otherwise it'll get overridden
 				can_head: false,
 				//content_type: "video/mp4", // otherwise it downloads as 'text/html; charset=UTF-8', which cannot be played. fixme: is this really needed?
 				video: true
@@ -18596,7 +18601,7 @@ var $$IMU_EXPORT$$;
 			return {
 				url: src
 					.replace(/(\.[^/.]*)(?:\.[^/.]*_){1,}\1(?:[?#].*)?$/, "$1") // is this needed?
-					.replace(/(?:\.+_*[A-Z][A-Z0-9][^/.]*)+\.([^./]*(?:[?#].*)?)$/, ".$1"),
+					.replace(/(?:\.+_*[A-Z][A-Z0-9][^/.]*)+\.([^./]*(?:[?#].*)?)$/, ".$1"), // for now this seems to work for all images
 				is_original: true,
 				can_head: false
 			};
@@ -18975,19 +18980,19 @@ var $$IMU_EXPORT$$;
 				var url = "https://twitter.com/i/api/2/timeline/conversation/" + tweet_id + ".json";
 				var queries = {
 					include_profile_interstitial_type: "1",
-					include_blocking: "1",
-					include_blocked_by: "1",
-					include_followed_by: "1",
-					include_want_retweets: "1",
-					include_mute_edge: "1",
-					include_can_dm: "1",
-					include_can_media_tag: "1",
+					include_blocking: "1", // u
+					include_blocked_by: "1", // u
+					include_followed_by: "1", // u
+					include_want_retweets: "1", // u
+					include_mute_edge: "1", // u
+					include_can_dm: "1", // u
+					include_can_media_tag: "1", // u
 					skip_status: "1",
 					cards_platform: "Web-12",
 					include_cards: "1",
 					include_ext_alt_text: "true",
-					include_quote_count: "true",
-					include_reply_count: "1",
+					include_quote_count: "true", // u
+					include_reply_count: "1", // u
 					tweet_mode: "extended",
 					include_entities: "true",
 					include_user_entities: "true",
@@ -18995,7 +19000,7 @@ var $$IMU_EXPORT$$;
 					include_ext_media_availability: "true",
 					send_error_codes: "true",
 					simple_quoted_tweet: "true",
-					count: "20",
+					count: "20", // u
 					include_ext_has_birdwatch_notes: "false",
 					ext: "mediaStats%2ChighlightedLabel"
 				};
@@ -19015,7 +19020,7 @@ var $$IMU_EXPORT$$;
 			};
 			var get_baseobj_from_tweet = function(tweet, users) {
 				var obj = {
-					can_head: false,
+					can_head: false, // returns 503 sometimes
 					extra: {}
 				};
 				if (tweet.created_at) {
@@ -20360,6 +20365,8 @@ var $$IMU_EXPORT$$;
 			(domain === "s13emagst.akamaized.net" && /\/products\/+[0-9]+\/+[0-9]+\/+images\//.test(src)) ||
 			(domain === "content.api.news" && /\/v3\/+images\/+bin\/+[0-9a-f]{10,}/.test(src)) ||
 			(domain_nowww === "panasonic.com" && /\/content\/+dam\//.test(src)) ||
+			domain === "images.komi.io" ||
+			(domain_nosub === "mi-img.com" && /\.api\./.test(domain)) ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -21936,7 +21943,7 @@ var $$IMU_EXPORT$$;
 					if (!largest)
 						return;
 					var obj = {
-						url: largest.url,
+						url: largest.url, //.replace(/^[a-z]+:\/\/[0-9]+\.media\./, "https://media."),
 						headers: {
 							"Accept": "*/*" // otherwise it can return an HTML
 						},
@@ -22785,7 +22792,7 @@ var $$IMU_EXPORT$$;
 								Origin: src.replace(/:\/\/(?:[^/]*\.)?([^/.]*\.[^/.]*)\/.*/, "://$1/"),
 								"Sec-Metadata": "destination=image, site=same-site"
 							},
-							is_private: true,
+							is_private: true, // linked to ip
 							is_original: true
 						}, 60 * 60);
 					}
@@ -22884,7 +22891,7 @@ var $$IMU_EXPORT$$;
 			};
 			newsrc = website_query({
 				website_regex: [
-					/^[a-z]+:\/\/[^/]+\/+([0-9a-z]{5,})\/+[^/]*\.html(?:[?#].*)?$/,
+					/^[a-z]+:\/\/[^/]+\/+([0-9a-z]{5,})\/+[^/]*\.html(?:[?#].*)?$/, // old style
 					/^[a-z]+:\/\/[^/]+\/+f\/+([0-9a-z]{5,})(?:[?#].*)?$/
 				],
 				run: function(cb, match) {
@@ -23436,7 +23443,7 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "ebayimg.com") {
 			obj = {
 				url: src,
-				can_head: false,
+				can_head: false, // fixme: does it hang here too?
 				bad_if: [{
 						headers: {
 							"x-ebay-c-extension": "responsecode=404,responsemessage=Not Found"
@@ -23474,7 +23481,7 @@ var $$IMU_EXPORT$$;
 			}
 			return {
 				url: src,
-				can_head: false,
+				can_head: false, // it just hangs
 				bad_if: [{
 						headers: {
 							"x-ebay-c-extension": "responsecode=404,responsemessage=Not Found"
@@ -23799,7 +23806,7 @@ var $$IMU_EXPORT$$;
 		}
 		if (domain_nosub === "psbin.com" && domain.match(/cdn[^.]*\.psbin\.com/)) {
 			return {
-				url: src.replace(/\/img\/[^/]*=[^/]*\//, "/img/"),
+				url: src.replace(/\/img\/[^/]*=[^/]*\//, "/img/"), // repeated
 				head_wrong_contentlength: true
 			};
 		}
@@ -24403,7 +24410,7 @@ var $$IMU_EXPORT$$;
 				url: src
 					.replace(/(\/PYH[^/_.]*)_[^/.]*(\.[^/.]*)$/, "$1_P4$2")
 					.replace(/(\/A(?:KR|JP|CK|EN)[^/_.]*_[0-9]+_i)_[^/.]*(\.[^/.]*)$/, "$1$2"),
-				can_head: false,
+				can_head: false, // 400
 				extra: extra
 			};
 		}
@@ -26186,7 +26193,7 @@ var $$IMU_EXPORT$$;
 						return done(null, false);
 					}
 					var obj = {
-						url: imagesrc.replace(/:\/\/di\./, "://ci."),
+						url: imagesrc.replace(/:\/\/di\./, "://ci."), // normalize to avoid excessive redirects
 						extra: {
 							page: resp.finalUrl
 						}
@@ -27324,7 +27331,14 @@ var $$IMU_EXPORT$$;
 				.replace(/(:\/\/[^/]+\/+(?:medium|large|obj|img|aweme|list)\/+.*)~[^/.?#]+(\.[^/.?#]+)?(?:[?#].*)?$/, "$1~noop$2");
 			newsrc = remove_queries(newsrc, ["from"]);
 			obj = {
-				url: newsrc,
+				url: newsrc, /*src
+					.replace(/(:\/\/[^/]*\/+)(?:medium|large|obj|aweme|list)\/+(?:[0-9]+x[0-9]+\/+)?/, "$1origin/")
+					.replace(/(:\/\/[^/]+\/+.*?)\.image(?:[?$].*)?$/, "$1.jpg")
+					.replace(/\/img\/+(.+\/+[0-9a-f]{10,}(?:_[0-9]+)?(?:\/+[^/]+|\.[^/.~?#]+)?)~noop(\.[^/.]*)(?:[?#].*)?$/, "/origin/$1$2")
+					.replace(/(\/origin\/+.+\/+[0-9a-f]{10,}\/+[^/.]+\.[^/.]+)\.[^/.]+$/, "$1")
+					.replace(/(\/img\/+.+\/+[0-9a-f]{10,}(?:\/+[^/]+|\.[^/.~?#]+)?~)[^/.]*?(\.[^/.]*)(?:[?#].*)?$/, "$1noop$2")
+					.replace(/(:\/\/[^/]+\/+)(tos-[^/]+\/+.*)/, "$1img/$2")
+					.replace(/\?imageView2.*$/, ""),*/
 				can_head: false // 404
 			};
 			if (/^v[0-9]*\./.test(domain) && string_indexof(src, "/video/") >= 0) {
@@ -27589,6 +27603,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "seher.no" ||
 			domain === "image.underdusken.no" ||
 			domain === "image.seiska.fi" ||
+			domain === "image.elle.no" ||
 			domain_nowww === "dbstatic.no") {
 			newsrc = src
 				.replace(/(:\/\/[^/]+\/+(?:images\/+)?[0-9]+\.[^/.?#]*)(?:[?#].*)?$/, "$1?width=-1&height=-1")
@@ -29381,7 +29396,7 @@ var $$IMU_EXPORT$$;
 						player: "monet_html5",
 						referer: "https://tv.kakao.com/",
 						uuid: "",
-						profile: "HIGH4",
+						profile: "HIGH4", // 1080p ... is there anything larger?
 						service: "kakao_tv",
 						fields: "seekUrl,abrVideoLocationList",
 						playerVersion: "3.7.1",
@@ -30083,7 +30098,7 @@ var $$IMU_EXPORT$$;
 				cache_key: "facebook_photo",
 				query_for_id: function(id) {
 					return {
-						url: "https://www.facebook.com/photo/?fbid=" + id,
+						url: "https://www.facebook.com/photo/?fbid=" + id, // needed for private photos
 						imu_mode: "document"
 					};
 				},
@@ -32392,6 +32407,10 @@ var $$IMU_EXPORT$$;
 			(domain === "" || domain_nosub === "bing.com") && options.element) {
 			var current = options.element;
 			while ((current = current.parentElement)) {
+				if (current.tagName === "DIV" && current.id === "mainImageWindow" && current.hasAttribute("data-m")) {
+					var parsed_2 = JSON_parse(current.getAttribute("data-m"));
+					return parsed_2.murl;
+				}
 				if (current.tagName !== "A")
 					continue;
 				if (!current.href.match(/\/images\/search\?.*mediaurl=/))
@@ -32729,7 +32748,7 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "luscious.net" && /^w[0-9]+\./.test(domain)) {
 			return {
 				url: src.replace(/^[a-z]+:\/\/[^/]+\/+/, "https://cdnio.luscious.net/"),
-				can_head: false,
+				can_head: false, // 403
 				headers: {
 					Referer: ""
 				}
@@ -34794,8 +34813,9 @@ var $$IMU_EXPORT$$;
 				};
 			}
 		}
-		if (host_domain_nowww === "vikiporn.com" && options.element) {
-			if (options.element.tagName === "DIV" && options.element.classList.contains("fp-ui")) {
+		if ((host_domain_nowww === "vikiporn.com" ||
+			host_domain_nowww === "sleazyneasy.com") && options.element) {
+			if (!src && options.element.tagName === "DIV" && options.element.classList.contains("fp-ui")) {
 				return {
 					url: origsrc,
 					bad: "mask"
@@ -35248,6 +35268,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "music.librepunk.club" ||
 			domain_nowww === "racctrusted.com" ||
 			domain === "d16kd6gzalkogb.cloudfront.net" ||
+			domain_nowww === "oye-records.com" ||
 			domain === "audio.gafamfree.party") {
 			return src.replace(/(:\/\/[^/]*\/+(?:media\/+)?)__sized__\/+(.*)-(?:thumbnail|crop-c[0-9]+-[0-9]+__[0-9]+-[0-9]+)-[0-9]+x[0-9]+(?:-[0-9]+)?(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
 		}
@@ -36004,7 +36025,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "imgs.ckcdn.com" ||
 			domain === "i.imgscc.com") {
 			return {
-				url: src.replace(/\?.*$/, ""),
+				url: src.replace(/\?.*$/, ""), //src.replace(/\?.*$/, "?_w=9999999999999"),
 				headers: {
 					Origin: null,
 					Referer: null
@@ -37966,7 +37987,10 @@ var $$IMU_EXPORT$$;
 		if (domain === "static.az-cdn.ch") return src.replace(/\/n-[^/]*(?:[?#].*)?$/, "/teaser-goldbach");
 		if (domain_nowww === "starchive.ru") return src.replace(/\/+thumbnails_foto\/+thumb_/, "/foto/");
 		if (domain === "pre.aichi.jp") return src.replace(/\/+archive\/+storage\/+thumb\/+/, "/archive/storage/");
-		if (domain === "img.kaikai.ch") return src.replace(/\/thumb(?:_[a-z]+)\//, "/img/");
+		if (domain === "img.kaikai.ch" ||
+			domain === "bbs.animanch.com") {
+			return src.replace(/\/thumb(?:_[a-z]+)\//, "/img/");
+		}
 		if (domain_nowww === "4fzone.com") return src.replace(/(\/+uploads\/+images\/+clip_[0-9]+_[0-9]+)_[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1_poster$2");
 		if ((domain_nosub === "s1sf.com" ||
 			domain_nosub === "isanook.com") &&
@@ -38500,14 +38524,14 @@ var $$IMU_EXPORT$$;
 			regex = /\/d\/+([0-9]+)(-[0-9]+\/+[^/]*)(?:[?#].*)?$/;
 			match = src.match(regex);
 			if (match) {
-				var parsed_2 = parseInt(match[1]);
+				var parsed_3 = parseInt(match[1]);
 				return [
 					{
-						url: src.replace(regex, "/d/" + (parsed_2 - 2) + "$2"),
+						url: src.replace(regex, "/d/" + (parsed_3 - 2) + "$2"),
 						norecurse: true
 					},
 					{
-						url: src.replace(regex, "/d/" + (parsed_2 - 1) + "$2"),
+						url: src.replace(regex, "/d/" + (parsed_3 - 1) + "$2"),
 						norecurse: true
 					}
 				];
@@ -38637,7 +38661,7 @@ var $$IMU_EXPORT$$;
 							data: "id=" + streamkey + "&data=0",
 							headers: {
 								"Origin": "https://spankbang.com",
-								"Referer": "https://spankbang.com/",
+								"Referer": "https://spankbang.com/", // add /.../video?
 								"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
 								"X-Requested-With": "XMLHttpRequest"
 							},
@@ -39353,13 +39377,13 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "meetmecdna.com") return src.replace(/\/thumb_userimages(\/+.*\/)thm_/, "/userimages$1");
 		if (domain === "images.spicyadulttools.com") return src.replace(/\/images\/+thumb\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/images/full/$1");
 		if (domain_nosub === "trafficdeposit.com" &&
-			domain.match(/^s[0-9]*\./)) {
+			domain.match(/^[sb][0-9]*\./)) {
 			var baseobj_5 = {
 				url: src,
 				extra: {}
 			};
 			urls = [];
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+blog\/+(?:vid|img)\/+(?:[0-9a-f]+|porn-collection)\/+([0-9a-f]{10,})\/+[^/]+$/);
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+blog\/+(?:[0-9]+\/+[0-9]+\/+)?(?:vid|img)\/+(?:[0-9a-f]+|porn-collection)\/+([0-9a-f]{10,})\/+[^/]+$/);
 			if (match) {
 				id = match[1];
 				baseobj_5.extra.page = "https://sxyprn.com/post/" + id + ".html";
@@ -39447,6 +39471,31 @@ var $$IMU_EXPORT$$;
 				};
 			}
 		}
+		if (domain_nowww === "fullporner.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+watch\/+([0-9a-f]{10,})(?:[?#].*)?$/,
+				query_for_id: "https://fullporner.com/watch/${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<iframe[^>]*src="(\/\/[^/]+\/+videox\/+[0-9a-f]+)"/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+					return done({ url: "https:" + match[1], is_pagelink: true }, 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "xiaoshenke.net") {
+			match = src.match(/\/videox\/+([0-9a-f]{10,})(?:[?#].*)?$/);
+			if (match) {
+				return {
+					url: "https://sxyprn.com/post/" + match[1] + ".html",
+					is_pagelink: true
+				};
+			}
+		}
 		if (domain_nowww === "babepedia.com") {
 			return src
 				.replace(/\/galleries-thumbs\/+/, "/galleries/")
@@ -39508,6 +39557,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 		}
+		if (domain === "helios-i.mashable.com") return src.replace(/(\/imagery\/+[^/]+\/+[^/]+\/+[^/.]+\.)(?:(?:fill|(?:size_|v)[^/.?#]+)\.)*/, "$1");
 		if (domain === "image.wisetrail.com" ||
 			amazon_container === "image.wisetrail.com") {
 			return src.replace(/(\/bookmark[0-9]+\/+[^/]*)_small(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
@@ -40574,7 +40624,7 @@ var $$IMU_EXPORT$$;
 		}
 		if (domain_nosub === "boltdns.net" && domain.match(/^cf-images\./)) {
 			return {
-				url: src,
+				url: src, //.replace(/\/[-0-9]+x[-0-9]+\/+match\/+/, "/-1x-1/match/"),
 				can_head: false // 405, method not allowed
 			};
 		}
@@ -42948,7 +42998,7 @@ var $$IMU_EXPORT$$;
 						urls.push({
 							url: url,
 							video: true,
-							is_private: true,
+							is_private: true, // linked to ip
 							headers: {
 								Referer: "https://www.milffox.com/"
 							}
@@ -45875,16 +45925,16 @@ var $$IMU_EXPORT$$;
 							headers: {
 								Referer: data._referer
 							},
-							can_head: false,
+							can_head: false, // 403?
 							private: true,
 							video: is_video
 						},
 						{
-							url: data.urls.sd,
+							url: data.urls.sd, // sometimes hd doesn't work
 							headers: {
 								Referer: data._referer
 							},
-							can_head: false,
+							can_head: false, // 403?
 							private: true,
 							video: is_video
 						},
@@ -46079,9 +46129,9 @@ var $$IMU_EXPORT$$;
 				process: function(done, resp, cache_key) {
 					var match = resp.responseText.match(/initialRoomDossier\s*=\s*("[^"]+");/);
 					if (match) {
-						var parsed_3 = JSON_parse(JSON_parse(match[1]));
+						var parsed_4 = JSON_parse(JSON_parse(match[1]));
 						return done({
-							url: parsed_3.hls_source,
+							url: parsed_4.hls_source,
 							media_info: {
 								type: "video",
 								delivery: "hls",
@@ -48356,7 +48406,7 @@ var $$IMU_EXPORT$$;
 					for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
 						var file = files_1[_i];
 						urls.push({
-							url: file.fileUrl,
+							url: file.fileUrl, // or fileDownloadUrl?
 							video: true
 						});
 					}
@@ -54507,7 +54557,7 @@ var $$IMU_EXPORT$$;
 						headers: {
 							Referer: extra.page,
 						},
-						cookie_url: "https://tv.gab.com/",
+						cookie_url: "https://tv.gab.com/", // hack, it requires cookies. browser refuses to load cookies for that site if embedded
 						video: true
 					});
 					var thumbnail = get_meta(resp.responseText, "og:image");
@@ -54771,7 +54821,7 @@ var $$IMU_EXPORT$$;
 					headers: {
 						"ab": "b",
 						"accept": "*/*",
-						"accept-language": "en",
+						"accept-language": "en", // or *
 						"content-type": "application/json",
 						referer: "https://gifer.com/en/" + id
 					},
@@ -55021,7 +55071,7 @@ var $$IMU_EXPORT$$;
 					}
 					urls.push({
 						url: JSON_parse(match[1]),
-						cookie_url: "https://ugetube.com/",
+						cookie_url: "https://ugetube.com/", // cloudflare
 						headers: {
 							Referer: "https://ugetube.com/",
 							"sec-fetch-dest": "video",
@@ -55885,11 +55935,11 @@ var $$IMU_EXPORT$$;
 		if (domain === "i.natgeofe.com") return src.replace(/(:\/\/[^/]+\/+[a-z]\/+[-0-9a-f]{10,}\/+[^/?#]+)(?:[?#].*)?$/, "$1");
 		if (domain === "imgr.search.brave.com" ||
 			domain === "imgs.search.brave.com") {
-			match = src.match(/.*?\/+(aHR0[^?#.]+)(?:[?#].*)?$/);
+			match = src.match(/.*?\/+(aHR0[^?#.]+)(?:[.?#].*)?$/);
 			if (match) {
 				var splitted = match[1].split("/");
 				array_foreach(splitted, function(x, i) {
-					splitted[i] = base64_decode(x);
+					splitted[i] = base64_decode_urlsafe(x);
 				});
 				return splitted.join("");
 			}
@@ -56094,7 +56144,11 @@ var $$IMU_EXPORT$$;
 				.replace(/(\/images\/+products\/+.+?\/+[0-9a-f]\/+[0-9a-f]{20,})-[0-9]+\./, "$1.")
 				.replace(/(\/images\/+avatars\/+[^/]+)_(?:sml|med)\./, "$1_lrg.");
 		}
-		if (domain === "ak.picdn.net") return src.replace(/(\/photos\/+[0-9a-f]{10,}\/+)medium\/+/, "$1large_w/");
+		if (domain === "ak.picdn.net") {
+			return src
+				.replace(/(\/photos\/+[0-9a-f]{10,}\/+)medium\/+/, "$1large_w/")
+				.replace(/(\/contributors\/+[0-9]+\/+avatars\/+)[a-z]+\./, "$1original.");
+		}
 		if (domain === "covers.zlibcdn2.com") return src.replace(/(:\/\/[^/]+\/+covers)[0-9]+\/+/, "$1/");
 		if (domain === "news-img.cdn.nimg.jp") return src.replace(/:\/\/news-img\.[^/]+\/+s\/+(articles\/+images\/+[0-9]+\/+[^/]+\.[^/]+)\/+.*/, "://news.cdn.nimg.jp/$1");
 		if (domain_nowww === "physicaleditions.com") return src.replace(/\?.*?(Type\/+Picture\/+[0-9]+\/+File:).*?$/, "?$1");
@@ -56138,7 +56192,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return {
 					url: newsrc,
-					norecurse: true,
+					norecurse: true, // it should only decrement the id once
 					problems: {
 						possibly_different: true
 					}
@@ -57334,7 +57388,7 @@ var $$IMU_EXPORT$$;
 						var urls = [];
 						if (result.video_versions && is_array(result.video_versions) && result.video_versions.length > 0)
 							urls.push({
-								url: result.video_versions[0].url,
+								url: result.video_versions[0].url, // FIXME: Is [0] the best quality?
 								video: true
 							});
 						if (best_image_obj)
@@ -57750,7 +57804,7 @@ var $$IMU_EXPORT$$;
 				try {
 					var decoded_5 = JSON_parse(base64_decode(match[1]));
 					var encoded = base64_encode(JSON_stringify({
-						bucket: decoded_5["bucket"],
+						bucket: decoded_5["bucket"], // armadafuga
 						key: decoded_5["key"]
 					}));
 					newsrc = src.replace(/\/eyJid.*/, "/" + encoded);
@@ -58226,6 +58280,40 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/res\/+v3\/+image\/+content\/+[0-9]+\/+[0-9]+\/+[^/]+)_1024\./, "$1_1200.");
 		}
 		if (domain === "cdn.80.lv") return src.replace(/(\/api\/+upload\/+[a-z]+\/+[0-9a-f]+\/+)images\/+([0-9a-f]{10,})\/+[^/.]+(\.[a-z]+)(?:[?#].*)?$/, "$1$2$3");
+		if (domain === "assets.exploreedmonton.com") return src.replace(/(\/images\/+feature\/+)_[0-9]+x[0-9]+_[^/]+\/+/, "$1");
+		if (domain_nowww === "barrisol.com") return src.replace(/(\/exception\/+[0-9]+\/+)medium\/+/, "$1");
+		if (domain_nowww === "singulart.com") {
+			match = src.match(/\/images-sh\/+(eyJ[^/?#.]+)/);
+			if (match) {
+				var json_5 = JSON_parse(base64_decode(match[1]));
+				return "https://" + json_5.bucket + ".s3.amazonaws.com/" + json_5.key.replace(/\/+/, "/");
+			}
+		}
+		if (domain_nowww === "allinks.me") return src.replace(/(\/storage\/+logos\/+[0-9a-f]+)_small\./, "$1.");
+		if (domain_nowww === "imagedelivery.net") {
+			var cf_original_map = {
+				"QondspN4HIUvB_R16-ddAQ": "original"
+			};
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+([^/]+)\/+/);
+			if (match) {
+				if (match[1] in cf_original_map) {
+					return src.replace(/^([a-z]+:\/\/[^/]+\/+[^/]+\/+.*\/)[^/]*(?:[?#].*)?$/, "$1" + cf_original_map[match[1]]);
+				}
+			}
+			return src.replace(/^([a-z]+:\/\/[^/]+\/+[^/]+\/+.*\/)[^/]*(?:[?#].*)?$/, "$1w=9999999");
+		}
+		if (domain_nosub === "appmifile.com" && /^i[0-9]*\./.test(domain)) {
+			return src.replace(/(\/[0-9a-f]{10,})(?:![^/.]+)*\./, "$1.");
+			"";
+		}
+		if (domain === "d2qu5xmcgmzxnb.cloudfront.net") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(ewog[^/?#]+)(?:[?#].*)?$/);
+			if (match) {
+				var parsed_5 = JSON_parse(base64_decode(match[1]));
+				return "http://" + parsed_5.bucket + "/" + parsed_5.key;
+			}
+		}
+		if (domain === "kuvat.huuto.net") return src.replace(/(\/[0-9]+)-[ms](\.[^/.]+)(?:[?#].*)?$/, "$1-orig$2");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -60275,7 +60363,7 @@ var $$IMU_EXPORT$$;
 					var cond = !options.fill_object || (newhref[0].waiting === true && !objified[0].waiting);
 					if (cond) {
 						newhref = objified;
-					} else {
+					} else if (pastobjs.length) {
 						// TODO: refactor
 						var _apply = function(newobj) {
 							array_foreach(basic_fillobj(newobj), function(sobj, i) {
@@ -60284,14 +60372,15 @@ var $$IMU_EXPORT$$;
 								if (!sobj.url) {
 									sobj.url = currenthref;
 								}
-								array_foreach(pastobjs, function(psobj) {
+								for (var _i = 0, pastobjs_1 = pastobjs; _i < pastobjs_1.length; _i++) {
+									var psobj = pastobjs_1[_i];
 									if (psobj.url === sobj.url) {
 										for (prop in sobj) {
 											psobj[prop] = sobj[prop];
 										}
-										return false;
+										break;
 									}
-								});
+								}
 							});
 						};
 						_apply(newhref);
@@ -60299,6 +60388,9 @@ var $$IMU_EXPORT$$;
 						// the second one is only set in newhref1, not newhref
 						_apply(newhref1);
 						// _apply is also needed for bigimage'd album_links
+						// thanks to fireattack on discord for reporting:
+						// https://repotama.com/wp-content/uploads/2023/11/am_gakusai2023_01.jpg without audio redirection enabled crashes because the object isn't filled
+						// pastobjs.length check is needed because pastobjs = [] in this case
 						newhref = null;
 						currentobj = pastobjs[0];
 					}
@@ -60797,7 +60889,7 @@ var $$IMU_EXPORT$$;
 		var src = get_img_src(el);
 		var options = {
 			fill_object: true,
-			exclude_problems: [],
+			exclude_problems: [], // todo: use settings' exclude_problems instead
 			use_cache: "read",
 			//use_cache: false,
 			use_api_cache: false,
@@ -64084,7 +64176,7 @@ var $$IMU_EXPORT$$;
 						var module = mediadelivery_support[media_info.delivery];
 						if (module.active()) {
 							module.el_init({
-								success: function() { },
+								success: function() { }, // todo?
 								fail: err_cb,
 								info_obj: obj[0],
 								el: el,
@@ -66088,7 +66180,7 @@ var $$IMU_EXPORT$$;
 				hours: ((delta / 60 / 60) | 0) % 24,
 				days: ((delta / 60 / 60 / 24) | 0),
 				//weeks: ((delta / 60 / 60 / 24 / 7)|0), // is this really needed?
-				months: ((delta / 60 / 60 / 24 / 30.4375) | 0),
+				months: ((delta / 60 / 60 / 24 / 30.4375) | 0), // (365 * 3 + 366) / (12 * 4)
 				years: ((delta / 60 / 60 / 24 / 365.25) | 0) // (365 * 3 + 366) / 4
 			};
 			var mod_units = {
@@ -71231,7 +71323,7 @@ var $$IMU_EXPORT$$;
 							multi: true,
 							use_head: false,
 							incomplete_image: false,
-							incomplete_video: true,
+							incomplete_video: true, // hack to force request_chunked
 							deny_nondirect_delivery: true,
 							deny_cache: true,
 							null_if_no_change: !settings.gallery_download_unchanged,
