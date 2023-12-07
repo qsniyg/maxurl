@@ -1,5 +1,9 @@
 2023.12.0
 
+New features:
+
+ * "Custom Gallery" button, allowing you create galleries from picked images (disabled by default)
+
 Special thanks to nimbuz, vscum, karpuzikov for their contributions and reports for this release
 
 ---
