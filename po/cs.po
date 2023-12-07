@@ -178,6 +178,10 @@ msgstr ""
 msgid "subcategory_highlightimages"
 msgstr ""
 
+#. English: Custom Gallery
+msgid "subcategory_customgallery"
+msgstr ""
+
 msgid "General"
 msgstr ""
 
@@ -3004,24 +3008,8 @@ msgstr ""
 msgid "Uses a simpler progress bar that has a fixed size for all media. This is useful to see how many images are replaced, rather than the ETA"
 msgstr ""
 
-#. replaceimgs_enable_keybinding.name, highlightimgs_enable_keybinding.name
-msgid "Enable trigger key"
-msgstr ""
-
-#. replaceimgs_enable_keybinding.description, highlightimgs_enable_keybinding.description
-msgid "Enables the use of the trigger key to run it without needing to use the menu"
-msgstr ""
-
-#. replaceimgs_keybinding.name, highlightimgs_keybinding.name
-msgid "Trigger key"
-msgstr ""
-
 #. highlightimgs_keybinding.description
 msgid "Trigger keybinding that will run the Highlight Images function"
-msgstr ""
-
-#. highlightimgs_enable.name
-msgid "Enable button"
 msgstr ""
 
 #. highlightimgs_enable.description
@@ -3066,6 +3054,54 @@ msgstr ""
 
 #. highlightimgs_css.description
 msgid "CSS style to apply for highlight. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)"
+msgstr ""
+
+#. replaceimgs_enable_keybinding.name, highlightimgs_enable_keybinding.name, customgallery_enable_keybinding.name
+msgid "Enable trigger key"
+msgstr ""
+
+#. replaceimgs_enable_keybinding.description, highlightimgs_enable_keybinding.description, customgallery_enable_keybinding.description
+msgid "Enables the use of the trigger key to run it without needing to use the menu"
+msgstr ""
+
+#. replaceimgs_keybinding.name, highlightimgs_keybinding.name, customgallery_keybinding.name
+msgid "Trigger key"
+msgstr ""
+
+#. customgallery_keybinding.description
+msgid "Trigger keybinding that will run the Custom Gallery function"
+msgstr ""
+
+#. highlightimgs_enable.name, customgallery_enable_button.name
+msgid "Enable button"
+msgstr ""
+
+#. customgallery_enable_button.description
+msgid "Enables the 'Custom Gallery' button"
+msgstr ""
+
+#. customgallery_apply_key.name
+msgid "Apply key"
+msgstr ""
+
+#. customgallery_apply_key.description
+msgid "Triggers the gallery when pressed"
+msgstr ""
+
+#. customgallery_bg_css.name
+msgid "Background CSS"
+msgstr ""
+
+#. customgallery_bg_css.description
+msgid "CSS style to apply for the background"
+msgstr ""
+
+#. customgallery_outline_css.name
+msgid "Outline CSS"
+msgstr ""
+
+#. customgallery_outline_css.description
+msgid "CSS style to apply for element outlines"
 msgstr ""
 
 #. mouseover_open_behavior.name, t2_mouseover_open_behavior.name, t3_mouseover_open_behavior.name

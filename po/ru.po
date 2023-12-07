@@ -178,6 +178,10 @@ msgstr "Замена изображений"
 msgid "subcategory_highlightimages"
 msgstr "Выделение изображений"
 
+#. English: Custom Gallery
+msgid "subcategory_customgallery"
+msgstr ""
+
 msgid "General"
 msgstr "Общие"
 
@@ -3142,25 +3146,9 @@ msgstr "Простой прогресс"
 msgid "Uses a simpler progress bar that has a fixed size for all media. This is useful to see how many images are replaced, rather than the ETA"
 msgstr "Использует более простую шкалу прогресса, которая имеет фиксированный размер для всех медиа. Это полезно для того, чтобы увидеть, сколько изображений заменено, а не ждать."
 
-#. replaceimgs_enable_keybinding.name, highlightimgs_enable_keybinding.name
-msgid "Enable trigger key"
-msgstr "Включить клавишу действия"
-
-#. replaceimgs_enable_keybinding.description, highlightimgs_enable_keybinding.description
-msgid "Enables the use of the trigger key to run it without needing to use the menu"
-msgstr "Позволяет использовать клавишу действия для запуска без необходимости использования меню."
-
-#. replaceimgs_keybinding.name, highlightimgs_keybinding.name
-msgid "Trigger key"
-msgstr "Клавиша действия"
-
 #. highlightimgs_keybinding.description
 msgid "Trigger keybinding that will run the Highlight Images function"
 msgstr "Привязка клавиши действия, которое будет запускать функцию подсветки изображений."
-
-#. highlightimgs_enable.name
-msgid "Enable button"
-msgstr "Включить кнопку"
 
 #. highlightimgs_enable.description
 msgid "Enables the 'Highlight Images' button"
@@ -3205,6 +3193,54 @@ msgstr "CSS подсветка"
 #. highlightimgs_css.description
 msgid "CSS style to apply for highlight. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)"
 msgstr "Стилизация CSS, для применения к подсветке. Дополнительные сведения смотрите в документации 'Стилизация CSS всплывающего окна' (здесь не поддерживаются переменные URL thumb/full)."
+
+#. replaceimgs_enable_keybinding.name, highlightimgs_enable_keybinding.name, customgallery_enable_keybinding.name
+msgid "Enable trigger key"
+msgstr "Включить клавишу действия"
+
+#. replaceimgs_enable_keybinding.description, highlightimgs_enable_keybinding.description, customgallery_enable_keybinding.description
+msgid "Enables the use of the trigger key to run it without needing to use the menu"
+msgstr "Позволяет использовать клавишу действия для запуска без необходимости использования меню."
+
+#. replaceimgs_keybinding.name, highlightimgs_keybinding.name, customgallery_keybinding.name
+msgid "Trigger key"
+msgstr "Клавиша действия"
+
+#. customgallery_keybinding.description
+msgid "Trigger keybinding that will run the Custom Gallery function"
+msgstr ""
+
+#. highlightimgs_enable.name, customgallery_enable_button.name
+msgid "Enable button"
+msgstr "Включить кнопку"
+
+#. customgallery_enable_button.description
+msgid "Enables the 'Custom Gallery' button"
+msgstr ""
+
+#. customgallery_apply_key.name
+msgid "Apply key"
+msgstr ""
+
+#. customgallery_apply_key.description
+msgid "Triggers the gallery when pressed"
+msgstr ""
+
+#. customgallery_bg_css.name
+msgid "Background CSS"
+msgstr ""
+
+#. customgallery_bg_css.description
+msgid "CSS style to apply for the background"
+msgstr ""
+
+#. customgallery_outline_css.name
+msgid "Outline CSS"
+msgstr ""
+
+#. customgallery_outline_css.description
+msgid "CSS style to apply for element outlines"
+msgstr ""
 
 #. mouseover_open_behavior.name, t2_mouseover_open_behavior.name, t3_mouseover_open_behavior.name
 #. English: Popup action

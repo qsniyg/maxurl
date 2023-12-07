@@ -178,6 +178,10 @@ msgstr "替换图像"
 msgid "subcategory_highlightimages"
 msgstr "高亮图像"
 
+#. English: Custom Gallery
+msgid "subcategory_customgallery"
+msgstr ""
+
 msgid "General"
 msgstr "通用"
 
@@ -3140,25 +3144,9 @@ msgstr "简单进度条"
 msgid "Uses a simpler progress bar that has a fixed size for all media. This is useful to see how many images are replaced, rather than the ETA"
 msgstr "对所有媒体使用固定大小的简单进度条。这能看到有多少图像已替换，而不是只有剩余时间"
 
-#. replaceimgs_enable_keybinding.name, highlightimgs_enable_keybinding.name
-msgid "Enable trigger key"
-msgstr "启用触发键"
-
-#. replaceimgs_enable_keybinding.description, highlightimgs_enable_keybinding.description
-msgid "Enables the use of the trigger key to run it without needing to use the menu"
-msgstr "允许使用触发键来运行，无需使用菜单"
-
-#. replaceimgs_keybinding.name, highlightimgs_keybinding.name
-msgid "Trigger key"
-msgstr "触发键"
-
 #. highlightimgs_keybinding.description
 msgid "Trigger keybinding that will run the Highlight Images function"
 msgstr "用来运行“高亮图像”功能的触发键"
-
-#. highlightimgs_enable.name
-msgid "Enable button"
-msgstr "启用按钮"
 
 #. highlightimgs_enable.description
 msgid "Enables the 'Highlight Images' button"
@@ -3203,6 +3191,54 @@ msgstr "高亮 CSS"
 #. highlightimgs_css.description
 msgid "CSS style to apply for highlight. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)"
 msgstr "高亮时使用的 CSS 样式。更多信息详见“弹窗 CSS 样式”文档（此处不支持 thumb/full URL 变量）"
+
+#. replaceimgs_enable_keybinding.name, highlightimgs_enable_keybinding.name, customgallery_enable_keybinding.name
+msgid "Enable trigger key"
+msgstr "启用触发键"
+
+#. replaceimgs_enable_keybinding.description, highlightimgs_enable_keybinding.description, customgallery_enable_keybinding.description
+msgid "Enables the use of the trigger key to run it without needing to use the menu"
+msgstr "允许使用触发键来运行，无需使用菜单"
+
+#. replaceimgs_keybinding.name, highlightimgs_keybinding.name, customgallery_keybinding.name
+msgid "Trigger key"
+msgstr "触发键"
+
+#. customgallery_keybinding.description
+msgid "Trigger keybinding that will run the Custom Gallery function"
+msgstr ""
+
+#. highlightimgs_enable.name, customgallery_enable_button.name
+msgid "Enable button"
+msgstr "启用按钮"
+
+#. customgallery_enable_button.description
+msgid "Enables the 'Custom Gallery' button"
+msgstr ""
+
+#. customgallery_apply_key.name
+msgid "Apply key"
+msgstr ""
+
+#. customgallery_apply_key.description
+msgid "Triggers the gallery when pressed"
+msgstr ""
+
+#. customgallery_bg_css.name
+msgid "Background CSS"
+msgstr ""
+
+#. customgallery_bg_css.description
+msgid "CSS style to apply for the background"
+msgstr ""
+
+#. customgallery_outline_css.name
+msgid "Outline CSS"
+msgstr ""
+
+#. customgallery_outline_css.description
+msgid "CSS style to apply for element outlines"
+msgstr ""
 
 #. mouseover_open_behavior.name, t2_mouseover_open_behavior.name, t3_mouseover_open_behavior.name
 #. English: Popup action
