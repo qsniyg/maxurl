@@ -812,7 +812,7 @@ input:checked + label, button, .button, .dark .button, .button:visited, .dark .b
 
 #popup #footer {
   margin-top: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 #popup #footer .line {

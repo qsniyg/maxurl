@@ -7,6 +7,14 @@ document.body.oncontextmenu = function(e) {
     }
 };
 
+// Firefox needs a specified height
+function updateheight() {
+    setTimeout(function() {
+        var html = document.getElementsByTagName("html")[0];
+        html.style.height = document.body.scrollHeight + "px";
+    }, 1);
+}
+
 document.getElementById("replaceimages").onclick = function() {
     chrome.runtime.sendMessage({
         type: "popupaction",
@@ -70,23 +78,14 @@ function update_logo(value) {
 
 function update_highlightimages(value) {
     var container = document.getElementById("highlightimages_container");
-    var html = document.getElementsByTagName("html")[0];
-
-    var addheight = function(off) {
-        html.style.height = (parseInt(html.style.height) + off) + "px";
-    };
 
     if (value) {
-        if (container.style.display === "none") {
-            addheight(50);
-        }
         container.style.display = "block";
     } else {
-        if (container.style.display === "block") {
-            addheight(-50);
-        }
         container.style.display = "none";
     }
+
+    updateheight();
 }
 
 var prefers_dark_mode = function() {
@@ -129,3 +128,5 @@ get_option("imu_enabled", function(value) {
 get_option("highlightimgs_enable", function(value) {
     update_highlightimages(value);
 }, false);
+
+updateheight();
