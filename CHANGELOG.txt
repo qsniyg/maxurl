@@ -3,10 +3,11 @@
 New features:
 
  * "Custom Gallery" button, allowing you create galleries from picked images (disabled by default)
+ * Extension now supports all userscript-specific menu actions
 
 Improvements:
 
- * Varoius improvements/fixes to existing rules (including BBC)
+ * Various improvements/fixes to existing rules (including BBC)
 
 Special thanks to nimbuz, vscum, karpuzikov for their contributions and reports for this release
 
