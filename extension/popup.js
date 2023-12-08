@@ -15,23 +15,41 @@ function updateheight() {
     }, 1);
 }
 
-document.getElementById("replaceimages").onclick = function() {
-    chrome.runtime.sendMessage({
-        type: "popupaction",
-        data: {
-            action: "replace_images"
-        }
-    });
-};
+function addactionbtn(info) {
+    var buttons_el = document.getElementById("buttons");
 
-document.getElementById("highlightimages").onclick = function() {
-    chrome.runtime.sendMessage({
-        type: "popupaction",
-        data: {
-            action: "highlight_images"
+    var button_container_el = document.createElement("li");
+    button_container_el.id = info.id + "_container";
+
+    var button_el = document.createElement("button");
+    button_el.id = info.id;
+    button_el.innerText = info.name;
+    button_el.onclick = function() {
+        chrome.runtime.sendMessage({
+            type: "popupaction",
+            data: {
+                action: info.action
+            }
+        });
+    };
+    button_container_el.appendChild(button_el);
+
+    return new Promise(function(resolve) {
+        if (!info.toggle_setting) {
+            buttons_el.appendChild(button_container_el);
+            resolve();
+        } else {
+            get_option(info.toggle_setting, function(value) {
+                if (value) {
+                    buttons_el.appendChild(button_container_el);
+                }
+
+                resolve();
+            }, info.toggle_default || false)
         }
-    });
-};
+        resolve();
+    })
+}
 
 function get_option(name, cb, _default) {
     chrome.runtime.sendMessage({
@@ -125,8 +143,20 @@ get_option("imu_enabled", function(value) {
     update_logo(value);
 }, true);
 
-get_option("highlightimgs_enable", function(value) {
-    update_highlightimages(value);
-}, false);
+var promises = [];
 
-updateheight();
+promises.push(addactionbtn({
+    id: "replaceimages",
+    action: "replace_images",
+    name: "Replace images"
+}));
+
+promises.push(addactionbtn({
+    id: "highlightimgs",
+    action: "highlight_images",
+    name: "Highlight images",
+    toggle_setting: "highlightimgs_enable",
+    toggle_default: false
+}));
+
+Promise.all(promises).then(updateheight);
