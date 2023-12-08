@@ -19,9 +19,11 @@ function addactionbtn(info) {
     var buttons_el = document.getElementById("buttons");
 
     var button_container_el = document.createElement("li");
+    button_container_el.classList.add("action");
     button_container_el.id = info.id + "_container";
 
     var button_el = document.createElement("button");
+    button_el.classList.add("action");
     button_el.id = info.id;
     button_el.innerText = info.name;
     button_el.onclick = function() {
@@ -75,6 +77,14 @@ function set_option(name, value) {
     chrome.runtime.sendMessage({
         type: "setvalue",
         data: kv
+    });
+}
+
+function get_menucommands(cb) {
+    chrome.runtime.sendMessage({
+        type: "get_menucommands",
+    }, function(response) {
+        cb(response.data);
     });
 }
 
@@ -143,20 +153,16 @@ get_option("imu_enabled", function(value) {
     update_logo(value);
 }, true);
 
-var promises = [];
+get_menucommands(function(menuitems) {
+    var promises = [];
 
-promises.push(addactionbtn({
-    id: "replaceimages",
-    action: "replace_images",
-    name: "Replace images"
-}));
+    for (let item of menuitems) {
+        promises.push(addactionbtn({
+            id: item.id,
+            action: item.id,
+            name: item.name
+        }));
+    }
 
-promises.push(addactionbtn({
-    id: "highlightimgs",
-    action: "highlight_images",
-    name: "Highlight images",
-    toggle_setting: "highlightimgs_enable",
-    toggle_default: false
-}));
-
-Promise.all(promises).then(updateheight);
+    Promise.all(promises).then(updateheight);
+});

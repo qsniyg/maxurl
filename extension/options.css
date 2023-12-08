@@ -805,9 +805,18 @@ input:checked + label, button, .button, .dark .button, .button:visited, .dark .b
   margin: 0;
 }
 
+#popup #buttons li.action {
+  padding: .25em;
+}
+
 #popup #buttons .button, #popup #buttons button {
   padding: 8px 12px;
   line-height: 1;
+}
+
+#popup #buttons button.action {
+  padding: 6px 8px;
+  font-size: 95%;
 }
 
 #popup #footer {

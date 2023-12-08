@@ -20,6 +20,7 @@ var override_headers = {};
 var override_download = {};
 var reqid_to_redid = {};
 var notifications = {};
+var menucommands = {};
 
 var ready_functions = [];
 var on_ready = function(f) {
@@ -1169,8 +1170,7 @@ var extension_message_handler = (message, sender, respond) => {
 			}
 		});
 	} else if (message.type === "popupaction") {
-		if (message.data.action === "replace_images" ||
-				message.data.action === "highlight_images") {
+		if (message.data.action) {
 			chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 				var currentTab = tabs[0];
 				chrome.tabs.sendMessage(currentTab.id, message);
@@ -1385,6 +1385,57 @@ var extension_message_handler = (message, sender, respond) => {
 		});
 
 		return true;
+	} else if (message.type === "register_menucommand") {
+		debug("register_menucommand", message);
+
+		if (sender.frameId)
+			return;
+
+		var tabid = sender.tab.id;
+		if (!(tabid in menucommands))
+			menucommands[tabid] = [];
+
+		menucommands[tabid].push(message.data);
+	} else if (message.type === "unregister_menucommand") {
+		debug("unregister_menucommand", message);
+
+		if (sender.frameId)
+			return;
+
+		var tabid = sender.tab.id;
+		if (tabid in menucommands) {
+			for (let i = 0; i < menucommands.length; i++) {
+				if (menucommands[i].id === message.data.id) {
+					menucommands.splice(i, 1);
+					break;
+				}
+			}
+		}
+	} else if (message.type === "get_menucommands") {
+		debug("get_menucommands", message);
+
+		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+			var currentTab = tabs[0];
+			var tabid = currentTab.id;
+
+			var commands = [];
+			if (tabid in menucommands)
+				commands = menucommands[tabid];
+
+			respond({
+				type: "get_menucommands",
+				data: commands
+			});
+		});
+
+		return true;
+	} else if (message.type === "init") {
+		debug("init", message);
+
+		if (sender.frameId)
+			return;
+
+		tabclear(sender.tab.id);
 	}
 };
 
@@ -1585,6 +1636,15 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 	}
 });
 
+function tabclear(tabid) {
+	if (nir_debug)
+		console.log("Clearing tab: ", tabid);
+
+	if (tabid in menucommands) {
+		delete menucommands[tabid];
+	}
+}
+
 function tabremoved(tabid) {
 	if (nir_debug)
 		console.log("Removed tab: ", tabid);
@@ -1613,6 +1673,8 @@ function tabremoved(tabid) {
 	if (tabid in redirects) {
 		delete redirects[tabid];
 	}
+
+	tabclear(tabid);
 }
 
 function tabready(tabid) {
@@ -1645,6 +1707,9 @@ chrome.tabs.onReplaced.addListener(function (added, removed) {
 });
 
 chrome.tabs.onUpdated.addListener(function(tabid, info, tab) {
+	if (nir_debug)
+		console.log("tabs.onUpdated", info, tab);
+
 	if (info.status === "loading") {
 		if (nir_debug)
 			console.log("tabs.onUpdated: loading");
