@@ -9,7 +9,11 @@ Improvements:
 
  * Various improvements/fixes to existing rules (including BBC, Wordpress)
 
-Special thanks to nimbuz, vscum, karpuzikov, fireattack, ljcool2006 for their contributions and reports for this release
+Bugfixes:
+
+ * Fix SVGs not popping up under Firefox (#1243, thanks to Rasmus Malver for reporting)
+
+Special thanks to nimbuz, vscum, karpuzikov, fireattack, ljcool2006, newuser999, Rasmus Malver for their contributions and reports for this release
 
 ---
 
