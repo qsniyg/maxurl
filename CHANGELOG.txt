@@ -13,7 +13,7 @@ Bugfixes:
 
  * Fix SVGs not popping up under Firefox (#1243, thanks to Rasmus Malver for reporting)
 
-Special thanks to nimbuz, vscum, karpuzikov, fireattack, ljcool2006, newuser999, Rasmus Malver for their contributions and reports for this release
+Special thanks to nimbuz, vscum, karpuzikov, fireattack, ljcool2006, newuser999, Rasmus Malver, Harmony for their contributions and reports for this release
 
 ---
 
