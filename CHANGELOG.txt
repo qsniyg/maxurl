@@ -7,7 +7,7 @@ New features:
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including BBC, Wordpress)
+ * Various improvements/fixes to existing rules (including BBC, Wordpress, TikTok)
 
 Bugfixes:
 
