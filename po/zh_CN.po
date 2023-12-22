@@ -2228,12 +2228,12 @@ msgid "This option popping up for source media with blacklisted URLs. If this is
 msgstr "如果禁用此选项，即便源地址被列入黑名单，只要末端网址没有列入黑名单，就打开弹窗。"
 
 #. apply_blacklist_host.name
-msgid "Apply blacklist for host websites"
-msgstr "对网站应用黑名单"
+msgid "Use media blacklist for host websites"
+msgstr ""
 
 #. apply_blacklist_host.description
-msgid "This option prevents the script from opening any popups to host websites that are in the blacklist. For example, adding `twitter.com` to the blacklist would prevent any popup from opening on twitter.com. If disabled, this option only applies to image URLs (such as twimg.com), not host URLs"
-msgstr "此选项决定是否不为黑名单中的网站打开任何弹窗。例如，将 twitter.com 添加到黑名单中可以避免在 twitter.com 上出现任何弹窗。如果禁用，黑名单仅应用于图像网址（如 twimg.com）而不针对网页网址"
+msgid "Overrides the host blacklist to use the media blacklist (specified under Rules)"
+msgstr ""
 
 #. mouseover_matching_media_types.name
 msgid "Don't popup different media type"
@@ -2708,6 +2708,14 @@ msgstr ""
 msgid "Redirects media stored on Teddit to Reddit's servers. Disabling this may prevent finding original images because Teddit's image servers will only cache images fetched from posts, which are deleted after a few minutes."
 msgstr ""
 
+#. tiktok_app_api.name
+msgid "TikTok: Use app API"
+msgstr ""
+
+#. tiktok_app_api.description
+msgid "Uses TikTok's app API to find video information."
+msgstr ""
+
 #. tiktok_no_watermarks.name
 msgid "TikTok: Don't use watermarked videos"
 msgstr "TikTok: 不使用带水印的视频"
@@ -2787,14 +2795,46 @@ msgid "Prefers `.jpg?name=orig` over `?format=jpg&name=orig`. This will possibly
 msgstr "首选 `.jpg?name=orig` 而不是 `?format=jpg&name=orig`。这可能在成功前产生额外的请求。注意，图像质量上没有差异。"
 
 #. bigimage_blacklist.name
-msgid "Blacklist"
-msgstr "黑名单"
+msgid "Media blacklist"
+msgstr ""
 
 #. bigimage_blacklist.description
 msgid "A list of URLs (one per line) that are blacklisted from being processed"
 msgstr "处理过程的黑名单网址列表（每行一条）"
 
-#. bigimage_blacklist.documentation.value
+#. bigimage_blacklist_mode.name
+msgid "Media blacklist mode"
+msgstr ""
+
+#. bigimage_blacklist_mode.description
+msgid "Whether the media blacklist should act as a blacklist or a whitelist"
+msgstr ""
+
+#. bigimage_blacklist_engine.name
+msgid "Blacklist engine"
+msgstr "黑名单引擎"
+
+#. bigimage_blacklist_engine.description
+msgid "How blacklists should be processed"
+msgstr ""
+
+#. bigimage_blacklist_engine.options.glob.name
+msgid "Simple (glob)"
+msgstr "简易 (glob)"
+
+#. bigimage_blacklist_engine.options.regex.name
+msgid "Regex"
+msgstr "正则表达式"
+
+#. host_blacklist.name
+msgid "Host blacklist"
+msgstr ""
+
+#. host_blacklist.description
+msgid "A list of host URLs (one per line) that the popup is blacklisted from. For example, adding `twitter.com` to this blacklist would prevent any popup from opening on twitter.com."
+msgstr ""
+
+#. bigimage_blacklist.documentation.value, host_blacklist.documentation.value
 msgid ""
 "The examples below are written for the simple (glob) engine, not the regex engine. The glob engine is generally based on the UNIX glob syntax.<br />\n"
 "<ul><br />\n"
@@ -2828,21 +2868,21 @@ msgstr ""
 "<li><code>g[0-9]ogle.com</code> 将屏蔽 https://g0ogle.com/, https://g1ogle.com/ 等。 (up to https://g9ogle.com/)</li>\n"
 "</ul>"
 
-#. bigimage_blacklist_engine.name
-msgid "Blacklist engine"
-msgstr "黑名单引擎"
+#. host_blacklist_mode.name
+msgid "Host blacklist mode"
+msgstr ""
 
-#. bigimage_blacklist_engine.description
-msgid "How the blacklist should be processed"
-msgstr "应如何处理黑名单"
+#. host_blacklist_mode.description
+msgid "Whether the host blacklist should act as a blacklist or a whitelist"
+msgstr ""
 
-#. bigimage_blacklist_engine.options.glob.name
-msgid "Simple (glob)"
-msgstr "简易 (glob)"
+#. bigimage_blacklist_mode.options.whitelist.name, host_blacklist_mode.options.whitelist.name
+msgid "Whitelist"
+msgstr ""
 
-#. bigimage_blacklist_engine.options.regex.name
-msgid "Regex"
-msgstr "正则表达式"
+#. bigimage_blacklist_mode.options.blacklist.name, host_blacklist_mode.options.blacklist.name
+msgid "Blacklist"
+msgstr "黑名单"
 
 #. filename_format.name
 msgid "Filename format"
@@ -2852,7 +2892,7 @@ msgstr "文件名格式"
 msgid "Format string(s) for the filename"
 msgstr "文件名格式化要用到的字符串"
 
-#. mouseover_styles.documentation.title, bigimage_blacklist.documentation.title, filename_format.documentation.title
+#. mouseover_styles.documentation.title, bigimage_blacklist.documentation.title, filename_format.documentation.title, host_blacklist.documentation.title
 msgid "Documentation"
 msgstr "文档"
 

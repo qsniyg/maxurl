@@ -2230,12 +2230,12 @@ msgid "This option popping up for source media with blacklisted URLs. If this is
 msgstr "Этот параметр всплывает для оригинальных медиа с URL-адресами в чёрный список. Если этот параметр отключен, всплывающее окно откроется, если конечный URL-адрес не внесён в чёрный список, независимо от того, внесен ли источник в чёрный список."
 
 #. apply_blacklist_host.name
-msgid "Apply blacklist for host websites"
-msgstr "Применять чёрный список для хост-сайтов"
+msgid "Use media blacklist for host websites"
+msgstr ""
 
 #. apply_blacklist_host.description
-msgid "This option prevents the script from opening any popups to host websites that are in the blacklist. For example, adding `twitter.com` to the blacklist would prevent any popup from opening on twitter.com. If disabled, this option only applies to image URLs (such as twimg.com), not host URLs"
-msgstr "Этот параметр не позволяет скрипту открывать любые всплывающие окна сайтам, которые находятся в чёрном списке. Например, добавление `twitter.com` в чёрный список предотвратит открытие всплывающих окон на twitter.com. Если этот параметр отключен, он применяется только к URL-адресам изображений (например, twimg.com), а не URL-адресам хостов."
+msgid "Overrides the host blacklist to use the media blacklist (specified under Rules)"
+msgstr ""
 
 #. mouseover_matching_media_types.name
 msgid "Don't popup different media type"
@@ -2710,6 +2710,14 @@ msgstr ""
 msgid "Redirects media stored on Teddit to Reddit's servers. Disabling this may prevent finding original images because Teddit's image servers will only cache images fetched from posts, which are deleted after a few minutes."
 msgstr ""
 
+#. tiktok_app_api.name
+msgid "TikTok: Use app API"
+msgstr ""
+
+#. tiktok_app_api.description
+msgid "Uses TikTok's app API to find video information."
+msgstr ""
+
 #. tiktok_no_watermarks.name
 msgid "TikTok: Don't use watermarked videos"
 msgstr "TikTok: Не использовать видео с водяными знаками"
@@ -2789,14 +2797,46 @@ msgid "Prefers `.jpg?name=orig` over `?format=jpg&name=orig`. This will possibly
 msgstr "Предпочитать `.jpg?name=orig` поверх `?format=jpg&name=orig`. Это, возможно, повлечет за собой дополнительные запросы, прежде чем добиться успеха. Обратите внимание, что нет никакой разницы в качестве изображения."
 
 #. bigimage_blacklist.name
-msgid "Blacklist"
-msgstr "Чёрный список"
+msgid "Media blacklist"
+msgstr ""
 
 #. bigimage_blacklist.description
 msgid "A list of URLs (one per line) that are blacklisted from being processed"
 msgstr "Список URL-адресов (по одному на строку), которые занесены в чёрный список для обработки."
 
-#. bigimage_blacklist.documentation.value
+#. bigimage_blacklist_mode.name
+msgid "Media blacklist mode"
+msgstr ""
+
+#. bigimage_blacklist_mode.description
+msgid "Whether the media blacklist should act as a blacklist or a whitelist"
+msgstr ""
+
+#. bigimage_blacklist_engine.name
+msgid "Blacklist engine"
+msgstr "Движок чёрного списка"
+
+#. bigimage_blacklist_engine.description
+msgid "How blacklists should be processed"
+msgstr ""
+
+#. bigimage_blacklist_engine.options.glob.name
+msgid "Simple (glob)"
+msgstr "Простой (glob)"
+
+#. bigimage_blacklist_engine.options.regex.name
+msgid "Regex"
+msgstr "Регулярное выражение"
+
+#. host_blacklist.name
+msgid "Host blacklist"
+msgstr ""
+
+#. host_blacklist.description
+msgid "A list of host URLs (one per line) that the popup is blacklisted from. For example, adding `twitter.com` to this blacklist would prevent any popup from opening on twitter.com."
+msgstr ""
+
+#. bigimage_blacklist.documentation.value, host_blacklist.documentation.value
 msgid ""
 "The examples below are written for the simple (glob) engine, not the regex engine. The glob engine is generally based on the UNIX glob syntax.<br />\n"
 "<ul><br />\n"
@@ -2830,21 +2870,21 @@ msgstr ""
 "<li><code>g[0-9]ogle.com</code> будет блокировать https://g0ogle.com/, https://g1ogle.com/, и т.д. (вплоть до https://g9ogle.com/)</li>\n"
 "</ul>"
 
-#. bigimage_blacklist_engine.name
-msgid "Blacklist engine"
-msgstr "Движок чёрного списка"
+#. host_blacklist_mode.name
+msgid "Host blacklist mode"
+msgstr ""
 
-#. bigimage_blacklist_engine.description
-msgid "How the blacklist should be processed"
-msgstr "Как следует обрабатывать чёрный список."
+#. host_blacklist_mode.description
+msgid "Whether the host blacklist should act as a blacklist or a whitelist"
+msgstr ""
 
-#. bigimage_blacklist_engine.options.glob.name
-msgid "Simple (glob)"
-msgstr "Простой (glob)"
+#. bigimage_blacklist_mode.options.whitelist.name, host_blacklist_mode.options.whitelist.name
+msgid "Whitelist"
+msgstr ""
 
-#. bigimage_blacklist_engine.options.regex.name
-msgid "Regex"
-msgstr "Регулярное выражение"
+#. bigimage_blacklist_mode.options.blacklist.name, host_blacklist_mode.options.blacklist.name
+msgid "Blacklist"
+msgstr "Чёрный список"
 
 #. filename_format.name
 msgid "Filename format"
@@ -2854,7 +2894,7 @@ msgstr "Формат имени файла"
 msgid "Format string(s) for the filename"
 msgstr "Формат строк(и) для имени файла."
 
-#. mouseover_styles.documentation.title, bigimage_blacklist.documentation.title, filename_format.documentation.title
+#. mouseover_styles.documentation.title, bigimage_blacklist.documentation.title, filename_format.documentation.title, host_blacklist.documentation.title
 msgid "Documentation"
 msgstr "Документация"
 
