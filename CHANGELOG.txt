@@ -4,6 +4,8 @@ New features:
 
  * "Custom Gallery" button, allowing you create galleries from picked images (disabled by default)
  * Extension now supports all userscript-specific menu actions
+ * Option for a separate host blacklist (#773)
+ * Option to turn blacklists into whitelists (#302)
 
 Improvements:
 
@@ -13,7 +15,7 @@ Bugfixes:
 
  * Fix SVGs not popping up under Firefox (#1243, thanks to Rasmus Malver for reporting)
 
-Special thanks to nimbuz, vscum, karpuzikov, fireattack, ljcool2006, newuser999, Rasmus Malver, Harmony for their contributions and reports for this release
+Special thanks to nimbuz, vscum, karpuzikov, fireattack, ljcool2006, newuser999, Rasmus Malver, Harmony, schleeb, tacohitbox, Noober for their contributions and reports for this release
 
 ---
 
