@@ -53,6 +53,7 @@ var variables_list = [
 	"new_set",
 	"set_add",
 	"set_has",
+	"set_remove",
 	"real_api_cache",
 	"real_api_query",
 	"real_website_query",
