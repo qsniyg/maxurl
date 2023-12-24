@@ -64,7 +64,7 @@
 // @description:zh-TW 為9000多個網站查找更大或原始圖像
 // @description:zh-HK 為9000多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2023.11.1
+// @version           2023.12.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -100,7 +100,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@bde224060ecd1b6cf6d1d18ba2bc9d865e7016b6/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@7c9422713c336cd85737cd212b1c2a112a0e39ee/build/rules.js
 // ==/UserScript==
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
 //   * Detecting whether or not the destination URL exists before redirecting
@@ -1607,22 +1607,35 @@ var $$IMU_EXPORT$$;
 	} else if (typeof (GM) !== "undefined" && typeof (GM.xmlHttpRequest) !== "undefined") {
 		do_request_raw = GM.xmlHttpRequest;
 	}
+	if (is_extension && !is_extension_bg) {
+		// used for clearing menu items
+		extension_send_message({
+			type: "init"
+		});
+	}
 	var register_menucommand = common_functions["nullfunc"];
 	var unregister_menucommand = common_functions["nullfunc"];
 	var num_menucommands = 0;
+	var menucommands_map = {};
+	var transform_menucommand_func = function(func) {
+		if (typeof func === "string") {
+			var dest = func;
+			func = function() {
+				// this gets run for every frame the script is injected in
+				if (is_in_iframe)
+					return;
+				open_in_tab_imu({
+					url: dest
+				}, false);
+			};
+		}
+		return func;
+	};
 	if (is_userscript) {
 		if (typeof (GM_registerMenuCommand) !== "undefined") {
 			register_menucommand = function(name, func) {
 				num_menucommands++;
-				if (typeof func === "string") {
-					var dest = func;
-					func = function() {
-						// this gets run for every frame the script is injected in
-						if (is_in_iframe)
-							return;
-						open_in_tab(dest);
-					};
-				}
+				func = transform_menucommand_func(func);
 				var caption = "[" + num_menucommands + "] " + name;
 				var id = GM_registerMenuCommand(caption, func);
 				if (id === void 0 || id === null)
@@ -1636,6 +1649,32 @@ var $$IMU_EXPORT$$;
 				return GM_unregisterMenuCommand(id);
 			};
 		}
+	} else if (is_extension && !is_extension_bg) {
+		register_menucommand = function(name, func) {
+			var id = get_random_id();
+			func = transform_menucommand_func(func);
+			menucommands_map[id] = {
+				name: name,
+				func: func
+			};
+			extension_send_message({
+				type: "register_menucommand",
+				data: {
+					id: id,
+					name: name
+				}
+			});
+			return id;
+		};
+		unregister_menucommand = function(id) {
+			extension_send_message({
+				type: "unregister_menucommand",
+				data: {
+					id: id
+				}
+			});
+			delete menucommands_map[id];
+		};
 	}
 	var open_in_tab = common_functions["nullfunc"];
 	// todo: move below settings for options page
@@ -1661,7 +1700,7 @@ var $$IMU_EXPORT$$;
 				type: "newtab",
 				data: {
 					imu: imu,
-					background: bg
+					background: bg || false
 				}
 			}, cb);
 		} else if (is_userscript && open_in_tab) {
@@ -1671,6 +1710,18 @@ var $$IMU_EXPORT$$;
 			}
 		}
 	};
+	if ((is_userscript && open_in_tab !== common_functions["nullfunc"]) || is_extension) {
+		if (is_userscript)
+			register_menucommand("Options", get_options_page());
+		register_menucommand("Request support for this page", function() {
+			if (is_in_iframe)
+				return;
+			var location = window.location.href;
+			open_in_tab_imu({
+				url: "https://qsniyg.github.io/maxurl/#imu-request-site&url=" + encodeURIComponent(location)
+			}, false);
+		});
+	}
 	var check_tracking_blocked = function(result) {
 		// FireMonkey returns null for result if blocked
 		// GreaseMonkey returns null for status if blocked
@@ -2458,13 +2509,32 @@ var $$IMU_EXPORT$$;
 	var bigimage_filter = function(url) {
 		return true;
 	};
+	var host_filter = function(url) {
+		return true;
+	};
 	if (is_interactive || is_extension_bg) {
-		bigimage_filter = function(url) {
-			for (var i = 0; i < blacklist_regexes.length; i++) {
-				if (blacklist_regexes[i].test(url))
-					return false;
+		var blackwhitelist_filter_1 = function(url, regexes, option) {
+			var result = true;
+			for (var i = 0; i < regexes.length; i++) {
+				if (regexes[i].test(url)) {
+					result = false;
+					break;
+				}
 			}
-			return true;
+			if (option === "whitelist") {
+				return !result;
+			} else {
+				return result;
+			}
+		};
+		bigimage_filter = function(url) {
+			return blackwhitelist_filter_1(url, blacklist_regexes, settings.bigimage_blacklist_mode);
+		};
+		host_filter = function(url) {
+			var regexes = host_blacklist_regexes;
+			if (settings.apply_blacklist_host)
+				regexes = blacklist_regexes;
+			return blackwhitelist_filter_1(url, regexes, settings.host_blacklist_mode);
 		};
 	}
 	var default_options = {
@@ -3048,6 +3118,9 @@ var $$IMU_EXPORT$$;
 			"en": "Highlight Images",
 			"ru": "\u0412\u044B\u0434\u0435\u043B\u0435\u043D\u0438\u0435 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0439",
 			"zh-CN": "\u9AD8\u4EAE\u56FE\u50CF"
+		},
+		"subcategory_customgallery": {
+			"en": "Custom Gallery"
 		},
 		"General": {
 			"es": "General",
@@ -5149,16 +5222,6 @@ var $$IMU_EXPORT$$;
 			"ru": "\u042D\u0442\u043E\u0442 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440 \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u0435\u0442 \u0434\u043B\u044F \u043E\u0440\u0438\u0433\u0438\u043D\u0430\u043B\u044C\u043D\u044B\u0445 \u043C\u0435\u0434\u0438\u0430 \u0441 URL-\u0430\u0434\u0440\u0435\u0441\u0430\u043C\u0438 \u0432 \u0447\u0451\u0440\u043D\u044B\u0439 \u0441\u043F\u0438\u0441\u043E\u043A. \u0415\u0441\u043B\u0438 \u044D\u0442\u043E\u0442 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440 \u043E\u0442\u043A\u043B\u044E\u0447\u0435\u043D, \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0435 \u043E\u043A\u043D\u043E \u043E\u0442\u043A\u0440\u043E\u0435\u0442\u0441\u044F, \u0435\u0441\u043B\u0438 \u043A\u043E\u043D\u0435\u0447\u043D\u044B\u0439 URL-\u0430\u0434\u0440\u0435\u0441 \u043D\u0435 \u0432\u043D\u0435\u0441\u0451\u043D \u0432 \u0447\u0451\u0440\u043D\u044B\u0439 \u0441\u043F\u0438\u0441\u043E\u043A, \u043D\u0435\u0437\u0430\u0432\u0438\u0441\u0438\u043C\u043E \u043E\u0442 \u0442\u043E\u0433\u043E, \u0432\u043D\u0435\u0441\u0435\u043D \u043B\u0438 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A \u0432 \u0447\u0451\u0440\u043D\u044B\u0439 \u0441\u043F\u0438\u0441\u043E\u043A.",
 			"zh-CN": "\u5982\u679C\u7981\u7528\u6B64\u9009\u9879\uFF0C\u5373\u4FBF\u6E90\u5730\u5740\u88AB\u5217\u5165\u9ED1\u540D\u5355\uFF0C\u53EA\u8981\u672B\u7AEF\u7F51\u5740\u6CA1\u6709\u5217\u5165\u9ED1\u540D\u5355\uFF0C\u5C31\u6253\u5F00\u5F39\u7A97\u3002"
 		},
-		"Apply blacklist for host websites": {
-			"ko": "\uD638\uC2A4\uD2B8 \uC6F9 \uC0AC\uC774\uD2B8\uC5D0 \uBE14\uB799\uB9AC\uC2A4\uD2B8 \uC801\uC6A9",
-			"ru": "\u041F\u0440\u0438\u043C\u0435\u043D\u044F\u0442\u044C \u0447\u0451\u0440\u043D\u044B\u0439 \u0441\u043F\u0438\u0441\u043E\u043A \u0434\u043B\u044F \u0445\u043E\u0441\u0442-\u0441\u0430\u0439\u0442\u043E\u0432",
-			"zh-CN": "\u5BF9\u7F51\u7AD9\u5E94\u7528\u9ED1\u540D\u5355"
-		},
-		"This option prevents the script from opening any popups to host websites that are in the blacklist. For example, adding `twitter.com` to the blacklist would prevent any popup from opening on twitter.com. If disabled, this option only applies to image URLs (such as twimg.com), not host URLs": {
-			"ko": "\uC774 \uC635\uC158\uC740 \uC2A4\uD06C\uB9BD\uD2B8\uAC00 \uBE14\uB799\uB9AC\uC2A4\uD2B8\uC5D0 \uC788\uB294 \uD638\uC2A4\uD2B8 \uC6F9 \uC0AC\uC774\uD2B8\uC5D0 \uD31D\uC5C5\uC744 \uC801\uC6A9\uD558\uB294 \uAC83\uC744 \uBC29\uC9C0\uD55C\uB2E4. \uC608\uB97C \uB4E4\uC5B4 twitter.com\uC744 \uBE14\uB799\uB9AC\uC2A4\uD2B8\uC5D0 \uCD94\uAC00\uD558\uBA74 twitter.com\uC5D0\uC11C \uC5B4\uB5A4 \uD31D\uC5C5\uB3C4 \uC5F4\uB9AC\uC9C0 \uC54A\uAC8C \uB41C\uB2E4. \uBE44\uD65C\uC131\uD654\uB41C \uACBD\uC6B0 \uC774 \uC635\uC158\uC740 \uD638\uC2A4\uD2B8 URL\uC774 \uC544\uB2CC \uC774\uBBF8\uC9C0 URL(\uC608: twimg.com)\uC5D0\uB9CC \uC801\uC6A9\uB428",
-			"ru": "\u042D\u0442\u043E\u0442 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440 \u043D\u0435 \u043F\u043E\u0437\u0432\u043E\u043B\u044F\u0435\u0442 \u0441\u043A\u0440\u0438\u043F\u0442\u0443 \u043E\u0442\u043A\u0440\u044B\u0432\u0430\u0442\u044C \u043B\u044E\u0431\u044B\u0435 \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0438\u0435 \u043E\u043A\u043D\u0430 \u0441\u0430\u0439\u0442\u0430\u043C, \u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u043D\u0430\u0445\u043E\u0434\u044F\u0442\u0441\u044F \u0432 \u0447\u0451\u0440\u043D\u043E\u043C \u0441\u043F\u0438\u0441\u043A\u0435. \u041D\u0430\u043F\u0440\u0438\u043C\u0435\u0440, \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0438\u0435 `twitter.com` \u0432 \u0447\u0451\u0440\u043D\u044B\u0439 \u0441\u043F\u0438\u0441\u043E\u043A \u043F\u0440\u0435\u0434\u043E\u0442\u0432\u0440\u0430\u0442\u0438\u0442 \u043E\u0442\u043A\u0440\u044B\u0442\u0438\u0435 \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0438\u0445 \u043E\u043A\u043E\u043D \u043D\u0430 twitter.com. \u0415\u0441\u043B\u0438 \u044D\u0442\u043E\u0442 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440 \u043E\u0442\u043A\u043B\u044E\u0447\u0435\u043D, \u043E\u043D \u043F\u0440\u0438\u043C\u0435\u043D\u044F\u0435\u0442\u0441\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u043A URL-\u0430\u0434\u0440\u0435\u0441\u0430\u043C \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0439 (\u043D\u0430\u043F\u0440\u0438\u043C\u0435\u0440, twimg.com), \u0430 \u043D\u0435 URL-\u0430\u0434\u0440\u0435\u0441\u0430\u043C \u0445\u043E\u0441\u0442\u043E\u0432.",
-			"zh-CN": "\u6B64\u9009\u9879\u51B3\u5B9A\u662F\u5426\u4E0D\u4E3A\u9ED1\u540D\u5355\u4E2D\u7684\u7F51\u7AD9\u6253\u5F00\u4EFB\u4F55\u5F39\u7A97\u3002\u4F8B\u5982\uFF0C\u5C06 twitter.com \u6DFB\u52A0\u5230\u9ED1\u540D\u5355\u4E2D\u53EF\u4EE5\u907F\u514D\u5728 twitter.com \u4E0A\u51FA\u73B0\u4EFB\u4F55\u5F39\u7A97\u3002\u5982\u679C\u7981\u7528\uFF0C\u9ED1\u540D\u5355\u4EC5\u5E94\u7528\u4E8E\u56FE\u50CF\u7F51\u5740\uFF08\u5982 twimg.com\uFF09\u800C\u4E0D\u9488\u5BF9\u7F51\u9875\u7F51\u5740"
-		},
 		"Don't popup different media type": {
 			"ru": "\u041D\u0435\u0442 \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0438\u0445 \u043E\u043A\u043E\u043D \u0434\u043B\u044F \u0434\u0440\u0443\u0433\u0438\u0445 \u0442\u0438\u043F\u043E\u0432 \u043C\u0435\u0434\u0438\u0430",
 			"zh-CN": "\u4E0D\u8981\u5F39\u51FA\u4E0D\u540C\u7684\u5A92\u4F53\u7C7B\u578B"
@@ -5655,27 +5718,14 @@ var $$IMU_EXPORT$$;
 			"ru": "\u041F\u0440\u0435\u0434\u043F\u043E\u0447\u0438\u0442\u0430\u0442\u044C `.jpg?name=orig` \u043F\u043E\u0432\u0435\u0440\u0445 `?format=jpg&name=orig`. \u042D\u0442\u043E, \u0432\u043E\u0437\u043C\u043E\u0436\u043D\u043E, \u043F\u043E\u0432\u043B\u0435\u0447\u0435\u0442 \u0437\u0430 \u0441\u043E\u0431\u043E\u0439 \u0434\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0435 \u0437\u0430\u043F\u0440\u043E\u0441\u044B, \u043F\u0440\u0435\u0436\u0434\u0435 \u0447\u0435\u043C \u0434\u043E\u0431\u0438\u0442\u044C\u0441\u044F \u0443\u0441\u043F\u0435\u0445\u0430. \u041E\u0431\u0440\u0430\u0442\u0438\u0442\u0435 \u0432\u043D\u0438\u043C\u0430\u043D\u0438\u0435, \u0447\u0442\u043E \u043D\u0435\u0442 \u043D\u0438\u043A\u0430\u043A\u043E\u0439 \u0440\u0430\u0437\u043D\u0438\u0446\u044B \u0432 \u043A\u0430\u0447\u0435\u0441\u0442\u0432\u0435 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u044F.",
 			"zh-CN": "\u9996\u9009 `.jpg?name=orig` \u800C\u4E0D\u662F `?format=jpg&name=orig`\u3002\u8FD9\u53EF\u80FD\u5728\u6210\u529F\u524D\u4EA7\u751F\u989D\u5916\u7684\u8BF7\u6C42\u3002\u6CE8\u610F\uFF0C\u56FE\u50CF\u8D28\u91CF\u4E0A\u6CA1\u6709\u5DEE\u5F02\u3002"
 		},
-		"Blacklist": {
-			"ko": "\uBE14\uB799\uB9AC\uC2A4\uD2B8",
-			"ru": "\u0427\u0451\u0440\u043D\u044B\u0439 \u0441\u043F\u0438\u0441\u043E\u043A",
-			"zh-CN": "\u9ED1\u540D\u5355"
-		},
 		"A list of URLs (one per line) that are blacklisted from being processed": {
 			"ru": "\u0421\u043F\u0438\u0441\u043E\u043A URL-\u0430\u0434\u0440\u0435\u0441\u043E\u0432 (\u043F\u043E \u043E\u0434\u043D\u043E\u043C\u0443 \u043D\u0430 \u0441\u0442\u0440\u043E\u043A\u0443), \u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u0437\u0430\u043D\u0435\u0441\u0435\u043D\u044B \u0432 \u0447\u0451\u0440\u043D\u044B\u0439 \u0441\u043F\u0438\u0441\u043E\u043A \u0434\u043B\u044F \u043E\u0431\u0440\u0430\u0431\u043E\u0442\u043A\u0438.",
 			"zh-CN": "\u5904\u7406\u8FC7\u7A0B\u7684\u9ED1\u540D\u5355\u7F51\u5740\u5217\u8868\uFF08\u6BCF\u884C\u4E00\u6761\uFF09"
-		},
-		"The examples below are written for the simple (glob) engine, not the regex engine. The glob engine is generally based on the UNIX glob syntax.<br />\n<ul><br />\n<li><code>google.com</code> will block https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/, etc.</li>\n<li><code>abc.google.com</code> will block https://abc.google.com/, https://def.abc.google.com/, etc.</li>\n<li><code>*.google.com</code> will block https://www.google.com/, https://def.abc.google.com/, etc. but not https://google.com/</li>\n<li><code>google.*/</code> will block https://google.com/, https://www.google.co.uk, etc.</li>\n<li><code>http://google.com</code> will block http://google.com/, but not https://google.com/, http://www.google.com/, etc.</li>\n<li><code>google.com/test</code> will block https://google.com/test, https://www.google.com/test/abcdef, but not https://google.com/, etc.</li>\n<li><code>google.com/*/test</code> will block https://google.com/abc/test, but not https://google.com/test or https://google.com/abc/def/test</li>\n<li><code>google.com/**/test</code> will block https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, etc. but not https://google.com/test</li>\n<li><code>g??gle.com</code> will block https://google.com/, https://gaagle.com/, https://goagle.com/, etc.</li>\n<li><code>google.{com,co.uk}</code> will block https://google.com/ and https://google.co.uk/</li>\n<li><code>g[oau]ogle.com</code> will block https://google.com/, https://gaogle.com/, and http://www.guogle.com/</li>\n<li><code>g[0-9]ogle.com</code> will block https://g0ogle.com/, https://g1ogle.com/, etc. (up to https://g9ogle.com/)</li>\n</ul>": {
-			"ru": "\u041F\u0440\u0438\u0432\u0435\u0434\u0435\u043D\u043D\u044B\u0435 \u043D\u0438\u0436\u0435 \u043F\u0440\u0438\u043C\u0435\u0440\u044B \u043D\u0430\u043F\u0438\u0441\u0430\u043D\u044B \u0434\u043B\u044F \u043F\u0440\u043E\u0441\u0442\u043E\u0433\u043E (glob) \u0434\u0432\u0438\u0436\u043A\u0430, \u0430 \u043D\u0435 \u0434\u043B\u044F \u0434\u0432\u0438\u0436\u043A\u0430 \u0440\u0435\u0433\u0443\u043B\u044F\u0440\u043D\u044B\u0445 \u0432\u044B\u0440\u0430\u0436\u0435\u043D\u0438\u0439. \u041C\u0435\u0445\u0430\u043D\u0438\u0437\u043C glob \u043E\u0431\u044B\u0447\u043D\u043E \u043E\u0441\u043D\u043E\u0432\u0430\u043D \u043D\u0430 \u0441\u0438\u043D\u0442\u0430\u043A\u0441\u0438\u0441\u0435 UNIX glob.<br />\n<ul><br />\n<li><code>google.com</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/, \u0438 \u0442.\u0434.</li>\n<li><code>abc.google.com</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://abc.google.com/, https://def.abc.google.com/, \u0438 \u0442.\u0434.</li>\n<li><code>*.google.com</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://www.google.com/, https://def.abc.google.com/, \u0438 \u0442.\u0434., \u043D\u043E \u043D\u0435 https://google.com/</li>\n<li><code>google.*/</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://google.com/, https://www.google.co.uk, \u0438 \u0442.\u0434.</li>\n<li><code>http://google.com</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C http://google.com/, \u043D\u043E \u043D\u0435 https://google.com/, http://www.google.com/, \u0438 \u0442.\u0434.</li>\n<li><code>google.com/test</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://google.com/test, https://www.google.com/test/abcdef, \u043D\u043E \u043D\u0435 https://google.com/, \u0438 \u0442.\u0434.</li>\n<li><code>google.com/*/test</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://google.com/abc/test, \u043D\u043E \u043D\u0435 https://google.com/test \u0438\u043B\u0438 https://google.com/abc/def/test</li>\n<li><code>google.com/**/test</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, \u0438 \u0442.\u0434., \u043D\u043E \u043D\u0435 https://google.com/test</li>\n<li><code>g??gle.com</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://google.com/, https://gaagle.com/, https://goagle.com/, \u0438 \u0442.\u0434.</li>\n<li><code>google.{com,co.uk}</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://google.com/ \u0438 https://google.co.uk/</li>\n<li><code>g[oau]ogle.com</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://google.com/, https://gaogle.com/, \u0438 http://www.guogle.com/</li>\n<li><code>g[0-9]ogle.com</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://g0ogle.com/, https://g1ogle.com/, \u0438 \u0442.\u0434. (\u0432\u043F\u043B\u043E\u0442\u044C \u0434\u043E https://g9ogle.com/)</li>\n</ul>",
-			"zh-CN": "\u4E0B\u9762\u7684\u793A\u4F8B\u662F\u4E3A\u5EFA\u8BAE\uFF08glob\uFF09\u5F15\u64CE\u7F16\u5199\uFF0C\u800C\u975E\u6B63\u5219\u8868\u8FBE\u5F0F\u5F15\u64CE\u3002Glob \u5F15\u64CE\u901A\u5E38\u57FA\u4E8E UNIX glob \u8BED\u6CD5\u3002<br />\n<ul><br />\n<li><code>google.com</code> \u5C06\u5C4F\u853D https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/ \u7B49\u3002</li>\n<li><code>abc.google.com</code> \u5C06\u5C4F\u853D https://abc.google.com/, https://def.abc.google.com/ \u7B49\u3002</li>\n<li><code>*.google.com</code> \u5C06\u5C4F\u853D https://www.google.com/, https://def.abc.google.com/ \u7B49\u3002\u4F46\u4E0D\u542B https://google.com/</li>\n<li><code>google.*/</code> \u5C06\u5C4F\u853D https://google.com/, https://www.google.co.uk \u7B49\u3002</li>\n<li><code>http://google.com</code> \u5C06\u5C4F\u853D http://google.com/, but not https://google.com/, http://www.google.com/ \u7B49\u3002</li>\n<li><code>google.com/test</code> \u5C06\u5C4F\u853D https://google.com/test, https://www.google.com/test/abcdef, but not https://google.com/ \u7B49\u3002</li>\n<li><code>google.com/*/test</code> \u5C06\u5C4F\u853D https://google.com/abc/test\uFF0C\u4F46\u4E0D\u542B https://google.com/test \u6216 https://google.com/abc/def/test</li>\n<li><code>google.com/**/test</code> \u5C06\u5C4F\u853D https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test \u7B49\u3002 but not https://google.com/test</li>\n<li><code>g??gle.com</code> \u5C06\u5C4F\u853D https://google.com/, https://gaagle.com/, https://goagle.com/ \u7B49\u3002</li>\n<li><code>google.{com,co.uk}</code> \u5C06\u5C4F\u853D https://google.com/ \u548Chttps://google.co.uk/</li>\n<li><code>g[oau]ogle.com</code> \u5C06\u5C4F\u853D https://google.com/, https://gaogle.com/, \u548Chttp://www.guogle.com/</li>\n<li><code>g[0-9]ogle.com</code> \u5C06\u5C4F\u853D https://g0ogle.com/, https://g1ogle.com/ \u7B49\u3002 (up to https://g9ogle.com/)</li>\n</ul>"
 		},
 		"Blacklist engine": {
 			"ko": "\uBE14\uB799\uB9AC\uC2A4\uD2B8 \uC5D4\uC9C4",
 			"ru": "\u0414\u0432\u0438\u0436\u043E\u043A \u0447\u0451\u0440\u043D\u043E\u0433\u043E \u0441\u043F\u0438\u0441\u043A\u0430",
 			"zh-CN": "\u9ED1\u540D\u5355\u5F15\u64CE"
-		},
-		"How the blacklist should be processed": {
-			"ru": "\u041A\u0430\u043A \u0441\u043B\u0435\u0434\u0443\u0435\u0442 \u043E\u0431\u0440\u0430\u0431\u0430\u0442\u044B\u0432\u0430\u0442\u044C \u0447\u0451\u0440\u043D\u044B\u0439 \u0441\u043F\u0438\u0441\u043E\u043A.",
-			"zh-CN": "\u5E94\u5982\u4F55\u5904\u7406\u9ED1\u540D\u5355"
 		},
 		"Simple (glob)": {
 			"ko": "\uB2E8\uC21C (glob)",
@@ -5686,6 +5736,15 @@ var $$IMU_EXPORT$$;
 			"ko": "\uC815\uADDC\uC2DD",
 			"ru": "\u0420\u0435\u0433\u0443\u043B\u044F\u0440\u043D\u043E\u0435 \u0432\u044B\u0440\u0430\u0436\u0435\u043D\u0438\u0435",
 			"zh-CN": "\u6B63\u5219\u8868\u8FBE\u5F0F"
+		},
+		"The examples below are written for the simple (glob) engine, not the regex engine. The glob engine is generally based on the UNIX glob syntax.<br />\n<ul><br />\n<li><code>google.com</code> will block https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/, etc.</li>\n<li><code>abc.google.com</code> will block https://abc.google.com/, https://def.abc.google.com/, etc.</li>\n<li><code>*.google.com</code> will block https://www.google.com/, https://def.abc.google.com/, etc. but not https://google.com/</li>\n<li><code>google.*/</code> will block https://google.com/, https://www.google.co.uk, etc.</li>\n<li><code>http://google.com</code> will block http://google.com/, but not https://google.com/, http://www.google.com/, etc.</li>\n<li><code>google.com/test</code> will block https://google.com/test, https://www.google.com/test/abcdef, but not https://google.com/, etc.</li>\n<li><code>google.com/*/test</code> will block https://google.com/abc/test, but not https://google.com/test or https://google.com/abc/def/test</li>\n<li><code>google.com/**/test</code> will block https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, etc. but not https://google.com/test</li>\n<li><code>g??gle.com</code> will block https://google.com/, https://gaagle.com/, https://goagle.com/, etc.</li>\n<li><code>google.{com,co.uk}</code> will block https://google.com/ and https://google.co.uk/</li>\n<li><code>g[oau]ogle.com</code> will block https://google.com/, https://gaogle.com/, and http://www.guogle.com/</li>\n<li><code>g[0-9]ogle.com</code> will block https://g0ogle.com/, https://g1ogle.com/, etc. (up to https://g9ogle.com/)</li>\n</ul>": {
+			"ru": "\u041F\u0440\u0438\u0432\u0435\u0434\u0435\u043D\u043D\u044B\u0435 \u043D\u0438\u0436\u0435 \u043F\u0440\u0438\u043C\u0435\u0440\u044B \u043D\u0430\u043F\u0438\u0441\u0430\u043D\u044B \u0434\u043B\u044F \u043F\u0440\u043E\u0441\u0442\u043E\u0433\u043E (glob) \u0434\u0432\u0438\u0436\u043A\u0430, \u0430 \u043D\u0435 \u0434\u043B\u044F \u0434\u0432\u0438\u0436\u043A\u0430 \u0440\u0435\u0433\u0443\u043B\u044F\u0440\u043D\u044B\u0445 \u0432\u044B\u0440\u0430\u0436\u0435\u043D\u0438\u0439. \u041C\u0435\u0445\u0430\u043D\u0438\u0437\u043C glob \u043E\u0431\u044B\u0447\u043D\u043E \u043E\u0441\u043D\u043E\u0432\u0430\u043D \u043D\u0430 \u0441\u0438\u043D\u0442\u0430\u043A\u0441\u0438\u0441\u0435 UNIX glob.<br />\n<ul><br />\n<li><code>google.com</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/, \u0438 \u0442.\u0434.</li>\n<li><code>abc.google.com</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://abc.google.com/, https://def.abc.google.com/, \u0438 \u0442.\u0434.</li>\n<li><code>*.google.com</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://www.google.com/, https://def.abc.google.com/, \u0438 \u0442.\u0434., \u043D\u043E \u043D\u0435 https://google.com/</li>\n<li><code>google.*/</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://google.com/, https://www.google.co.uk, \u0438 \u0442.\u0434.</li>\n<li><code>http://google.com</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C http://google.com/, \u043D\u043E \u043D\u0435 https://google.com/, http://www.google.com/, \u0438 \u0442.\u0434.</li>\n<li><code>google.com/test</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://google.com/test, https://www.google.com/test/abcdef, \u043D\u043E \u043D\u0435 https://google.com/, \u0438 \u0442.\u0434.</li>\n<li><code>google.com/*/test</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://google.com/abc/test, \u043D\u043E \u043D\u0435 https://google.com/test \u0438\u043B\u0438 https://google.com/abc/def/test</li>\n<li><code>google.com/**/test</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, \u0438 \u0442.\u0434., \u043D\u043E \u043D\u0435 https://google.com/test</li>\n<li><code>g??gle.com</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://google.com/, https://gaagle.com/, https://goagle.com/, \u0438 \u0442.\u0434.</li>\n<li><code>google.{com,co.uk}</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://google.com/ \u0438 https://google.co.uk/</li>\n<li><code>g[oau]ogle.com</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://google.com/, https://gaogle.com/, \u0438 http://www.guogle.com/</li>\n<li><code>g[0-9]ogle.com</code> \u0431\u0443\u0434\u0435\u0442 \u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C https://g0ogle.com/, https://g1ogle.com/, \u0438 \u0442.\u0434. (\u0432\u043F\u043B\u043E\u0442\u044C \u0434\u043E https://g9ogle.com/)</li>\n</ul>",
+			"zh-CN": "\u4E0B\u9762\u7684\u793A\u4F8B\u662F\u4E3A\u5EFA\u8BAE\uFF08glob\uFF09\u5F15\u64CE\u7F16\u5199\uFF0C\u800C\u975E\u6B63\u5219\u8868\u8FBE\u5F0F\u5F15\u64CE\u3002Glob \u5F15\u64CE\u901A\u5E38\u57FA\u4E8E UNIX glob \u8BED\u6CD5\u3002<br />\n<ul><br />\n<li><code>google.com</code> \u5C06\u5C4F\u853D https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/ \u7B49\u3002</li>\n<li><code>abc.google.com</code> \u5C06\u5C4F\u853D https://abc.google.com/, https://def.abc.google.com/ \u7B49\u3002</li>\n<li><code>*.google.com</code> \u5C06\u5C4F\u853D https://www.google.com/, https://def.abc.google.com/ \u7B49\u3002\u4F46\u4E0D\u542B https://google.com/</li>\n<li><code>google.*/</code> \u5C06\u5C4F\u853D https://google.com/, https://www.google.co.uk \u7B49\u3002</li>\n<li><code>http://google.com</code> \u5C06\u5C4F\u853D http://google.com/, but not https://google.com/, http://www.google.com/ \u7B49\u3002</li>\n<li><code>google.com/test</code> \u5C06\u5C4F\u853D https://google.com/test, https://www.google.com/test/abcdef, but not https://google.com/ \u7B49\u3002</li>\n<li><code>google.com/*/test</code> \u5C06\u5C4F\u853D https://google.com/abc/test\uFF0C\u4F46\u4E0D\u542B https://google.com/test \u6216 https://google.com/abc/def/test</li>\n<li><code>google.com/**/test</code> \u5C06\u5C4F\u853D https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test \u7B49\u3002 but not https://google.com/test</li>\n<li><code>g??gle.com</code> \u5C06\u5C4F\u853D https://google.com/, https://gaagle.com/, https://goagle.com/ \u7B49\u3002</li>\n<li><code>google.{com,co.uk}</code> \u5C06\u5C4F\u853D https://google.com/ \u548Chttps://google.co.uk/</li>\n<li><code>g[oau]ogle.com</code> \u5C06\u5C4F\u853D https://google.com/, https://gaogle.com/, \u548Chttp://www.guogle.com/</li>\n<li><code>g[0-9]ogle.com</code> \u5C06\u5C4F\u853D https://g0ogle.com/, https://g1ogle.com/ \u7B49\u3002 (up to https://g9ogle.com/)</li>\n</ul>"
+		},
+		"Blacklist": {
+			"ko": "\uBE14\uB799\uB9AC\uC2A4\uD2B8",
+			"ru": "\u0427\u0451\u0440\u043D\u044B\u0439 \u0441\u043F\u0438\u0441\u043E\u043A",
+			"zh-CN": "\u9ED1\u540D\u5355"
 		},
 		"Filename format": {
 			"ru": "\u0424\u043E\u0440\u043C\u0430\u0442 \u0438\u043C\u0435\u043D\u0438 \u0444\u0430\u0439\u043B\u0430",
@@ -5863,25 +5922,9 @@ var $$IMU_EXPORT$$;
 			"ru": "\u0418\u0441\u043F\u043E\u043B\u044C\u0437\u0443\u0435\u0442 \u0431\u043E\u043B\u0435\u0435 \u043F\u0440\u043E\u0441\u0442\u0443\u044E \u0448\u043A\u0430\u043B\u0443 \u043F\u0440\u043E\u0433\u0440\u0435\u0441\u0441\u0430, \u043A\u043E\u0442\u043E\u0440\u0430\u044F \u0438\u043C\u0435\u0435\u0442 \u0444\u0438\u043A\u0441\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u0440\u0430\u0437\u043C\u0435\u0440 \u0434\u043B\u044F \u0432\u0441\u0435\u0445 \u043C\u0435\u0434\u0438\u0430. \u042D\u0442\u043E \u043F\u043E\u043B\u0435\u0437\u043D\u043E \u0434\u043B\u044F \u0442\u043E\u0433\u043E, \u0447\u0442\u043E\u0431\u044B \u0443\u0432\u0438\u0434\u0435\u0442\u044C, \u0441\u043A\u043E\u043B\u044C\u043A\u043E \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0439 \u0437\u0430\u043C\u0435\u043D\u0435\u043D\u043E, \u0430 \u043D\u0435 \u0436\u0434\u0430\u0442\u044C.",
 			"zh-CN": "\u5BF9\u6240\u6709\u5A92\u4F53\u4F7F\u7528\u56FA\u5B9A\u5927\u5C0F\u7684\u7B80\u5355\u8FDB\u5EA6\u6761\u3002\u8FD9\u80FD\u770B\u5230\u6709\u591A\u5C11\u56FE\u50CF\u5DF2\u66FF\u6362\uFF0C\u800C\u4E0D\u662F\u53EA\u6709\u5269\u4F59\u65F6\u95F4"
 		},
-		"Enable trigger key": {
-			"ru": "\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u043A\u043B\u0430\u0432\u0438\u0448\u0443 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044F",
-			"zh-CN": "\u542F\u7528\u89E6\u53D1\u952E"
-		},
-		"Enables the use of the trigger key to run it without needing to use the menu": {
-			"ru": "\u041F\u043E\u0437\u0432\u043E\u043B\u044F\u0435\u0442 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C \u043A\u043B\u0430\u0432\u0438\u0448\u0443 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044F \u0434\u043B\u044F \u0437\u0430\u043F\u0443\u0441\u043A\u0430 \u0431\u0435\u0437 \u043D\u0435\u043E\u0431\u0445\u043E\u0434\u0438\u043C\u043E\u0441\u0442\u0438 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u043D\u0438\u044F \u043C\u0435\u043D\u044E.",
-			"zh-CN": "\u5141\u8BB8\u4F7F\u7528\u89E6\u53D1\u952E\u6765\u8FD0\u884C\uFF0C\u65E0\u9700\u4F7F\u7528\u83DC\u5355"
-		},
-		"Trigger key": {
-			"ru": "\u041A\u043B\u0430\u0432\u0438\u0448\u0430 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044F",
-			"zh-CN": "\u89E6\u53D1\u952E"
-		},
 		"Trigger keybinding that will run the Highlight Images function": {
 			"ru": "\u041F\u0440\u0438\u0432\u044F\u0437\u043A\u0430 \u043A\u043B\u0430\u0432\u0438\u0448\u0438 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044F, \u043A\u043E\u0442\u043E\u0440\u043E\u0435 \u0431\u0443\u0434\u0435\u0442 \u0437\u0430\u043F\u0443\u0441\u043A\u0430\u0442\u044C \u0444\u0443\u043D\u043A\u0446\u0438\u044E \u043F\u043E\u0434\u0441\u0432\u0435\u0442\u043A\u0438 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0439.",
 			"zh-CN": "\u7528\u6765\u8FD0\u884C\u201C\u9AD8\u4EAE\u56FE\u50CF\u201D\u529F\u80FD\u7684\u89E6\u53D1\u952E"
-		},
-		"Enable button": {
-			"ru": "\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u043A\u043D\u043E\u043F\u043A\u0443",
-			"zh-CN": "\u542F\u7528\u6309\u94AE"
 		},
 		"Enables the 'Highlight Images' button": {
 			"ru": "\u0412\u043A\u043B\u044E\u0447\u0430\u0435\u0442 \u043A\u043D\u043E\u043F\u043A\u0443 '\u041F\u043E\u0434\u0441\u0432\u0435\u0442\u0438\u0442\u044C \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u044F'.",
@@ -5926,6 +5969,22 @@ var $$IMU_EXPORT$$;
 		"CSS style to apply for highlight. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)": {
 			"ru": "\u0421\u0442\u0438\u043B\u0438\u0437\u0430\u0446\u0438\u044F CSS, \u0434\u043B\u044F \u043F\u0440\u0438\u043C\u0435\u043D\u0435\u043D\u0438\u044F \u043A \u043F\u043E\u0434\u0441\u0432\u0435\u0442\u043A\u0435. \u0414\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0435 \u0441\u0432\u0435\u0434\u0435\u043D\u0438\u044F \u0441\u043C\u043E\u0442\u0440\u0438\u0442\u0435 \u0432 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u0430\u0446\u0438\u0438 '\u0421\u0442\u0438\u043B\u0438\u0437\u0430\u0446\u0438\u044F CSS \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043E\u043A\u043D\u0430' (\u0437\u0434\u0435\u0441\u044C \u043D\u0435 \u043F\u043E\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u044E\u0442\u0441\u044F \u043F\u0435\u0440\u0435\u043C\u0435\u043D\u043D\u044B\u0435 URL thumb/full).",
 			"zh-CN": "\u9AD8\u4EAE\u65F6\u4F7F\u7528\u7684 CSS \u6837\u5F0F\u3002\u66F4\u591A\u4FE1\u606F\u8BE6\u89C1\u201C\u5F39\u7A97 CSS \u6837\u5F0F\u201D\u6587\u6863\uFF08\u6B64\u5904\u4E0D\u652F\u6301 thumb/full URL \u53D8\u91CF\uFF09"
+		},
+		"Enable trigger key": {
+			"ru": "\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u043A\u043B\u0430\u0432\u0438\u0448\u0443 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044F",
+			"zh-CN": "\u542F\u7528\u89E6\u53D1\u952E"
+		},
+		"Enables the use of the trigger key to run it without needing to use the menu": {
+			"ru": "\u041F\u043E\u0437\u0432\u043E\u043B\u044F\u0435\u0442 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C \u043A\u043B\u0430\u0432\u0438\u0448\u0443 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044F \u0434\u043B\u044F \u0437\u0430\u043F\u0443\u0441\u043A\u0430 \u0431\u0435\u0437 \u043D\u0435\u043E\u0431\u0445\u043E\u0434\u0438\u043C\u043E\u0441\u0442\u0438 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u043D\u0438\u044F \u043C\u0435\u043D\u044E.",
+			"zh-CN": "\u5141\u8BB8\u4F7F\u7528\u89E6\u53D1\u952E\u6765\u8FD0\u884C\uFF0C\u65E0\u9700\u4F7F\u7528\u83DC\u5355"
+		},
+		"Trigger key": {
+			"ru": "\u041A\u043B\u0430\u0432\u0438\u0448\u0430 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044F",
+			"zh-CN": "\u89E6\u53D1\u952E"
+		},
+		"Enable button": {
+			"ru": "\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u043A\u043D\u043E\u043F\u043A\u0443",
+			"zh-CN": "\u542F\u7528\u6309\u94AE"
 		},
 		"Mouseover popup action": {
 			"en": "Popup action",
@@ -6399,6 +6458,8 @@ var $$IMU_EXPORT$$;
 		mouseover_zoom_fit_key: ["2"],
 		mouseover_fullscreen_key: ["f"],
 		mouseover_apply_blacklist: true,
+		host_blacklist: "",
+		host_blacklist_mode: "blacklist",
 		apply_blacklist_host: false,
 		mouseover_matching_media_types: false,
 		// thanks to ComedicFox on discord for the idea: https://github.com/qsniyg/maxurl/issues/811
@@ -6442,6 +6503,7 @@ var $$IMU_EXPORT$$;
 		instagram_gallery_postlink: false,
 		snapchat_orig_media: true,
 		teddit_redirect_reddit: true,
+		tiktok_app_api: false,
 		tiktok_no_watermarks: false,
 		tiktok_thirdparty: null,
 		// just a very small protection against github scraping bots :)
@@ -6450,6 +6512,7 @@ var $$IMU_EXPORT$$;
 		twitter_use_ext: false,
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
 		bigimage_blacklist: "",
+		bigimage_blacklist_mode: "blacklist",
 		bigimage_blacklist_engine: "glob",
 		filename_format: "{author_username} {filename}",
 		filename_replace_special_underscores: true,
@@ -6481,6 +6544,12 @@ var $$IMU_EXPORT$$;
 		highlightimgs_auto: "never",
 		highlightimgs_onlysupported: true,
 		highlightimgs_css: "outline: 4px solid yellow",
+		customgallery_enable_keybinding: false,
+		customgallery_keybinding: ["shift", "alt", "g"],
+		customgallery_enable_button: false,
+		customgallery_apply_key: ["enter"],
+		customgallery_bg_css: "background-color: rgba(0, 0, 0, 0.25)",
+		customgallery_outline_css: "background-color: rgba(255, 0, 0, 0.25)\nborder: 2px solid red",
 		// cache entries (not settings, but this is the most convenient way to do it)
 		last_update_check: 0,
 		last_update_version: null,
@@ -9135,8 +9204,8 @@ var $$IMU_EXPORT$$;
 			subcategory: "source"
 		},
 		apply_blacklist_host: {
-			name: "Apply blacklist for host websites",
-			description: "This option prevents the script from opening any popups to host websites that are in the blacklist. For example, adding `twitter.com` to the blacklist would prevent any popup from opening on twitter.com. If disabled, this option only applies to image URLs (such as twimg.com), not host URLs",
+			name: "Use media blacklist for host websites",
+			description: "Overrides the host blacklist to use the media blacklist (specified under Rules)",
 			category: "popup",
 			subcategory: "source"
 		},
@@ -9555,9 +9624,17 @@ var $$IMU_EXPORT$$;
 			subcategory: "rule_specific",
 			onupdate: update_rule_setting
 		},
+		tiktok_app_api: {
+			name: "TikTok: Use app API",
+			description: "Uses TikTok's app API to find video information.",
+			category: "rules",
+			subcategory: "rule_specific",
+			onupdate: update_rule_setting
+		},
 		tiktok_no_watermarks: {
 			name: "TikTok: Don't use watermarked videos",
 			description: "Uses non-watermarked videos for TikTok if possible. This will introduce an extra delay when loading the video as two extra requests need to be performed. It will also fail for any videos uploaded after ~late July 2020",
+			hidden: true,
 			category: "rules",
 			subcategory: "rule_specific",
 			onupdate: update_rule_setting
@@ -9568,6 +9645,7 @@ var $$IMU_EXPORT$$;
 			requires: [{
 					allow_thirdparty: true
 				}],
+			hidden: true,
 			options: {
 				_type: "combo",
 				_randomize: true,
@@ -9632,64 +9710,59 @@ var $$IMU_EXPORT$$;
 			onupdate: update_rule_setting
 		},
 		bigimage_blacklist: {
-			name: "Blacklist",
+			name: "Media blacklist",
 			description: "A list of URLs (one per line) that are blacklisted from being processed",
 			category: "rules",
-			type: "textarea",
-			onupdate: function() {
-				update_rule_setting();
-				create_blacklist_regexes();
-			},
-			onedit: function() {
-				var errors = create_blacklist_regexes();
-				var errordiv;
-				try {
-					errordiv = document.querySelector("#option_bigimage_blacklist .error");
-					errordiv.innerText = "";
-					errordiv.classList.add("hidden");
-				} catch (e) {
+			type: "textarea"
+		},
+		bigimage_blacklist_mode: {
+			name: "Media blacklist mode",
+			description: "Whether the media blacklist should act as a blacklist or a whitelist",
+			category: "rules",
+			options: {
+				whitelist: {
+					name: "Whitelist"
+				},
+				blacklist: {
+					name: "Blacklist"
 				}
-				if (errors) {
-					for (var i = 0; i < errors.length; i++) {
-						if (errordiv) {
-							errordiv.innerText += errors[i].message + "\n";
-							errordiv.classList.remove("hidden");
-						}
-						console.error(errors[i]);
-					}
-				}
-			},
-			documentation: {
-				title: "Documentation",
-				value: [
-					"The examples below are written for the simple (glob) engine, not the regex engine. The glob engine is generally based on the UNIX glob syntax.<br />",
-					"<ul><br />",
-					"<li><code>google.com</code> will block https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/, etc.</li>",
-					"<li><code>abc.google.com</code> will block https://abc.google.com/, https://def.abc.google.com/, etc.</li>",
-					"<li><code>*.google.com</code> will block https://www.google.com/, https://def.abc.google.com/, etc. but not https://google.com/</li>",
-					"<li><code>google.*/</code> will block https://google.com/, https://www.google.co.uk, etc.</li>",
-					"<li><code>http://google.com</code> will block http://google.com/, but not https://google.com/, http://www.google.com/, etc.</li>",
-					"<li><code>google.com/test</code> will block https://google.com/test, https://www.google.com/test/abcdef, but not https://google.com/, etc.</li>",
-					"<li><code>google.com/*/test</code> will block https://google.com/abc/test, but not https://google.com/test or https://google.com/abc/def/test</li>",
-					"<li><code>google.com/**/test</code> will block https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, etc. but not https://google.com/test</li>",
-					"<li><code>g??gle.com</code> will block https://google.com/, https://gaagle.com/, https://goagle.com/, etc.</li>",
-					"<li><code>google.{com,co.uk}</code> will block https://google.com/ and https://google.co.uk/</li>",
-					"<li><code>g[oau]ogle.com</code> will block https://google.com/, https://gaogle.com/, and http://www.guogle.com/</li>",
-					"<li><code>g[0-9]ogle.com</code> will block https://g0ogle.com/, https://g1ogle.com/, etc. (up to https://g9ogle.com/)</li>",
-					"</ul>"
-				].join("\n")
 			}
 		},
 		bigimage_blacklist_engine: {
 			name: "Blacklist engine",
-			description: "How the blacklist should be processed",
-			category: "rules",
+			description: "How blacklists should be processed",
+			category: "general",
 			options: {
 				glob: {
 					name: "Simple (glob)"
 				},
 				regex: {
 					name: "Regex"
+				}
+			}
+		},
+		host_blacklist: {
+			name: "Host blacklist",
+			description: "A list of host URLs (one per line) that the popup is blacklisted from. For example, adding `twitter.com` to this blacklist would prevent any popup from opening on twitter.com.",
+			type: "textarea",
+			requires: {
+				mouseover: true,
+				apply_blacklist_host: false
+			},
+			category: "popup",
+			subcategory: "source"
+		},
+		host_blacklist_mode: {
+			name: "Host blacklist mode",
+			description: "Whether the host blacklist should act as a blacklist or a whitelist",
+			category: "popup",
+			subcategory: "source",
+			options: {
+				whitelist: {
+					name: "Whitelist"
+				},
+				blacklist: {
+					name: "Blacklist"
 				}
 			}
 		},
@@ -10023,7 +10096,66 @@ var $$IMU_EXPORT$$;
 			category: "extra",
 			subcategory: "highlightimages",
 			imu_enabled_exempt: true
-		}
+		},
+		customgallery_enable_keybinding: {
+			name: "Enable trigger key",
+			description: "Enables the use of the trigger key to run it without needing to use the menu",
+			category: "extra",
+			subcategory: "customgallery",
+		},
+		customgallery_keybinding: {
+			name: "Trigger key",
+			description: "Trigger keybinding that will run the Custom Gallery function",
+			requires: {
+				customgallery_enable_keybinding: true
+			},
+			type: "keysequence",
+			category: "extra",
+			subcategory: "customgallery"
+		},
+		customgallery_enable_button: {
+			name: "Enable button",
+			description: "Enables the 'Custom Gallery' button",
+			category: "extra",
+			subcategory: "customgallery",
+			imu_enabled_exempt: true
+		},
+		customgallery_apply_key: {
+			name: "Apply key",
+			description: "Triggers the gallery when pressed",
+			requires: [
+				{ customgallery_enable_button: true },
+				{ customgallery_enable_keybinding: true }
+			],
+			type: "keysequence",
+			category: "extra",
+			subcategory: "customgallery",
+			imu_enabled_exempt: true
+		},
+		customgallery_bg_css: {
+			name: "Background CSS",
+			description: "CSS style to apply for the background",
+			type: "textarea",
+			requires: [
+				{ customgallery_enable_button: true },
+				{ customgallery_enable_keybinding: true }
+			],
+			category: "extra",
+			subcategory: "customgallery",
+			imu_enabled_exempt: true
+		},
+		customgallery_outline_css: {
+			name: "Outline CSS",
+			description: "CSS style to apply for element outlines",
+			type: "textarea",
+			requires: [
+				{ customgallery_enable_button: true },
+				{ customgallery_enable_keybinding: true }
+			],
+			category: "extra",
+			subcategory: "customgallery",
+			imu_enabled_exempt: true
+		},
 	};
 	var option_to_problems = {
 		allow_watermark: "watermark",
@@ -10072,7 +10204,8 @@ var $$IMU_EXPORT$$;
 		},
 		"extra": {
 			"replaceimages": "subcategory_replaceimages",
-			"highlightimages": "subcategory_highlightimages"
+			"highlightimages": "subcategory_highlightimages",
+			"customgallery": "subcategory_customgallery"
 		}
 	};
 	var settings_conditions = {
@@ -10125,6 +10258,62 @@ var $$IMU_EXPORT$$;
 			}
 		}
 	})();
+	var blacklist_settings = {
+		bigimage_blacklist: {
+			create_regexes: function() { return create_blacklist_regexes(); }
+		},
+		host_blacklist: {
+			create_regexes: function() { return create_host_blacklist_regexes(); }
+		}
+	};
+	var _loop_1 = function(bl) {
+		settings_meta[bl].onupdate = function() {
+			update_rule_setting();
+			blacklist_settings[bl].create_regexes();
+		};
+		settings_meta[bl].onedit = function() {
+			var errors = blacklist_settings[bl].create_regexes();
+			var errordiv = null;
+			try {
+				errordiv = document.querySelector("#option_" + bl + " .error");
+				errordiv.innerText = "";
+				errordiv.classList.add("hidden");
+			} catch (e) {
+			}
+			if (errors) {
+				for (var i = 0; i < errors.length; i++) {
+					if (errordiv) {
+						errordiv.innerText += errors[i].message + "\n";
+						errordiv.classList.remove("hidden");
+					}
+					console.error(errors[i]);
+				}
+			}
+		};
+		settings_meta[bl].documentation = {
+			title: "Documentation",
+			value: [
+				"The examples below are written for the simple (glob) engine, not the regex engine. The glob engine is generally based on the UNIX glob syntax.<br />",
+				"<ul><br />",
+				"<li><code>google.com</code> will block https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/, etc.</li>",
+				"<li><code>abc.google.com</code> will block https://abc.google.com/, https://def.abc.google.com/, etc.</li>",
+				"<li><code>*.google.com</code> will block https://www.google.com/, https://def.abc.google.com/, etc. but not https://google.com/</li>",
+				"<li><code>google.*/</code> will block https://google.com/, https://www.google.co.uk, etc.</li>",
+				"<li><code>http://google.com</code> will block http://google.com/, but not https://google.com/, http://www.google.com/, etc.</li>",
+				"<li><code>google.com/test</code> will block https://google.com/test, https://www.google.com/test/abcdef, but not https://google.com/, etc.</li>",
+				"<li><code>google.com/*/test</code> will block https://google.com/abc/test, but not https://google.com/test or https://google.com/abc/def/test</li>",
+				"<li><code>google.com/**/test</code> will block https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, etc. but not https://google.com/test</li>",
+				"<li><code>g??gle.com</code> will block https://google.com/, https://gaagle.com/, https://goagle.com/, etc.</li>",
+				"<li><code>google.{com,co.uk}</code> will block https://google.com/ and https://google.co.uk/</li>",
+				"<li><code>g[oau]ogle.com</code> will block https://google.com/, https://gaogle.com/, and http://www.guogle.com/</li>",
+				"<li><code>g[0-9]ogle.com</code> will block https://g0ogle.com/, https://g1ogle.com/, etc. (up to https://g9ogle.com/)</li>",
+				"</ul>"
+			].join("\n")
+		};
+	};
+	for (var bl in blacklist_settings) {
+		_loop_1(bl);
+	}
 	var orig_settings = deepcopy(settings);
 	for (var option in option_to_problems) {
 		var problem = option_to_problems[option];
@@ -10287,6 +10476,9 @@ var $$IMU_EXPORT$$;
 	};
 	var set_has = function(set, key) {
 		return map_has(set, key);
+	};
+	var set_remove = function(set, key) {
+		return map_remove(set, key);
 	};
 	var IMUCache = /** @class */ (function() {
 		function IMUCache(options) {
@@ -11313,97 +11505,105 @@ var $$IMU_EXPORT$$;
 		};
 	}
 	var blacklist_regexes = [];
+	var host_blacklist_regexes = [];
 	function update_rule_setting() {
 		url_cache.clear();
 	}
-	function create_blacklist_regexes() {
-		blacklist_regexes = [];
-		var blacklist_str = settings.bigimage_blacklist || "";
-		if (typeof blacklist_str !== "string") {
-			console_warn("Invalid blacklist", blacklist_str);
-			return;
+	var glob_to_regexstr = function(current) {
+		var newcurrent = "";
+		var sbracket = -1;
+		var cbracket = -1;
+		for (var j = 0; j < current.length; j++) {
+			if (sbracket >= 0) {
+				if (current[j] === "]") {
+					newcurrent += current.substr(sbracket, j - sbracket + 1);
+					sbracket = -1;
+				}
+				continue;
+			}
+			if (cbracket >= 0) {
+				if (current[j] === "}") {
+					var options = current.substr(cbracket + 1, j - cbracket - 1).split(",");
+					var newoptions = [];
+					for (var k = 0; k < options.length; k++) {
+						newoptions.push(options[k].replace(/(.)/g, "[$1]"));
+					}
+					if (newoptions.length > 0 && (newoptions.length > 1 || newoptions[0].length > 0))
+						newcurrent += "(?:" + newoptions.join("|") + ")";
+					cbracket = -1;
+				}
+				continue;
+			}
+			if (current[j] !== "*") {
+				if (current[j] === "{") {
+					cbracket = j;
+				} else if (current[j] === "[") {
+					sbracket = j;
+				} else if (current[j] === "?") {
+					newcurrent += "[^/]";
+				} else if (current[j] === ".") {
+					newcurrent += "\\.";
+				} else {
+					newcurrent += current[j];
+				}
+				continue;
+			}
+			var doublestar = false;
+			if ((j + 1) < current.length) {
+				if (current[j + 1] === "*") {
+					doublestar = true;
+					j++;
+				}
+			}
+			if (doublestar)
+				newcurrent += ".+";
+			else
+				newcurrent += "[^/]+";
 		}
-		var blacklist = blacklist_str.split("\n");
-		for (var i = 0; i < blacklist.length; i++) {
-			var current = blacklist[i].replace(/^\s+|\s+$/, "");
+		current = newcurrent;
+		if (current[0] !== "*") {
+			newcurrent = current.replace(/^[a-z]*:\/\//, "[a-z]+://");
+			if (newcurrent !== current) {
+				current = newcurrent;
+			} else {
+				current = "[a-z]+://[^/]*" + current;
+			}
+		}
+		current = "^" + current;
+		return current;
+	};
+	var parse_blacklist_regexes = function(blacklist, engine) {
+		var regexes = [];
+		var lines = (blacklist || "").split("\n");
+		for (var i = 0; i < lines.length; i++) {
+			var current = lines[i].replace(/^\s+|\s+$/, "");
 			//console_log(current);
 			if (current.length === 0)
 				continue;
-			if (settings.bigimage_blacklist_engine === "regex") {
-				try {
-					blacklist_regexes.push(new RegExp(current));
-				} catch (e) {
-					return [e];
-				}
-			} else if (settings.bigimage_blacklist_engine === "glob") {
-				var newcurrent = "";
-				var sbracket = -1;
-				var cbracket = -1;
-				for (var j = 0; j < current.length; j++) {
-					if (sbracket >= 0) {
-						if (current[j] === "]") {
-							newcurrent += current.substr(sbracket, j - sbracket + 1);
-							sbracket = -1;
-						}
-						continue;
-					}
-					if (cbracket >= 0) {
-						if (current[j] === "}") {
-							var options = current.substr(cbracket + 1, j - cbracket - 1).split(",");
-							var newoptions = [];
-							for (var k = 0; k < options.length; k++) {
-								newoptions.push(options[k].replace(/(.)/g, "[$1]"));
-							}
-							if (newoptions.length > 0 && (newoptions.length > 1 || newoptions[0].length > 0))
-								newcurrent += "(?:" + newoptions.join("|") + ")";
-							cbracket = -1;
-						}
-						continue;
-					}
-					if (current[j] !== "*") {
-						if (current[j] === "{") {
-							cbracket = j;
-						} else if (current[j] === "[") {
-							sbracket = j;
-						} else if (current[j] === "?") {
-							newcurrent += "[^/]";
-						} else if (current[j] === ".") {
-							newcurrent += "\\.";
-						} else {
-							newcurrent += current[j];
-						}
-						continue;
-					}
-					var doublestar = false;
-					if ((j + 1) < current.length) {
-						if (current[j + 1] === "*") {
-							doublestar = true;
-							j++;
-						}
-					}
-					if (doublestar)
-						newcurrent += ".+";
-					else
-						newcurrent += "[^/]+";
-				}
-				current = newcurrent;
-				if (current[0] !== "*") {
-					newcurrent = current.replace(/^[a-z]*:\/\//, "[a-z]+://");
-					if (newcurrent !== current) {
-						current = newcurrent;
-					} else {
-						current = "[a-z]+://[^/]*" + current;
-					}
-				}
-				current = "^" + current;
-				try {
-					blacklist_regexes.push(new RegExp(current));
-				} catch (e) {
-					return [e];
-				}
+			var regexstr = current;
+			if (engine === "glob") {
+				regexstr = glob_to_regexstr(current);
 			}
+			regexes.push(new RegExp(regexstr));
+		}
+		return regexes;
+	};
+	function create_blacklist_regexes() {
+		blacklist_regexes = [];
+		try {
+			blacklist_regexes = parse_blacklist_regexes(settings.bigimage_blacklist, settings.bigimage_blacklist_engine);
+		} catch (e) {
+			return [e];
 		}
 		//console_log(blacklist_regexes);
+	}
+	function create_host_blacklist_regexes() {
+		host_blacklist_regexes = [];
+		try {
+			host_blacklist_regexes = parse_blacklist_regexes(settings.host_blacklist, settings.bigimage_blacklist_engine);
+		} catch (e) {
+			return [e];
+		}
 	}
 	var parse_headers = function(headerstr) {
 		var headers = [];
@@ -12048,7 +12248,7 @@ var $$IMU_EXPORT$$;
 		return strip_whitespace_simple(normalize_whitespace(str));
 	};
 	var get_image_size = function(url, cb) {
-		var image = new Image(url);
+		var image = new Image();
 		var timeout = null;
 		var finalcb = function(e) {
 			image.onload = null;
@@ -14955,7 +15155,7 @@ var $$IMU_EXPORT$$;
 		return false;
 	};
 	common_functions["get_tiktok_weburl_parts"] = function(url) {
-		var match = url.match(/^[a-z]+:\/\/[^/]+\/+@([^/]+)\/+video\/+([0-9]+)(?:[?#].*)?$/);
+		var match = url.match(/^[a-z]+:\/\/[^/]+\/+@([^/]*)\/+video\/+([0-9]+)(?:[?#].*)?$/);
 		if (!match) {
 			return null;
 		}
@@ -15587,7 +15787,8 @@ var $$IMU_EXPORT$$;
 		});
 	};
 	common_functions["tiktok_remove_watermark"] = function(api_cache, options, url, weburl, cb) {
-		if (!options.rule_specific) {
+		// Disabling this for now, it doesn't work anymore and serves no purpose with the latest tiktok rule updates
+		if (!options.rule_specific || true) {
 			return cb(null);
 		}
 		var funcs = [];
@@ -17319,6 +17520,7 @@ var $$IMU_EXPORT$$;
 	    	'new_set': new_set,
 	    	'set_add': set_add,
 	    	'set_has': set_has,
+	    	'set_remove': set_remove,
 	    	'real_api_cache': real_api_cache,
 	    	'real_api_query': real_api_query,
 	    	'real_website_query': real_website_query,
@@ -17398,13 +17600,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "2p2p7602iji08fng") {
+	            } else if (bigimage_obj.nonce !== "2ak9hjl1c3694726") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "2p2p7602iji08fng"
+	                    message: "Bad nonce, expected: " + "2ak9hjl1c3694726"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -18551,6 +18753,7 @@ var $$IMU_EXPORT$$;
 				"instagram_gallery_postlink": true,
 				"snapchat_orig_media": true,
 				teddit_redirect_reddit: true,
+				"tiktok_app_api": true,
 				"tiktok_no_watermarks": true,
 				"tiktok_thirdparty": true,
 				"tumblr_api_key": true,
@@ -22127,6 +22330,29 @@ var $$IMU_EXPORT$$;
 			cb(el);
 		}
 	}
+	var get_image_dims = function(image) {
+		var dims = {
+			height: image.naturalHeight,
+			width: image.naturalWidth
+		};
+		if (!image.complete || (dims.height && dims.width)) {
+			return dims;
+		}
+		// Firefox returns a width of 0 for SVGs (https://github.com/qsniyg/maxurl/issues/1243)
+		var newimg = new Image();
+		set_el_all_initial(newimg);
+		newimg.style.margin = "0";
+		newimg.style.padding = "0";
+		newimg.style.visibility = "hidden";
+		newimg.src = image.src;
+		document.documentElement.appendChild(newimg);
+		dims = {
+			width: newimg.offsetWidth,
+			height: newimg.offsetHeight
+		};
+		document.documentElement.removeChild(newimg);
+		return dims;
+	};
 	var get_window_url = function() {
 		return native_URL; // || window.URL || window.webkitURL;
 	};
@@ -22271,7 +22497,8 @@ var $$IMU_EXPORT$$;
 		};
 		img.onload = function() {
 			end_cbs();
-			if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+			var dims = get_image_dims(img);
+			if (dims.width === 0 || dims.height === 0) {
 				if (_nir_debug_)
 					console_log("naturalWidth or naturalHeight == 0", img);
 				return err_cb();
@@ -22980,7 +23207,7 @@ var $$IMU_EXPORT$$;
 		var mouseover_base_enabled = function() {
 			if (!settings.imu_enabled)
 				return false;
-			if (settings.apply_blacklist_host && !bigimage_filter(window.location.href))
+			if (!host_filter(window.location.href))
 				return false;
 			return true;
 		};
@@ -23011,6 +23238,7 @@ var $$IMU_EXPORT$$;
 		var mask_el = null;
 		var popup_obj = null;
 		var previous_album_links = null;
+		var override_album = null;
 		var popup_contentlength = null;
 		var popup_el = null;
 		var popup_el_mediatype = null;
@@ -23330,6 +23558,7 @@ var $$IMU_EXPORT$$;
 			last_popup_media_client_rect_cache = 0;
 			if (!options.automatic) {
 				popup_hold = false;
+				override_album = null;
 			}
 			if (!options.new_popup) {
 				can_close_popup = [false, false];
@@ -24402,6 +24631,12 @@ var $$IMU_EXPORT$$;
 				return [
 					el.width.animVal.value,
 					el.height.animVal.value
+				];
+			} else if (el_tagname === "IMG") {
+				var dims = get_image_dims(el);
+				return [
+					dims.width,
+					dims.height
 				];
 			} else if (el_tagname === "IMG" || el_tagname === "PICTURE") {
 				return [
@@ -27939,6 +28174,21 @@ var $$IMU_EXPORT$$;
 			return null;
 		};
 		get_next_in_gallery = function(el, nextprev) {
+			if (override_album) {
+				var index = array_indexof(override_album, el);
+				if (index < 0)
+					return null;
+				if (nextprev) {
+					index++;
+				} else {
+					index--;
+				}
+				if (index < 0)
+					return null;
+				if (index >= override_album.length)
+					return null;
+				return override_album[index];
+			}
 			var value = get_album_info_gallery(popup_obj, el, nextprev);
 			if (value || value === false)
 				return value;
@@ -28150,6 +28400,7 @@ var $$IMU_EXPORT$$;
 			return settings.mouseover_exclude_imagetab && get_single_setting("mouseover_trigger_behavior") === "mouse" &&
 				currenttab_is_image() && !imagetab_ok_override;
 		}
+		var exclude_find_els = new_set();
 		function find_els_at_point(xy, els, prev, zoom_cache) {
 			// test for pointer-events: none: https://www.shacknews.com/article/114834/should-you-choose-vulkan-or-directx-12-in-red-dead-redemption-2
 			if (false && _nir_debug_)
@@ -28170,7 +28421,13 @@ var $$IMU_EXPORT$$;
 			var afterret = [];
 			var els_mode = get_single_setting("mouseover_find_els_mode");
 			if (!els) {
-				els = document.elementsFromPoint(xy[0], xy[1]);
+				var orig_els = document.elementsFromPoint(xy[0], xy[1]);
+				els = [];
+				for (var _i = 0, orig_els_1 = orig_els; _i < orig_els_1.length; _i++) {
+					var el_1 = orig_els_1[_i];
+					if (!set_has(exclude_find_els, el_1))
+						els.push(el_1);
+				}
 				afterret = els;
 				if (_nir_debug_) {
 					console_log("find_els_at_point (elsfrompoint)", deepcopy(els));
@@ -29416,6 +29673,168 @@ var $$IMU_EXPORT$$;
 			return replace_images(base_options);
 		};
 		register_menucommand("Replace images", replace_images_full);
+		var exit_custom_gallery = null;
+		var setup_custom_gallery = function() {
+			if (exit_custom_gallery)
+				exit_custom_gallery();
+			var base_maskel = document_createElement("div");
+			set_important_style(base_maskel, "position", "absolute");
+			set_important_style(base_maskel, "left", "0px");
+			set_important_style(base_maskel, "top", "0px");
+			set_el_all_initial(base_maskel);
+			var mask_bgel = document_createElement("div");
+			set_el_all_initial(mask_bgel);
+			apply_styles(mask_bgel, settings.customgallery_bg_css, { force_important: true });
+			set_important_style(mask_bgel, "pointer-events", "none");
+			set_important_style(mask_bgel, "position", "fixed");
+			set_important_style(mask_bgel, "left", "0px");
+			set_important_style(mask_bgel, "top", "0px");
+			set_important_style(mask_bgel, "height", "100%");
+			set_important_style(mask_bgel, "width", "100%");
+			set_important_style(mask_bgel, "z-index", maxzindex - 3);
+			base_maskel.appendChild(mask_bgel);
+			var mask_outlines_el = document_createElement("div");
+			set_el_all_initial(mask_outlines_el);
+			set_important_style(mask_outlines_el, "position", "absolute");
+			set_important_style(mask_outlines_el, "pointer-events", "none");
+			set_important_style(mask_outlines_el, "left", "0px");
+			set_important_style(mask_outlines_el, "top", "0px");
+			set_important_style(mask_outlines_el, "z-index", maxzindex - 2);
+			base_maskel.appendChild(mask_outlines_el);
+			var maskel = document_createElement("div");
+			set_el_all_initial(maskel);
+			set_important_style(maskel, "position", "fixed");
+			set_important_style(maskel, "left", "0px");
+			set_important_style(maskel, "top", "0px");
+			set_important_style(maskel, "height", "100%");
+			set_important_style(maskel, "width", "100%");
+			set_important_style(maskel, "z-index", maxzindex);
+			base_maskel.appendChild(maskel);
+			set_add(exclude_find_els, maskel);
+			var sources = [];
+			var source_el_set = new_set();
+			var _find_source = function(source) {
+				for (var _i = 0, sources_1 = sources; _i < sources_1.length; _i++) {
+					var src = sources_1[_i];
+					if (src.el === source.el)
+						return src;
+				}
+				return null;
+			};
+			var add_source = function(source) {
+				if (!source.el)
+					return false;
+				if (set_has(source_el_set, source.el))
+					return _find_source(source) || source;
+				sources.push(source);
+				set_add(source_el_set, source.el);
+				return source;
+			};
+			var remove_source = function(source) {
+				var found_source = _find_source(source);
+				if (found_source) {
+					var index = array_indexof(sources, found_source);
+					if (index >= 0)
+						sources.splice(index, 1);
+				}
+				set_remove(source_el_set, source.el);
+			};
+			exit_custom_gallery = function() {
+				if (alt_keydown_cb === our_keydown_cb)
+					alt_keydown_cb = null;
+				set_remove(exclude_find_els, maskel);
+				base_maskel.parentElement.removeChild(base_maskel);
+				exit_custom_gallery = null;
+			};
+			var our_keydown_cb = alt_keydown_cb = function(e) {
+				var actions = [
+					{
+						key: settings.mouseover_close_key,
+						action: exit_custom_gallery
+					},
+					{
+						key: settings.customgallery_apply_key,
+						action: function() {
+							exit_custom_gallery();
+							if (!sources.length)
+								return;
+							override_album = [];
+							for (var _i = 0, sources_2 = sources; _i < sources_2.length; _i++) {
+								var source = sources_2[_i];
+								override_album.push(source.el);
+							}
+							trigger_popup_with_source(sources[0], true);
+						}
+					}
+				];
+				for (var _i = 0, actions_1 = actions; _i < actions_1.length; _i++) {
+					var action = actions_1[_i];
+					if (!trigger_complete(action.key))
+						continue;
+					action.action();
+					return false;
+				}
+			};
+			our_addEventListener(maskel, "click", function(e) {
+				e.preventDefault();
+				e.stopImmediatePropagation();
+				e.stopPropagation();
+				var els = find_els_at_point([mouseX, mouseY]);
+				var source = find_source(els);
+				if (!source || !source.el)
+					return;
+				source = add_source(source);
+				source._real_el = source.el;
+				if (source.picture)
+					source._real_el = source.picture;
+				if (source._outline_el) {
+					// if _outline_el exists, then the source was already added previously
+					// toggle
+					remove_source(source);
+					if (source._outline_el) {
+						source._outline_el.parentElement.removeChild(source._outline_el);
+					}
+					return;
+				}
+				var rect = source._real_el.getBoundingClientRect();
+				var outline_el = document_createElement("div");
+				apply_styles(outline_el, settings.customgallery_outline_css, { force_important: true });
+				set_important_style(outline_el, "position", "absolute");
+				set_important_style(outline_el, "pointer-events", "none");
+				set_important_style(outline_el, "z-index", maxzindex - 1);
+				set_important_style(outline_el, "left", (rect.left + window.scrollX) + "px");
+				set_important_style(outline_el, "top", (rect.top + window.scrollY) + "px");
+				set_important_style(outline_el, "width", rect.width + "px");
+				set_important_style(outline_el, "height", rect.height + "px");
+				mask_outlines_el.appendChild(outline_el);
+				source._outline_el = outline_el;
+			}, { capture: true });
+			document.documentElement.appendChild(base_maskel);
+		};
+		(function() {
+			var added = false;
+			var id = null;
+			var update_button = function() {
+				if (settings.customgallery_enable_button) {
+					if (!added) {
+						id = register_menucommand("Custom gallery", setup_custom_gallery);
+						added = true;
+					}
+				} else {
+					if (added) {
+						unregister_menucommand(id);
+						added = false;
+					}
+				}
+			};
+			update_button();
+			var origfunc = settings_meta.customgallery_enable_button.onupdate;
+			settings_meta.customgallery_enable_button.onupdate = function() {
+				update_button();
+				if (origfunc)
+					return origfunc.apply(this, arguments);
+			};
+		})();
 		var create_zip = function(files, foldername, cb, progresscb) {
 			get_library("jszip", settings, do_request, function(lib) {
 				if (!lib)
@@ -30023,7 +30442,7 @@ var $$IMU_EXPORT$$;
 			if (is_suspended())
 				return;
 			// TODO: allow this to be automatically updated
-			if (settings.apply_blacklist_host && !bigimage_filter(window.location.href))
+			if (!host_filter(window.location.href))
 				return;
 			var observer;
 			var observe_options = { childList: true, subtree: true, attributes: true };
@@ -30401,6 +30820,9 @@ var $$IMU_EXPORT$$;
 				case "highlight_images":
 					highlight_images();
 					return true;
+				case "custom_gallery":
+					setup_custom_gallery();
+					return true;
 				case "trigger_popup":
 					if (action.trigger === "keyboard") {
 						popup_trigger_reason = "keyboard";
@@ -30597,6 +31019,7 @@ var $$IMU_EXPORT$$;
 			}
 			return down + " " + keystrs_arr.join(",") + " " + event.timeStamp;
 		};
+		var alt_keydown_cb = null;
 		var keydown_cb = function(event) {
 			// otherwise rebinding the trigger key will fail
 			if (is_options_page)
@@ -30636,6 +31059,11 @@ var $$IMU_EXPORT$$;
 				if (trigger_complete(["shift", "button2"])) {
 					update_contextmenu_pos(event);
 				}
+			}
+			if (alt_keydown_cb) {
+				ret = alt_keydown_cb(event);
+				if (ret === false)
+					return do_event_return(event, ret);
 			}
 			if (settings.mouseover) {
 				if (get_single_setting("mouseover_trigger_behavior") === "keyboard") {
@@ -30680,6 +31108,11 @@ var $$IMU_EXPORT$$;
 				actions.push({ type: "highlight_images" });
 				ret = false;
 				release_ignore = settings.highlightimgs_keybinding;
+			}
+			if (settings.customgallery_enable_keybinding && trigger_complete(settings.customgallery_keybinding)) {
+				actions.push({ type: "custom_gallery" });
+				ret = false;
+				release_ignore = settings.customgallery_keybinding;
 			}
 			// don't run if another function above was already triggered (e.g. when close is bound to the same key as trigger)
 			if (settings.mouseover && ret !== false) {
@@ -31151,6 +31584,8 @@ var $$IMU_EXPORT$$;
 						replace_images_full();
 					} else if (message.data.action === "highlight_images") {
 						highlight_images();
+					} else if (message.data.action in menucommands_map) {
+						menucommands_map[message.data.action].func();
 					}
 				} else if (message.type === "remote" || message.type === "remote_reply") {
 					handle_remote_event(message);

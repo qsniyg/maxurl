@@ -549,6 +549,7 @@ assets.lybrate.com
 assets.marthastewart.com
 assets.media-platform.com
 assets.metrolatam.com
+assets.mmsrg.com
 assets.mocha.global
 assets.mubi.com
 assets.mubicdn.net
@@ -646,6 +647,7 @@ avisen.dk
 avito.st
 avsforum.com
 awanshop.co
+awork.com
 aws-br-pic.kwai.net
 aws-cf.caradisiac.com
 aws-cf.imdoc.fr
@@ -694,6 +696,7 @@ badfon.ru
 baidu-img.cn
 baidu.com
 bakusai.com
+ballyrobertgardens.coM
 bamcontent.com
 bamgrid.com
 banana1015.com
@@ -1045,6 +1048,7 @@ camwhores.tv
 camwhoresbay.com
 camwhoreshd.com
 canada.unofficialbird.com
+canadashistory.ca
 canalblog.com
 canarias7.es
 canberratimes.com.au
@@ -1077,6 +1081,7 @@ cartoontube.xxx
 cash-images-f.squarecdn.com
 casopiszdravie.sk
 casseycds.net
+catalogo.biblio.unc.edu.ar
 catmario.info
 cbjpeg.stream.highwebmedia.com
 cbs19.tv
@@ -1152,6 +1157,7 @@ cdn.9razia.de
 cdn.aarp.net
 cdn.abcotvs.com
 cdn.adltimgcdn.com
+cdn.administrace.tv
 cdn.admireme.vip
 cdn.agensite.online
 cdn.aibooru.online
@@ -1224,6 +1230,7 @@ cdn.drouot.com
 cdn.dsmcdn.com
 cdn.ebaumsworld.com
 cdn.elineupmall.com
+cdn.elitebabes.com
 cdn.emetro.co.kr
 cdn.empireonline.com
 cdn.entameclip.com
@@ -1350,6 +1357,7 @@ cdn.onebauer.media
 cdn.onedala.tv
 cdn.otamart.com
 cdn.panda-gossips.com.s3.amazonaws.com
+cdn.passes.com
 cdn.pastemagazine.com
 cdn.pax6.com
 cdn.photos.sparkplatform.com
@@ -1737,6 +1745,7 @@ connectgalaxy.com
 connexionfrance.com
 consolefun.fr
 contactmusic.com
+content-jp.umgi.net
 content.adultwork.com
 content.api.news
 content.atkingdom.com
@@ -2073,6 +2082,7 @@ delfi.ee
 deliciousbabes.org
 deloitte.com
 delphi.lv
+deltagoodrem.com
 demandstudios.com
 demo.brainymore.com
 demokrathaber.org
@@ -2312,6 +2322,7 @@ e-monsite.com
 e-onkyo.com
 e-outdoor.co.uk
 e-shuushuu.net
+e.khoahoc.tv
 e.porosenka.net
 e.radio-studio92.io
 e1nn.com
@@ -2326,6 +2337,7 @@ ebayimg.com
 ebaystatic.com
 ebookstore.sony.jp
 ec56229aec51f1baff1d-185c3068e22352c56024573e929788ff.ssl.cf1.rackcdn.com
+ecdnimg.toranoana.jp
 ecestaticos.com
 echosrecordbar.co.za
 echosrecordbar.s3.amazonaws.com
@@ -2361,6 +2373,7 @@ eiga.k-img.com
 ekladata.com
 eksisozluk.com
 eksisozluk1923.com
+eksisozluk1999.com
 ekstrabladet.dk
 elbalad.news
 eldarioncloud.com
@@ -2796,6 +2809,7 @@ foxyporn.com
 fpo.xxx
 fractal-design.com
 framatube.org
+framemark.vam.ac.uk
 franceinter.fr
 fraufluger.ru
 freakolla.com
@@ -3116,6 +3130,7 @@ greenpostkorea.co.kr
 gretschpages.com
 grid.id
 groundctrl.s3.amazonaws.com
+groundnews.b-cdn.net
 gstatic.com
 gta.cz
 gtainside.com
@@ -3573,6 +3588,7 @@ iloveporn.xxx
 ilyo.co.kr
 ilyoseoul.co.kr
 ilyosisa.co.kr
+im.autopilot.ru
 im.camjaxx.com
 im.indiatimes.in
 im.milliyet.com.tr
@@ -3627,6 +3643,7 @@ image.fomos.kr
 image.gala.de
 image.gamechosun.co.kr
 image.gamer.ne.jp
+image.gazetevatan.com
 image.genie.co.kr
 image.giaoducthoidai.vn
 image.goxip.com
@@ -3678,6 +3695,7 @@ image.photocnc.com
 image.photohito.k-img.com
 image.pmgstatic.com
 image.pornyl.com
+image.posta.com.tr
 image.puls24.at
 image.qianye88.com
 image.seiska.fi
@@ -3947,6 +3965,7 @@ images.nudeasians.pics
 images.nudejapanesemodels.sexy
 images.nudereviews.com
 images.pagina12.com.ar
+images.pangobooks.com
 images.paramount.tech
 images.parler.com
 images.performgroup.com
@@ -4949,6 +4968,7 @@ kinohron.mskcentrum.sk
 kinokach.com
 kinolift.ru
 kinonews.ru
+kinopavasaris.lt
 kinorium-images.s3.amazonaws.com
 kinoukr.com
 kisax.com
@@ -5106,6 +5126,7 @@ libe.com
 liber.post-gazette.com
 liberoquotidiano.it
 libre.tube
+libreriaeldesvan.com
 librex.baczek.me
 librex.bloatcat.tk
 librex.me
@@ -5279,6 +5300,7 @@ mangadex.cc
 mangadex.org
 mangadrawing.net
 mangovideo.club
+manhua.acimg.cn
 mania.kr
 mapi.associatedpress.com
 maquillagecreation.ch
@@ -5319,6 +5341,7 @@ media-cache.cinematerial.com
 media-cdn.grubhub.com
 media-cdn.sueddeutsche.de
 media-cdn.tripadvisor.com
+media-cloud.corcoranlabs.com
 media-ima002.globaltalentsystems.com
 media-ima002.globaltalentsystems.com.s3.amazonaws.com
 media-imdb.com
@@ -5339,6 +5362,7 @@ media.architecturaldigest.com
 media.arkansasonline.com
 media.babesource.com
 media.baselineresearch.com
+media.bauerradio.com
 media.bechtle.com
 media.becteroradio.com
 media.beliefnet.com
@@ -5619,6 +5643,7 @@ mfoxes.net
 mfqqx.com
 mg.soupingguo.com
 mgl.skyrock.net
+mgpstockphotos.com
 mgstage.com
 mhnew.com
 mhns.co.kr
@@ -5787,11 +5812,13 @@ musictory.com
 musik-sammler.de
 muzmo.org
 muzmob.org
+mvd.cloud
 mvpchannel.net
 mweb.co.za
 my-hit.org
 my.cdn.tokyo-hot.com
 my.evilmilk.com
+my.mail.ru
 my.wikifeet.com
 my18pussy.com
 myabandonware.com
@@ -6434,6 +6461,7 @@ phylopic.org
 phys.org
 physicaleditions.com
 pic-b.com
+pic-bstarstatic.akamaized.net
 pic-bucket.ws.126.net
 pic-cdn.35pic.com
 pic-upload.de
@@ -7616,6 +7644,7 @@ static.keptelenseg.hu
 static.kino.de
 static.kinoafisha.info
 static.kinokopilka.pro
+static.kinorium.com
 static.klix.ba
 static.koreastardaily.com
 static.kritikustomeg.org
@@ -7856,6 +7885,7 @@ suryaa.com
 sutki.net
 suwalls.com
 suzisporn.com
+svbtleusercontent.com
 svensktnaringsliv.se
 svgsilh.com
 svirtus.cdnvideo.ru
@@ -7980,6 +8010,7 @@ telugu.samayam.com
 teluguone.com
 templatemo.com
 tengritravel.kz
+tent.bloat.cat
 tent.bloatcat.tk
 tent.sny.sh
 tent.vern.cc
@@ -8060,6 +8091,7 @@ themoviedb.org
 thenational.ae
 thenewslens.com
 thenorthernecho.co.uk
+theoldmapshop.com
 theonemilano.com
 thepaysites.com
 thephuketnews.com
@@ -8134,6 +8166,7 @@ thumbnails.cbc.ca
 thumbnails.odycdn.com
 thumbnails.pcgamingwiki.com
 thumbnails.trvl-media.com
+thumbnails.yayimages.com
 thumbnews.nateimg.co.kr
 thumbor-static.factorymedia.com
 thumbor-titelmediaug.netdna-ssl.com
@@ -8695,6 +8728,7 @@ wdfiles.com
 we123.com
 weandestudio.com
 wearehairy.com
+weaudition.com
 web-ace.jp
 web.de
 web.rds.it
@@ -8745,6 +8779,7 @@ wilddream.net
 wildpictures.net
 win4000.com
 windows7themes.net
+wine.com
 winporn.com
 wisebread.com
 withdrama.net
