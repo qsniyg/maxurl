@@ -4,7 +4,11 @@ New features:
 
  * Option to add thumbnail link to history (#749, thanks to madman06 for the idea)
 
-Special madman06 for their contributions and reports for this release
+Improvements:
+
+ * Various improvements/fixes to existing rules
+
+Special madman06, nimbuz for their contributions and reports for this release
 
  ---
 
