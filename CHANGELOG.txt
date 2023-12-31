@@ -6,9 +6,9 @@ New features:
 
 Improvements:
 
- * Various improvements/fixes to existing rules
+ * Various improvements/fixes to existing rules (including Patreon)
 
-Special madman06, nimbuz for their contributions and reports for this release
+Special madman06, nimbuz, Broly for their contributions and reports for this release
 
  ---
 
