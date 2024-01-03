@@ -11,8 +11,9 @@ Improvements:
 Bugfixes:
 
  * Fix remote messages failing under Firefox (thanks to Tulsow for reporting)
+ * Fix duplicate "Options" and "Request support for site" menu items for userscript (thanks to fireattack for reporting)
 
-Special madman06, nimbuz, Broly, Tulsow, jonestly for their contributions and reports for this release
+Special madman06, nimbuz, Broly, Tulsow, jonestly, fireattack for their contributions and reports for this release
 
  ---
 
