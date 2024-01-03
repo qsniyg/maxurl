@@ -8,7 +8,11 @@ Improvements:
 
  * Various improvements/fixes to existing rules (including Patreon)
 
-Special madman06, nimbuz, Broly for their contributions and reports for this release
+Bugfixes:
+
+ * Fix remote messages failing under Firefox (thanks to Tulsow for reporting)
+
+Special madman06, nimbuz, Broly, Tulsow, jonestly for their contributions and reports for this release
 
  ---
 
