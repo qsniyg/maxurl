@@ -14,7 +14,7 @@ Bugfixes:
  * Fix duplicate "Options" and "Request support for site" menu items for userscript (thanks to fireattack for reporting)
  * Prevent rare infinite loop with bad images
 
-Special madman06, nimbuz, Broly, Tulsow, jonestly, fireattack, TristanWasTaken, pointy, oifj34f34f, Viper33, vscum, karpuzikov for their contributions and reports for this release
+Special madman06, nimbuz, Broly, Tulsow, jonestly, fireattack, TristanWasTaken, pointy, oifj34f34f, Viper33, vscum, karpuzikov, sn3akyb3ar for their contributions and reports for this release
 
  ---
 
