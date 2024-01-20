@@ -1,4 +1,4 @@
-2023.12.1 (in-dev)
+2024.1.0 (in-dev)
 
 New features:
 
