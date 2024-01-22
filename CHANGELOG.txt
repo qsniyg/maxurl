@@ -1,8 +1,9 @@
-2024.1.0 (in-dev)
+2024.1.0
 
 New features:
 
  * Option to add thumbnail link to history (#749, thanks to madman06 for the idea)
+ * Support for ~80 new websites (using ~40 new rules)
 
 Improvements:
 

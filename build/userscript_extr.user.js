@@ -32,39 +32,39 @@
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 9000+ websites, including a powerful media popup and download feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 9000 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 9000 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 9000 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 9000 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 9000 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 9000 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 9000 sitios
-// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 9000 verkkosivustolle
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 000 sites web, y compris une puissante fonction de popup média
-// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 000 sites web, y compris une puissante fonction de popup média
-// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-9000 אתרים
-// @description:hi    9000 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
-// @description:hu    Több mint 9000 webhely képének és videóinak nagyobb vagy eredeti változatát találja
-// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 9000 situs web
-// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 9000 siti web
-// @description:ja    9000以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ko    9000개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 9000 nettsteder
-// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 9000 websites
-// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 9000 stron internetowych
-// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 9000 sites
-// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 9000+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 9000 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 9000 веб-сайтів
-// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 9000 งเว็บไซต์
-// @description:tr    9000'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
-// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 9000 trang web
+// @description       Finds larger or original versions of images and videos for 9100+ websites, including a powerful media popup and download feature
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 9100 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 9100 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 9100 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 9100 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 9100 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 9100 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 9100 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 9100 verkkosivustolle
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 100 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 100 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-9100 אתרים
+// @description:hi    9100 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
+// @description:hu    Több mint 9100 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 9100 situs web
+// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 9100 siti web
+// @description:ja    9100以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ko    9100개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 9100 nettsteder
+// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 9100 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 9100 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 9100 sites
+// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 9100+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 9100 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 9100 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 9100 งเว็บไซต์
+// @description:tr    9100'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 9100 trang web
 // @description:zh-CN 在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能
-// @description:zh-TW 為9000多個網站查找更大或原始圖像
-// @description:zh-HK 為9000多個網站查找更大或原始圖像
+// @description:zh-TW 為9100多個網站查找更大或原始圖像
+// @description:zh-HK 為9100多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2023.12.0
+// @version           2024.1.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -100,7 +100,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@7c9422713c336cd85737cd212b1c2a112a0e39ee/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@884bd053df1d72fff56ef409879657e8aa8876d9/build/rules.js
 // ==/UserScript==
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
 //   * Detecting whether or not the destination URL exists before redirecting
@@ -971,9 +971,10 @@ var $$IMU_EXPORT$$;
 		if (!matches)
 			return null;
 		var result = [];
-		array_foreach(matches, function(match) {
+		for (var _i = 0, matches_1 = matches; _i < matches_1.length; _i++) {
+			var match = matches_1[_i];
 			result.push(match.match(regex));
-		});
+		}
 		return result;
 	};
 	var obj_foreach = function(obj, cb) {
@@ -1382,7 +1383,7 @@ var $$IMU_EXPORT$$;
 			}
 			message.imu = true;
 			var wrapped_message = {};
-			wrapped_message[imu_message_key] = message;
+			wrapped_message[imu_message_key] = serialize_event(message);
 			if (!specified_window) {
 				for (var i = 0; i < window.frames.length; i++) {
 					try {
@@ -1426,7 +1427,7 @@ var $$IMU_EXPORT$$;
 			if (_nir_debug_) {
 				console_log("remote_send_message", to, message);
 			}
-			//console_log("remote", data);
+			//console_log("remote", to, data);
 			raw_remote_send_message(to, message);
 		};
 		remote_send_reply = function(to, response_id, data) {
@@ -1684,7 +1685,7 @@ var $$IMU_EXPORT$$;
 		} else if (typeof (GM) !== "undefined" && typeof (GM.openInTab) !== "undefined") {
 			open_in_tab = GM.openInTab;
 		}
-		if (open_in_tab !== common_functions["nullfunc"]) {
+		if (false && open_in_tab !== common_functions["nullfunc"]) {
 			register_menucommand("Options", get_options_page());
 			register_menucommand("Request support for this page", function() {
 				if (is_in_iframe)
@@ -1748,10 +1749,11 @@ var $$IMU_EXPORT$$;
 			if (data.imu_mode) {
 				var headers_to_set = {};
 				if (data.imu_mode === "document" || data.imu_mode === "iframe") {
-					headers_to_set["accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
+					//headers_to_set["accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
+					headers_to_set["accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8";
 					headers_to_set["Sec-Fetch-Dest"] = data.imu_mode === "document" ? "document" : "iframe";
 					headers_to_set["Sec-Fetch-Mode"] = "navigate";
-					headers_to_set["Sec-Fetch-Site"] = data.imu_mode === "document" ? "none" : "cross-site";
+					headers_to_set["Sec-Fetch-Site"] = data.imu_mode === "document" ? "same-origin" : "cross-site";
 					headers_to_set["Sec-Fetch-User"] = "?1";
 				} else if (data.imu_mode === "xhr") {
 					headers_to_set["accept"] = "*/*";
@@ -2738,7 +2740,10 @@ var $$IMU_EXPORT$$;
 					try {
 						result[key] = deepcopy(x[key], options);
 					} catch (e) {
-						result[key] = x[key];
+						if (options["json"])
+							result[key] = void 0;
+						else
+							result[key] = x[key];
 					}
 				}
 			}
@@ -6440,6 +6445,7 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
 		mouseover_wait_use_el: false,
 		mouseover_add_to_history: false,
+		mouseover_add_thumbnail_to_history: false,
 		mouseover_close_key: ["esc"],
 		mouseover_download_key: [["s"], ["ctrl", "s"]],
 		mouseover_open_new_tab_key: ["o"],
@@ -8075,6 +8081,17 @@ var $$IMU_EXPORT$$;
 		mouseover_add_to_history: {
 			name: "Add popup link to history",
 			description: "Adds the image/video link opened through the popup to the browser's history",
+			requires: {
+				mouseover: true
+			},
+			category: "popup",
+			subcategory: "popup_other",
+			required_permission: "history",
+			extension_only: true
+		},
+		mouseover_add_thumbnail_to_history: {
+			name: "Add thumbnail link to history",
+			description: "Adds the original media link opened through the popup to the browser's history",
 			requires: {
 				mouseover: true
 			},
@@ -13556,8 +13573,8 @@ var $$IMU_EXPORT$$;
 						console_error(cache_key, "Unable to find UID from user page", result);
 						return done(null, false);
 					}
-					for (var _i = 0, matches_1 = matches; _i < matches_1.length; _i++) {
-						var match = matches_1[_i];
+					for (var _i = 0, matches_2 = matches; _i < matches_2.length; _i++) {
+						var match = matches_2[_i];
 						var id = match[1];
 						if (!(id in ids))
 							ids[id] = 0;
@@ -16294,7 +16311,8 @@ var $$IMU_EXPORT$$;
 		};
 		var sources = {
 			video: [],
-			image: []
+			image: [],
+			subtitles: []
 		};
 		if (video_parsed.args["src"])
 			add_source(video_parsed);
@@ -16311,9 +16329,31 @@ var $$IMU_EXPORT$$;
 				console_warn("Unable to parse <source> tag", source);
 				return;
 			}
-			if (parsed.args.src)
+			if (parsed.args["src"])
 				add_source(parsed);
 		});
+		var captions_match = videomatch[0].match(/<track[^>]+?>/g);
+		if (captions_match) {
+			for (var _i = 0, captions_match_1 = captions_match; _i < captions_match_1.length; _i++) {
+				var caption = captions_match_1[_i];
+				var parsed = parse_tag_def(caption);
+				if (!parsed) {
+					console_warn("Unable to parse <track> tag", caption);
+					continue;
+				}
+				if (parsed.args["kind"] !== "captions" && parsed.args["kind"] !== "subtitles")
+					continue;
+				if (!parsed.args["src"])
+					continue;
+				var capt_obj = {
+					url: parsed.args["src"],
+					title: null
+				};
+				if (parsed.args["label"])
+					capt_obj.title = parsed.args["label"];
+				sources.subtitles.push(capt_obj);
+			}
+		}
 		sources.video.sort(function(a, b) {
 			if (!a.name || !b.name)
 				return 0;
@@ -16389,7 +16429,7 @@ var $$IMU_EXPORT$$;
 			options.ogimage = true;
 		if (!("videotag" in options))
 			options.videotag = true;
-		var sources = { video: [], image: [] };
+		var sources = { video: [], image: [], subtitles: [] };
 		if (options.videotag) {
 			sources = common_functions["get_videotag_sources"](resp.responseText);
 			if (!sources)
@@ -16422,6 +16462,16 @@ var $$IMU_EXPORT$$;
 		array_foreach(sources.video, function(source) {
 			video_urls.push(urljoin(page, source.url, true));
 		});
+		var subs = null;
+		if (sources.subtitles && sources.subtitles.length) {
+			subs = [];
+			for (var _i = 0, _a = sources.subtitles; _i < _a.length; _i++) {
+				var subtitle = _a[_i];
+				var baseobj = deepcopy(subtitle);
+				baseobj.url = urljoin(page, subtitle.url, true);
+				subs.push(baseobj);
+			}
+		}
 		if (options.ogvideo) {
 			var ogvideo = get_meta(resp.responseText, "og:video");
 			if (ogvideo) {
@@ -16440,10 +16490,14 @@ var $$IMU_EXPORT$$;
 		}
 		var urls = [];
 		array_foreach(video_urls, function(url) {
-			urls.push({
+			var obj = {
 				url: url,
 				video: true
-			});
+			};
+			if (subs) {
+				obj.subtitles = deepcopy(subs);
+			}
+			urls.push(obj);
 		});
 		array_extend(urls, image_urls);
 		if (!urls.length)
@@ -17238,6 +17292,7 @@ var $$IMU_EXPORT$$;
 		//   2020/01/16/687/n/1922564/4606d55d5e20819816a430.09594567_/i/selena-gomez-style-for-new-album-release-2020.jpg
 		// https://images.macrumors.com/t/H0ZN9uTQCAlcNAvgJLkUkfNyHDI=/112x112/smart/article-new/2021/05/Top-Stories-59-Feature.jpg
 		//   article-new/2021/05/Top-Stories-59-Feature.jpg
+		// https://images.vs-static.com/yfr09nm8pH3P694LHLLivqhMRDg=/0x314:2999x2001/1900x0/Getty_Images_1330811041_046fcd0f40/Getty_Images_1330811041_046fcd0f40.jpg
 		src = src
 			.replace(/^\/*/, "/")
 			.replace(/^\/[-_0-9a-zA-Z]{20,}=?\/+/, "/")
@@ -17245,6 +17300,7 @@ var $$IMU_EXPORT$$;
 			.replace(/^\/fit-in\/+(?:[0-9]+|orig)x(?:[0-9]+|orig)\/+(?:top\/+)?/, "/")
 			.replace(/^\/filters:[^/]+\/+/, "/")
 			.replace(/^\/smart\/+/, "/")
+			.replace(/^\/(?:[0-9]+|orig)x(?:[0-9]+|orig)(?::[0-9]+x[0-9]+)?\/+/, "/")
 			.replace(/^\/*/, "");
 		return src;
 	};
@@ -17445,6 +17501,96 @@ var $$IMU_EXPORT$$;
 			return done(resp.finalUrl, 60 * 60);
 		});
 	};
+	var match_single_file_signature = function(data, signature) {
+		if (typeof signature === "string") {
+			var newsig = [];
+			for (var i = 0; i < signature.length; i++) {
+				newsig.push(signature.charCodeAt(i));
+			}
+			signature = newsig;
+		}
+		if (data.length < signature.length)
+			return false;
+		for (var i = 0; i < signature.length; i++) {
+			if (signature[i] === null)
+				continue;
+			if (data[i] !== signature[i]) {
+				return false;
+			}
+		}
+		return true;
+	};
+	var match_file_signature = function(data) {
+		// https://en.wikipedia.org/wiki/List_of_file_signatures
+		var signatures = {
+			mp4: [
+				[null, null, null, null, 0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6F, 0x6D],
+				[null, null, null, null, 0x66, 0x74, 0x79, 0x70, 0x4D, 0x53, 0x4E, 0x56]
+			],
+			jpg: [
+				[0xFF, 0xD8, 0xFF]
+				/*[ 0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01 ],
+				[ 0xFF, 0xD8, 0xFF, 0xEE ],
+				[ 0xFF, 0xD8, 0xFF, 0xE1, null, null, 0x45, 0x78, 0x69, 0x66, 0x00, 0x00 ],
+				[ 0xFF, 0xD8, 0xFF, 0xE0 ]*/
+			],
+			gif: ["GIF87a", "GIF89a"],
+			png: [
+				[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]
+			],
+			webm: [
+				[0x1A, 0x45, 0xDF, 0xA3]
+			],
+			webp: [
+				[0x52, 0x49, 0x46, 0x46, null, null, null, null, 0x57, 0x45, 0x42, 0x50]
+			]
+		};
+		for (var key in signatures) {
+			for (var _i = 0, _a = signatures[key]; _i < _a.length; _i++) {
+				var sig = _a[_i];
+				if (match_single_file_signature(data, sig))
+					return key;
+			}
+		}
+		return null;
+	};
+	common_functions["get_file_signature"] = function(api_cache, options, url, cb) {
+		var reqobj = url;
+		if (typeof url === "string") {
+			reqobj = {
+				url: url
+			};
+		}
+		url = reqobj.url;
+		var cache_key = "file_signature:" + url;
+		api_cache.fetch(cache_key, cb, function(done) {
+			var handled = false;
+			var onload_cb = function(resp) {
+				if (handled || !resp.response)
+					return;
+				handled = true;
+				req.abort();
+				var signature;
+				try {
+					var view = new Uint8Array(resp.response);
+					signature = match_file_signature(view);
+				} catch (e) {
+					console_error(cache_key, e);
+					return done(null, false);
+				}
+				done(signature, 60 * 60);
+			};
+			reqobj.responseType = "arraybuffer";
+			reqobj.onload = onload_cb;
+			reqobj.onabort = onload_cb;
+			reqobj.onprogress = function(resp) {
+				if (resp.lengthComputable && resp.responseHeaders && resp.readyState >= 2 && resp.loaded >= 10) {
+					onload_cb(resp);
+				}
+			};
+			var req = options.do_request(reqobj);
+		});
+	};
 	var get_domain_from_url = function(url) {
 		return url.replace(/^[a-z]+:\/\/([^/]*)(?:\/+.*)?$/, "$1");
 	};
@@ -17600,13 +17746,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "2ak9hjl1c3694726") {
+	            } else if (bigimage_obj.nonce !== "lg6h2o1l2f5md2l1") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "2ak9hjl1c3694726"
+	                    message: "Bad nonce, expected: " + "lg6h2o1l2f5md2l1"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -18586,6 +18732,22 @@ var $$IMU_EXPORT$$;
 				}
 			};
 		}
+		if (host_domain_nosub === "reddit.com") {
+			return {
+				gallery: function(el, nextprev) {
+					if (el.tagName.toUpperCase() === "A" && el.parentElement &&
+						el.parentElement.tagName.toUpperCase() === "P" && el.parentElement.classList.contains("title")) {
+						return get_nextprev_from_tree(el, nextprev, [
+							{ tagName: "A" },
+							{ tagName: "P", classList: ["p.title"] },
+							{ tagName: "DIV", classList: ["top-matter"] },
+							{ tagName: "DIV", classList: ["entry"] },
+							{ tagName: "DIV", classList: ["thing"] },
+						], ".thing > .entry > .top-matter > p.title > a");
+					}
+				}
+			};
+		}
 		return null;
 	};
 	var _get_album_info_gallery = function(album_info, el, nextprev) {
@@ -19280,17 +19442,27 @@ var $$IMU_EXPORT$$;
 		}
 		return newobj;
 	};
-	var bigimage_recursive_loop = function(url, options, query, fine_urls, tried_urls, oldobj) {
+	var bigimage_recursive_loop = function(url, options, query, state) {
 		var newoptions = {};
-		if (!fine_urls) {
-			fine_urls = [];
+		if (!state) {
+			state = {
+				fine_urls: [],
+				tried_urls: [],
+				oldobj: [],
+				tried_imus: []
+			};
 		}
-		if (!tried_urls) {
-			tried_urls = [];
+		var fine_urls = state.fine_urls;
+		var tried_urls = state.tried_urls;
+		var oldobj = state.oldobj;
+		var already_tried_url = false;
+		for (var _i = 0, _a = state.tried_imus; _i < _a.length; _i++) {
+			var tried_url = _a[_i];
+			if (tried_url === url) {
+				already_tried_url = true;
+			}
 		}
-		if (!oldobj) {
-			oldobj = [];
-		}
+		state.tried_imus.push(url);
 		for (var option in options) {
 			if (option === "cb") {
 				newoptions.cb = function(obj) {
@@ -19389,8 +19561,14 @@ var $$IMU_EXPORT$$;
 						});
 						//if (array_indexof(images, newurl) < 0 && newurl !== url || true) {
 						var newurl_index = array_indexof(images, newurl);
+						if (newurl_index < 0 && already_tried_url) {
+							if (_nir_debug_) {
+								console_log("bigimage_recursive_loop (query): already tried url", deepcopy(state));
+							}
+							return options.cb(null, data);
+						}
 						if (newurl_index < 0 || !obj[newurl_index].norecurse) {
-							bigimage_recursive_loop(newurl, options, query, fine_urls, tried_urls, obj);
+							bigimage_recursive_loop(newurl, options, query, state);
 						} else {
 							//obj = obj.slice(array_indexof(images, newurl));
 							obj = [obj[newurl_index]];
@@ -22413,6 +22591,83 @@ var $$IMU_EXPORT$$;
 		revoke_objecturl(image.src);
 		image.setAttribute("imu-destroyed", "true");
 	};
+	var preprocess_subtitles = function(subtitles) {
+		var newsubs = deepcopy(subtitles);
+		// https://en.wikipedia.org/wiki/IETF_language_tag
+		var langcodemap = {
+			"arabic": "ar",
+			"العربية": "ar",
+			"bengali": "bn",
+			"বাংলা": "bn",
+			"german": "de",
+			"deutsch": "de",
+			"english": "en",
+			"spanish": "es",
+			"español": "es",
+			"espanol": "es",
+			"french": "fr",
+			"français": "fr",
+			"francais": "fr",
+			"hindi": "hi",
+			"हिंदी": "hi",
+			"italian": "it",
+			"italiano": "it",
+			"korean": "ko",
+			"한국어": "ko",
+			"polish": "pl",
+			"polski": "pl",
+			"portuguese": "pt",
+			"português": "pt",
+			"portugues": "pt",
+			"russian": "ru",
+			"русский": "ru",
+			"thai": "th",
+			"ไทย": "th",
+			"turkish": "tr",
+			"türkçe": "tr",
+			"turkce": "tr",
+			"chinese": "zh",
+			"中文": "zh"
+		};
+		for (var _i = 0, newsubs_1 = newsubs; _i < newsubs_1.length; _i++) {
+			var sub = newsubs_1[_i];
+			if (!sub.language_code && sub.title) {
+				var title = strip_whitespace(sub.title.toLowerCase());
+				if (!(title in langcodemap)) {
+					title = strip_whitespace(title.replace(/[ (].*$/, ""));
+				}
+				if (title in langcodemap) {
+					sub.language_code = langcodemap[title];
+				}
+			}
+			if (sub.language_code)
+				sub.simple_language_code = sub.language_code.replace(/-.*/, "");
+		}
+		var user_langs = ["en"];
+		// in case of anti-fingerprinting?
+		try {
+			user_langs = deepcopy(navigator.languages);
+		} catch (e) {
+			console_error(e);
+		}
+		for (var i = 0; i < user_langs.length; i++) {
+			user_langs[i] = user_langs[i].replace(/-.*/, "");
+		}
+		var best_subs = shallowcopy_array(newsubs).sort(function(a, b) {
+			var ai = array_indexof(user_langs, a.simple_language_code);
+			var bi = array_indexof(user_langs, b.simple_language_code);
+			if (ai < 0)
+				ai = 9999;
+			if (bi < 0)
+				bi = 9999;
+			return ai - bi;
+		});
+		console_log(user_langs, best_subs);
+		if (best_subs.length > 0 && best_subs[0].simple_language_code === user_langs[0]) {
+			best_subs[0].default = true;
+		}
+		return newsubs;
+	};
 	var create_streaming_el = function(obj, type, processing, good_cb, err_cb) {
 		var video = document_createElement(type);
 		set_common_el_properties(video, obj);
@@ -22448,6 +22703,22 @@ var $$IMU_EXPORT$$;
 			remove_loaded_metadata_listener();
 			if (!processing.running) {
 				return err_cb(true);
+			}
+			if (obj.subtitles) {
+				var subs = preprocess_subtitles(obj.subtitles);
+				for (var _i = 0, subs_1 = subs; _i < subs_1.length; _i++) {
+					var sub = subs_1[_i];
+					var trackel = document_createElement("track");
+					trackel.setAttribute("kind", "captions");
+					trackel.setAttribute("src", sub.url);
+					if (sub.language_code)
+						trackel.setAttribute("srclang", sub.language_code);
+					trackel.setAttribute("label", sub.title);
+					video.appendChild(trackel);
+					if (sub.default) {
+						trackel.setAttribute("default", "default");
+					}
+				}
 			}
 			if (video.hasAttribute("loop")) {
 				if (settings.mouseover_video_autoloop_max && settings.mouseover_video_autoloop_max < video.duration)
@@ -22821,22 +23092,21 @@ var $$IMU_EXPORT$$;
 				obj[0].filesize = parseInt(parsed_headers["content-length"]);
 			}
 			var set_src = function(el, src) {
-				if (media_info.type === "image" || !media_info.delivery || processing.deny_nondirect_delivery) {
-					set_direct_src(el, src, obj[0]);
-				} else {
-					if (media_info.delivery in mediadelivery_support) {
-						var module = mediadelivery_support[media_info.delivery];
-						if (module.active()) {
-							module.el_init({
-								success: function() { }, // todo?
-								fail: err_cb,
-								info_obj: obj[0],
-								el: el,
-								src: src
-							});
-							return;
-						}
+				var delivery = media_info.delivery + "";
+				if (media_info.type !== "image" && !processing.deny_nondirect_delivery && delivery in mediadelivery_support) {
+					var module = mediadelivery_support[delivery];
+					if (module.active()) {
+						module.el_init({
+							success: function() { }, // todo?
+							fail: err_cb,
+							info_obj: obj[0],
+							el: el,
+							src: src
+						});
+						return;
 					}
+				} else {
+					set_direct_src(el, src, obj[0]);
 				}
 			};
 			var create_media = function(src, mediatype) {
@@ -24329,14 +24599,16 @@ var $$IMU_EXPORT$$;
 						}
 					});
 					player.load(src).then(function() {
+						var subs = null;
 						if (info_obj.subtitles) {
 							var selected = false;
-							for (var _i = 0, _a = info_obj.subtitles; _i < _a.length; _i++) {
-								var subtitle = _a[_i];
+							subs = preprocess_subtitles(info_obj.subtitles);
+							for (var _i = 0, subs_2 = subs; _i < subs_2.length; _i++) {
+								var subtitle = subs_2[_i];
 								var kind = "subtitle";
-								var language = subtitle.language_code || "en-US";
+								var language = subtitle.language_code || "en";
 								var title = subtitle.title || null;
-								var mime = subtitle.mime || undefined;
+								var mime = subtitle.mime || void 0;
 								var forced = false;
 								player.addTextTrackAsync(subtitle.url, language, kind, mime, undefined, title, forced);
 							}
@@ -25127,6 +25399,9 @@ var $$IMU_EXPORT$$;
 			}
 			if (settings.mouseover_add_to_history) {
 				add_link_to_history(data.data.obj.url);
+			}
+			if (orig_url && settings.mouseover_add_thumbnail_to_history) {
+				add_link_to_history(orig_url);
 			}
 			var openb = get_tprofile_single_setting("mouseover_open_behavior");
 			if (openb === "newtab" || openb === "newtab_bg" || openb === "download" || openb === "copylink" || openb === "replace") {
@@ -27768,7 +28043,6 @@ var $$IMU_EXPORT$$;
 			function get_urlfunc_url(func) {
 				if (typeof func !== "object")
 					return null;
-				;
 				if (func.name !== "url")
 					return null;
 				if (func.tokens.length < 1 || func.tokens[0].length < 1 || func.tokens[0][0].length === 0)
@@ -28424,9 +28698,9 @@ var $$IMU_EXPORT$$;
 				var orig_els = document.elementsFromPoint(xy[0], xy[1]);
 				els = [];
 				for (var _i = 0, orig_els_1 = orig_els; _i < orig_els_1.length; _i++) {
-					var el_1 = orig_els_1[_i];
-					if (!set_has(exclude_find_els, el_1))
-						els.push(el_1);
+					var el_2 = orig_els_1[_i];
+					if (!set_has(exclude_find_els, el_2))
+						els.push(el_2);
 				}
 				afterret = els;
 				if (_nir_debug_) {
