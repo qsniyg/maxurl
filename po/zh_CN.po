@@ -12,7 +12,7 @@ msgstr ""
 msgid "$language_native$"
 msgstr "简体中文"
 
-#. English: Finds larger or original versions of images and videos for 9000+ websites, including a powerful media popup and download feature
+#. English: Finds larger or original versions of images and videos for 9100+ websites, including a powerful media popup and download feature
 msgid "$description$"
 msgstr "在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能"
 
@@ -1340,6 +1340,14 @@ msgstr "添加弹出的链接到历史记录"
 #. mouseover_add_to_history.description
 msgid "Adds the image/video link opened through the popup to the browser's history"
 msgstr "将通过弹窗打开的图像/视频链接添加到浏览器的历史记录"
+
+#. mouseover_add_thumbnail_to_history.name
+msgid "Add thumbnail link to history"
+msgstr ""
+
+#. mouseover_add_thumbnail_to_history.description
+msgid "Adds the original media link opened through the popup to the browser's history"
+msgstr ""
 
 #. allow_remote.name
 msgid "Allow inter-frame communication"

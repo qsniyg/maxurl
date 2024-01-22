@@ -12,9 +12,9 @@ msgstr ""
 msgid "$language_native$"
 msgstr ""
 
-#. English: Finds larger or original versions of images and videos for 9000+ websites, including a powerful media popup and download feature
+#. English: Finds larger or original versions of images and videos for 9100+ websites, including a powerful media popup and download feature
 msgid "$description$"
-msgstr "Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 000 sites web, y compris une puissante fonction de popup média"
+msgstr "Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 100 sites web, y compris une puissante fonction de popup média"
 
 #. English: Options
 msgid "options_header"
@@ -1315,6 +1315,14 @@ msgstr ""
 
 #. mouseover_add_to_history.description
 msgid "Adds the image/video link opened through the popup to the browser's history"
+msgstr ""
+
+#. mouseover_add_thumbnail_to_history.name
+msgid "Add thumbnail link to history"
+msgstr ""
+
+#. mouseover_add_thumbnail_to_history.description
+msgid "Adds the original media link opened through the popup to the browser's history"
 msgstr ""
 
 #. allow_remote.name
