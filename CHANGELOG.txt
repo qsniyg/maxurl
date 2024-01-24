@@ -1,3 +1,13 @@
+2024.1.1 (in-dev)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules
+
+Special thanks to Froktime for their contributions and reports for this release
+
+---
+
 2024.1.0
 
 New features:
@@ -17,7 +27,7 @@ Bugfixes:
 
 Special madman06, nimbuz, Broly, Tulsow, jonestly, fireattack, TristanWasTaken, pointy, oifj34f34f, Viper33, vscum, karpuzikov, sn3akyb3ar, Froktime, neckothy, Harmony, watatomo for their contributions and reports for this release
 
- ---
+---
 
 2023.12.0
 
