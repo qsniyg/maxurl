@@ -4,7 +4,7 @@ Improvements:
 
  * Various improvements/fixes to existing rules
 
-Special thanks to Froktime for their contributions and reports for this release
+Special thanks to Froktime, aslian for their contributions and reports for this release
 
 ---
 
