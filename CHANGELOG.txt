@@ -3,6 +3,7 @@
 Improvements:
 
  * Various improvements/fixes to existing rules
+ * Significantly improve popup performance under YouTube when using uBlock Origin
 
 Bugfixes:
 
