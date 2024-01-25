@@ -64,7 +64,7 @@
 // @description:zh-TW 為9100多個網站查找更大或原始圖像
 // @description:zh-HK 為9100多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2024.1.0
+// @version           2024.1.1
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -100,7 +100,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@884bd053df1d72fff56ef409879657e8aa8876d9/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@72662d9ece42752843b5392c784f04d2147e5b21/build/rules.js
 // ==/UserScript==
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
 //   * Detecting whether or not the destination URL exists before redirecting
@@ -17746,13 +17746,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "lg6h2o1l2f5md2l1") {
+	            } else if (bigimage_obj.nonce !== "b7h935abmpb428pa") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "lg6h2o1l2f5md2l1"
+	                    message: "Bad nonce, expected: " + "b7h935abmpb428pa"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -17864,6 +17864,12 @@ var $$IMU_EXPORT$$;
 						if (!current.classList.contains(cls)) {
 							return "default";
 						}
+					}
+				}
+				if (tree[i].attrs) {
+					for (var attr in tree[i].attrs) {
+						if (current.getAttribute(attr) !== tree[i].attrs[attr])
+							return "default";
 					}
 				}
 				current = current.parentElement;
@@ -18748,6 +18754,24 @@ var $$IMU_EXPORT$$;
 				}
 			};
 		}
+		if (host_domain_nowww === "gofile.io") {
+			return {
+				element_ok: function(el) {
+					// FIXME: this disregards the mouseover_links setting
+					if (el.tagName.toUpperCase() === "A" && el.classList.contains("contentLink"))
+						return true;
+				},
+				gallery: function(el, nextprev) {
+					if (el.tagName.toUpperCase() === "A" && el.classList.contains("contentLink")) {
+						return get_nextprev_from_tree(el, nextprev, [
+							{ tagName: "A", attrs: { class: el.getAttribute("class") } },
+							{ tagName: "DIV" },
+							{ tagName: "DIV", classList: ["contentId"] }
+						], ".contentId > div > a[class=\"" + el.getAttribute("class") + "\"]");
+					}
+				}
+			};
+		}
 		return null;
 	};
 	var _get_album_info_gallery = function(album_info, el, nextprev) {
@@ -19449,7 +19473,8 @@ var $$IMU_EXPORT$$;
 				fine_urls: [],
 				tried_urls: [],
 				oldobj: [],
-				tried_imus: []
+				tried_imus: [],
+				redirect_map: {} // FIXME: is this needed?
 			};
 		}
 		var fine_urls = state.fine_urls;
@@ -19471,22 +19496,22 @@ var $$IMU_EXPORT$$;
 						console_log("bigimage_recursive_loop's cb: oldobj:", deepcopy(oldobj));
 					}
 					obj = obj_merge(obj, oldobj);
-					var images = obj_to_simplelist(obj);
+					var image_urls = obj_to_simplelist(obj);
 					for (var i = 0; i < obj.length; i++) {
 						// TODO: also remove bad_if
 						if (obj[i].bad) {
 							var bad_url = obj[i].url;
 							obj.splice(i, 1);
-							images.splice(i, 1);
+							image_urls.splice(i, 1);
 							i--;
 							for (var j = 0; j < tried_urls.length; j++) {
 								if (tried_urls[j].newurl === bad_url) {
 									var orig_url = tried_urls[j].newobj.url;
-									var index = array_indexof(images, orig_url);
+									var index = array_indexof(image_urls, orig_url);
 									tried_urls[j].redirects_to_bad = true;
 									if (index >= 0) {
 										obj.splice(index, 1);
-										images.splice(index, 1);
+										image_urls.splice(index, 1);
 										if (index < i)
 											i -= 2;
 										else if (index === i)
@@ -19496,15 +19521,28 @@ var $$IMU_EXPORT$$;
 								}
 							}
 						}
+						// FIXME: is this needed?
+						if (false && obj[i].url in state.redirect_map) {
+							var to = state.redirect_map[obj[i].url];
+							var j = void 0;
+							for (j = i + 1; j < obj.length; j++) {
+								if (obj[j].url === to) {
+									obj.splice(i, j - i);
+									image_urls.splice(i, j - i);
+									break;
+								}
+							}
+							i -= 1;
+						}
 					}
 					if (_nir_debug_) {
 						console_log("bigimage_recursive_loop's cb: obj after:", deepcopy(obj));
-						console_log("bigimage_recursive_loop's cb: images after:", deepcopy(images));
+						console_log("bigimage_recursive_loop's cb: image_urls after:", deepcopy(image_urls));
 						console_log("bigimage_recursive_loop's cb: fine_urls:", deepcopy(fine_urls));
 						console_log("bigimage_recursive_loop's cb: tried_urls:", deepcopy(tried_urls));
 					}
 					for (var i = 0; i < fine_urls.length; i++) {
-						var index = array_indexof(images, fine_urls[i].url);
+						var index = array_indexof(image_urls, fine_urls[i].url);
 						if (index >= 0) {
 							obj = [obj[index]];
 							if (_nir_debug_) {
@@ -19520,7 +19558,7 @@ var $$IMU_EXPORT$$;
 								try_any = true;
 								continue;
 							}
-							var index = array_indexof(images, tried_urls[i].newurl);
+							var index = array_indexof(image_urls, tried_urls[i].newurl);
 							if (index >= 0) {
 								obj = [obj[index]];
 								if (_nir_debug_) {
@@ -19559,8 +19597,9 @@ var $$IMU_EXPORT$$;
 							newobj: deepcopy(newobj),
 							redirects_to_bad: false
 						});
-						//if (array_indexof(images, newurl) < 0 && newurl !== url || true) {
-						var newurl_index = array_indexof(images, newurl);
+						state.redirect_map[url] = newurl;
+						//if (array_indexof(image_urls, newurl) < 0 && newurl !== url || true) {
+						var newurl_index = array_indexof(image_urls, newurl);
 						if (newurl_index < 0 && already_tried_url) {
 							if (_nir_debug_) {
 								console_log("bigimage_recursive_loop (query): already tried url", deepcopy(state));
@@ -19568,9 +19607,10 @@ var $$IMU_EXPORT$$;
 							return options.cb(null, data);
 						}
 						if (newurl_index < 0 || !obj[newurl_index].norecurse) {
+							state.oldobj = obj;
 							bigimage_recursive_loop(newurl, options, query, state);
 						} else {
-							//obj = obj.slice(array_indexof(images, newurl));
+							//obj = obj.slice(array_indexof(image_urls, newurl));
 							obj = [obj[newurl_index]];
 							if (_nir_debug_) {
 								console_log("bigimage_recursive_loop (query): returning", deepcopy(obj), data);
@@ -19584,7 +19624,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 		if (_nir_debug_) {
-			console_log("bigimage_recursive_loop", url, deepcopy(options), query, deepcopy(fine_urls), deepcopy(tried_urls), deepcopy(oldobj));
+			console_log("bigimage_recursive_loop", url, deepcopy(options), query, deepcopy(state));
 		}
 		return bigimage_recursive(url, newoptions);
 	};
@@ -27540,7 +27580,23 @@ var $$IMU_EXPORT$$;
 			return result;
 		}
 		function get_bounding_client_rect(el, mapcache) {
+			var need_qsa_patch = false;
+			// ublock origin patches getBoundingClientRect under youtube, calling document.querySelectorAll every time, which is very slow
+			if (/youtube\.com$/.test(window.location.host))
+				need_qsa_patch = true;
+			var old_selectorall = null;
+			if (need_qsa_patch) {
+				old_selectorall = document.querySelectorAll;
+				try {
+					document.querySelectorAll = function() { return []; };
+				} catch (e) { }
+			}
 			var obj = get_bounding_client_rect_inner(el, mapcache, true);
+			if (need_qsa_patch) {
+				try {
+					document.querySelectorAll = old_selectorall;
+				} catch (e) { }
+			}
 			return obj.rect || obj.orig_rect;
 		}
 		function get_popup_client_rect() {
@@ -27945,10 +28001,10 @@ var $$IMU_EXPORT$$;
 					}
 				}
 				if (el_tagname === "A" || (settings.mouseover_allow_iframe_el && el_tagname === "IFRAME")) {
-					var src_1 = get_img_src(el);
-					links[src_1] = {
+					var src_2 = get_img_src(el);
+					links[src_2] = {
 						count: 1,
-						src: src_1,
+						src: src_2,
 						el: el,
 						id: id++
 					};

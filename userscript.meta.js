@@ -64,7 +64,7 @@
 // @description:zh-TW 為9100多個網站查找更大或原始圖像
 // @description:zh-HK 為9100多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2024.1.0
+// @version           2024.1.1
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
