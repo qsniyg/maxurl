@@ -197,11 +197,11 @@ input, textarea {
 }
 
 .dark body, .dark select option {
-  background: #333;
+  background: #2a2a2a;
 }
 
 .dark .topsaved {
-  background-color: rgba(51, 51, 51, 90%);
+  background-color: #2a2a2ae7;
 }
 
 .dark body, .dark select, .dark input, .dark textarea, .dark #popup #footer a {
