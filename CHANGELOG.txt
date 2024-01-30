@@ -2,9 +2,9 @@
 
 Improvements:
 
- * Various improvements/fixes to existing rules
+ * Various improvements/fixes to existing rules (including TikTok)
 
-Special thanks to fireattack, aslian for their contributions and reports for this release
+Special thanks to fireattack, aslian, remlap, uwuceo, TristanWasTaken for their contributions and reports for this release
 
 ---
 
