@@ -38,6 +38,12 @@ if [ "$USERVERSION" != "$CHANGELOGVERSION" ]; then
     exit 1
 fi
 
+ps -ef | grep -v grep | grep 'maxurl/.*/concurrently.*npm:' >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo 'Kill watcher before running this'
+    exit 1
+fi
+
 if [ ! -d "node_modules" ]; then
     npm install
 fi
@@ -368,15 +374,21 @@ if [ ! -z $RELEASE ]; then
     echo "Release checklist:"
     echo
     echo ' * Ensure translation strings are updated'
-    echo ' * Ensure xx00+ count is updated (userscript - greasyfork/oujs, reddit post, mozilla/opera, website)'
+    echo '  * node tools/update_sitesnum.js'
+    echo '  * node tools/update_strings.js'
+    echo '  * node tools/gen_po.js'
+    echo '  * node tools/update_from_po.js'
     echo ' * Ensure CHANGELOG.txt is updated'
+    echo '  * Sites added: ./tools/get_old_userscript.sh && node site/about.js olduserscript'
+    echo ' * Update xx00+ count (oujs, reddit post, firefox, website)'
     echo ' * git add src/userscript.ts userscript.user.js userscript_smaller.user.js userscript.meta.js CHANGELOG.txt build/userscript_extr.user.js build/userscript_extr_min.user.js build/ImageMaxURL_crx3.crx build/ImageMaxURL_unsigned.xpi extension/updates.xml manifest.json package.json sites.txt'
     echo ' * git commit ('$USERVERSION')'
-    echo ' * Update firefox, oujs'
-    echo ' * Update userscript.user.js for site (but check about.js for site count before)'
+    echo ' * Update firefox addon'
+    echo ' * Update site userscript'
     echo ' * Update Discord changelog'
     echo ' * Update build/ImageMaxURL_signed.xpi'
-    echo ' * git tag v'$USERVERSION
+    echo '  * ./tools/update_signed_xpi.sh'
+    echo ' * git tag v'$USERVERSION' && git push origin v'$USERVERSION
 else
     echo
     echo "Non-maintainer build finished"
