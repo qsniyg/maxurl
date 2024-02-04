@@ -2,9 +2,9 @@
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including TikTok)
+ * Various improvements/fixes to existing rules (including TikTok, Tumblr)
 
-Special thanks to fireattack, aslian, remlap, uwuceo, TristanWasTaken, Froktime, karpuzikov, nimbuz, Shaggy, hosadokha for their contributions and reports for this release
+Special thanks to fireattack, aslian, remlap, uwuceo, TristanWasTaken, Froktime, karpuzikov, nimbuz, Shaggy, hosadokha, happysurf for their contributions and reports for this release
 
 ---
 
