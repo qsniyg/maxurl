@@ -1,8 +1,12 @@
-2024.1.2 (in-dev)
+2024.2.0 (in-dev)
 
 Improvements:
 
  * Various improvements/fixes to existing rules (including TikTok, Tumblr)
+
+Bugfixes
+
+ * Fix crash when redirecting to blacklisted URLs
 
 Special thanks to fireattack, aslian, remlap, uwuceo, TristanWasTaken, Froktime, karpuzikov, nimbuz, Shaggy, hosadokha, happysurf for their contributions and reports for this release
 
