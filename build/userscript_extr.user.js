@@ -32,39 +32,39 @@
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 9100+ websites, including a powerful media popup and download feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 9100 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 9100 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 9100 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 9100 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 9100 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 9100 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 9100 sitios
-// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 9100 verkkosivustolle
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 100 sites web, y compris une puissante fonction de popup média
-// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 100 sites web, y compris une puissante fonction de popup média
-// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-9100 אתרים
-// @description:hi    9100 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
-// @description:hu    Több mint 9100 webhely képének és videóinak nagyobb vagy eredeti változatát találja
-// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 9100 situs web
-// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 9100 siti web
-// @description:ja    9100以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ko    9100개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 9100 nettsteder
-// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 9100 websites
-// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 9100 stron internetowych
-// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 9100 sites
-// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 9100+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 9100 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 9100 веб-сайтів
-// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 9100 งเว็บไซต์
-// @description:tr    9100'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
-// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 9100 trang web
+// @description       Finds larger or original versions of images and videos for 9200+ websites, including a powerful media popup and download feature
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 9200 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 9200 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 9200 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 9200 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 9200 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 9200 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 9200 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 9200 verkkosivustolle
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 200 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 200 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-9200 אתרים
+// @description:hi    9200 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
+// @description:hu    Több mint 9200 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 9200 situs web
+// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 9200 siti web
+// @description:ja    9200以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ko    9200개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 9200 nettsteder
+// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 9200 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 9200 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 9200 sites
+// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 9200+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 9200 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 9200 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 9200 งเว็บไซต์
+// @description:tr    9200'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 9200 trang web
 // @description:zh-CN 在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能
-// @description:zh-TW 為9100多個網站查找更大或原始圖像
-// @description:zh-HK 為9100多個網站查找更大或原始圖像
+// @description:zh-TW 為9200多個網站查找更大或原始圖像
+// @description:zh-HK 為9200多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2024.1.1
+// @version           2024.2.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -96,11 +96,11 @@
 // @downloadURL       https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript_smaller.user.js
 //
 //  Greasyfork and OpenUserJS have 2MB and 1MB limits for userscripts (respectively).
-//  Because of this, the rules (~1.6MB) have been split into a separate file, linked below.
+//  Because of this, the rules (~1.7MB) have been split into a separate file, linked below.
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@72662d9ece42752843b5392c784f04d2147e5b21/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@396b62b9f7921568dc22a5568f22fac165ce64c2/build/rules.js
 // ==/UserScript==
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
 //   * Detecting whether or not the destination URL exists before redirecting
@@ -173,7 +173,7 @@ var $$IMU_EXPORT$$;
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
 	var imu_icon = "https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png";
-	var current_version = null;
+	var current_version = "2024.2.0";
 	var imagetab_ok_override = false;
 	var has_ffmpeg_lib = true;
 	// -- Currently this is unused, it'll be used in a future release (to workaround the 1MB and 2MB limits for OUJS and Greasyfork respectively) --
@@ -16203,10 +16203,15 @@ var $$IMU_EXPORT$$;
 			var seconds = data.duration % 60;
 			header += get_attrib("mediaPresentationDuration", "PT" + hours + "H" + minutes + "M" + seconds + "S");
 		}
+		if (data.min_buffer_time) {
+			header += get_attrib("minBufferTime", data.min_buffer_time);
+		}
 		header += " profiles=\"urn:mpeg:dash:profile:isoff-main:2011\"";
 		//header += " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\"";
 		header += ">\n<Period>\n";
 		var get_range_str = function(range) {
+			if (typeof range === "string")
+				return range;
 			return range.start + "-" + range.end;
 		};
 		var create_representation = function(representation) {
@@ -16217,6 +16222,12 @@ var $$IMU_EXPORT$$;
 			rep += get_attrib("width", representation.width);
 			rep += get_attrib("height", representation.height);
 			rep += get_attrib("id", representation.id);
+			if ("frame_rate" in representation)
+				rep += get_attrib("frameRate", representation.frame_rate);
+			if ("start_with_sap" in representation)
+				rep += get_attrib("startWithSap", representation.start_with_sap);
+			if ("sar" in representation)
+				rep += get_attrib("sar", representation.sar);
 			rep += ">\n";
 			rep += "    <BaseURL>" + encode_entities(representation.url) + "</BaseURL>\n";
 			if (representation.index_range || representation.init_range) {
@@ -17746,13 +17757,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "b7h935abmpb428pa") {
+	            } else if (bigimage_obj.nonce !== "3p1bbe28jn63o150") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "b7h935abmpb428pa"
+	                    message: "Bad nonce, expected: " + "3p1bbe28jn63o150"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -22393,7 +22404,7 @@ var $$IMU_EXPORT$$;
 	var mediadelivery_support = {};
 	var is_probably_video = function(obj) {
 		//console_log(obj);
-		if (obj.media_info.type === "video")
+		if (obj.media_info && obj.media_info.type === "video")
 			return true;
 		if (/\.(?:mp4|webm|mkv|mpg|ogv|wmv|m3u8|mpd)(?:[?#].*)?$/i.test(obj.url))
 			return true;
@@ -22401,7 +22412,7 @@ var $$IMU_EXPORT$$;
 	};
 	var is_probably_audio = function(obj) {
 		//console_log(obj);
-		if (obj.media_info.type === "audio")
+		if (obj.media_info && obj.media_info.type === "audio")
 			return true;
 		if (/\.(?:mp3|m4a|oga|mkv|wma|mp4|ogg)(?:[?#].*)?$/i.test(obj.url))
 			return true;
@@ -28001,10 +28012,10 @@ var $$IMU_EXPORT$$;
 					}
 				}
 				if (el_tagname === "A" || (settings.mouseover_allow_iframe_el && el_tagname === "IFRAME")) {
-					var src_2 = get_img_src(el);
-					links[src_2] = {
+					var src_4 = get_img_src(el);
+					links[src_4] = {
 						count: 1,
-						src: src_2,
+						src: src_4,
 						el: el,
 						id: id++
 					};
