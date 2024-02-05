@@ -9,7 +9,7 @@ process.chdir(__dirname + "/..");
 var userscript_smaller = util.read_userscript("userscript_smaller.user.js");
 about.get_userscript_stats(userscript_smaller);
 
-var userscript = util.read_userscript();
+var userscript = util.read_userscript(util.ts_userscript_filename);
 
 var sites = about.get_sites();
 var total_sites = sites.length;
@@ -66,7 +66,7 @@ for (var i = 0; i < lines.length; i++) {
 }
 
 if (changed) {
-	util.write_userscript_lines(lines);
+	util.write_userscript_lines(lines, util.ts_userscript_filename);
 
 	var pofiles = fs.readdirSync("po");
 	for (const pofile of pofiles) {

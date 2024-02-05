@@ -4,7 +4,7 @@ var maximage = require("../userscript.user.js");
 var get_descriptions = function(strings) {
 	var descriptions = {};
 
-	var userscript = util.read_userscript();
+	var userscript = util.read_userscript(util.ts_userscript_filename);
 	var match_regex = /\/\/ @description:([-a-zA-Z]+) +(.*)/;
 	var matches = userscript.match(new RegExp(match_regex, "g"));
 	for (const match_str of matches) {
