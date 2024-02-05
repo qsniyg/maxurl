@@ -374,9 +374,10 @@ if [ ! -z $RELEASE ]; then
     echo "Release checklist:"
     echo
     echo ' * Ensure translation strings are updated'
-    echo '  * node tools/update_sitesnum.js'
     echo '  * node tools/update_strings.js'
     echo '  * node tools/gen_po.js'
+    echo '  * node tools/update_from_po.js'
+    echo '  * node tools/update_sitesnum.js'
     echo '  * node tools/update_from_po.js'
     echo ' * Ensure CHANGELOG.txt is updated'
     echo '  * Sites added: ./tools/get_old_userscript.sh && node site/about.js olduserscript'
