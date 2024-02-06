@@ -1,3 +1,9 @@
+2024.2.1 (in-dev)
+
+Special thanks to rEnr3n for their contributions and reports for this release
+
+---
+
 2024.2.0
 
 New features:
