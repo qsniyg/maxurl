@@ -42879,6 +42879,7 @@ var $$IMU_EXPORT$$;
 		}
 		if (domain === "i.moveek.com") return src.replace(/\/media\/+resized\/+[^/]*\/+/, "/media/");
 		if (domain === "i.ryt9.com" ||
+			domain === "ip.kolonmall.com" ||
 			domain === "imageproxy.haaartland.com") {
 			return src.replace(/^[a-z]+:\/\/[^/]*\/[0-9]*x[0-9]*\/+http/, "http");
 		}
@@ -48879,14 +48880,14 @@ var $$IMU_EXPORT$$;
 					}
 				},
 				process: function(done, resp, cache_key) {
-					var match = resp.responseText.match(/<a[^>]+href=["'](https?:\/\/i\.pixxxels\.cc\/+[^"']+\?dl=1)["']/);
+					var match = resp.responseText.match(/<a[^>]+href=["'](https?:\/\/i\.[a-z]+\.cc\/+[^"']+\?dl=1)["']/);
 					if (!match) {
 						console_error(cache_key, "Unable to find download link for", resp);
 						return done(null, false);
 					}
 					var dllink = decode_entities(match[1]).replace(/[?#].*$/, "");
 					var referer = resp.finalUrl;
-					match = resp.responseText.match(/<link rel="canonical" href="(https?:\/\/pixxxels\.cc\/[^"]+)"/);
+					match = resp.responseText.match(/<link rel="canonical" href="(https?:\/\/[a-z]+\.cc\/[^"]+)"/);
 					if (match) {
 						referer = decode_entities(match[1]);
 					}
@@ -59929,6 +59930,14 @@ var $$IMU_EXPORT$$;
 			return src
 				.replace(/(\/images\/+hd4\/+[^/]+)\.webp(?:[?#].*)?$/, "$1.jpg")
 				.replace(/(\/images\/+)(?:thumb(?:nail)?|high|hd)\/+/, "$1hd4/");
+		}
+		if (domain === "images.kolonmall.com") return src.replace(/(\/Prod_Img\/+[^/]+\/+[0-9]{4}\/+L)[SML]([0-9]+\/+[^/]+_L)[SML]([0-9]+\.)/, "$1Z$2Z$3");
+		if (domain_nowww === "lookandlearn.com") return src.replace(/(\/history-images\/+)thumbnail\/+/, "$1preview/");
+		if (domain === "storage.pubble.nl") {
+			newsrc = src.replace(/(\/content\/.*)\.webp$/, "$1.jpg");
+			if (newsrc !== src)
+				return newsrc;
+			return src.replace(/(\/content\/.*)_thumb[0-9]+\./, "$1.");
 		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
