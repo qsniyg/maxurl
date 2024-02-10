@@ -20853,6 +20853,7 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "birminghamworld.uk" && /\/jpim-static\/+image\//.test(src)) ||
 			(domain_nowww === "nationalworld.com" && /\/jpim-static\/+image\//.test(src)) ||
 			(domain === "digitalcontent.api.tesco.com" && /\/v2\/+media\//.test(src)) ||
+			(domain === "gitlab.winehq.org" && /\/uploads\/+/.test(src)) ||
 			(domain_nosub === "ztat.net" && /^img[0-9]*\./.test(domain))) {
 			return {
 				url: src.replace(/\?.*$/, ""),
@@ -60209,6 +60210,7 @@ var $$IMU_EXPORT$$;
 			domain === "fclm-new.hb.bizmrg.com" ||
 			domain === "media-1obl-ru.storage.yandexcloud.net" ||
 			domain_nowww === "icearenamsk.ru" ||
+			domain === "ru.viomi.com" ||
 			src.match(/:\/\/[^/]*\/upload\/+resize_cache\/+(?:[^/]*\/+)?iblock\/+[0-9a-f]{3}\/+[0-9]+_[0-9]+_/) ||
 			src.match(/:\/\/[^/]*\/(?:upload\/+)?resize_cache_imm\/+iblock\/+[0-9a-f]{3}\/+[0-9a-f]{4}\/+[0-9]+x[0-9]+_Quality[0-9]+_[0-9a-f]+\./)) {
 			/*newsrc = src.replace(/(\/upload\/+)webp\/+(iblock\/+[0-9a-f]{3}\/+[0-9a-z]{10,}\/+[^/]+\.)webp(?:[?#].*)?$/, "$1$2jpg");
