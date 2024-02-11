@@ -1,6 +1,6 @@
 2024.2.1 (in-dev)
 
-Special thanks to rEnr3n, beeznutsonly, f2005 for their contributions and reports for this release
+Special thanks to roi, rEnr3n, beeznutsonly, f2005 for their contributions and reports for this release
 
 ---
 
