@@ -1,6 +1,10 @@
 2024.2.1 (in-dev)
 
-Special thanks to roi, rEnr3n, beeznutsonly, f2005 for their contributions and reports for this release
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Discord)
+
+Special thanks to roi, rEnr3n, beeznutsonly, f2005, Froktime for their contributions and reports for this release
 
 ---
 
