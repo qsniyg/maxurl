@@ -2,9 +2,9 @@
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including Discord)
+ * Various improvements/fixes to existing rules (including Discord, SmugMug)
 
-Special thanks to roi, rEnr3n, beeznutsonly, f2005, Froktime, neckothy, nimbuz, fireattack for their contributions and reports for this release
+Special thanks to roi, rEnr3n, beeznutsonly, f2005, Froktime, neckothy, nimbuz, fireattack, Lerortle, barry for their contributions and reports for this release
 
 ---
 
