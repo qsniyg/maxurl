@@ -440,6 +440,7 @@ arabmubasher.com
 arabyoum.com
 arasale.com
 arborday.org
+arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com
 arch.b4k.co
 archive.org
 archived.moe
@@ -447,6 +448,7 @@ archivegalleries.net
 archiveofsins.com
 archives.norwich.edu
 arcinfo.ch
+arcpublishing.com
 arhiva.dalje.com
 arhiva.nacional.hr
 arhivach.cf
@@ -586,6 +588,7 @@ assets.shueisha.online
 assets.simpleviewinc.com
 assets.sport.ro
 assets.st-note.com
+assets.steadyhq.com
 assets.survivalinternational.org
 assets.teamrock.com
 assets.teenvogue.com
@@ -703,6 +706,7 @@ backbook.me
 badfon.ru
 baidu-img.cn
 baidu.com
+bakersfieldnow.com
 bakusai.com
 balancer.ru
 ballyrobertgardens.coM
@@ -1016,6 +1020,7 @@ c.o0bg.com
 c.officialstore.jp
 c.puzzcore.com
 c.shld.net
+c.static-nike.com
 c.stocksy.com
 c.tribune.com.pk
 c.xme.net
@@ -1073,6 +1078,7 @@ canonnews.com
 capebreton.lokol.me
 caping.co.id
 capl.washjeff.edu
+caps-a-holic.com
 captaingoodlink.com
 cara.app
 carbon-media.accelerator.net
@@ -1136,7 +1142,10 @@ cdn-imgix-open.headout.com
 cdn-immedia.net
 cdn-l-cyberpunk.cdprojektred.com
 cdn-learn.adafruit.com
+cdn-live.foreignaffairs.com
+cdn-m.sport24.ru
 cdn-media.rtl.fr
+cdn-media.tass.ru
 cdn-myhdjav.info
 cdn-news30.it
 cdn-obs.line-apps.com
@@ -1148,6 +1157,7 @@ cdn-s3.si.com
 cdn-s3.sidereel.com
 cdn-scissors.gigaviewer.com
 cdn-shop.adafruit.com
+cdn-storage-media.tass.ru
 cdn-storage-tass.cdnvideo.ru
 cdn-stylehaus-jp.akamaized.net
 cdn-tehran.wisgoon.com
@@ -1276,6 +1286,7 @@ cdn.harpersbazaar.com.sg
 cdn.hashnode.com
 cdn.hdpornpics.net
 cdn.heatworld.com
+cdn.hfashionmall.com
 cdn.highdefdigest.com
 cdn.himalaya.com
 cdn.hipwallpaper.com
@@ -1416,6 +1427,7 @@ cdn.revistavanityfair.es
 cdn.roosterteeth.com.s3.amazonaws.com
 cdn.royalcanin-weshare-online.io
 cdn.ruguoapp.com
+cdn.saam.media
 cdn.sabay.com
 cdn.sahafahn.net
 cdn.sanity.io
@@ -1624,6 +1636,7 @@ cgaxisimages.?.digitaloceanspaces.com
 cgeimage.commutil.kr
 cgtrader.com
 chacuncherchesonfilm.fr
+chanel.com
 channel3000.com
 chaosimg.site
 chartsinfrance.net
@@ -1802,6 +1815,7 @@ coolspotters.com
 cooltrack.co.kr
 coolwallpaperz.info
 coomer.party
+coomer.su
 copia-di-arte.com
 coppel.com
 cora.porntrex.com
@@ -2525,6 +2539,7 @@ etoland.co.kr
 etonline.com
 etsystatic.com
 ettoday.net
+eu.gogo.mn
 eurikacosmetics.ru
 europaplus.ru
 eva.bg
@@ -3086,6 +3101,7 @@ girlswithmuscle.com
 girlznation.com
 gitee.com
 githubusercontent.com
+gitlab.winehq.org
 gittigidiyor.net
 giveawayoftheday.com
 gjdream.com
@@ -3349,6 +3365,7 @@ hoopchina.com.cn
 horizont.net
 hornybabepics.com
 hornyteen.pro
+host.church
 hostave2.net
 hosted.amourangels.com
 hosted.dreamdolls.com
@@ -3965,6 +3982,7 @@ images.khan.co.kr
 images.khoeplus24h.vn
 images.kienthuc.net.vn
 images.kinorium.com
+images.kolonmall.com
 images.komi.io
 images.kpopstarz.com
 images.kstars.kr
@@ -4038,6 +4056,7 @@ images.porninspector.com
 images.pornpics.com
 images.pottermore.com
 images.prismic.io
+images.prod.hjholdings.tv
 images.prop24.com
 images.psmcdn.net
 images.pushsquare.com
@@ -4061,6 +4080,7 @@ images.shakespearesglobe.com
 images.shaneco.com
 images.sharerails.com
 images.shazam.com
+images.sidearmdev.com
 images.sk-static.com
 images.spicyadulttools.com
 images.spoilertv.com
@@ -4321,6 +4341,7 @@ img.guess.com
 img.guildedcdn.com
 img.gurugamer.com
 img.gva.be
+img.haarets.co.il
 img.haihanxeng.com
 img.hani.co.kr
 img.hankyung.com
@@ -4376,12 +4397,14 @@ img.kpopmap.com
 img.ksl.com
 img.kurocore.com
 img.kutikomiya.jp
+img.kyodonews.net
 img.lady-first.me
 img.lady.ru
 img.laonanren.com
 img.lap.recochoku.jp
 img.lazcdn.com
 img.leaksx.com
+img.leidschdagblad.nl
 img.lemde.fr
 img.lengding.cn
 img.letgo.com
@@ -4453,6 +4476,7 @@ img.nzz.ch
 img.oastatic.com
 img.ohpolly.com
 img.olympicchannel.com
+img.olympics.com
 img.onestore.co.kr
 img.onvshen.com
 img.oppaisan.com
@@ -4801,6 +4825,7 @@ iol.pt
 iomoio.com
 ip.bitcointalk.org
 ip.index.hr
+ip.kolonmall.com
 ip.trueachievements.com
 ipcc.ch
 ipetgroup.com
@@ -5015,6 +5040,7 @@ kcentv.com
 keep2share.cc
 keezmovies.com
 kemono.party
+kemono.su
 kencarson.xyz
 kendam-148811.appspot.com.storage.googleapis.com
 kenh14cdn.com
@@ -5207,6 +5233,7 @@ lemmynsfw.com
 lens2print.co.uk
 lensdump.com
 leonardo.osnova.io
+leparisien.fr
 lepoint.fr
 lesarchive.com
 lesboluvin.com
@@ -5299,6 +5326,7 @@ londonsvenskar.com
 longroom.com
 longtake.it
 longwallpapers.com
+lookandlearn.com
 lookbookspro.com
 looklive.at
 lookmovie.ag
@@ -5487,6 +5515,7 @@ media.contentapi.ea.com
 media.cungcau.vn
 media.customon.com
 media.dcbusiness.ro
+media.defense.gov
 media.deseretdigital.com
 media.diepresse.com
 media.dior.com
@@ -6003,6 +6032,7 @@ naver.jp
 naver.net
 navicdn.com
 navigacloud.com
+nbc16.com
 nbocdn.akamaized.net
 nbstr.org
 ndr.de
@@ -6296,6 +6326,7 @@ nytimes.com
 nzxt.com
 o.oystermag.com
 obaldenno.com
+oblgazeta.ru
 oblok.s3.amazonaws.com
 oboi.cc
 oboi.ws
@@ -6397,6 +6428,7 @@ outlookweekly.net
 ovb-online.de
 over-blog.com
 overcast.fm
+overclockers.ru
 overlandbound.com
 ow.ly
 owo.lewd.ninja
@@ -6976,6 +7008,7 @@ r.fod4.com
 r.hswstatic.com
 r.kelkoo.com
 r.mtdata.ru
+r.testifier.nl
 r10s.com
 r10s.jp
 r29static.com
@@ -7093,12 +7126,14 @@ resource.breakingnews.mn
 resource.globenewswire.com
 resource.holyshare.com.tw
 resource.info.mn
+resource.lap.recochoku.jp
 resource.logitech.com
 resource.logitechg.com
 resource.meihua.info
 resource.mingweekly.com
 resource.shuud.mn
 resource.supercheats.com
+resources.finalsite.net
 resources.mynewsdesk.com
 resources.sonyliv.com
 resources.stuff.co.nz
@@ -7177,6 +7212,7 @@ rspb.org.uk
 rssso.com
 rtbf.be
 ru-24.ru
+ru.viomi.com
 rubberxxx.com
 rule34.dev
 rule34.world
@@ -7308,6 +7344,7 @@ schellywood.be
 schokkendnieuws.nl
 schreyer-photo.com
 schwarzwaelder-bote.de
+schweizer-illustrierte.ch
 scienceleadership.org
 scifi-forum.de
 scirra.net
@@ -7782,6 +7819,7 @@ static.kritikustomeg.org
 static.kstyle.com
 static.kvraudio.com
 static.langimg.com
+static.legalcdn.org
 static.leiphone.com
 static.life.ru
 static.lostfilm.run
@@ -7858,6 +7896,7 @@ static.telugu.news18.com
 static.thcdn.com
 static.thefrisky.com
 static.themezy.com
+static.thenounproject.com
 static.thenude.eu
 static.thesuperficial.com
 static.timesofisrael.com
@@ -7931,6 +7970,7 @@ storage.mainichikirei.jp
 storage.mantan-web.jp
 storage.ottawasun.com
 storage.oxii.vn
+storage.pubble.nl
 storage.radiosarajevo.ba
 storage.tele-sport.ru
 storage.torontosun.com
@@ -8455,6 +8495,7 @@ tubsexer.com
 tucano.com
 tuchong.pstatp.com
 tuktukpatrol.com
+tulup.ru
 tumblr.com
 tunes.zone
 tunestream.net
@@ -8553,6 +8594,7 @@ unicef.ie
 unicorncards.co.uk
 unifr.ch
 unison.org.uk
+univision.com
 unlimitedcnd.appspot.com.storage.googleapis.com
 unlockxh.com
 unofficialbird.com
@@ -8810,6 +8852,7 @@ wallpapermix.club
 wallpapername.com
 wallpaperplay.com
 wallpaperpulse.com
+wallpapers.com
 wallpapers.jami.lt
 wallpapers.net
 wallpapers.wallhaven.cc
@@ -8932,6 +8975,7 @@ wmg.jp
 wmj.ru
 wn.com
 wnacg.net
+wnoz.de
 wnppsn.com
 wolframcdn.com
 wolfstream.tv

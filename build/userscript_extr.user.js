@@ -64,7 +64,7 @@
 // @description:zh-TW 為9200多個網站查找更大或原始圖像
 // @description:zh-HK 為9200多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2024.2.0
+// @version           2024.2.1
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -100,7 +100,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@396b62b9f7921568dc22a5568f22fac165ce64c2/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@49ebcffb4d721c422fa3f98c1163e1e31103b115/build/rules.js
 // ==/UserScript==
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
 //   * Detecting whether or not the destination URL exists before redirecting
@@ -173,7 +173,7 @@ var $$IMU_EXPORT$$;
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
 	var imu_icon = "https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png";
-	var current_version = "2024.2.0";
+	var current_version = "2024.2.1";
 	var imagetab_ok_override = false;
 	var has_ffmpeg_lib = true;
 	// -- Currently this is unused, it'll be used in a future release (to workaround the 1MB and 2MB limits for OUJS and Greasyfork respectively) --
@@ -2649,7 +2649,7 @@ var $$IMU_EXPORT$$;
 		}
 	};
 	function is_element(x) {
-		if (!x || typeof x !== "object")
+		if (!x || typeof x !== "object" || is_array(x))
 			return false;
 		if (("namespaceURI" in x) && ("nodeType" in x) && ("nodeName" in x) && ("childNodes" in x)) {
 			return true;
@@ -2660,11 +2660,16 @@ var $$IMU_EXPORT$$;
 		}
 		// very slow
 		if (is_interactive) {
-			if ((x instanceof Node) ||
-				(x instanceof Element) ||
-				(x instanceof HTMLDocument) ||
-				(x instanceof Window)) {
-				return true;
+			var objects = [Node, Element, HTMLDocument, Window];
+			for (var _i = 0, objects_1 = objects; _i < objects_1.length; _i++) {
+				var obj = objects_1[_i];
+				// some websites override Window
+				try {
+					if (x instanceof obj)
+						return true;
+				} catch (e) {
+					console_error(e);
+				}
 			}
 		}
 		return false;
@@ -16047,7 +16052,7 @@ var $$IMU_EXPORT$$;
 			var url = decode_entities(smatch[2]);
 			urls.push({
 				url: url,
-				quality: parse_int(quality),
+				quality: parse_int(quality.replace(/^([0-9]+)p$/, "$1")),
 				video: true
 			});
 		}
@@ -17757,13 +17762,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "3p1bbe28jn63o150") {
+	            } else if (bigimage_obj.nonce !== "21h13lg2012lpa17") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "3p1bbe28jn63o150"
+	                    message: "Bad nonce, expected: " + "21h13lg2012lpa17"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -18779,6 +18784,23 @@ var $$IMU_EXPORT$$;
 							{ tagName: "DIV" },
 							{ tagName: "DIV", classList: ["contentId"] }
 						], ".contentId > div > a[class=\"" + el.getAttribute("class") + "\"]");
+					}
+				}
+			};
+		}
+		if (host_domain_nosub === "cnn.com") {
+			return {
+				element_ok: function(el) {
+					if (el.tagName.toUpperCase() === "BUTTON" && (el.classList.contains("gallery-inline__next-overlay") ||
+						el.classList.contains("gallery-inline__prev-overlay"))) {
+						var parent_6 = el.parentElement;
+						if (parent_6.classList.contains("gallery-inline__container")) {
+							var slides = parent_6.querySelector(".gallery-inline__slides");
+							return {
+								el: slides,
+								search: true
+							};
+						}
 					}
 				}
 			};
@@ -27878,12 +27900,32 @@ var $$IMU_EXPORT$$;
 						if (element_ok_result === true) {
 							ok_els.push(ok_el_obj);
 							set_add(ok_els_set, el);
-						} else {
-							if (is_element(element_ok_result)) {
-								ok_el_obj.el = element_ok_result;
-								ok_els.push(ok_el_obj);
-								set_add(ok_els_set, el);
-								el = element_ok_result;
+						} else if (typeof element_ok_result === "object") {
+							if (is_element(element_ok_result))
+								element_ok_result = { el: element_ok_result };
+							ok_el_obj.el = element_ok_result.el;
+							ok_els.push(ok_el_obj);
+							set_add(ok_els_set, el);
+							el = element_ok_result.el;
+							if (element_ok_result.search) {
+								var point = options.point;
+								if (!point) {
+									var rect = get_bounding_client_rect(el);
+									point = [
+										rect.left + (rect.width / 2),
+										rect.top + (rect.height / 2)
+									];
+								}
+								var found_els = find_els_at_point(point, {
+									els_mode: "full",
+									els: [el]
+								});
+								for (var _i = 0, found_els_1 = found_els; _i < found_els_1.length; _i++) {
+									var fel = found_els_1[_i];
+									if (fel === el)
+										continue;
+									addElement(fel);
+								}
 							}
 						}
 					}
@@ -28742,10 +28784,17 @@ var $$IMU_EXPORT$$;
 				currenttab_is_image() && !imagetab_ok_override;
 		}
 		var exclude_find_els = new_set();
-		function find_els_at_point(xy, els, prev, zoom_cache) {
+		function find_els_at_point(xy, options, els, prev, zoom_cache) {
 			// test for pointer-events: none: https://www.shacknews.com/article/114834/should-you-choose-vulkan-or-directx-12-in-red-dead-redemption-2
 			if (false && _nir_debug_)
-				console_log("find_els_at_point", deepcopy(xy), deepcopy(els), deepcopy(prev));
+				console_log("find_els_at_point", deepcopy(options), deepcopy(xy), deepcopy(els), deepcopy(prev));
+			if (!options) {
+				options = {};
+			}
+			if (!options.els_mode)
+				options.els_mode = get_single_setting("mouseover_find_els_mode");
+			if (options.els && !els)
+				els = options.els;
 			var first_run = false;
 			if (!prev) {
 				prev = new_set();
@@ -28760,24 +28809,23 @@ var $$IMU_EXPORT$$;
 			}
 			var ret = [];
 			var afterret = [];
-			var els_mode = get_single_setting("mouseover_find_els_mode");
 			if (!els) {
 				var orig_els = document.elementsFromPoint(xy[0], xy[1]);
 				els = [];
 				for (var _i = 0, orig_els_1 = orig_els; _i < orig_els_1.length; _i++) {
-					var el_2 = orig_els_1[_i];
-					if (!set_has(exclude_find_els, el_2))
-						els.push(el_2);
+					var el = orig_els_1[_i];
+					if (!set_has(exclude_find_els, el))
+						els.push(el);
 				}
 				afterret = els;
 				if (_nir_debug_) {
 					console_log("find_els_at_point (elsfrompoint)", deepcopy(els));
 				}
-				if (els_mode === "simple")
+				if (options.els_mode === "simple")
 					return els;
 			}
 			for (var i = 0; i < els.length; i++) {
-				if (i > 0 && first_run && els_mode === "hybrid") {
+				if (i > 0 && first_run && options.els_mode === "hybrid") {
 					ret.push(els[i]);
 					continue;
 				}
@@ -28813,9 +28861,9 @@ var $$IMU_EXPORT$$;
 							newchildren.push(el_shadow_children[j]);
 						}
 					}
-					var newels = find_els_at_point(xy, newchildren, prev, zoom_cache);
-					for (var j = 0; j < newels.length; j++) {
-						var newel = newels[j];
+					var newels = find_els_at_point(xy, options, newchildren, prev, zoom_cache);
+					for (var j_1 = 0; j_1 < newels.length; j_1++) {
+						var newel = newels[j_1];
 						//console_log("about to add", newel, deepcopy(ret))
 						if (array_indexof(ret, newel) < 0) {
 							//console_log("adding", newel);
@@ -28840,7 +28888,7 @@ var $$IMU_EXPORT$$;
 			if (_nir_debug_ && ret.length > 0) {
 				console_log("find_els_at_point (unsorted ret)", shallowcopy(ret));
 			}
-			if (first_run && els_mode === "hybrid") {
+			if (first_run && options.els_mode === "hybrid") {
 				return ret;
 			}
 			var get_zindex_raw = function(el) {
@@ -28937,7 +28985,7 @@ var $$IMU_EXPORT$$;
 				mouseContextX = null;
 				mouseContextY = null;
 			}
-			var source = find_source(els);
+			var source = find_source(els, { point: point });
 			if (!source && settings.mouseover_allow_self_pagelink && popup_trigger_reason === "keyboard") {
 				source = {
 					el: document.body,
@@ -30120,8 +30168,9 @@ var $$IMU_EXPORT$$;
 				e.preventDefault();
 				e.stopImmediatePropagation();
 				e.stopPropagation();
-				var els = find_els_at_point([mouseX, mouseY]);
-				var source = find_source(els);
+				var point = [mouseX, mouseY];
+				var els = find_els_at_point(point);
+				var source = find_source(els, { point: point });
 				if (!source || !source.el)
 					return;
 				source = add_source(source);
