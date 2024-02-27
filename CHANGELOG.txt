@@ -1,6 +1,10 @@
 2024.2.2
 
-Special thanks to f2005, VS, Froktime for their contributions and reports for this release
+Improvements:
+
+ * Various improvements/fixes to existing rules (including SmugMug)
+
+Special thanks to f2005, VS, Froktime, Viper33, barry for their contributions and reports for this release
 
 ---
 
