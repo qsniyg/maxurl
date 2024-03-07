@@ -37,7 +37,8 @@ var reqsite_invalid_domains = [
 var reqsite_invalid_urls = [
     /^https?:\/\/i\.redd\.it\/+[0-9a-z]+\.[a-z]+$/,
     /^https?:\/\/i\.scdn\.co\/+image\/+[0-9a-f]{40}$/,
-    /^https?:\/\/images\.genius\.com\/+[0-9a-f]{32}\.[0-9]+x[0-9]+x[0-9]+\.[a-z]+$/
+    /^https?:\/\/images\.genius\.com\/+[0-9a-f]{32}\.[0-9]+x[0-9]+x[0-9]+\.[a-z]+$/,
+    /^https?:\/\/media\.licdn\.com\/+dms\/+image\/+.*?\?[et]=/
 ];
 
 function reqsite_valid_url(url) {
