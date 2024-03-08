@@ -4,7 +4,7 @@ Improvements:
 
  * Various improvements/fixes to existing rules (including SmugMug)
 
-Special thanks to f2005, VS, Froktime, Viper33, barry, snek, fireattack for their contributions and reports for this release
+Special thanks to f2005, VS, Froktime, Viper33, barry, snek, fireattack, leoli1110 for their contributions and reports for this release
 
 ---
 
