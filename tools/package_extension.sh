@@ -153,8 +153,8 @@ echo Building Firefox extension
 
 BASEFILES="LICENSE.txt manifest.json userscript.user.js resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension/background.js extension/options.css extension/options.html extension/popup.js extension/popup.html"
 NONFFFILES="lib/ffmpeg.js lib/stream_parser.js"
-NONAMOFILES="lib/testcookie_slowaes.js lib/cryptojs_aes.js lib/jszip.js lib/shaka.debug.js"
-AMOFILES="lib/orig/slowaes.js lib/orig/cryptojs_aes.js lib/orig/jszip.js lib/orig/mux.js lib/orig/shaka-player.compiled.debug.js"
+NONAMOFILES="lib/testcookie_slowaes.js lib/cryptojs_aes.js lib/jszip.js lib/shaka.debug.js lib/acorn_interpreter.js"
+AMOFILES="lib/orig/slowaes.js lib/orig/cryptojs_aes.js lib/orig/jszip.js lib/orig/mux.js lib/orig/shaka-player.compiled.debug.js lib/orig/acorn_interpreter.js"
 SOURCEFILES="tools/fetch_libs.sh tools/build_libs.sh lib/libs.txt EXTENSION_README.txt tools/package_extension.sh tools/remcomments.js tools/util.js tools/patch_libs.js tools/watch_tsc.sh src/userscript.ts src/module.d.ts package.json tsconfig.json"
 DIRS="extension lib lib/orig resources tools src"
 
