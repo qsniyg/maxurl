@@ -128,6 +128,20 @@ var patch_lib = null;
 		files: "BigInteger.min.js"
 	};
 
+	function patch_jsinterpreter(text) {
+		text = text
+			// bugfixes from: https://github.com/NeilFraser/JS-Polyfills/pull/2
+			.replace('"if (arguments.length < 1) {"', '"if (arguments.length < 2) {"')
+			.replace('"len -= deleteCount;","var arl = arguments.length - 2;"', '"len -= deleteCount;","if (arguments.length > 2){var arl = arguments.length - 2;"')
+			.replace('arguments[i];","}","o.length = len;"', 'arguments[i];","}}","o.length = len;"')
+			.replace(/^/, "var globalThis={};\n");
+		return libexport_shim(text, "globalThis.Interpreter");
+	}
+	lib_patches["acorn_interpreter"] = {
+		patch: patch_jsinterpreter,
+		files: "acorn_interpreter.js"
+	};
+
 	var unwrap_object = function(obj) {
 		var keys = Object.keys(obj);
 		if (keys.length !== 1)

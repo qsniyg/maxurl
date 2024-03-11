@@ -22,6 +22,7 @@ node ../tools/patch_libs.js cryptojs_aes orig > cryptojs_aes.js
 node ../tools/patch_libs.js shaka orig > shaka.debug.js
 node ../tools/patch_libs.js jszip orig > jszip.js
 node ../tools/patch_libs.js BigInteger orig > BigInteger.js
+node ../tools/patch_libs.js acorn_interpreter orig > acorn_interpreter.js
 
 # The following libraries are not present in the Firefox version
 
