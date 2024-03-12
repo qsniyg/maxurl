@@ -64,7 +64,7 @@
 // @description:zh-TW 為9200多個網站查找更大或原始圖像
 // @description:zh-HK 為9200多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2024.2.1
+// @version           2024.3.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -100,7 +100,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@49ebcffb4d721c422fa3f98c1163e1e31103b115/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@928e90b53b6b9e26521a23b4a3541a724e37f4d4/build/rules.js
 // ==/UserScript==
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
 //   * Detecting whether or not the destination URL exists before redirecting
@@ -173,7 +173,7 @@ var $$IMU_EXPORT$$;
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
 	var imu_icon = "https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png";
-	var current_version = "2024.2.1";
+	var current_version = "2024.3.0";
 	var imagetab_ok_override = false;
 	var has_ffmpeg_lib = true;
 	// -- Currently this is unused, it'll be used in a future release (to workaround the 1MB and 2MB limits for OUJS and Greasyfork respectively) --
@@ -6521,6 +6521,7 @@ var $$IMU_EXPORT$$;
 		tumblr_api_key: base64_decode("IHhyTXBMTThuMWVDZUwzb1JZU1pHN0NMQUx3NkVIaFlEZFU2V3E1ZUQxUGJNa2xkN1kx").substr(1),
 		// thanks to modelfe on github for the idea: https://github.com/qsniyg/maxurl/issues/639
 		twitter_use_ext: false,
+		youtube_replace_n: false,
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
 		bigimage_blacklist: "",
 		bigimage_blacklist_mode: "blacklist",
@@ -9731,6 +9732,16 @@ var $$IMU_EXPORT$$;
 			subcategory: "rule_specific",
 			onupdate: update_rule_setting
 		},
+		youtube_replace_n: {
+			name: "YouTube: Enable faster speeds",
+			description: "Increases the download bandwidth for YouTube videos by replacing the `n` parameter. Note that this may execute untrusted Javascript.",
+			requires: {
+				allow_thirdparty_libs: true
+			},
+			category: "rules",
+			subcategory: "rule_specific",
+			onupdate: update_rule_setting
+		},
 		bigimage_blacklist: {
 			name: "Media blacklist",
 			description: "A list of URLs (one per line) that are blacklisted from being processed",
@@ -12110,6 +12121,14 @@ var $$IMU_EXPORT$$;
 			size: 21482,
 			crc32: 337445473,
 			crc32_size: 2641711624
+		},
+		"JSInterpreter": {
+			name: "acorn_interpreter",
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/b4d3d715e391e2e3f50a699acc5711bc7bdb6f52/lib/acorn_interpreter.js",
+			archive_time: "20240311233145",
+			size: 79532,
+			crc32: 270556316,
+			crc32_size: 2713590225
 		}
 	};
 	var get_library = function(name, options, do_request, cb) {
@@ -17644,6 +17663,7 @@ var $$IMU_EXPORT$$;
 	    	'Math_max': Math_max,
 	    	'Math_min': Math_min,
 	    	'Math_abs': Math_abs,
+	    	'Math_pow': Math_pow,
 	    	'get_random_text': get_random_text,
 	    	'console_log': console_log,
 	    	'console_error': console_error,
@@ -17762,13 +17782,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "21h13lg2012lpa17") {
+	            } else if (bigimage_obj.nonce !== "ojimdb21e5e0k1op") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "21h13lg2012lpa17"
+	                    message: "Bad nonce, expected: " + "ojimdb21e5e0k1op"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -18805,6 +18825,38 @@ var $$IMU_EXPORT$$;
 				}
 			};
 		}
+		// myportfolio
+		if (host_domain_nowww === "kalyanyasaswi.com") {
+			// thanks to anonymous for reporting:
+			return {
+				element_ok: function(el) {
+					if (el.tagName.toUpperCase() === "SPAN" && el.classList.contains("grid__item-filler")) {
+						var prev = el.previousElementSibling;
+						if (prev && prev.tagName.toUpperCase() === "IMG" && prev.classList.contains("grid__item-image"))
+							return prev;
+					}
+				}
+			};
+		}
+		if (host_domain === "open.spotify.com") {
+			// thanks to anonymous for reporting:
+			// public lists on spotify user profiles
+			return {
+				element_ok: function(el) {
+					if (el.getAttribute("data-testid") === "card-click-handler") {
+						var prev = el.previousElementSibling;
+						if (prev)
+							prev = prev.previousElementSibling;
+						if (prev && prev.tagName === "DIV") {
+							return {
+								el: prev,
+								search: true
+							};
+						}
+					}
+				}
+			};
+		}
 		return null;
 	};
 	var _get_album_info_gallery = function(album_info, el, nextprev) {
@@ -18977,6 +19029,7 @@ var $$IMU_EXPORT$$;
 				"tiktok_thirdparty": true,
 				"tumblr_api_key": true,
 				"twitter_use_ext": true,
+				"youtube_replace_n": true,
 				"mouseover_linked_image": "linked_image"
 			};
 			for (var rule_specific in rule_specific_map) {

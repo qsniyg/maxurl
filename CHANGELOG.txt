@@ -1,7 +1,8 @@
-2024.2.2
+2024.3.0
 
 New features:
 
+ * Support for ~45 new websites (using ~30 new rules)
  * Option to enable faster speeds on YouTube (disabled by default)
 
 Improvements:
