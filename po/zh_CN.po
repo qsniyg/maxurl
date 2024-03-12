@@ -2802,6 +2802,14 @@ msgstr "Twitter: 使用扩展名"
 msgid "Prefers `.jpg?name=orig` over `?format=jpg&name=orig`. This will possibly incur extra requests before succeeding. Note that there is no difference in image quality."
 msgstr "首选 `.jpg?name=orig` 而不是 `?format=jpg&name=orig`。这可能在成功前产生额外的请求。注意，图像质量上没有差异。"
 
+#. youtube_replace_n.name
+msgid "YouTube: Enable faster speeds"
+msgstr ""
+
+#. youtube_replace_n.description
+msgid "Increases the download bandwidth for YouTube videos by replacing the `n` parameter. Note that this may execute untrusted Javascript."
+msgstr ""
+
 #. bigimage_blacklist.name
 msgid "Media blacklist"
 msgstr ""

@@ -2804,6 +2804,14 @@ msgstr "Twitter: Использовать расширение"
 msgid "Prefers `.jpg?name=orig` over `?format=jpg&name=orig`. This will possibly incur extra requests before succeeding. Note that there is no difference in image quality."
 msgstr "Предпочитать `.jpg?name=orig` поверх `?format=jpg&name=orig`. Это, возможно, повлечет за собой дополнительные запросы, прежде чем добиться успеха. Обратите внимание, что нет никакой разницы в качестве изображения."
 
+#. youtube_replace_n.name
+msgid "YouTube: Enable faster speeds"
+msgstr ""
+
+#. youtube_replace_n.description
+msgid "Increases the download bandwidth for YouTube videos by replacing the `n` parameter. Note that this may execute untrusted Javascript."
+msgstr ""
+
 #. bigimage_blacklist.name
 msgid "Media blacklist"
 msgstr ""
