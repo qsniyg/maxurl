@@ -16,7 +16,13 @@ get_userscript_version() {
 USERVERSION=`get_userscript_version userscript.user.js`
 MANIFESTVERSION=`cat manifest.json | grep '"version": *"[0-9.]*", *$' | sed 's/.*"version": *"\([0-9.]*\)", *$/\1/g'`
 PACKAGEVERSION=`cat package.json | grep '"version": *"[0-9.]*", *$' | sed 's/.*"version": *"\([0-9.]*\)", *$/\1/g'`
-CHANGELOGVERSION=`cat CHANGELOG.txt | head -n1`
+
+HASCHANGELOG=0
+CHANGELOGVERSION=
+if [ -f CHANGELOG.txt ]; then
+    CHANGELOGVERSION=`cat CHANGELOG.txt | head -n1`
+    HASCHANGELOG=1
+fi
 
 if [ -z "$USERVERSION" -o -z "$MANIFESTVERSION" -o -z "$PACKAGEVERSION" ]; then
     echo Broken version regex
@@ -25,15 +31,19 @@ fi
 
 if [ "$USERVERSION" != "$MANIFESTVERSION" ]; then
     echo 'Conflicting versions (userscript and manifest)'
+    echo "Userscript: $USERVERSION"
+    echo "Manifest: $MANIFESTVERSION"
     exit 1
 fi
 
 if [ "$USERVERSION" != "$PACKAGEVERSION" ]; then
     echo 'Conflicting versions (userscript and npm package)'
+    echo "Userscript: $USERVERSION"
+    echo "Package: $PACKAGEVERSION"
     exit 1
 fi
 
-if [ "$USERVERSION" != "$CHANGELOGVERSION" ]; then
+if [ $HASCHANGELOG -eq 1 ] && [ "$USERVERSION" != "$CHANGELOGVERSION" ]; then
     echo 'Conflicting versions (userscript and changelog)'
     exit 1
 fi
@@ -153,8 +163,8 @@ echo Building Firefox extension
 
 BASEFILES="LICENSE.txt manifest.json userscript.user.js resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension/background.js extension/options.css extension/options.html extension/popup.js extension/popup.html"
 NONFFFILES="lib/ffmpeg.js lib/stream_parser.js"
-NONAMOFILES="lib/testcookie_slowaes.js lib/cryptojs_aes.js lib/jszip.js lib/shaka.debug.js lib/acorn_interpreter.js"
-AMOFILES="lib/orig/slowaes.js lib/orig/cryptojs_aes.js lib/orig/jszip.js lib/orig/mux.js lib/orig/shaka-player.compiled.debug.js lib/orig/acorn_interpreter.js"
+NONAMOFILES="lib/testcookie_slowaes.js lib/cryptojs_aes.js lib/jszip.js lib/shaka.debug.js lib/acorn_interpreter.js lib/BigInteger.js"
+AMOFILES="lib/orig/slowaes.js lib/orig/cryptojs_aes.js lib/orig/jszip.js lib/orig/mux.js lib/orig/shaka-player.compiled.debug.js lib/orig/acorn_interpreter.js lib/orig/BigInteger.min.js"
 SOURCEFILES="tools/fetch_libs.sh tools/build_libs.sh lib/libs.txt EXTENSION_README.txt tools/package_extension.sh tools/remcomments.js tools/util.js tools/patch_libs.js tools/watch_tsc.sh src/userscript.ts src/module.d.ts package.json tsconfig.json"
 DIRS="extension lib lib/orig resources tools src"
 
