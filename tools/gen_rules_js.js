@@ -13,6 +13,7 @@ var variables_list = [
 	"Math_max",
 	"Math_min",
 	"Math_abs",
+	"Math_pow",
 	"get_random_text",
 	"console_log",
 	"console_error",
