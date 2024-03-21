@@ -1,0 +1,12 @@
+{
+  "addons": {
+    "maxurl@qsniyg": {
+      "updates": [
+        {
+          "version": "0.19.5",
+          "update_link": "https://raw.githubusercontent.com/qsniyg/maxurl/master/build/ImageMaxURL_signed.xpi"
+        }
+      ]
+    }
+  }
+}
