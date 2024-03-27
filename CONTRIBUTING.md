@@ -60,11 +60,11 @@ perfect though, I often get it wrong myself :) I can fix it up if you make a mis
     - `get_queries("https://example.com/?a=5&b=10")` -> `{a: 5, b: 10}`
 
   - `remove_queries`: Removes the specified queries:
-    - `remove_queries("https://example.com/?a=5&b=10&c=20", ["b, c"])` -> `"https://example.com/?a=5"`
+    - `remove_queries("https://example.com/?a=5&b=10&c=20", ["b", "c"])` -> `"https://example.com/?a=5"`
     - `remove_queries("https://example.com/?a=5&b=10&c=20", "b")` -> `"https://example.com/?a=5&c=20"`
 
   - `keep_queries`: Removes every query except for the specified queries:
-    - `keep_queries("https://example.com/?a=5&b=10&c=20", ["b", c"])` -> `"https://example.com/?b=10&c=20"`
+    - `keep_queries("https://example.com/?a=5&b=10&c=20", ["b", "c"])` -> `"https://example.com/?b=10&c=20"`
     - `keep_queries("https://example.com/?a=5&b=10&c=20", "b")` -> `"https://example.com/?b=10"`
     - `keep_queries("https://example.com/?a=5&b=10&c=20", ["b", "c"], {overwrite: {"c": 1, "d": 2}})` -> `"https://example.com/?b=10&c=1&d=2"`
     - `keep_queries("https://example.com/?a=5&b=10", ["b", "c"], {required: ["c"]})` -> `"https://example.com/?a=5&b=10"`
