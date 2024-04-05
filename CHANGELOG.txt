@@ -1,6 +1,6 @@
-2023.3.1 (in-dev)
+2023.4.0 (in-dev)
 
-Special thanks to fireattack, nimbuz, Froktime, fyhtma, SakalliTavernaci, TheLastZombie, oifj34f34f, Solus for their contributions and reports for this release
+Special thanks to fireattack, nimbuz, Froktime, fyhtma, SakalliTavernaci, TheLastZombie, oifj34f34f, Solus, sn3akyb3ar for their contributions and reports for this release
 
 ---
 
