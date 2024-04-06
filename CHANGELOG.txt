@@ -1,6 +1,10 @@
 2023.4.0 (in-dev)
 
-Special thanks to fireattack, nimbuz, Froktime, fyhtma, SakalliTavernaci, TheLastZombie, oifj34f34f, Solus, sn3akyb3ar for their contributions and reports for this release
+Improvements:
+
+ * Various improvements/fixes to existing rules (including iTunes)
+
+Special thanks to fireattack, nimbuz, Froktime, fyhtma, SakalliTavernaci, TheLastZombie, oifj34f34f, Solus, sn3akyb3ar, n0stal6ic for their contributions and reports for this release
 
 ---
 
