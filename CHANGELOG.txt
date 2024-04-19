@@ -2,9 +2,9 @@
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including iTunes)
+ * Various improvements/fixes to existing rules (including iTunes, Tumblr)
 
-Special thanks to fireattack, nimbuz, Froktime, fyhtma, SakalliTavernaci, TheLastZombie, oifj34f34f, Solus, sn3akyb3ar, n0stal6ic for their contributions and reports for this release
+Special thanks to fireattack, nimbuz, Froktime, fyhtma, SakalliTavernaci, TheLastZombie, oifj34f34f, Solus, sn3akyb3ar, n0stal6ic, nyahgust for their contributions and reports for this release
 
 ---
 
