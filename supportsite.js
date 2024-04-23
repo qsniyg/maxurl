@@ -24,14 +24,24 @@ function reqsite_simplehash(str) {
     return hash;
 }
 
-// Commonly requested domains that currently cannot be supported.
-// Please message me if you find a method to support these!
 var reqsite_invalid_domains = [
+    // Commonly requested domains that currently cannot be supported.
+    // Please message me if you find a method to support these!
     /\.fbcdn\.net$/,
     /\.cdninstagram\.com$/,
     /i\.discogs\.com$/,
     /www\.discogs\.com$/,
-    /encrypted-tbn[0-9]*\.gstatic\.com$/
+    /encrypted-tbn[0-9]*\.gstatic\.com$/,
+
+    // onion links aren't currently supported
+    /\.onion(?:\.ly)?$/,
+
+    // Commonly requested NSFW domains.
+    /e-hentai\.org$/,
+    /coomer\.su$/,
+    /xhamster\.[a-z]+$/,
+    /pornhub\.com$/,
+    /viper(?:girls)\.to$/
 ];
 
 var reqsite_invalid_urls = [
@@ -39,7 +49,7 @@ var reqsite_invalid_urls = [
     /^https?:\/\/i\.scdn\.co\/+image\/+[0-9a-f]{40}$/,
     /^https?:\/\/images\.genius\.com\/+[0-9a-f]{32}\.[0-9]+x[0-9]+x[0-9]+\.[a-z]+$/,
     /^https?:\/\/media\.licdn\.com\/+dms\/+image\/+.*?\?[et]=/,
-    /^https?:\/\/(?:www\.)?people\.com\/+thmb\/+[^/]+=\//
+    /^https?:\/\/(?:www\.)?(?:people|instyle)\.com\/+thmb\/+[^/]+=\//
 ];
 
 function reqsite_valid_url(url) {

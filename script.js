@@ -160,6 +160,11 @@ function main_reqsupport(e) {
   if (!url || url in sent_requests)
     return;
 
+  if (!reqsite_valid_url(url)) {
+    maxspanel.innerHTML = "Failed to send site request: Please <a href=\"https://github.com/qsniyg/maxurl/issues\">file an issue on Github</a>.";
+    return;
+  }
+
   if (sending_request)
     return;
 
