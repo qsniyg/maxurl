@@ -2,14 +2,14 @@
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including iTunes, Tumblr)
+ * Various improvements/fixes to existing rules (including iTunes, Soundcloud, Tumblr)
 
 Bugfixes:
 
  * Fix browser download replacing current page on non-same-origin URLs
  * Fix GM_download headers for Tampermonkey and Violentmonkey
 
-Special thanks to fireattack, nimbuz, Froktime, fyhtma, SakalliTavernaci, TheLastZombie, oifj34f34f, Solus, sn3akyb3ar, n0stal6ic, nyahgust, vscum for their contributions and reports for this release
+Special thanks to fireattack, nimbuz, Froktime, fyhtma, SakalliTavernaci, TheLastZombie, oifj34f34f, Solus, sn3akyb3ar, n0stal6ic, nyahgust, vscum, TristanWasTaken for their contributions and reports for this release
 
 ---
 
