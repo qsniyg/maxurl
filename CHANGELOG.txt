@@ -2,7 +2,7 @@
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including iTunes, Soundcloud, Tumblr)
+ * Various improvements/fixes to existing rules (including iTunes, Soundcloud, Threads, Tumblr)
 
 Bugfixes:
 
