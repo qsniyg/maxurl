@@ -2,7 +2,7 @@
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including Flickr, iTunes, Soundcloud, Threads, TikTok, Tumblr)
+ * Various improvements/fixes to existing rules (including Flickr, iTunes, Patreon, Soundcloud, Threads, TikTok, Tumblr)
 
 Bugfixes:
 
