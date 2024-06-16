@@ -2185,6 +2185,7 @@ diarioshow.com
 diariouno.com.ar
 diasp.eu
 diasp.org
+diberie.com
 dice-i-scdn-co.imgix.net
 dicelacancion.com
 dientumaytinh.com
@@ -7127,6 +7128,7 @@ refinery29.com
 reforma.com
 regmedia.co.uk
 reho.st
+rehost.diberie.com
 rei.com
 rejob-v2-images-production.s3.amazonaws.com
 religionpeace.ru
