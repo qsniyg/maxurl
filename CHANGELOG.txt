@@ -1,5 +1,9 @@
 2023.5.0 (in-dev)
 
+New features:
+
+ * Add custom blacklist for HTML page redirects (#773)
+
 Improvements:
 
  * Various improvements/fixes to existing rules (including Flickr, iTunes, Patreon, Soundcloud, Threads, TikTok, Tumblr)
