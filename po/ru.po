@@ -530,16 +530,14 @@ msgid "Redirect for HTML pages too"
 msgstr "Перенаправлять для HTML-страниц тоже"
 
 #. redirect_host_html.description
-msgid "Tries redirection even if the host page is HTML. This option might be useful for dead links. However, this will also result in many normal pages being redirected to images/video, so please avoid enabling this by default!"
-msgstr "Пытается перенаправить, даже если хост является страницой HTML. Этот параметр может быть полезен для мёртвых ссылок. Однако, это также приведёт к тому, что многие обычные страницы будут перенаправлены на изображения/видео, поэтому, не включайте это по умолчанию!"
+msgid "Tries redirection even if the host page is HTML. This option might be useful for dead links. However, this will also result in many normal pages being redirected to images/video, so use with caution."
+msgstr ""
 
 #. redirect_host_html.warning.true
 msgid ""
 "This will result in many pages being redirected to images/videos.\n"
-"I'd recommend only enabling this for the media you need it for, then disabling it after."
+"I'd recommend only either enabling this for the media you need it for then disabling it after, or using the black/whitelist feature below to only allow it to run for specified websites."
 msgstr ""
-"В результате многие страницы будут перенаправлены на изображения/видео.\n"
-"Рекомендуется включать это только для тех медиа, для которых это нужно, а после снова отключить."
 
 #. mouseover.name
 #. English: Enable image popup
@@ -2852,7 +2850,23 @@ msgstr ""
 msgid "A list of host URLs (one per line) that the popup is blacklisted from. For example, adding `twitter.com` to this blacklist would prevent any popup from opening on twitter.com."
 msgstr ""
 
-#. bigimage_blacklist.documentation.value, host_blacklist.documentation.value
+#. host_blacklist_mode.name
+msgid "Host blacklist mode"
+msgstr ""
+
+#. host_blacklist_mode.description
+msgid "Whether the host blacklist should act as a blacklist or a whitelist"
+msgstr ""
+
+#. host_html_blacklist.name
+msgid "HTML page blacklist"
+msgstr ""
+
+#. host_html_blacklist.description
+msgid "A list of URLs (one per line) that are blacklisted from being redirected."
+msgstr ""
+
+#. bigimage_blacklist.documentation.value, host_blacklist.documentation.value, host_html_blacklist.documentation.value
 msgid ""
 "The examples below are written for the simple (glob) engine, not the regex engine. The glob engine is generally based on the UNIX glob syntax.<br />\n"
 "<ul><br />\n"
@@ -2886,19 +2900,19 @@ msgstr ""
 "<li><code>g[0-9]ogle.com</code> будет блокировать https://g0ogle.com/, https://g1ogle.com/, и т.д. (вплоть до https://g9ogle.com/)</li>\n"
 "</ul>"
 
-#. host_blacklist_mode.name
-msgid "Host blacklist mode"
+#. host_html_blacklist_mode.name
+msgid "HTML page blacklist mode"
 msgstr ""
 
-#. host_blacklist_mode.description
-msgid "Whether the host blacklist should act as a blacklist or a whitelist"
+#. host_html_blacklist_mode.description
+msgid "Whether the HTML page blacklist should act as a blacklist or a whitelist"
 msgstr ""
 
-#. bigimage_blacklist_mode.options.whitelist.name, host_blacklist_mode.options.whitelist.name
+#. bigimage_blacklist_mode.options.whitelist.name, host_blacklist_mode.options.whitelist.name, host_html_blacklist_mode.options.whitelist.name
 msgid "Whitelist"
 msgstr ""
 
-#. bigimage_blacklist_mode.options.blacklist.name, host_blacklist_mode.options.blacklist.name
+#. bigimage_blacklist_mode.options.blacklist.name, host_blacklist_mode.options.blacklist.name, host_html_blacklist_mode.options.blacklist.name
 msgid "Blacklist"
 msgstr "Чёрный список"
 
@@ -2910,7 +2924,7 @@ msgstr "Формат имени файла"
 msgid "Format string(s) for the filename"
 msgstr "Формат строк(и) для имени файла."
 
-#. mouseover_styles.documentation.title, bigimage_blacklist.documentation.title, filename_format.documentation.title, host_blacklist.documentation.title
+#. mouseover_styles.documentation.title, bigimage_blacklist.documentation.title, filename_format.documentation.title, host_blacklist.documentation.title, host_html_blacklist.documentation.title
 msgid "Documentation"
 msgstr "Документация"
 
