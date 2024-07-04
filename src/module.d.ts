@@ -84,3 +84,16 @@ declare class SharedArrayBuffer {
 interface HeaderDict {
 	[key: string]: string;
 }
+
+type SingleHeader = {
+	name: string;
+	value: string;
+};
+
+type HeaderList = Array<SingleHeader>;
+
+/*declare class Promise<T> {
+	static all: (promises:any)=>Promise<T>
+	then: (callback:any)=>Promise<T>
+	catch: (callback:any)=>Promise<T>
+}*/
