@@ -12,8 +12,9 @@ Bugfixes:
 
  * Fix browser download replacing current page on non-same-origin URLs
  * Fix GM_download headers for Tampermonkey and Violentmonkey
+ * Fix header parsing for Tampermonkey BETA (thanks to Broly for reporting)
 
-Special thanks to fireattack, nimbuz, Froktime, fyhtma, SakalliTavernaci, TheLastZombie, oifj34f34f, Solus, sn3akyb3ar, n0stal6ic, nyahgust, vscum, TristanWasTaken, BlindWanda, SUPER7X, n0099, remlap, CetaceanNation, bsydow, tathastu871, roi, ItsProyal, lazybookwyrm, James Joint, Machou for their contributions and reports for this release
+Special thanks to fireattack, nimbuz, Froktime, fyhtma, SakalliTavernaci, TheLastZombie, oifj34f34f, Solus, sn3akyb3ar, n0stal6ic, nyahgust, vscum, TristanWasTaken, BlindWanda, SUPER7X, n0099, remlap, CetaceanNation, bsydow, tathastu871, roi, ItsProyal, lazybookwyrm, James Joint, Machou, Broly for their contributions and reports for this release
 
 ---
 
