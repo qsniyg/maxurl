@@ -7,6 +7,7 @@ New features:
 Improvements:
 
  * Various improvements/fixes to existing rules (including Flickr, iTunes, Patreon, Soundcloud, Threads, TikTok, Tumblr)
+ * Improve parsing for <picture> elements
 
 Bugfixes:
 
