@@ -1,5 +1,13 @@
 .. raw:: html
 
+    <div align="center">
+    
+    **English** | `Português (Brasil) <docs/pt/README.pt-BR.md>`_
+    
+    </div>
+
+---
+
    <p align="center">
      <img src="https://raw.githubusercontent.com/qsniyg/maxurl/master/resources/imu_opera_banner_transparent.png" alt="Image Max URL" title="Image Max URL" />
    </p>
