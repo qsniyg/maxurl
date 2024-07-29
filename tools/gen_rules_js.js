@@ -114,7 +114,8 @@ var variables_list = [
 	"looks_like_valid_link",
 	"IMUCache",
 	"url_basename",
-	"parse_int"
+	"parse_int",
+	"get_localstorage"
 ];
 
 var get_random_text = function(length) {
