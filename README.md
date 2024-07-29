@@ -8,6 +8,8 @@
   <b>English</b> | <a href="docs/pt/README.pt-BR.md">Português (Brasil)</a>
 </p>
 
+---
+
 Image Max URL is a program that will try to find larger/original versions of images and videos, usually by replacing URL patterns.
 
 It currently contains support for \>9000 hardcoded websites (full list in [sites.txt](https://github.com/qsniyg/maxurl/blob/master/sites.txt)),
@@ -15,43 +17,45 @@ but it also supports a number of generic engines (such as Wordpress and MediaWik
 
 It is currently released as:
 
--   Userscript: (most browsers)
-    -   Stable: [userscript_smaller.user.js](https://github.com/qsniyg/maxurl/blob/master/userscript_smaller.user.js?raw=true) or [OpenUserJS](https://openuserjs.org/scripts/qsniyg/Image_Max_URL)
-    -   Development: [userscript.user.js](https://github.com/qsniyg/maxurl/blob/master/userscript.user.js?raw=true) (recommended)
-    -   It serves as the base for everything listed below. It also serves as a node module (used by the reddit bot), and can be embedded in a website.
--   Browser extension: [Firefox](https://addons.mozilla.org/firefox/addon/image-max-url/) (other browsers supporting WebExtensions can sideload the extension through this git repository)
-    -   Since addons have more privileges than userscripts, it has a bit of extra functionality over the userscript
-    -   Source code is in [manifest.json](https://github.com/qsniyg/maxurl/blob/master/manifest.json) and the [extension](https://github.com/qsniyg/maxurl/tree/master/extension) folder
--   [Website](https://qsniyg.github.io/maxurl/)
-    -   Due to browser security constraints, some URLs (requiring cross-origin requests) can't be supported by the website
-    -   Source code is in the [gh-pages](https://github.com/qsniyg/maxurl/tree/gh-pages) branch
--   Reddit bot ([/u/MaxImageBot](https://www.reddit.com/user/MaxImageBot/))
-    -   Source code is in [reddit-bot/comment-bot.js](https://github.com/qsniyg/maxurl/blob/master/reddit-bot/comment-bot.js) and [reddit-bot/dourl.js](https://github.com/qsniyg/maxurl/blob/master/reddit-bot/dourl.js)
+- Userscript: (most browsers)
+  - Stable: [userscript_smaller.user.js](https://github.com/qsniyg/maxurl/blob/master/userscript_smaller.user.js?raw=true) or [OpenUserJS](https://openuserjs.org/scripts/qsniyg/Image_Max_URL)
+  - Development: [userscript.user.js](https://github.com/qsniyg/maxurl/blob/master/userscript.user.js?raw=true) (recommended)
+  - It serves as the base for everything listed below. It also serves as a node module (used by the reddit bot), and can be embedded in a website.
+- Browser extension:
+  - [Firefox](https://addons.mozilla.org/firefox/addon/image-max-url/)
+  - Other browsers supporting WebExtensions can sideload the extension through this git repository.
+  - Since addons have more privileges than userscripts, it has a bit of extra functionality over the userscript.
+  - Source code is in [manifest.json](https://github.com/qsniyg/maxurl/blob/master/manifest.json) and the [extension](https://github.com/qsniyg/maxurl/tree/master/extension) folder.
+- [Website](https://qsniyg.github.io/maxurl/)
+  - Due to browser security constraints, some URLs (requiring cross-origin requests) can't be supported by the website.
+  - Source code is in the [gh-pages](https://github.com/qsniyg/maxurl/tree/gh-pages) branch.
+- Reddit bot ([/u/MaxImageBot](https://www.reddit.com/user/MaxImageBot/))
+  - Source code is in [reddit-bot/comment-bot.js](https://github.com/qsniyg/maxurl/blob/master/reddit-bot/comment-bot.js) and [reddit-bot/dourl.js](https://github.com/qsniyg/maxurl/blob/master/reddit-bot/dourl.js)
 
 Community:
 
--   [Discord Server](https://discord.gg/fH9Pf54)
--   [Matrix](https://matrix.to/#/#image-max-url:tedomum.net?via=tedomum.net) (`#image-max-url:tedomum.net`)
--   [Subreddit](http://reddit.com/r/MaxImage)
+- [Discord Server](https://discord.gg/fH9Pf54)
+- [Matrix](https://matrix.to/#/#image-max-url:tedomum.net?via=tedomum.net) (`#image-max-url:tedomum.net`)
+- [Subreddit](http://reddit.com/r/MaxImage)
 
 # Sideloading the extension
 
 The extension is currently unavailable to other browsers\' addon stores (such as Chrome and Microsoft Edge),
 but you can sideload this repository if you wish to use the extension version instead of the userscript.
 
--   Repository:
-    -   Download the repository however you wish (I\'d recommend cloning it through git as it allows easier updating)
-    -   Chromium:
-        -   Go to <chrome://extensions>, make sure \"Developer mode\" is enabled, click \"Load unpacked \[extension\]\", and navigate to the maxurl repository
-    -   Firefox:
-        -   Go to <about:debugging->\>This Firefox, select \"Load temporary Add-on\...\", and navigate to \"manifest.json\" within the maxurl repository
-        -   Note that the addon will be deleted once Firefox is closed. There\'s unfortunately nothing I can do about this.
--   CRX (Chromium-based browsers):
-    -   Download the CRX build from <https://github.com/qsniyg/maxurl/blob/master/build/ImageMaxURL_crx3.crx>
-    -   Go to <chrome://extensions>, make sure \"Developer mode\" is enabled, then drag&drop the downloaded CRX file onto the page.
--   XPI (Firefox-based browsers):
-    -   Download the XPI build from <https://github.com/qsniyg/maxurl/blob/master/build/ImageMaxURL_signed.xpi>
-    -   Go to <about:addons>, click on the gear icon, then select \"Install Add-on from From File\...\", and navigate to the downloaded XPI file.
+- Repository:
+  - Download the repository however you wish (I\'d recommend cloning it through git as it allows easier updating)
+  - Chromium:
+    - Go to <chrome://extensions>, make sure \"Developer mode\" is enabled, click \"Load unpacked \[extension\]\", and navigate to the maxurl repository
+  - Firefox:
+    - Go to <about:debugging->\>This Firefox, select \"Load temporary Add-on\...\", and navigate to \"manifest.json\" within the maxurl repository
+    - Note that the addon will be deleted once Firefox is closed. There\'s unfortunately nothing I can do about this.
+- CRX (Chromium-based browsers):
+  - Download the CRX build from <https://github.com/qsniyg/maxurl/blob/master/build/ImageMaxURL_crx3.crx>
+  - Go to <chrome://extensions>, make sure \"Developer mode\" is enabled, then drag&drop the downloaded CRX file onto the page.
+- XPI (Firefox-based browsers):
+  - Download the XPI build from <https://github.com/qsniyg/maxurl/blob/master/build/ImageMaxURL_signed.xpi>
+  - Go to <about:addons>, click on the gear icon, then select \"Install Add-on from From File\...\", and navigate to the downloaded XPI file.
 
 # Contributing
 
