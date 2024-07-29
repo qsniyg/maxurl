@@ -21,8 +21,7 @@ It is currently released as:
   - Stable: [userscript_smaller.user.js](https://github.com/qsniyg/maxurl/blob/master/userscript_smaller.user.js?raw=true) or [OpenUserJS](https://openuserjs.org/scripts/qsniyg/Image_Max_URL)
   - Development: [userscript.user.js](https://github.com/qsniyg/maxurl/blob/master/userscript.user.js?raw=true) (recommended)
   - It serves as the base for everything listed below. It also serves as a node module (used by the reddit bot), and can be embedded in a website.
-- Browser extension:
-  - [Firefox](https://addons.mozilla.org/firefox/addon/image-max-url/)
+- Browser extension: [Firefox](https://addons.mozilla.org/firefox/addon/image-max-url/)
   - Other browsers supporting WebExtensions can sideload the extension through this git repository.
   - Since addons have more privileges than userscripts, it has a bit of extra functionality over the userscript.
   - Source code is in [manifest.json](https://github.com/qsniyg/maxurl/blob/master/manifest.json) and the [extension](https://github.com/qsniyg/maxurl/tree/master/extension) folder.
