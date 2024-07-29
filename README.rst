@@ -1,15 +1,13 @@
 .. raw:: html
 
-    <div align="center">
-    
-    **English** | `Português (Brasil) <docs/pt/README.pt-BR.md>`_
-    
-    </div>
-
----
-
    <p align="center">
      <img src="https://raw.githubusercontent.com/qsniyg/maxurl/master/resources/imu_opera_banner_transparent.png" alt="Image Max URL" title="Image Max URL" />
+   </p>
+
+   <hr />
+
+   <p align="center">
+     **English** | `Português (Brasil) <docs/pt/README.pt-BR.md>`_
    </p>
 
 Image Max URL is a program that will try to find larger/original versions of images and videos, usually by replacing URL patterns.
