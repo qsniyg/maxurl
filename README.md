@@ -5,7 +5,7 @@
 ---
 
 <p align="center">
-  **English** | [Português (Brasil)](docs/pt/README.pt-BR.md)
+  <b>English</b> | <a href="docs/pt/README.pt-BR.md">Português (Brasil)</a>
 </p>
 
 Image Max URL is a program that will try to find larger/original versions of images and videos, usually by replacing URL patterns.
