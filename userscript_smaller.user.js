@@ -18814,6 +18814,7 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "answcdn.com" && domain.match(/^file[0-9]*\./)) ||
 			domain === "res.fashionsnap.com" ||
 			domain === "user-images.strikinglycdn.com" ||
+			domain === "custom-images.strikinglycdn.com" ||
 			domain === "novel-img.prepics-cdn.com" ||
 			domain === "cdn.apartmenttherapy.info" ||
 			domain === "cdn.domestika.org" ||
@@ -19010,7 +19011,7 @@ var $$IMU_EXPORT$$;
 					bad: "mask"
 				};
 			var parse_directives = function(url) {
-				var match = url.match(/((?:\.+_*(?:[A-Z][A-Z0-9]|V_)[^/.]*)+)\.+[^/.]+(?:[?#].*)?$/);
+				var match = url.match(/((?:\.+_*(?:0_)?(?:[A-Z][A-Z0-9]|V_)[^/.]*)+)\.+[^/.]+(?:[?#].*)?$/);
 				if (!match)
 					return null;
 				var raw_directives = match[1].replace(/\./g, "_").replace(/_+/g, "_").split("_");
@@ -19019,7 +19020,7 @@ var $$IMU_EXPORT$$;
 					var directive = raw_directives_1[_i];
 					if (!directive || !directive.length)
 						continue;
-					var dmatch = directive.match(/^([A-Z][A-Z0-9]|V)(.*)?$/);
+					var dmatch = directive.match(/^([A-Z][A-Z0-9]|V|0)(.*)?$/);
 					if (!dmatch) {
 						console_warn("Invalid directive", directive, "for URL", url);
 						return null;
@@ -19040,7 +19041,7 @@ var $$IMU_EXPORT$$;
 				var stringified = "._" + stringified_arr.join("_") + "_";
 				if (!stringified_arr.length)
 					stringified = "";
-				var urlmatch = url.match(/^(.*\/[^/]+?)(?:\.+_*(?:[A-Z][A-Z0-9]|V_)[^/.]*)*\.*(\.[^/.]+(?:[?#].*)?)$/);
+				var urlmatch = url.match(/^(.*\/[^/]+?)(?:\.+_*(?:0_)?(?:[A-Z][A-Z0-9]|V_)[^/.]*)*\.*(\.[^/.]+(?:[?#].*)?)$/);
 				if (!urlmatch) {
 					console_warn("Unable to find URL match for", url);
 					return url;
@@ -19067,6 +19068,7 @@ var $$IMU_EXPORT$$;
 						directive.key === "SY" ||
 						directive.key === "V" ||
 						directive.key === "BG" || // background color
+						directive.key === "0" ||
 						directive.key === "CB") {
 						continue;
 					}
@@ -23124,6 +23126,11 @@ var $$IMU_EXPORT$$;
 				can_head: true
 			};
 		}
+		if (domain === "resize.elle.fr") {
+			return src
+				.replace(/:\/\/[^/]+\/+original\/+(var\/.*)$/, "://cdn-elle.ladmedia.fr/$1")
+				.replace(/(:\/\/[^/]+\/+)[^/]+\/+var\/+/, "$1original/var/");
+		}
 		if (domain_nosub === "imgbox.com" &&
 			(domain.match(/^thumbs[0-9]*\./) ||
 				domain.match(/images[0-9]*\./))) {
@@ -25479,6 +25486,7 @@ var $$IMU_EXPORT$$;
 			domain === "d30fl32nd2baj9.cloudfront.net" ||
 			domain_nowww === "elsoldepuebla.com.mx" ||
 			domain_nowww === "svensktnaringsliv.se" ||
+			(domain_nosub === "jyllands-posten.dk" && /\/pictures\/+image\/+[0-9]+\//.test(src)) ||
 			src.match(/\/(?:article[0-9]+\.(?:ece|svt)|[0-9a-z]+\/+picture[0-9]{4,})\/+(?:[^/]*\/)?alternates\//i) ||
 			src.match(/:\/\/i[0-9]*(?:-prod)?\..*\/article[^/]*\.(?:ece|svt)\//i)
 		) {
@@ -29885,7 +29893,7 @@ var $$IMU_EXPORT$$;
 		if ((domain_nosub === "staticflickr.com" ||
 			domain === "static.flickr.com" ||
 			(domain_nosub === "flickr.com" && string_indexof(domain, ".static.flickr.com") >= 0)) &&
-			(src.match(/\/[0-9]+_[0-9a-f]+(?:_[a-z0-9]*)?\.[a-z]+.*$/) || /\/video\/+[0-9]+\/+[0-9a-f]+\/+/.test(src)) &&
+			(src.match(/\/[0-9]+_[0-9a-f]+(?:_[a-z0-9]*)*\.[a-z]+.*$/) || /\/video\/+[0-9]+\/+[0-9a-f]+\/+/.test(src)) &&
 			options && options.do_request && options.cb) {
 			var find_photoid_secret_from_url = function(src) {
 				var match = src.match(/\/video\/+([0-9]+)\/+([0-9a-f]+)\/+/);
@@ -43461,7 +43469,7 @@ var $$IMU_EXPORT$$;
 		}
 		if (domain_nowww === "sn.at") return src.replace(/\/[0-9]*x[0-9]*(\/+[0-9]+\.[0-9]+\.[0-9]+)(?:[?#].*)?$/, "$1");
 		if (domain_nowww === "meninafm.com.br") return src.replace(/\/thumb_indice_noticias\.php\?(?:.*&)?img=([^&]*).*?$/, "/$1");
-		if (domain === "img.lemde.fr") return src.replace(/(:\/\/[^/]*\/[0-9]{4}\/+(?:[0-9]{2}\/+){2})(?:[0-9]+\/+){8}([0-9a-f]+_[0-9]+-[0-9]+-[0-9]+\.[^/.]*)(?:[?#].*)?$/, "$10/0/0/0/0/0/0/0/$2");
+		if (domain === "img.lemde.fr") return src.replace(/(:\/\/[^/]*\/[0-9]{4}\/+(?:[0-9]{2}\/+){2})(?:[0-9]+\/+){8}([0-9a-f]+_[0-9]+-[^/.?#]+\.[^/.]*)(?:[?#].*)?$/, "$10/0/0/0/0/0/0/0/$2");
 		if (domain_nowww === "christian-dogma.com") return src.replace(/\/im[0-9]+photos\/+([0-9]{8}\/+[0-9a-f]+\.[^/.?&#]*).*?$/, "/photos/$1");
 		if (domain_nosub === "feedme.id" && domain.match(/^cdn[0-9]*\./)) {
 			return src.replace(/\/media\/+post\/+[a-z]+\/+/, "/media/post/");
@@ -43634,6 +43642,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "northerndailyleader.com.au" ||
 			domain_nowww === "hawkesburygazette.com.au" ||
 			domain_nowww === "theleader.com.au" ||
+			domain_nowww === "examiner.com.au" ||
 			domain_nowww === "northweststar.com.au") {
 			return src.replace(/\/transform\/+v1\/+[a-z]+\/+(frm\/+[^/]*\/+[^/]*\.[^/.]*)\/+[^/]*?(\.[^/.]*)?(?:[?#].*)?$/, "/transform/v1/resize/$1/w0_h0_fscale$2");
 		}
@@ -45348,7 +45357,11 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "jdmagicbox.com" && /^content[0-9]*\./.test(domain)) {
 			return src.replace(/(\/catalogue\/+[^/?]*-[a-z0-9]{10,})(?:-[0-9]+)?(\.[^/.]*?)(?:[?#].*)?$/, "$1$2");
 		}
-		if (domain === "image.aladin.co.kr") return src.replace(/(\/product\/+[0-9]+\/+[0-9]+\/+)cover(?:sum|150)\/+/, "$1cover500/");
+		if (domain === "image.aladin.co.kr") {
+			return src
+				.replace(/(\/product\/+[0-9]+\/+[0-9]+\/+)cover500\/+(k[0-9]+_)1\./, "$1letslook/$2fl.")
+				.replace(/(\/product\/+[0-9]+\/+[0-9]+\/+)cover(?:sum|1[50]0|200)\/+/, "$1cover500/");
+		}
 		if (domain === "book.interpark.com" ||
 			domain === "bimage.interpark.com") {
 			return src.replace(/(\/goods_image\/+(?:[0-9]\/+){4}[0-9]+)[hoi](\.[^/.]*)(?:[?#].*)?$/, "$1g$2");
@@ -61349,6 +61362,8 @@ var $$IMU_EXPORT$$;
 				};
 		}
 		if (domain === "cdn.rockislandauction.com") return src.replace(/(\/dev_cdn\/+[0-9]+\/+)thumbs\/+/, "$1");
+		if (domain === "assets.playbill.com") return src.replace(/(\/editorial\/+)_enhancementPortrait\/+/, "$1");
+		if (domain === "cdn.s-cloud.fi") return src.replace(/(\/v1\/+)[^/]+\/+assets\/+/, "$1assets/");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
