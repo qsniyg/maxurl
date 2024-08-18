@@ -1,9 +1,10 @@
-2023.8.0 (in-dev)
+2024.8.0
 
 New features:
 
  * Brazilian Portuguese translation by thiagojramos
  * Add custom blacklist for HTML page redirects (#773)
+ * Support for ~200 new websites (using ~125 new rules)
 
 Improvements:
 
