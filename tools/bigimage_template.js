@@ -50,7 +50,8 @@ var _get_bigimage = function() {
         }
 
         // in case the userscript is loaded in the window context
-        delete __IMU_GETBIGIMAGE__;
+        //delete __IMU_GETBIGIMAGE__; // not allowed in strict mode
+        __IMU_GETBIGIMAGE__ = void 0;
     }
 
     if (require_rules_failed) {
