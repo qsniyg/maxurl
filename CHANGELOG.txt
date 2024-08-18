@@ -1,4 +1,4 @@
-2023.5.0 (in-dev)
+2023.8.0 (in-dev)
 
 New features:
 
@@ -7,7 +7,7 @@ New features:
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including Flickr, iTunes, Patreon, Soundcloud, Threads, TikTok, Tumblr)
+ * Various improvements/fixes to existing rules (including Flickr, iTunes, Patreon, Soundcloud, Spotify, Threads, TikTok, Tumblr)
  * Improve parsing for <picture> elements
 
 Bugfixes:
@@ -16,7 +16,7 @@ Bugfixes:
  * Fix GM_download headers for Tampermonkey and Violentmonkey
  * Fix header parsing for Tampermonkey BETA (thanks to Broly for reporting)
 
-Special thanks to thiagojramos, fireattack, nimbuz, Froktime, fyhtma, SakalliTavernaci, TheLastZombie, oifj34f34f, Solus, sn3akyb3ar, n0stal6ic, nyahgust, vscum, TristanWasTaken, BlindWanda, SUPER7X, n0099, remlap, CetaceanNation, bsydow, tathastu871, roi, ItsProyal, lazybookwyrm, James Joint, Machou, Broly, siloricity, ValiumBear for their contributions and reports for this release
+Special thanks to thiagojramos, fireattack, nimbuz, Froktime, fyhtma, SakalliTavernaci, TheLastZombie, oifj34f34f, Solus, sn3akyb3ar, n0stal6ic, nyahgust, vscum, TristanWasTaken, BlindWanda, SUPER7X, n0099, remlap, CetaceanNation, bsydow, tathastu871, roi, ItsProyal, lazybookwyrm, James Joint, Machou, Broly, siloricity, ValiumBear, siloricity, evilxsloth for their contributions and reports for this release
 
 ---
 
