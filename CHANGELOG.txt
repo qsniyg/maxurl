@@ -1,3 +1,9 @@
+2024.8.1 (in-dev)
+
+Special thanks to nimbuz for their contributions and reports for this release
+
+---
+
 2024.8.0
 
 New features:
