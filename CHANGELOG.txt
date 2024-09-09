@@ -1,6 +1,6 @@
-2024.8.1 (in-dev)
+2024.9.0 (in-dev)
 
-Special thanks to nimbuz, remlap, Solus for their contributions and reports for this release
+Special thanks to nimbuz, remlap, Solus, immewnity for their contributions and reports for this release
 
 ---
 
