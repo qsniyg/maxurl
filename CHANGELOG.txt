@@ -1,6 +1,6 @@
 2024.9.0 (in-dev)
 
-Special thanks to nimbuz, remlap, Solus, immewnity, Froktime, billkewl for their contributions and reports for this release
+Special thanks to nimbuz, remlap, Solus, immewnity, Froktime, billkewl, Broly for their contributions and reports for this release
 
 ---
 
