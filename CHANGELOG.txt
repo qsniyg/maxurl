@@ -4,7 +4,7 @@ Improvements:
 
  * Various improvements/fixes to existing rules (including YouTube)
 
-Special thanks to nimbuz, remlap, Solus, immewnity, Froktime, billkewl, Broly, fyhtma, vscum, acidzab, sn3akyb3ar, ValiumBear, fireattack, NeverForgotten, liamengland1, mantou for their contributions and reports for this release
+Special thanks to nimbuz, remlap, Solus, immewnity, Froktime, billkewl, Broly, fyhtma, vscum, acidzab, sn3akyb3ar, ValiumBear, fireattack, NeverForgotten, liamengland1, mantou, siloricity for their contributions and reports for this release
 
 ---
 
@@ -27,7 +27,7 @@ Bugfixes:
  * Fix GM_download headers for Tampermonkey and Violentmonkey
  * Fix header parsing for Tampermonkey BETA (thanks to Broly for reporting)
 
-Special thanks to thiagojramos, fireattack, nimbuz, Froktime, fyhtma, SakalliTavernaci, TheLastZombie, oifj34f34f, Solus, sn3akyb3ar, n0stal6ic, nyahgust, vscum, TristanWasTaken, BlindWanda, SUPER7X, n0099, remlap, CetaceanNation, bsydow, tathastu871, roi, ItsProyal, lazybookwyrm, James Joint, Machou, Broly, siloricity, ValiumBear, siloricity, evilxsloth, leoli1110, ljcool2006 for their contributions and reports for this release
+Special thanks to thiagojramos, fireattack, nimbuz, Froktime, fyhtma, SakalliTavernaci, TheLastZombie, oifj34f34f, Solus, sn3akyb3ar, n0stal6ic, nyahgust, vscum, TristanWasTaken, BlindWanda, SUPER7X, n0099, remlap, CetaceanNation, bsydow, tathastu871, roi, ItsProyal, lazybookwyrm, James Joint, Machou, Broly, siloricity, ValiumBear, evilxsloth, leoli1110, ljcool2006 for their contributions and reports for this release
 
 ---
 
