@@ -1,10 +1,10 @@
-2024.9.0 (in-dev)
+2024.11.0 (in-dev)
 
 Improvements:
 
  * Various improvements/fixes to existing rules (including YouTube)
 
-Special thanks to nimbuz, remlap, Solus, immewnity, Froktime, billkewl, Broly, fyhtma, vscum, acidzab, sn3akyb3ar, ValiumBear, fireattack, NeverForgotten, liamengland1, mantou, siloricity, adz for their contributions and reports for this release
+Special thanks to nimbuz, remlap, Solus, immewnity, Froktime, billkewl, Broly, fyhtma, vscum, acidzab, sn3akyb3ar, ValiumBear, fireattack, NeverForgotten, liamengland1, mantou, siloricity, adz, RAT for their contributions and reports for this release
 
 ---
 
