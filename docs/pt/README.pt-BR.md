@@ -1,6 +1,6 @@
 <div align="center">
 
-[English](../../README.rst) | **Português (Brasil)**
+[English](../../README.md) | **Português (Brasil)**
 
 </div>
 
