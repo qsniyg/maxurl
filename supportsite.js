@@ -41,7 +41,12 @@ var reqsite_invalid_domains = [
     /coomer\.su$/,
     /xhamster\.[a-z]+$/,
     /pornhub\.com$/,
-    /viper(?:girls)\.to$/
+    /viper(?:girls)\.to$/,
+    /onlyfans\.com$/,
+
+    // Frequently requested domains that are already supported.
+    // If you encounter an issue with these, please open an issue on Github or message me.
+    /pimeyes\.com$/
 ];
 
 var reqsite_invalid_urls = [
