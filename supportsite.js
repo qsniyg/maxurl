@@ -32,6 +32,7 @@ var reqsite_invalid_domains = [
     /i\.discogs\.com$/,
     /www\.discogs\.com$/,
     /encrypted-tbn[0-9]*\.gstatic\.com$/,
+    /sun[-0-9]*\.userapi\.com$/,
 
     // onion links aren't currently supported
     /\.onion(?:\.ly)?$/,
@@ -43,10 +44,12 @@ var reqsite_invalid_domains = [
     /pornhub\.com$/,
     /viper(?:girls)\.to$/,
     /onlyfans\.com$/,
+    /\.xhcdn\.com$/,
 
     // Frequently requested domains that are already supported.
     // If you encounter an issue with these, please open an issue on Github or message me.
-    /pimeyes\.com$/
+    /pimeyes\.com$/,
+    /i\.pinimg\.com$/
 ];
 
 var reqsite_invalid_urls = [
@@ -54,7 +57,7 @@ var reqsite_invalid_urls = [
     /^https?:\/\/i\.scdn\.co\/+image\/+[0-9a-f]{40}$/,
     /^https?:\/\/images\.genius\.com\/+[0-9a-f]{32}\.[0-9]+x[0-9]+x[0-9]+\.[a-z]+$/,
     /^https?:\/\/media\.licdn\.com\/+dms\/+image\/+.*?\?[et]=/,
-    /^https?:\/\/(?:www\.)?(?:people|instyle)\.com\/+thmb\/+[^/]+=\//
+    /^https?:\/\/(?:www\.)?(?:people|instyle|ew)\.com\/+thmb\/+[^/]+=\//
 ];
 
 function reqsite_valid_url(url) {
