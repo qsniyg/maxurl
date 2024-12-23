@@ -8,7 +8,7 @@ Bugfixes:
 
  * Fix bad images preventing more than one fallback image from being tried
 
-Special thanks to nimbuz, remlap, Solus, immewnity, Froktime, billkewl, Broly, fyhtma, vscum, acidzab, sn3akyb3ar, ValiumBear, fireattack, NeverForgotten, liamengland1, mantou, siloricity, adz, RAT, DoomTay, byjrg, Liz, azadandro, litterbox1 for their contributions and reports for this release
+Special thanks to nimbuz, remlap, Solus, immewnity, Froktime, billkewl, Broly, fyhtma, vscum, acidzab, sn3akyb3ar, ValiumBear, fireattack, NeverForgotten, liamengland1, mantou, siloricity, adz, RAT, DoomTay, byjrg, Liz, azadandro, litterbox1, Earthworm-Banana for their contributions and reports for this release
 
 ---
 
