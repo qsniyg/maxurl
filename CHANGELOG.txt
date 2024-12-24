@@ -3,6 +3,7 @@
 Improvements:
 
  * Various improvements/fixes to existing rules (including DeviantArt, Pinterest, YouTube)
+ * Support for ~155 new websites (using ~65 new rules)
 
 Bugfixes:
 
