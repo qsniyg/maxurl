@@ -32,39 +32,39 @@
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 9400+ websites, including a powerful media popup and download feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 9400 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 9400 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 9400 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 9400 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 9400 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 9400 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 9400 sitios
-// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 9400 verkkosivustolle
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 400 sites web, y compris une puissante fonction de popup média
-// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 400 sites web, y compris une puissante fonction de popup média
-// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-9400 אתרים
-// @description:hi    9400 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
-// @description:hu    Több mint 9400 webhely képének és videóinak nagyobb vagy eredeti változatát találja
-// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 9400 situs web
-// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 9400 siti web
-// @description:ja    9400以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ko    9400개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 9400 nettsteder
-// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 9400 websites
-// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 9400 stron internetowych
-// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 9400 sites
-// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 9400+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 9400 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 9400 веб-сайтів
-// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 9400 งเว็บไซต์
-// @description:tr    9400'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
-// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 9400 trang web
+// @description       Finds larger or original versions of images and videos for 9600+ websites, including a powerful media popup and download feature
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 9600 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 9600 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 9600 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 9600 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 9600 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 9600 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 9600 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 9600 verkkosivustolle
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 600 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 600 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-9600 אתרים
+// @description:hi    9600 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
+// @description:hu    Több mint 9600 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 9600 situs web
+// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 9600 siti web
+// @description:ja    9600以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ko    9600개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 9600 nettsteder
+// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 9600 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 9600 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 9600 sites
+// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 9600+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 9600 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 9600 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 9600 งเว็บไซต์
+// @description:tr    9600'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 9600 trang web
 // @description:zh-CN 在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能
-// @description:zh-TW 為9400多個網站查找更大或原始圖像
-// @description:zh-HK 為9400多個網站查找更大或原始圖像
+// @description:zh-TW 為9600多個網站查找更大或原始圖像
+// @description:zh-HK 為9600多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2024.8.0
+// @version           2024.12.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -100,7 +100,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@7a434a7b6585c1237293548b4257786b08a7beec/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@4c1d5cc85682c7268bdc6870a0bbfbf7dc4ad882/build/rules.js
 // ==/UserScript==
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
 //   * Detecting whether or not the destination URL exists before redirecting
@@ -173,7 +173,7 @@ var $$IMU_EXPORT$$;
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
 	var imu_icon = "https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png";
-	var current_version = "2024.8.0";
+	var current_version = "2024.12.0";
 	var imagetab_ok_override = false;
 	var has_ffmpeg_lib = true;
 	// -- Currently this is unused, it'll be used in a future release (to workaround the 1MB and 2MB limits for OUJS and Greasyfork respectively) --
@@ -1607,6 +1607,90 @@ var $$IMU_EXPORT$$;
 		}
 	} else if (typeof (GM) !== "undefined" && typeof (GM.xmlHttpRequest) !== "undefined") {
 		do_request_raw = GM.xmlHttpRequest;
+	} else if (is_node) {
+		do_request_raw = function(request) {
+			if (_nir_debug_) {
+				console_log("do_request_node", request);
+			}
+			var http = require("http");
+			var https = require("https");
+			var method = request.method || "GET";
+			var our_http = http;
+			if (/^https:/.test(request.url))
+				our_http = https;
+			var hostinfo = request.url.match(/^[a-z]+:\/\/([^/]+)(?:\/+.*)?$/)[1];
+			var port = void 0;
+			var hostname = hostinfo;
+			var portmatch = hostinfo.match(/^(.*):([0-9]+)$/);
+			if (portmatch) {
+				hostname = portmatch[1];
+				port = portmatch[2] | 0;
+			}
+			var path = request.url.match(/^[a-z]+:\/\/[^/]+(\/.*)?$/)[1] || "/";
+			var req = our_http.request({
+				hostname: hostname,
+				port: port,
+				method: method,
+				path: path,
+				// FIXME: add realistic browser headers, cookie jar
+				headers: request.headers
+			}, function(res) {
+				var chunks = [];
+				res.on("data", function(chunk) {
+					chunks.push(chunk);
+				});
+				var done_final = false;
+				var finalcb = function() {
+					if (done_final)
+						return;
+					done_final = true;
+					var rawdata = Buffer.concat(chunks);
+					var headersstrs = [];
+					for (var i = 0; i < res.rawHeaders.length; i += 2) {
+						headersstrs.push([res.rawHeaders[i] + ": " + res.rawHeaders[i + 1]].join(""));
+					}
+					var headersstr = headersstrs.join("\r\n");
+					var resp = {
+						readyState: 4,
+						finalUrl: request.url, // FIXME
+						responseHeaders: headersstr,
+						responseType: "buffer",
+						response: null,
+						responseText: null,
+						status: res.statusCode,
+						statusText: res.statusMessage
+					};
+					resp.response = rawdata;
+					try {
+						resp.responseText = rawdata.toString("utf8"); // FIXME
+					} catch (e) { }
+					if (req.destroyed) {
+						request.onabort();
+					} else if (!req.complete) {
+						request.onerror(resp);
+					} else {
+						// FIXME: more onerror?
+						request.onload(resp);
+					}
+				};
+				// TODO: onprogress
+				// TODO: ontimeout
+				res.on("close", function() {
+					finalcb();
+				});
+				res.on("end", function() {
+					finalcb();
+				});
+			});
+			if (request.data)
+				req.write(request.data);
+			req.end();
+			return {
+				abort: function() {
+					req.abort();
+				}
+			};
+		};
 	}
 	if (is_extension && !is_extension_bg) {
 		// used for clearing menu items
@@ -11778,6 +11862,18 @@ var $$IMU_EXPORT$$;
 			// https://www.test.com./ -> https://www.test.com/
 			.replace(/^([a-z]+:\/\/[^/]+\.[^/]+)\.([?#/].*)?$/, "$1$2");
 	};
+	var get_base = function(document, url) {
+		if (typeof document === "string") {
+			var match = document.match(/<base\s+[^>]*href=["']([^'"]+)["']/);
+			if (match) {
+				return decode_entities(match[1]);
+			} else {
+				return url;
+			}
+		} else {
+			return document.baseURI || url;
+		}
+	};
 	function urljoin(a, b, browser) {
 		if (b.length === 0)
 			return a;
@@ -11797,6 +11893,11 @@ var $$IMU_EXPORT$$;
 			// urljoin("http://site.com/index.html", "file.png") = "http://site.com/index.html/file.png"
 			return a.replace(/\/*$/, "") + "/" + b.replace(/^\/*/, "");
 		} else {
+			if (browser === "real") {
+				if (is_interactive && !is_extension_bg && typeof document === "object") {
+					a = get_base(document, a);
+				}
+			}
 			if (b.length >= 2 && b.slice(0, 2) === "//")
 				return protocol + ":" + b;
 			if (b.length >= 1 && b.slice(0, 1) === "/")
@@ -11833,7 +11934,7 @@ var $$IMU_EXPORT$$;
 		var match;
 		if (options.known_ext) {
 			// todo: factor out?
-			match = basename.match(/(.*?)\.(mp4|mpe?g|jpe?g|jfif|png|tiff|og[agv]|m4[av]|web[pm]|mkv|avi|gif|mpd|m3u8|zip)$/i);
+			match = basename.match(/(.*?)\.(mp4|mpe?g|jpe?g|jfif|png|tiff|og[agv]|m4[av]|web[pm]|mkv|mov|avi|gif|mpd|m3u8|zip)$/i);
 		} else {
 			match = basename.match(/(.*)\.([^.]*)$/);
 		}
@@ -11964,11 +12065,18 @@ var $$IMU_EXPORT$$;
 		var new_urls = add_full_extensions(url, options.extensions, options.prefer_order);
 		if (options.add_video) {
 			for (var i = 0; i < new_urls.length; i++) {
-				if (/\.(?:mp4|webm)$/.test(new_urls[i])) {
-					new_urls[i] = {
-						url: new_urls[i],
-						video: true
-					};
+				var src = new_urls[i];
+				if (typeof src !== "string")
+					src = src.url;
+				if (/\.(?:mp4|webm)(?:[?#].*)?$/i.test(src)) {
+					if (typeof new_urls[i] === "string") {
+						new_urls[i] = {
+							url: src,
+							video: true
+						};
+					} else {
+						new_urls[i].video = true;
+					}
 				}
 			}
 		}
@@ -12000,6 +12108,8 @@ var $$IMU_EXPORT$$;
 		}
 	};
 	var add_http = function(url) {
+		if (/^\/\/[^/]+\.[a-z]+\//.test(url))
+			return "http:" + url;
 		if (!url.match(/^[a-z]+:\/\//))
 			return "http://" + url;
 		return url;
@@ -12690,7 +12800,8 @@ var $$IMU_EXPORT$$;
 	};
 	var contenttype_map = {
 		"image/jpeg": "jpg",
-		"application/dash+xml": "mpd"
+		"application/dash+xml": "mpd",
+		"video/quicktime": "mov"
 	};
 	var get_ext_from_contenttype = function(contenttype) {
 		contenttype = contenttype.replace(/^\s*\[?([^/]+)\/([^/]+?)\]?\s*$/, "$1/$2");
@@ -13903,7 +14014,9 @@ var $$IMU_EXPORT$$;
 		} else {
 			real_api_query(api_cache, do_request, "deviantart_url_from_id:" + id, {
 				method: "HEAD",
-				url: "http://fav.me/" + id, // https doesn't work
+				// use /deviation/ to find the original page instead of fav.me (which only supported http)
+				// thanks to litterbox1 on discord for reporting
+				url: "https://deviantart.com/deviation/" + id,
 				cookie_url: "https://www.deviantart.com/" // workaround
 			}, cb, function(done, resp, cache_key) {
 				done(resp.finalUrl, 6 * 60 * 60);
@@ -15124,14 +15237,20 @@ var $$IMU_EXPORT$$;
 					maxsize = 0;
 					maxobj = null;
 					var videos = img.video_versions;
+					var video_hevc = null;
 					for (var i = 0; i < videos.length; i++) {
 						videos[i].corrected_height = get_corrected_height(img, videos[i]);
 						var size = videos[i].width * videos[i].corrected_height;
-						// >= because for some reason, in stories, type 102==103, but higher quality than 101 (all same dimensions)
-						// thanks to remlap on discord for reporting
-						if (size >= maxsize) {
-							maxsize = size;
-							maxobj = videos[i];
+						// 104 > 101, but 104/_ptProgressive.mp4 is HEVC
+						if (string_indexof(videos[i].url, "_ptProgressive.mp4") >= 0) {
+							video_hevc = videos[i];
+						} else {
+							// >= because for some reason, in stories, type 102==103, but higher quality than 101 (all same dimensions)
+							// thanks to remlap on discord for reporting
+							if (size >= maxsize) {
+								maxsize = size;
+								maxobj = videos[i];
+							}
 						}
 					}
 					if (maxobj !== null) {
@@ -15141,6 +15260,9 @@ var $$IMU_EXPORT$$;
 					}
 					if (img.video_dash_manifest) {
 						image.video_dash = img.video_dash_manifest;
+					}
+					if (video_hevc) {
+						image.video_hevc = video_hevc.url;
 					}
 				}
 				if (image !== null) {
@@ -15270,6 +15392,17 @@ var $$IMU_EXPORT$$;
 						is_current: i === image.i
 					});
 				}
+			}
+			if (image.video_hevc) {
+				preobj.push({
+					url: common_functions["instagram_norm_url"](image.video_hevc),
+					media_info: {
+						type: "video",
+						codec: "hevc"
+					},
+					extra: deepcopy(extra),
+					album_info: deepcopy(album_info)
+				});
 			}
 			if (image.video_dash) {
 				var dashurl = "data:application/dash+xml," + encodeURIComponent(image.video_dash);
@@ -17036,43 +17169,93 @@ var $$IMU_EXPORT$$;
 		}
 		return urls;
 	};
-	common_functions["parse_mediadefinition"] = function(src, data, cache_key) {
+	common_functions["parse_mediadefinition"] = function(api_cache, options, src, data, cache_key, cb) {
 		if (!data) {
 			return null;
 		}
+		var final = function(defs) {
+			try {
+				defs.sort(function(a, b) {
+					if (a.format !== b.format) {
+						if (a.format === "hls")
+							return -1;
+						if (b.format === "hls")
+							return 1;
+					}
+					var diff = (b.quality | 0) - (a.quality | 0);
+					if (diff)
+						return diff;
+					var a_dims = (a.height || 1) * (a.width || 1);
+					var b_dims = (b.height || 1) * (b.width || 1);
+					return b_dims - a_dims;
+				});
+				var urls = [];
+				for (var _i = 0, defs_1 = defs; _i < defs_1.length; _i++) {
+					var def = defs_1[_i];
+					// the queries constantly change, so to avoid constantly refreshing, let's make sure the base URL is different
+					// the domain can also change (cv/ev) so remove that as well
+					var newsrc = def.videoUrl;
+					var noq = src.replace(/[?#].*$/, "").replace(/^[a-z]+:\/\/[^/]+\/+/, "");
+					var newnoq = newsrc.replace(/[?#].*$/, "").replace(/^[a-z]+:\/\/[^/]+\/+/, "");
+					if (noq === newnoq)
+						newsrc = src;
+					var video = true;
+					if (def.format === "hls")
+						video = "hls";
+					urls.push({
+						url: newsrc,
+						extra: {
+							page: data.link_url,
+							caption: data.video_title
+						},
+						headers: {
+							Referer: data.link_url
+						},
+						video: video,
+						is_private: true // linked to IP
+					});
+				}
+				cb(urls);
+			} catch (e) {
+				console_error(cache_key, e);
+			}
+		};
 		try {
-			var maxdef = 0;
-			var maxobj = null;
-			for (var i = 0; i < data.mediaDefinition.length; i++) {
-				var def = data.mediaDefinition[i];
+			var defs_2 = [];
+			var waiting_1 = 0;
+			var videourls = new_set();
+			for (var _i = 0, _a = data.mediaDefinition; _i < _a.length; _i++) {
+				var def = _a[_i];
 				// e.g. 2160/1440p videos for non-logged in members
 				if (!def.videoUrl)
 					continue;
-				def.quality = parse_int(def.quality);
-				if (def.quality > maxdef) {
-					maxdef = def.quality;
-					maxobj = def;
+				if (set_has(videourls, def.videoUrl))
+					continue;
+				set_add(videourls, def.videoUrl);
+				if (!def.quality) {
+					real_api_query(api_cache, options.do_request, cache_key + ":" + def.videoUrl, {
+						url: def.videoUrl,
+						headers: {
+							Referer: data.link_url
+						},
+						json: true
+					}, function(data) {
+						if (data)
+							array_extend(defs_2, data);
+						waiting_1 -= 1;
+						if (waiting_1 <= 0) {
+							final(defs_2);
+						}
+					}, function(done, resp, cache_key) {
+						done(resp, 60 * 60);
+					});
+					waiting_1 += 1;
+				} else {
+					defs_2.push(def);
 				}
 			}
-			// the queries constantly change, so to avoid constantly refreshing, let's make sure the base URL is different
-			// the domain can also change (cv/ev) so remove that as well
-			var newsrc = maxobj.videoUrl;
-			var noq = src.replace(/[?#].*$/, "").replace(/^[a-z]+:\/\/[^/]+\/+/, "");
-			var newnoq = newsrc.replace(/[?#].*$/, "").replace(/^[a-z]+:\/\/[^/]+\/+/, "");
-			if (noq === newnoq)
-				newsrc = src;
-			return {
-				url: newsrc,
-				extra: {
-					page: data.link_url,
-					caption: data.video_title
-				},
-				headers: {
-					Referer: data.link_url
-				},
-				video: true,
-				is_private: true // linked to IP
-			};
+			if (waiting_1 <= 0)
+				final(defs_2);
 		} catch (e) {
 			console_error(cache_key, e);
 		}
@@ -17293,7 +17476,7 @@ var $$IMU_EXPORT$$;
 			return null;
 		}
 		var add_source = function(parsed) {
-			parsed.name = parsed.args.title || null;
+			parsed.name = parsed.args.res || parsed.args.title || parsed.args.label || null;
 			parsed.url = parsed.args.src;
 			sources.video.push(parsed);
 		};
@@ -17428,6 +17611,7 @@ var $$IMU_EXPORT$$;
 			page = urljoin(resp.finalUrl, page, true);
 		else
 			page = resp.finalUrl;
+		var baseurl = get_base(resp.responseText, page);
 		var obj = {
 			headers: {
 				Referer: page
@@ -17448,7 +17632,7 @@ var $$IMU_EXPORT$$;
 		});
 		var video_urls = [];
 		array_foreach(sources.video, function(source) {
-			video_urls.push(urljoin(page, source.url, true));
+			video_urls.push(urljoin(baseurl, source.url, true));
 		});
 		var subs = null;
 		if (sources.subtitles && sources.subtitles.length) {
@@ -17456,24 +17640,24 @@ var $$IMU_EXPORT$$;
 			for (var _i = 0, _a = sources.subtitles; _i < _a.length; _i++) {
 				var subtitle = _a[_i];
 				var baseobj = deepcopy(subtitle);
-				baseobj.url = urljoin(page, subtitle.url, true);
+				baseobj.url = urljoin(baseurl, subtitle.url, true);
 				subs.push(baseobj);
 			}
 		}
 		if (options.ogvideo) {
 			var ogvideo = get_meta(resp.responseText, "og:video");
 			if (ogvideo) {
-				array_upush(video_urls, urljoin(page, ogvideo, true));
+				array_upush(video_urls, urljoin(baseurl, ogvideo, true));
 			}
 		}
 		var image_urls = [];
 		array_foreach(sources.image, function(image) {
-			image_urls.push(urljoin(page, image, true));
+			image_urls.push(urljoin(baseurl, image, true));
 		});
 		if (options.ogimage) {
 			var ogimage = get_meta(resp.responseText, "og:image");
 			if (ogimage) {
-				array_upush(image_urls, urljoin(page, ogimage, true));
+				array_upush(image_urls, urljoin(baseurl, ogimage, true));
 			}
 		}
 		var urls = [];
@@ -18736,13 +18920,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "1h8dl6dd448im2e7") {
+	            } else if (bigimage_obj.nonce !== "4mbgi223o4gf131a") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "1h8dl6dd448im2e7"
+	                    message: "Bad nonce, expected: " + "4mbgi223o4gf131a"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -20523,10 +20707,20 @@ var $$IMU_EXPORT$$;
 		var tried_urls = state.tried_urls;
 		var oldobj = state.oldobj;
 		var already_tried_url = false;
+		var already_tried_nonbad_url = false;
 		for (var _i = 0, _a = state.tried_imus; _i < _a.length; _i++) {
 			var tried_url = _a[_i];
 			if (tried_url === url) {
 				already_tried_url = true;
+				for (var _b = 0, _c = state.tried_urls; _b < _c.length; _b++) {
+					var t_url = _c[_b];
+					if (t_url.url !== tried_url)
+						continue;
+					if (!t_url.redirects_to_bad) {
+						already_tried_nonbad_url = true;
+						break;
+					}
+				}
 			}
 		}
 		state.tried_imus.push(url);
@@ -20551,6 +20745,8 @@ var $$IMU_EXPORT$$;
 									var orig_url = tried_urls[j].newobj.url;
 									var index = array_indexof(image_urls, orig_url);
 									tried_urls[j].redirects_to_bad = true;
+									if (already_tried_nonbad_url && bad_url === url)
+										already_tried_nonbad_url = false;
 									if (index >= 0) {
 										obj.splice(index, 1);
 										image_urls.splice(index, 1);
@@ -20642,9 +20838,9 @@ var $$IMU_EXPORT$$;
 						state.redirect_map[url] = newurl;
 						//if (array_indexof(image_urls, newurl) < 0 && newurl !== url || true) {
 						var newurl_index = array_indexof(image_urls, newurl);
-						if (newurl_index < 0 && already_tried_url) {
+						if (newurl_index < 0 && already_tried_nonbad_url) {
 							if (_nir_debug_) {
-								console_log("bigimage_recursive_loop (query): already tried url", deepcopy(state));
+								console_log("bigimage_recursive_loop (query): already tried url", newurl, image_urls, deepcopy(state));
 							}
 							return options.cb(null, data);
 						}
@@ -23502,6 +23698,8 @@ var $$IMU_EXPORT$$;
 			return false;
 		}
 		if (media_info.codec === "hevc") {
+			if (!processing.browser_viewable)
+				return true;
 			// TODO: check for HEVC support
 			return false;
 		}
@@ -30047,6 +30245,7 @@ var $$IMU_EXPORT$$;
 			if (openb === "newtab" || openb === "newtab_bg" || openb === "download" || openb === "copylink") {
 				use_head = true;
 			}
+			var browser_viewable = !use_head; // incidentally the same
 			var old_source = source;
 			var incomplete_image = false;
 			var incomplete_video = false;
@@ -30067,7 +30266,8 @@ var $$IMU_EXPORT$$;
 				use_head: use_head,
 				incomplete_image: incomplete_image,
 				incomplete_video: incomplete_video,
-				use_last_pos: use_last_pos
+				use_last_pos: use_last_pos,
+				browser_viewable: browser_viewable
 			}, function(source_imu, source, processing, data) {
 				if (!source_imu && !source && !processing && !data) {
 					delay_handle_triggering = false;
@@ -30187,7 +30387,7 @@ var $$IMU_EXPORT$$;
 						// brl returns [] if they're bad, but the bad sources are added right back here
 						if (!settings.mouseover_exclude_sameimage) {
 							if (source.src && obj_indexOf(newobj, source.src) < 0)
-								newobj.push(fillobj(source.src)[0]);
+								newobj.push(fillobj(source.src)[0]); // FIXME: fillobj needs a second argument
 						} else if (source.src) {
 							var index;
 							while ((index = obj_indexOf(newobj, source.src)) >= 0) {
@@ -30205,6 +30405,7 @@ var $$IMU_EXPORT$$;
 						processing.incomplete_image = options.incomplete_image;
 						processing.incomplete_video = options.incomplete_video;
 						processing.progress_cb = options.progress_cb;
+						processing.browser_viewable = options.browser_viewable;
 						if (options.use_head) {
 							processing.head = true;
 						}
@@ -30935,7 +31136,8 @@ var $$IMU_EXPORT$$;
 						incomplete_video: incomplete,
 						null_if_no_change: null_if_no_change,
 						use_last_pos: false,
-						progress_cb: progress_cb
+						progress_cb: progress_cb,
+						browser_viewable: options.browser_viewable
 					}, function(source_imu, source, processing, data) {
 						domain_processed_cb();
 						if (!data) {
@@ -31070,7 +31272,8 @@ var $$IMU_EXPORT$$;
 				links_newtab: settings.replaceimgs_links_newtab,
 				size_constraints: get_single_setting("replaceimgs_size_constraints"),
 				replace_css: settings.replaceimgs_css,
-				use_progressbar: true
+				use_progressbar: true,
+				browser_viewable: true
 			};
 			var plainlinks_option = get_single_setting("replaceimgs_plainlinks");
 			if (plainlinks_option !== "none") {
@@ -31582,6 +31785,7 @@ var $$IMU_EXPORT$$;
 				replace_images_full({
 					images: els,
 					all_els_ok: true,
+					browser_viewable: false,
 					replace_image_func: function(options, our_source, cb, domain_processed_cb, progress_cb) {
 						//console_log(our_source);
 						var gffs_options = {
@@ -31594,7 +31798,8 @@ var $$IMU_EXPORT$$;
 							deny_cache: true,
 							null_if_no_change: !settings.gallery_download_unchanged,
 							use_last_pos: false,
-							progress_cb: progress_cb
+							progress_cb: progress_cb,
+							browser_viewable: false
 						};
 						if (download_method === "jdownloader") {
 							gffs_options.use_head = true;
@@ -33506,11 +33711,19 @@ var $$IMU_EXPORT$$;
 			return;
 		}
 		var url = parsed._positional[0];
-		bigimage_recursive(url, {
+		var window = {
+			location: {
+				href: url
+			}
+		};
+		bigimage_recursive_loop(url, {
 			fill_object: true,
+			window: window,
 			cb: function(obj) {
 				console.log(JSON_stringify(obj, null, '\t'));
 			}
+		}, function(obj, finalcb) {
+			console.log("BRL", obj);
 		});
 	};
 	function start() {
