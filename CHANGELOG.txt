@@ -1,5 +1,9 @@
 2024.12.1
 
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Flickr, Twitch)
+
 Special thanks to arlenestrigger for their contributions and reports for this release
 
 ---
