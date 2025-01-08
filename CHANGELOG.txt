@@ -1,10 +1,10 @@
-2024.12.1
+2025.1.0 (in-dev)
 
 Improvements:
 
  * Various improvements/fixes to existing rules (including Flickr, Twitch)
 
-Special thanks to arlenestrigger for their contributions and reports for this release
+Special thanks to arlenestrigger, fyhtma for their contributions and reports for this release
 
 ---
 
