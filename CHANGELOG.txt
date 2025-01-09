@@ -4,7 +4,7 @@ Improvements:
 
  * Various improvements/fixes to existing rules (including Flickr, Twitch)
 
-Special thanks to arlenestrigger, fyhtma for their contributions and reports for this release
+Special thanks to arlenestrigger, fyhtma, BlindWanda for their contributions and reports for this release
 
 ---
 
