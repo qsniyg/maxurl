@@ -8,6 +8,10 @@ Improvements:
 
  * Various improvements/fixes to existing rules (including Flickr, Twitch)
 
+Bugfixes:
+
+ * Fix backslash escapes breaking parsing for format strings
+
 Special thanks to arlenestrigger, fyhtma, BlindWanda, chr1sx, James Joint, musicianjam888, Velocidensity, Egor Popov, Froktime for their contributions and reports for this release
 
 ---
