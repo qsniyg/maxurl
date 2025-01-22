@@ -1,10 +1,14 @@
 2025.1.0 (in-dev)
 
+New features:
+
+ * Regex replace support for format strings (#1398, thanks to musicianjam888 for the idea)
+
 Improvements:
 
  * Various improvements/fixes to existing rules (including Flickr, Twitch)
 
-Special thanks to arlenestrigger, fyhtma, BlindWanda, chr1sx, James Joint for their contributions and reports for this release
+Special thanks to arlenestrigger, fyhtma, BlindWanda, chr1sx, James Joint, musicianjam888 for their contributions and reports for this release
 
 ---
 
