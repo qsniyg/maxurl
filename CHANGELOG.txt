@@ -6,7 +6,7 @@ New features:
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including Flickr, Twitch)
+ * Various improvements/fixes to existing rules (including Flickr, Twitch, Reddit)
 
 Bugfixes:
 
