@@ -3,6 +3,7 @@
 New features:
 
  * Regex replace support for format strings (#1398, thanks to musicianjam888 for the idea)
+ * Option to disable autoplay if current tab isn't active (#1399, thanks to Gooberpatrol66 for the idea)
 
 Improvements:
 
@@ -12,7 +13,7 @@ Bugfixes:
 
  * Fix backslash escapes breaking parsing for format strings
 
-Special thanks to arlenestrigger, fyhtma, BlindWanda, chr1sx, James Joint, musicianjam888, Velocidensity, Egor Popov, Froktime, siloricity for their contributions and reports for this release
+Special thanks to arlenestrigger, fyhtma, BlindWanda, chr1sx, James Joint, musicianjam888, Velocidensity, Egor Popov, Froktime, siloricity, Gooberpatrol66 for their contributions and reports for this release
 
 ---
 
