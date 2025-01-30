@@ -8,12 +8,13 @@ New features:
 Improvements:
 
  * Various improvements/fixes to existing rules (including Flickr, Twitch, Reddit)
+ * Fill `caption` format variable for image alt tags (thanks to Dietz on discord for reporting)
 
 Bugfixes:
 
  * Fix backslash escapes breaking parsing for format strings
 
-Special thanks to arlenestrigger, fyhtma, BlindWanda, chr1sx, James Joint, musicianjam888, Velocidensity, Egor Popov, Froktime, siloricity, Gooberpatrol66 for their contributions and reports for this release
+Special thanks to arlenestrigger, fyhtma, BlindWanda, chr1sx, James Joint, musicianjam888, Velocidensity, Egor Popov, Froktime, siloricity, Gooberpatrol66, Dietz for their contributions and reports for this release
 
 ---
 
