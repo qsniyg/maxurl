@@ -14,7 +14,7 @@ Bugfixes:
 
  * Fix backslash escapes breaking parsing for format strings
 
-Special thanks to arlenestrigger, fyhtma, BlindWanda, chr1sx, James Joint, musicianjam888, Velocidensity, Egor Popov, Froktime, siloricity, Gooberpatrol66, Dietz for their contributions and reports for this release
+Special thanks to arlenestrigger, fyhtma, BlindWanda, chr1sx, James Joint, musicianjam888, Velocidensity, Egor Popov, Froktime, siloricity, Gooberpatrol66, Dietz, friedkeenan for their contributions and reports for this release
 
 ---
 
