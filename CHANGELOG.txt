@@ -1,9 +1,10 @@
-2025.2.0 (in-dev)
+2025.2.0
 
 New features:
 
  * Regex replace support for format strings (#1398, thanks to musicianjam888 for the idea)
  * Option to disable autoplay if current tab isn't active (#1399, thanks to Gooberpatrol66 for the idea)
+ * Support for ~70 new websites (using ~40 new rules)
 
 Improvements:
 
