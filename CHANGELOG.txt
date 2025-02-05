@@ -1,3 +1,9 @@
+2025.2.1 (in-dev)
+
+Special thanks to byjrg for their contributions and reports for this release
+
+---
+
 2025.2.0
 
 New features:
