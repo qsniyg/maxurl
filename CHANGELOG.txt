@@ -1,6 +1,10 @@
 2025.2.1 (in-dev)
 
-Special thanks to byjrg, TanatOSz, skbeh for their contributions and reports for this release
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Reddit)
+
+Special thanks to byjrg, TanatOSz, skbeh, F640, Gavin for their contributions and reports for this release
 
 ---
 
