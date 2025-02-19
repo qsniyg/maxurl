@@ -4,7 +4,7 @@ Improvements:
 
  * Various improvements/fixes to existing rules (including Reddit)
 
-Special thanks to byjrg, TanatOSz, skbeh, F640, Gavin for their contributions and reports for this release
+Special thanks to byjrg, TanatOSz, skbeh, F640, Gavin, vscum for their contributions and reports for this release
 
 ---
 
