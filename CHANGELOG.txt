@@ -1,5 +1,9 @@
 2025.2.1 (in-dev)
 
+New features:
+
+ * Option to autoplay only when tab is active (#1399)
+
 Improvements:
 
  * Various improvements/fixes to existing rules (including Reddit)
