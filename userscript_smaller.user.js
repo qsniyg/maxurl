@@ -1124,8 +1124,6 @@ var $$IMU_EXPORT$$;
 	// ublock blocks accessing Math on sites like gfycat
 	var Math_floor, Math_round, Math_random, Math_max, Math_min, Math_abs, Math_pow;
 	var get_compat_math = function() {
-		if (is_node)
-			return;
 		try {
 			Math_floor = Math.floor;
 			Math_round = Math.round;
@@ -8326,6 +8324,9 @@ var $$IMU_EXPORT$$;
 				},
 				"active": {
 					name: "If active tab"
+				},
+				"onactive": {
+					name: "When active tab"
 				},
 				"disabled": {
 					name: "Disabled"
@@ -22306,6 +22307,7 @@ var $$IMU_EXPORT$$;
 			domain === "images.ottplay.com" ||
 			(domain_nowww === "thewebster.com" && /\/media\/+catalog\/+product\//.test(src)) ||
 			(domain === "assets.lummi.ai" && string_indexof(src, "/assets/") >= 0) ||
+			(domain_nosub === "flixcart.com" && string_indexof(src, "/image/") >= 0) ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -24855,10 +24857,18 @@ var $$IMU_EXPORT$$;
 			if (!is_picdomain) {
 				newsrc = website_query({
 					website_regex: {
-						regex: /^[a-z]+:\/\/([^/]+)\/+([0-9a-z]{8,})\/+[^/.?#]*(\.[^/.]+)(?:[?#].*)?$/,
+						regex: /^[a-z]+:\/\/([^/]+)\/+([0-9a-z]{8,})(?:\/+[^/.?#]*(\.[^/.]+))?(?:[?#].*)?$/,
 						groups: ["domain", "id", "ext"]
 					},
-					query_for_id: "https://${domain}/${id}/${ext}",
+					query_for_id: function(id, match) {
+						var url = "https://" + match.groups.domain + "/" + match.groups.id;
+						if (match.groups.ext)
+							url += "/" + match.groups.ext;
+						return {
+							url: url,
+							imu_mode: "document"
+						};
+					},
 					process: function(done, resp, cache_key) {
 						var match = resp.responseText.match(/<a\s+href=["'](https?:\/\/[ius](?:mg)?[0-9]*(?:[a-z]+)?\.[^/]+\/+i\/+.*?)["'][^>]*\sdownload/);
 						if (!match) {
@@ -25294,6 +25304,7 @@ var $$IMU_EXPORT$$;
 				domain_nowww === "deltagoodrem.com" ||
 				domain === "partners.spigen.com" ||
 				domain_nowww === "cosmicbackground.io" ||
+				domain_nowww === "ropemall.com" ||
 				domain_nowww === "roguewavecoffee.ca") && /\/cdn\/+shop\//.test(src)) ||
 			/^[a-z]+:\/\/[^/]+\/+cdn\/+shop\/+(?:products|collections|files|articles)\/+[^/.?#]+(?:\.progressive)?\.[a-zA-Z]+(?:[?#].*)?$/.test(src)) {
 			if (/\/assets\/+product-highlight-color-hover\.svg(?:[?#].*)?$/.test(src)) {
@@ -26531,12 +26542,16 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "genkcdn.vn" ||
 			domain === "icdn.dantri.com.vn" ||
 			domain_nosub === "mediacdn.vn") {
-			return src
+			newsrc = src
 				.replace(/\/zoom\/[^/]*\//, "/")
-				.replace(/-[0-9]+-[0-9]+-[0-9]+-[0-9]+-crop-[0-9]+(\.[^/.]*)$/, "$1")
-				.replace(/-crop-[0-9]{13,}(\.[^/.]*)$/, "$1")
 				.replace(/(:\/\/[^/]*)\/thumb_[a-z]\/[0-9]+\//, "$1/");
+			if (newsrc !== src)
+				return newsrc;
+			return src
+				.replace(/-[0-9]+-[0-9]+-[0-9]+-[0-9]+-crop-[0-9]+(\.[^/.]*)$/, "$1")
+				.replace(/-crop-[0-9]{13,}(\.[^/.]*)$/, "$1");
 		}
+		if (domain === "cdnphoto.dantri.com.vn") return src.replace(/^[a-z]+:\/\/[^/]+\/+[^/]+\/+(.*)/, "https://icdn.dantri.com.vn/$1");
 		if (domain_nosub === "24hstatic.com" ||
 			domain_nosub === "24h.com.vn" ||
 			(domain_nosub === "danviet.vn" && domain.match(/^streaming[0-9]*\./)) ||
@@ -28249,6 +28264,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "thequestforit.com" ||
 			domain_nosub === "blogs.com" ||
 			domain === "latimesblogs.latimes.com" ||
+			domain_nowww === "bodybuilderbeautiful.com" ||
 			domain === "www.weeklystorybook.com") {
 			return src.replace(/^([a-z]+:\/\/[^/]+\/+\.a\/+[0-9a-f]{10,})-[^/]*(?:[?#].*)?$/, "$1");
 		}
@@ -60569,6 +60585,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "estadao.com.br" ||
 			domain_nowww === "irishnews.com" ||
 			domain_nowww === "chosun.com" ||
+			domain === "biz.chosun.com" ||
 			domain_nowww === "hawaiinewsnow.com" ||
 			domain_nowww === "rfa.org" ||
 			domain_nowww === "theglobeandmail.com") {
@@ -60607,6 +60624,8 @@ var $$IMU_EXPORT$$;
 				info_1 = { folder: "irishnews", loc: "eu-central-1" };
 			else if (domain_nowww === "chosun.com")
 				info_1 = { folder: "chosun", loc: "ap-northeast-1" };
+			else if (domain === "biz.chosun.com")
+				info_1 = { folder: "chosunbiz", loc: "ap-northeast-1" };
 			else if (domain_nowww === "rfa.org")
 				info_1 = { folder: "radiofreeasia", loc: "us-east-1" };
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+resizer\/+v2\/+([^?#/]+)(?:[?#].*)?$/, "https://cloudfront-" + info_1.loc + ".images.arcpublishing.com/" + info_1.folder + "/$1");
@@ -62003,7 +62022,9 @@ var $$IMU_EXPORT$$;
 		}
 		if (domain_nowww === "guforecords.com") return src.replace(/(\/imgApp\/+)thumbs\/+([0-9]+)_[0-9]+x[0-9]+\./, "$1$2.");
 		if (domain === "cdn.kdkw.jp") return src.replace(/\/cover_(?:b|500)\/+/, "/cover_1000/");
-		if (domain === "phantom-elmundo.unidadeditorial.es") return src.replace(/:\/\/phantom-([^/.]+)\.[^/]+\/+[0-9a-f]{10,}\/+.*?\/(assets\/+multimedia\/+)/, "://e00-$1.uecdn.es/$2");
+		if (domain_nosub === "unidadeditorial.es" && /^phantom-[a-z]+\./.test(domain)) {
+			return src.replace(/:\/\/phantom-([^/.]+)\.[^/]+\/+[0-9a-f]{10,}\/+.*?\/(assets\/+multimedia\/+)/, "://e00-$1.uecdn.es/$2");
+		}
 		if (domain_nosub === "youla.io") return src.replace(/(\/files\/+images\/+)[0-9]+_[0-9]+(?:_[^/]+)?\/+((?:[0-9a-f]{2}\/+){2}[0-9a-f]{10,})/, "$1orig/$2");
 		if (domain === "i.hinnavaatlus.ee") return src.replace(/(\/p\/+)[0-9]+(?:x[0-9]+[a-z])?\/+/, "$1full/");
 		if (domain_nosub === "avito.st" && /^[0-9]+\.img\./.test(domain)) {
@@ -64214,6 +64235,12 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 		}
+		if (domain_nowww === "hola.com") return src.replace(/(:\/\/[^/]+\/+horizon\/+)(?:portrait|square|landscape|original)\/+([^/?#]+)(?:[?#].*)?$/, "$1original/$2");
+		if (domain_nowww === "topfapgirlspics.com") return src.replace(/(\/content\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[^/]+\/+[^/]+)-[0-9]{3}px\./, "$1-1080px.");
+		if (domain === "images.justwatch.com") return src.replace(/(\/[0-9]+\/+)s(?:166|332)\/+/, "$1s718/");
+		if (domain_nosub === "decks.de" && /^gfx[0-9]*\./.test(domain)) {
+			return src.replace(/(\/gfx\/+co_)(?:mid|large)\/+/, "$1raw/");
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -64751,6 +64778,7 @@ var $$IMU_EXPORT$$;
 			domain === "sports.inquirer.net" ||
 			digitalocean_container === "saywhofr" ||
 			(amazon_container === "sfmoma-media-dev" && string_indexof(src, "/www-media/") >= 0) ||
+			(domain === "media.pri.org" && /\/s3fs-public\/+uploads\//.test(src)) ||
 			/(\/wp-content\/+uploads\/+(?:sites\/+[0-9]+\/+)?(?:[0-9]{4}\/+[0-9]{2}\/+)?.*)-(?:scaled|e[0-9]{10,})(\.[^/.]+)(?:[?#].*)?$/.test(src)) {
 			newsrc = src.replace(/((?:(?:\/wp-content)?\/+uploads(?:\/+sites\/+[0-9]+)?)?\/+[0-9]{4}\/+[0-9]{2}\/+[^?#]*?|\/wp-content\/+uploads(?:\/+sites\/+[0-9]+)?\/+[^?#]*?)(?:-(?:scaled|e[0-9]{10,}|[0-9]+x[0-9]+))*(\.[^/.?]+)(?:[?#].*)?$/, "$1$2");
 			if (newsrc !== src) {
@@ -69964,15 +69992,37 @@ var $$IMU_EXPORT$$;
 			return true;
 		return !document.hidden;
 	};
+	var tabactive_cbs = [];
+	var tabactive_cb = function() {
+		if (!tabactive_cbs.length)
+			return;
+		for (var _i = 0, tabactive_cbs_1 = tabactive_cbs; _i < tabactive_cbs_1.length; _i++) {
+			var cb = tabactive_cbs_1[_i];
+			cb();
+		}
+		tabactive_cbs = [];
+	};
+	var on_tabactive = function(cb) {
+		if (is_tab_active()) {
+			return cb();
+		}
+		tabactive_cbs.push(cb);
+	};
 	var autoplay_enabled = function() {
 		return settings.mouseover_video_autoplay === "always" ||
-			(settings.mouseover_video_autoplay === "active" && is_tab_active());
+			((settings.mouseover_video_autoplay === "active" ||
+				settings.mouseover_video_autoplay === "onactive") && is_tab_active());
 	};
 	var create_streaming_el = function(obj, type, processing, good_cb, err_cb) {
 		var video = document_createElement(type);
 		set_common_el_properties(video, obj);
-		if (autoplay_enabled())
+		if (autoplay_enabled()) {
 			video.setAttribute("autoplay", "autoplay");
+		} else if (settings.mouseover_video_autoplay === "onactive") {
+			on_tabactive(function() {
+				video.play();
+			});
+		}
 		if (settings.mouseover_video_controls || type === "audio")
 			video.setAttribute("controls", "controls");
 		if (settings.mouseover_video_loop && !settings.mouseover_gallery_move_after_video)
@@ -74740,6 +74790,11 @@ var $$IMU_EXPORT$$;
 						play_video(img);
 					} else {
 						img.pause();
+						if (settings.mouseover_video_autoplay === "onactive") {
+							on_tabactive(function() {
+								img.play();
+							});
+						}
 					}
 				}
 				popups.push(outerdiv);
@@ -79379,6 +79434,11 @@ var $$IMU_EXPORT$$;
 			our_addEventListener(document, 'keyup', keyup_cb, eventlistener_opts);
 			our_addEventListener(document, 'mouseup', keyup_cb, eventlistener_opts);
 			our_addEventListener(document, 'contextmenu', update_contextmenu_pos);
+			our_addEventListener(document, 'focus', tabactive_cb);
+			our_addEventListener(window, 'focus', tabactive_cb);
+			our_addEventListener(document, 'keydown', tabactive_cb);
+			our_addEventListener(document, 'wheel', tabactive_cb);
+			our_addEventListener(document, 'mousemove', tabactive_cb);
 			var wheel_cb = function(event) {
 				if (settings.scroll_override_page && popups_active && popup_wheel_cb) {
 					return popup_wheel_cb(event, true);
@@ -79769,70 +79829,200 @@ var $$IMU_EXPORT$$;
 		}
 		do_userscript_page(imgel, latest_version);
 	};
-	var parse_node_args = function(args_info) {
-		var parsed = { _positional: [] };
-		for (var i = 2; i < process.argv.length; i++) {
-			var arg = process.argv[i];
-			if (arg[0] !== '-') {
-				parsed["_positional"].push(arg);
-				continue;
-			}
-			if (arg === '--') {
-				array_extend(parsed._positional, process.argv.slice(i + 1));
-				break;
-			}
-			var shortarg = null;
-			var longarg = null;
-			var argval = null;
-			if (arg[1] === '-') {
-				longarg = arg.substr(2);
-			} else {
-				// TODO: support chained args (-abc == -a -b -c)
-				shortarg = arg.substr(1);
-			}
-			var our_arg = null;
+	var do_node_main = function() {
+		var parse_node_args = function(args_info) {
+			var parsed = { _positional: [] };
 			for (var _i = 0, args_info_1 = args_info; _i < args_info_1.length; _i++) {
-				var arg_info = args_info_1[_i];
-				if (shortarg) {
-					if (arg_info.short === shortarg) {
-						our_arg = arg_info;
-						break;
+				var info = args_info_1[_i];
+				if (!info.name && info.long)
+					info.name = info.long;
+			}
+			for (var i = 2; i < process.argv.length; i++) {
+				var arg = process.argv[i];
+				if (arg[0] !== '-') {
+					parsed["_positional"].push(arg);
+					continue;
+				}
+				if (arg === '--') {
+					array_extend(parsed._positional, process.argv.slice(i + 1));
+					break;
+				}
+				var shortarg = null;
+				var longarg = null;
+				var argval = null;
+				if (arg[1] === '-') {
+					longarg = arg.substr(2);
+				} else {
+					// TODO: support chained args (-abc == -a -b -c)
+					shortarg = arg.substr(1);
+				}
+				var our_arg = null;
+				for (var _a = 0, args_info_2 = args_info; _a < args_info_2.length; _a++) {
+					var arg_info = args_info_2[_a];
+					if (shortarg) {
+						if (arg_info.short === shortarg) {
+							our_arg = arg_info;
+							break;
+						}
+					}
+					if (longarg) {
+						if (arg_info.long === longarg) {
+							our_arg = arg_info;
+							break;
+						}
 					}
 				}
-				if (longarg) {
-					if (arg_info.long === longarg) {
-						our_arg = arg_info;
-						break;
-					}
-				}
-			}
-			if (!our_arg) {
-				console.error("Unable to find argument:", process.argv[i]);
-				return null;
-			}
-			if (our_arg.needs_arg) {
-				i++;
-				if (i >= process.argv.length) {
-					console.error("Argument", process.argv[i - 1], "needs an argument");
+				if (!our_arg) {
+					console.error("Unable to find argument:", process.argv[i]);
 					return null;
 				}
-				argval = process.argv[i];
-			} else {
-				argval = true;
+				if (our_arg.needs_arg) {
+					i++;
+					if (i >= process.argv.length) {
+						console.error("Argument", process.argv[i - 1], "needs an argument");
+						return null;
+					}
+					argval = process.argv[i];
+				} else {
+					argval = true;
+				}
+				parsed[our_arg.name] = argval;
 			}
-			parsed[our_arg.name] = argval;
-		}
-		return parsed;
-	};
-	var do_node_main = function() {
-		var parsed = parse_node_args({});
-		if (!parsed)
+			return parsed;
+		};
+		var get_node_config_file = function() {
+			if (!__dirname)
+				return null;
+			return __dirname + "/standalone_config.json";
+		};
+		var node_config = {};
+		var parsedargs = {};
+		var read_node_config = function() {
+			var configpath = get_node_config_file();
+			if (!configpath)
+				return {};
+			var fs = require("fs");
+			try {
+				var text = fs.readFileSync(configpath, "utf8");
+				var json = JSON.parse(text);
+				return json;
+			} catch (e) {
+				return {};
+			}
+		};
+		var get_node_config = function(arg, def) {
+			if (arg in parsedargs) {
+				return deepcopy(parsedargs[arg]);
+			}
+			if (arg in node_config)
+				return deepcopy(node_config[arg]);
+			return deepcopy(def);
+		};
+		var save_node_config = function(config) {
+			var configpath = get_node_config_file();
+			if (!configpath)
+				return false;
+			if (!config)
+				config = node_config;
+			var fs = require("fs");
+			try {
+				var str = JSON.stringify(config);
+				fs.writeFileSync(configpath, str, "utf8");
+				return true;
+			} catch (e) {
+				console.error(e);
+				return false;
+			}
+		};
+		var run_node_dlserver = function() {
+			// WIP
+			var port = get_node_config("dlport", 30130);
+			var randomtoken = get_random_text(32, "both");
+			var token = get_node_config("dltoken", randomtoken);
+			if (token === randomtoken) {
+				node_config.dltoken = randomtoken;
+				save_node_config();
+			}
+			var outpath = get_node_config("out", null);
+			if (!outpath) {
+				console.error("No --out path");
+				return;
+			}
+			var http = require("http");
+			http.createServer(function(req, res) {
+				var client_token = req.getHeader("X-IMU-Token");
+				if (client_token !== token) {
+					console.log("Invalid token:", client_token);
+					return res.end();
+				}
+				var fail = function(status) {
+					res.writeHead(400, { 'Content-Type': 'text/plain' });
+					res.write(JSON.stringify({ "error": status }));
+					res.end();
+				};
+				var info = req.getHeader("X-IMU-Info");
+				if (!info) {
+					return fail("No info");
+				}
+				var parsedinfo;
+				try {
+					parsedinfo = JSON.parse(info);
+				} catch (e) {
+					console.error(e);
+					return fail("Invalid info");
+				}
+				var headers = {
+					"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.3"
+				};
+				for (var headername in parsedinfo.headers) {
+					headerobj_set(headers, headername, parsedinfo.headers[headername]);
+				}
+				console.log("[DL] " + parsedinfo.url);
+				do_request({
+					method: parsedinfo.method || "GET",
+					url: parsedinfo.url,
+					headers: headers,
+					onload: function(resp) {
+						if (resp.status !== 200) {
+							console.log("[FAIL] " + parsedinfo.url, resp);
+							return;
+						}
+						//outpath + "/" + parsedinfo.filename;
+					}
+				});
+				return fail("");
+			}).listen(port);
+			console.log("IMU Download server:");
+			console.log("http://127.0.0.1:" + port + "/?token=" + token);
+		};
+		parsedargs = parse_node_args([
+			{
+				short: "D",
+				long: "dlserver"
+			},
+			{
+				short: "p",
+				long: "dlport"
+			},
+			{
+				long: "dltoken"
+			},
+			{
+				short: "o",
+				long: "out"
+			}
+		]);
+		if (!parsedargs)
 			return;
-		if (!parsed._positional.length) {
+		node_config = read_node_config();
+		if (parsedargs.dlserver) {
+			return run_node_dlserver();
+		}
+		if (!parsedargs._positional.length) {
 			console.error("Usage:", process.argv[0], process.argv[1], "url");
 			return;
 		}
-		var url = parsed._positional[0];
+		var url = parsedargs._positional[0];
 		var window = {
 			location: {
 				href: url
