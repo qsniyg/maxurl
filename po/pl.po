@@ -773,6 +773,18 @@ msgstr ""
 msgid "Play automatically once the popup is opened"
 msgstr ""
 
+#. mouseover_video_autoplay.options.active.name
+msgid "If active tab"
+msgstr ""
+
+#. mouseover_video_autoplay.options.onactive.name
+msgid "When active tab"
+msgstr ""
+
+#. mouseover_video_autoplay.options.disabled.name
+msgid "Disabled"
+msgstr ""
+
 #. mouseover_video_controls.name
 msgid "Show video controls"
 msgstr ""
@@ -3110,7 +3122,7 @@ msgstr ""
 msgid "Automatically highlights images as you view pages"
 msgstr ""
 
-#. highlightimgs_auto.options.always.name, mouseover_enable_mask_styles2.options.always.name, mouseover_zoom_use_last.options.always.name, scroll_zoomout_pagemiddle.options.always.name, gallery_jd_referer.options.always.name
+#. highlightimgs_auto.options.always.name, mouseover_enable_mask_styles2.options.always.name, mouseover_zoom_use_last.options.always.name, scroll_zoomout_pagemiddle.options.always.name, gallery_jd_referer.options.always.name, mouseover_video_autoplay.options.always.name
 msgid "Always"
 msgstr ""
 
