@@ -33,6 +33,7 @@ declare var GM: {
 declare function require(filename:string):any;
 declare var Buffer: {
 	from: (...args)=>any;
+	concat: (...args)=>any;
 };
 declare var module: { exports: any };
 declare var process: {
@@ -61,6 +62,9 @@ declare var chrome: {
 
 declare var userscript_extension_message_handler:Function;
 declare var imu_userscript_message_sender:Function;
+
+// node
+declare var __dirname:string;
 
 declare function BigInt(n:number):any;
 
