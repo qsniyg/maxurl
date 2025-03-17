@@ -64640,6 +64640,8 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9]+)(?:_large)?(_vertical\.[a-z]+)(?:\.webp)?(?:[?#].*)?$/, "$1_large$2");
 		}
 		if (domain_nowww === "zoro.com") return src.replace(/(\/static\/+cms\/+product\/+)[^/]+\/+([^/]+)(?:[?#].*)?$/, "$1$2");
+		if (domain_nowww === "pngfind.com") return src.replace(/(\/pngs\/+)m\/+/, "$1b/");
+		if (domain === "spng.pngfind.com") return src.replace(/:\/\/[^/]+\/+(pngs\/+)[a-z]+\/+/, "://www.pngfind.com/$1m/");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
