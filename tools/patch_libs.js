@@ -189,7 +189,8 @@ var patch_lib = null;
 	patch_lib = do_patch;
 
 	// https://stackoverflow.com/a/42587206
-	var isCLI = typeof navigator === "undefined" && !module.parent;
+	//var isCLI = typeof navigator === "undefined" && !module.parent;
+	var isCLI = !module.parent;
 	if (isCLI) {
 		var fs = require("fs");
 		var readfile = function(file) {
