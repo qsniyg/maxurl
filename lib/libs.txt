@@ -8,11 +8,12 @@ https://raw.githubusercontent.com/NeilFraser/JS-Interpreter/824d8331cc4b72c09ca3
 https://unpkg.com/mux.js@5.7.0/dist/mux.js
 
 # Built versions for shaka aren't available on github
-https://ajax.googleapis.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.debug.js
+https://ajax.googleapis.com/ajax/libs/shaka-player/4.12.5/shaka-player.compiled.debug.js
 
 # Libraries below are not included in the firefox extension
-https://unpkg.com/@ffmpeg/ffmpeg@0.9.7/dist/ffmpeg.min.js
-https://unpkg.com/@ffmpeg/core@0.8.5/dist/ffmpeg-core.js
-https://unpkg.com/@ffmpeg/core@0.8.5/dist/ffmpeg-core.worker.js
+https://unpkg.com/@ffmpeg/ffmpeg@0.12.15/dist/umd/ffmpeg.js = ffmpeg.min.js
+https://unpkg.com/@ffmpeg/core@0.12.9/dist/umd/ffmpeg-core.js
+#https://unpkg.com/@ffmpeg/core@0.8.5/dist/ffmpeg-core.worker.js
+https://unpkg.com/@ffmpeg/ffmpeg@0.12.15/dist/umd/814.ffmpeg.js = ffmpeg-core.worker.js
 https://unpkg.com/mpd-parser@0.15.0/dist/mpd-parser.js
 https://unpkg.com/m3u8-parser@4.5.0/dist/m3u8-parser.js
