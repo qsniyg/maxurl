@@ -1,5 +1,16 @@
 // @license http://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
 // ^ for LibreJS (this has to be the first comment in the file)
+var __assign = (this && this.__assign) || function() {
+	__assign = Object.assign || function(t) {
+		for (var s, i = 1, n = arguments.length; i < n; i++) {
+			s = arguments[i];
+			for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+				t[p] = s[p];
+		}
+		return t;
+	};
+	return __assign.apply(this, arguments);
+};
 // ==UserScript==
 // @name              Image Max URL
 // @name:en           Image Max URL
@@ -33,38 +44,38 @@
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 9700+ websites, including a powerful media popup and download feature
-// @description:en    Finds larger or original versions of images and videos for 9700+ websites, including a powerful media popup and download feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 9700 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 9700 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 9700 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 9700 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 9700 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 9700 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 9700 sitios
-// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 9700 verkkosivustolle
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 700 sites web, y compris une puissante fonction de popup média
-// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 700 sites web, y compris une puissante fonction de popup média
-// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-9700 אתרים
-// @description:hi    9700 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
-// @description:hu    Több mint 9700 webhely képének és videóinak nagyobb vagy eredeti változatát találja
-// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 9700 situs web
-// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 9700 siti web
-// @description:ja    9700以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ko    9700개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 9700 nettsteder
-// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 9700 websites
-// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 9700 stron internetowych
-// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 9700 sites
-// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 9700+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 9700 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 9700 веб-сайтів
-// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 9700 งเว็บไซต์
-// @description:tr    9700'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
-// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 9700 trang web
+// @description       Finds larger or original versions of images and videos for 9800+ websites, including a powerful media popup and download feature
+// @description:en    Finds larger or original versions of images and videos for 9800+ websites, including a powerful media popup and download feature
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 9800 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 9800 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 9800 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 9800 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 9800 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 9800 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 9800 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 9800 verkkosivustolle
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 800 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 800 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-9800 אתרים
+// @description:hi    9800 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
+// @description:hu    Több mint 9800 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 9800 situs web
+// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 9800 siti web
+// @description:ja    9800以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ko    9800개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 9800 nettsteder
+// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 9800 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 9800 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 9800 sites
+// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 9800+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 9800 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 9800 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 9800 งเว็บไซต์
+// @description:tr    9800'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 9800 trang web
 // @description:zh-CN 在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能
-// @description:zh-TW 為9700多個網站查找更大或原始圖像
-// @description:zh-HK 為9700多個網站查找更大或原始圖像
+// @description:zh-TW 為9800多個網站查找更大或原始圖像
+// @description:zh-HK 為9800多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
 // @version           2025.2.0
 // @author            qsniyg
@@ -132,6 +143,42 @@ var $$IMU_EXPORT$$;
 (function() {
 	// Don't 'use strict', as it prevents nested functions
 	//'use strict';
+var __awaiter = (this && this.__awaiter) || function(thisArg, _arguments, P, generator) {
+	function adopt(value) { return value instanceof P ? value : new P(function(resolve) { resolve(value); }); }
+	return new (P || (P = Promise))(function(resolve, reject) {
+		function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+		function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+		function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+		step((generator = generator.apply(thisArg, _arguments || [])).next());
+	});
+};
+var __generator = (this && this.__generator) || function(thisArg, body) {
+	var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+	return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+	function verb(n) { return function(v) { return step([n, v]); }; }
+	function step(op) {
+		if (f) throw new TypeError("Generator is already executing.");
+		while (g && (g = 0, op[0] && (_ = 0)), _) try {
+			if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+			if (y = 0, t) op = [op[0] & 2, t.value];
+			switch (op[0]) {
+				case 0: case 1: t = op; break;
+				case 4: _.label++; return { value: op[1], done: false };
+				case 5: _.label++; y = op[1]; op = [0]; continue;
+				case 7: op = _.ops.pop(); _.trys.pop(); continue;
+				default:
+					if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+					if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+					if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+					if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+					if (t[2]) _.ops.pop();
+					_.trys.pop(); continue;
+			}
+			op = body.call(thisArg, _);
+		} catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+		if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+	}
+};
 	var _nir_debug_ = false;
 	if (_nir_debug_) {
 		_nir_debug_ = {
@@ -443,6 +490,9 @@ var $$IMU_EXPORT$$;
 		}
 		return floor;
 	};
+	if (typeof Promise === "undefined") {
+		console_warn("Unable to find Promise, expect code to break.");
+	}
 	// https://stackoverflow.com/a/15016605
 	// unminified version: https://stackoverflow.com/a/3058974
 	var base64_decode_base = function(s, dict) {
@@ -1636,13 +1686,37 @@ var $$IMU_EXPORT$$;
 				var chunks = [];
 				res.on("data", function(chunk) {
 					chunks.push(chunk);
+					if (request.onprogress) {
+						var total_length = 0;
+						for (var _i = 0, chunks_1 = chunks; _i < chunks_1.length; _i++) {
+							var chunk_1 = chunks_1[_i];
+							total_length += chunk_1.length;
+						}
+						var res_length = null;
+						for (var i = 0; i < res.rawHeaders.length; i += 2) {
+							if (res.rawHeaders[i].toLowerCase() === "content-length") {
+								res_length = parseInt(res.rawHeaders[i + 1]);
+								break;
+							}
+						}
+						var progressobj = {
+							lengthComputable: false,
+							loaded: total_length,
+							total: 0,
+							_node_chunks: chunks
+						};
+						if (res_length) {
+							progressobj.lengthComputable = true;
+							progressobj.total = res_length;
+						}
+						request.onprogress(progressobj);
+					}
 				});
 				var done_final = false;
 				var finalcb = function() {
 					if (done_final)
 						return;
 					done_final = true;
-					var rawdata = Buffer.concat(chunks);
 					var headersstrs = [];
 					for (var i = 0; i < res.rawHeaders.length; i += 2) {
 						headersstrs.push([res.rawHeaders[i] + ": " + res.rawHeaders[i + 1]].join(""));
@@ -1658,20 +1732,26 @@ var $$IMU_EXPORT$$;
 						status: res.statusCode,
 						statusText: res.statusMessage
 					};
-					resp.response = rawdata;
-					try {
-						resp.responseText = rawdata.toString("utf8"); // FIXME
-					} catch (e) { }
+					if (request.responseType !== "none") {
+						var rawdata = Buffer.concat(chunks);
+						resp.response = rawdata;
+						try {
+							resp.responseText = rawdata.toString("utf8"); // FIXME
+						} catch (e) { }
+					}
 					if (req.destroyed) {
-						request.onabort();
+						if (request.onabort)
+							request.onabort();
+						else
+							request.onload(resp);
 					} else if (!req.complete) {
-						request.onerror(resp);
+						if (request.onerror)
+							request.onerror(resp);
 					} else {
 						// FIXME: more onerror?
 						request.onload(resp);
 					}
 				};
-				// TODO: onprogress
 				// TODO: ontimeout
 				res.on("close", function() {
 					finalcb();
@@ -5321,9 +5401,6 @@ var $$IMU_EXPORT$$;
 			"pt-BR": "Habilitar download de transmiss\u00F5es HLS/DASH",
 			"ru": "\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u0441\u043A\u0430\u0447\u0438\u0432\u0430\u043D\u0438\u0435 \u043F\u043E\u0442\u043E\u043A\u043E\u0432 HLS/DASH",
 			"zh-CN": "\u542F\u7528 HLS/DASH \u6D41\u5A92\u4F53\u7684\u4E0B\u8F7D"
-		},
-		"Downloads and muxes the contents of the streams rather than the stream information file.\nThis currently does not work under modern browsers due to `SharedArrayBuffer` restrictions.": {
-			"pt-BR": "Baixa e multiplexa o conte\u00FAdo dos streams em vez do arquivo de informa\u00E7\u00F5es do stream.\nAtualmente, isso n\u00E3o funciona em navegadores modernos devido a restri\u00E7\u00F5es do `SharedArrayBuffer`."
 		},
 		"Prefer MP4 over MKV": {
 			"pt-BR": "Preferir MP4 em vez de MKV",
@@ -9626,7 +9703,7 @@ var $$IMU_EXPORT$$;
 		},
 		enable_stream_download: {
 			name: "Enable downloading HLS/DASH streams",
-			description: "Downloads and muxes the contents of the streams rather than the stream information file.\nThis currently does not work under modern browsers due to `SharedArrayBuffer` restrictions.",
+			description: "Downloads and muxes the contents of the streams rather than the stream information file.",
 			requires: {
 				_condition: "action:popup",
 				mouseover_allow_hlsdash: true
@@ -13145,6 +13222,7 @@ var $$IMU_EXPORT$$;
 			return result;
 		} catch (e) {
 			console_error(e);
+			cb(null);
 			return null;
 		}
 	};
@@ -13184,11 +13262,11 @@ var $$IMU_EXPORT$$;
 		},
 		"ffmpeg": {
 			name: "ffmpeg",
-			url: "https://raw.githubusercontent.com/qsniyg/maxurl/2178819a193656245ce1a2bd885ff12aaaa04ea9/lib/ffmpeg.js",
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/5d8a153e7ccb2272cc1162422ece252c2666aab0/lib/ffmpeg.js",
 			archive_time: "20210403204304",
-			size: 285642,
-			crc32: 2587771391,
-			crc32_size: 2632494853,
+			size: 190178,
+			crc32: 1792613332,
+			crc32_size: 1070694591,
 			xhr: true
 		},
 		"jszip": {
@@ -13251,8 +13329,10 @@ var $$IMU_EXPORT$$;
 							name: lib_obj.name
 						}
 					}, function(response) {
-						if (!response || !response.data || !response.data.text)
+						if (!response || !response.data || !response.data.text) {
+							console_error("Invalid response when trying to load library", { lib_obj: lib_obj, response: response });
 							return done(null, 0); // 0 instead of false because it will never be available
+						}
 						//done(new Function(response.data.text + ";return lib_export;")(), 0);
 						run_sandboxed_lib(response.data.text, lib_obj.xhr, function(exported) {
 							done(exported, 0);
@@ -17790,9 +17870,14 @@ var $$IMU_EXPORT$$;
 		}
 		var urls = [];
 		array_foreach(video_urls, function(url) {
+			var videotype = true;
+			if (/\.m3u8(?:[?#].*)?$/i.test(url))
+				videotype = "hls";
+			else if (/\.mpd(?:[?#].*)?$/i.test(url))
+				videotype = "dash";
 			var obj = {
 				url: url,
-				video: true
+				video: videotype
 			};
 			if (subs) {
 				obj.subtitles = deepcopy(subs);
@@ -20374,12 +20459,12 @@ var $$IMU_EXPORT$$;
 						var our_url = {
 							url: our_obj.url
 						};
-						if (our_obj.mimeType === "video/mp4") {
+						if (our_obj.mimeType === "video/mp4" || our_obj.videoMimeType === "MP4") {
 							our_url.video = true;
-						} else if (our_obj.mimeType === "application/x-mpegurl") {
+						} else if (our_obj.mimeType === "application/x-mpegurl" || our_obj.videoMimeType === "M3U8") {
 							our_url.video = "hls";
 						} else {
-							console_warn("Unsupported mime type", our_obj.mimeType);
+							console_warn("Unsupported mime type", our_obj.mimeType || our_obj.videoMimeType);
 							continue;
 						}
 						urls.push(our_url);
@@ -22175,7 +22260,6 @@ var $$IMU_EXPORT$$;
 			(domain === "netstorage-yen.akamaized.net" && string_indexof(src, "/images/") >= 0) ||
 			domain === "static.nexilia.it" ||
 			(domain_nosub === "eldia.com" && /^cdn[0-9]*\./.test(domain)) ||
-			(domain_nowww === "esquire.com.gr" && /\/Content\/+ImagesDatabase\//i.test(src)) ||
 			domain === "akmedia.hollywoodlife.com" ||
 			(domain_nowww === "refinery29.com" && string_indexof(src, "/images/") >= 0) ||
 			(domain === "images.radio.com" && string_indexof(src, "/aiu-media/") >= 0) ||
@@ -22391,6 +22475,7 @@ var $$IMU_EXPORT$$;
 			domain === "upload-images.jianshu.io" ||
 			domain === "mz.eastday.com" ||
 			domain === "s.isanook.com" ||
+			domain === "img.kwcdn.com" ||
 			domain_nosub === "fengimg.com") {
 			src = src.replace(/\?.*$/, "");
 		}
@@ -30408,7 +30493,8 @@ var $$IMU_EXPORT$$;
 			domain === "tent.vern.cc" ||
 			domain === "bandcamp.vern.cc" ||
 			domain === "tent.deep-swarm.xyz" ||
-			domain === "bandcamp.lurkmore.com") {
+			domain === "bandcamp.lurkmore.com" ||
+			domain === "tent.qunn.link") {
 			return src.replace(/\/image\.php\?(?:.*&)?file=([0-9]+_)[0-9]+(\.[^/.&#]+)?(?:[#&].*)?$/, "/image.php?file=$10$2");
 		}
 		if (domain_nosub === "bandcamp.com") {
@@ -36905,7 +36991,7 @@ var $$IMU_EXPORT$$;
 			if (match) {
 				id = match[1];
 			} else {
-				match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:(?:(?:tube\/+)?v(?:id(?:eo)?s?)?|embed)\/+(?:([0-9]+)(?:\/+[^/]+)?|([^/]+))\/*)?(?:[?#].*)?$/);
+				match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:(?:(?:tube\/+)?v(?:id(?:eo)?s?)?|embed|post)\/+(?:([0-9]+)(?:\/+[^/]+)?|([^/]+))\/*)?(?:[?#].*)?$/);
 				if (!match) {
 					if (domain_nowww === "pornid.xxx") {
 						match = src.match(/^[a-z]+:\/\/[^/]+\/+([^/.]{20,})\.html(?:[?#].*)?$/);
@@ -37081,7 +37167,6 @@ var $$IMU_EXPORT$$;
 				can_detect_videourl = false;
 			} else if (domain_nosub === "pornhat.com" ||
 				domain_nosub === "mrdeepfakes.com" ||
-				domain_nosub === "tubedupe.com" ||
 				domain_nosub === "porno666.cam") {
 				videos_component = "video";
 			} else if (domain_nosub === "anysex.com") {
@@ -37106,7 +37191,7 @@ var $$IMU_EXPORT$$;
 				videos_component = "embed";
 				addslash = "";
 				a_component = "";
-			} else if (domain_nosub === "stfucdn.com") {
+			} else if (domain_nosub === "stfucdn.com" || domain_nosub === "tubedupe.com") {
 				basedomain = "https://tubedupe.com/";
 				videos_component = "video";
 			} else if (domain_nosub === "prostoporno.help") {
@@ -46247,7 +46332,8 @@ var $$IMU_EXPORT$$;
 					bad: "mask"
 				};
 		}
-		if (domain_nowww === "vk.com") {
+		if (domain_nowww === "vk.com" ||
+			domain_nowww === "vkvideo.ru") {
 			var vk_request_video = function(id, list, cb) {
 				var cache_key = "vk_video:" + id;
 				api_cache.fetch(cache_key, cb, function(done) {
@@ -46259,14 +46345,14 @@ var $$IMU_EXPORT$$;
 					}
 					options.do_request({
 						method: "POST",
-						url: "https://vk.com/al_video.php?act=show",
+						url: "https://" + domain_nosub + "/al_video.php?act=show",
 						data: "act=show&al=1&module=direct" + listkey + "&video=" + id,
 						imu_mode: "xhr",
 						headers: {
 							"Content-Type": "application/x-www-form-urlencoded",
 							"X-Requested-With": "XMLHttpRequest",
-							"Referer": "https://vk.com/",
-							"Origin": "https://vk.com"
+							"Referer": "https://" + domain + "/",
+							"Origin": "https://" + domain
 						},
 						onload: function(result) {
 							if (result.readyState !== 4)
@@ -46295,7 +46381,8 @@ var $$IMU_EXPORT$$;
 					var hlsurl = "data:application/vnd.apple.mpegurl," + encodeURIComponent(params.hls_raw);
 					urls.push({
 						url: hlsurl,
-						video: "hls"
+						video: "hls",
+						is_private: true // includes IP
 					});
 				}
 				var maxsize = 0;
@@ -46310,11 +46397,37 @@ var $$IMU_EXPORT$$;
 				if (maxsize !== 0) {
 					urls.push({
 						url: params["url" + maxsize],
-						video: true
+						video: true,
+						is_private: true // includes IP
 					});
 				}
+				var subtitles = [];
+				if (params.subs) {
+					for (var _i = 0, _a = params.subs; _i < _a.length; _i++) {
+						var sub = _a[_i];
+						var subtitle = {};
+						subtitle.language_code = sub.lang;
+						subtitle.url = sub.url;
+						subtitle.mime = "text/vtt";
+						subtitle.is_auto = sub.is_auto;
+						subtitles.push(subtitle);
+					}
+				}
+				var baseobj = {
+					extra: {}
+				};
+				if (params.date) {
+					baseobj.extra.created_date = params.date * 1000;
+				}
+				if (params.author_href) {
+					baseobj.extra.author_username = params.author_href.replace(/^\/*/, "");
+				}
+				if (params.md_title)
+					baseobj.extra.caption = params.md_title;
+				if (subtitles.length > 0)
+					baseobj.subtitles = subtitles;
 				if (urls.length >= 0)
-					return urls;
+					return fillobj_urls(urls, baseobj);
 				console_log("Unable to find video for", deepcopy(params));
 				return null;
 			};
@@ -46352,6 +46465,14 @@ var $$IMU_EXPORT$$;
 					is_pagelink: true
 				};
 			}
+		}
+		if (host_domain_nosub === "vkvideo.ru" && options.element) {
+			newsrc = common_functions["get_pagelink_host_el_matching"](options, {
+				url_match: /^[a-z]+:\/\/[^/]+\/+video(-?[0-9]+_[0-9]+)(?:[?#].*)?$/,
+				el_match: function(x) { return x.id === "video_player"; }
+			});
+			if (newsrc)
+				return newsrc;
 		}
 		if (domain_nosub === "userapi.com" &&
 			host_domain_nosub === "vk.com" && options.element &&
@@ -50862,7 +50983,8 @@ var $$IMU_EXPORT$$;
 		if (domain === "images.sanoma-sndp.fi") {
 			newsrc = src
 				.replace(/\.jpg\.webp(?:[?#].*)?$/, ".jpg")
-				.replace(/\.webp(?:[?#].*)?$/, ".jpg");
+				.replace(/\.webp(?:[?#].*)?$/, ".jpg")
+				.replace(/\.avif(?:[?#].*)?$/, ".jpg");
 			if (newsrc !== src)
 				return newsrc;
 			return src
@@ -51562,6 +51684,7 @@ var $$IMU_EXPORT$$;
 			domain === "img.tumblbug.com" ||
 			domain === "d193frjqb908ar.cloudfront.net" ||
 			domain === "images.locable.com" ||
+			domain === "image.privacy.com.br" ||
 			domain === "images.ams-prd.blv.cloud") {
 			match = src.match(/^([a-z]+:\/\/[^/]+\/+(?:resize\/+)?)([^-_/.]{20,})(?:[?#].*)?$/);
 			if (match) {
@@ -51571,6 +51694,14 @@ var $$IMU_EXPORT$$;
 					"d193frjqb908ar.cloudfront.net/milesplit": "https://milesplit.s3.amazonaws.com/",
 					"images.locable.com/impact-production": "https://impact-production.s3.amazonaws.com/"
 				};
+				var baseobj_9 = {};
+				if (domain_nosub === "privacy.com.br") {
+					baseobj_9 = {
+						headers: {
+							Referer: "https://" + domain_nosub + "/"
+						}
+					};
+				}
 				try {
 					var host = match[1];
 					var decoded_1 = base64_decode(match[2]);
@@ -51584,7 +51715,7 @@ var $$IMU_EXPORT$$;
 					if (!/[?&]Signature=/i.test(src))
 						urls_8.push(host + base64_encode(JSON_stringify(json)));
 					if (urls_8.length > 0)
-						return urls_8;
+						return fillobj_urls(urls_8, baseobj_9);
 				} catch (e) {
 					console_error(e);
 				}
@@ -52972,7 +53103,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 		}
-		if (domain_nowww === "eporner.com") {
+		if (domain_nosub === "eporner.com" && !/^(?:vid|static)-/.test(domain)) {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:(?:hd-porn|embed)\/+|video-)?([0-9a-zA-Z]+)(?:\/+.*)?(?:[?#].*)?$/);
 			if (match) {
 				id = match[1];
@@ -53006,15 +53137,23 @@ var $$IMU_EXPORT$$;
 							}
 						};
 						urls = [];
+						if (resp.sources.hls && resp.sources.hls.auto) {
+							urls.push({
+								url: resp.sources.hls.auto.src,
+								video: "hls"
+							});
+						}
 						if (resp.sources.mp4) {
 							var sources = resp.sources.mp4;
 							var sources_urls = [];
 							for (var key in sources) {
 								if (!sources[key].src)
 									continue;
+								var qualitylabel = sources[key].labelShort || key;
 								sources_urls.push({
 									url: sources[key].src,
-									quality: parseInt(key)
+									quality: parseInt(qualitylabel),
+									video: true
 								});
 							}
 							sources_urls.sort(function(a, b) {
@@ -53061,7 +53200,7 @@ var $$IMU_EXPORT$$;
 				}
 			}
 		}
-		if (host_domain_nowww === "eporner.com" && options.element) {
+		if (host_domain_nosub === "eporner.com" && options.element) {
 			newsrc = common_functions["get_pagelink_host_el_matching"](options, {
 				url_match: /^[a-z]+:\/\/[^/]+\/+(?:hd-porn|embed)\/+([0-9a-zA-Z]+)(?:\/+.*)?(?:[?#].*)?$/,
 				el_match: function(x) {
@@ -53580,14 +53719,14 @@ var $$IMU_EXPORT$$;
 				}
 			}
 			if (id) {
-				var baseobj_9 = {
+				var baseobj_10 = {
 					url: src,
 					extra: {
 						page: "https://www.streamable.com/" + id
 					}
 				};
 				if (page_nullobj)
-					page_nullobj.extra = baseobj_9.extra;
+					page_nullobj.extra = baseobj_10.extra;
 				var query_streamable = function(id, cb) {
 					api_query("streamable:" + id, {
 						url: "https://www.streamable.com/" + id
@@ -53600,7 +53739,7 @@ var $$IMU_EXPORT$$;
 						var json = JSON_parse(match[1]);
 						var title = json.title || json.reddit_title;
 						if (title) {
-							baseobj_9.extra.caption = title;
+							baseobj_10.extra.caption = title;
 						}
 						var urls = [];
 						if (json.files) {
@@ -53647,20 +53786,20 @@ var $$IMU_EXPORT$$;
 				if (options.cb && options.do_request) {
 					query_streamable(id, function(obj) {
 						if (!obj) {
-							return options.cb(page_nullobj || baseobj_9);
+							return options.cb(page_nullobj || baseobj_10);
 						}
 						if (!is_array(obj)) {
 							obj = [obj];
 						}
 						if (page_nullobj)
 							obj.push(page_nullobj);
-						return options.cb(fillobj_urls(obj, baseobj_9));
+						return options.cb(fillobj_urls(obj, baseobj_10));
 					});
 					return {
 						waiting: true
 					};
 				} else {
-					return page_nullobj || baseobj_9;
+					return page_nullobj || baseobj_10;
 				}
 			}
 		}
@@ -54019,6 +54158,8 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "dood.work" ||
 			domain_nowww === "dooodster.com" ||
 			domain_nowww === "d0000d.com" ||
+			domain_nowww === "d000d.com" ||
+			domain_nowww === "do7go.com" ||
 			domain_nowww === "dood.pm" ||
 			domain_nowww === "doodstream.com") {
 			newsrc = website_query({
@@ -55241,12 +55382,12 @@ var $$IMU_EXPORT$$;
 				var urls = [];
 				array_extend(urls, objs.watermark);
 				array_extend(urls, objs.smaller);
-				var baseobj_10 = {
+				var baseobj_11 = {
 					extra: {
 						page: "https://www.imago-images.de/st/" + match[1]
 					}
 				};
-				return fillobj_urls(urls, baseobj_10);
+				return fillobj_urls(urls, baseobj_11);
 			}
 		}
 		if (domain_nowww === "banned.video" ||
@@ -60229,7 +60370,10 @@ var $$IMU_EXPORT$$;
 			queries.rule = queries.rule.replace(/\d+/, "57");
 			return add_queries(src, queries);
 		}
-		if (domain === "img.bntnews.co.kr") return src.replace(/^[a-z]+:\/\/[^/]+\/+(data\/+bnt\/+)(?:cache|image)\/+([0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+bnt[0-9]{5,})\.[0-9]+x\.[0-9]+\./, "https://www.bntnews.co.kr/$1image/$2.");
+		if (domain_nosub === "bntnews.co.kr" ||
+			domain_nosub === "isplus.com") {
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+(data\/+(?:bnt|isp)\/+)(?:cache|image)\/+([0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[a-z]{3}[0-9]{5,})\.[0-9]+x[0-9]*\.[0-9]+\./, "https://www." + domain_nosub + "/$1image/$2.");
+		}
 		if (domain === "a4tech.ua") return src.replace(/\/cache\/[0-9a-f]+\//, "/");
 		if (domain === "cdn.coolermaster.com") return src.replace(/-(?:bannerdesktop|bannermobile|column|desktop|hover|imageleftorright|intro|mobile|small|zoom)(\.)/, "$1");
 		if (domain_nowww === "westerndigital.com") {
@@ -60376,7 +60520,6 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "govdeals.com") {
 			return src.replace(/(\/photos\/+\d+\/+)thumb(?:nail)?s\/+(.*)/i, "$1$2");
 		}
-		if (domain_nowww === "isplus.com") return src.replace(/(\/data\/+isp\/+image\/+.*)\.[0-9]+x\.[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		if (domain === "cdn.aniplaylist.com") return src.replace(/(\/thumbnails\/+[0-9a-f]+)@[0-9a-z]+\./, "$1.");
 		if (domain === "statics.tver.jp") return src.replace(/(\/images\/+content\/+thumbnail\/+[^/]+\/+)(?:small|medium|large)\/+/, "$1xlarge/");
 		if (domain_nowww === "tver.jp") {
@@ -64421,16 +64564,16 @@ var $$IMU_EXPORT$$;
 					match = decoded_8.match(/"url":\s*("https?:\/\/[^"]+")/);
 					if (match) {
 						var page_4 = JSON_parse(match[1]);
-						var baseobj_11 = {
+						var baseobj_12 = {
 							url: origsrc,
 							extra: {
 								page: page_4
 							}
 						};
 						if (looks_like_valid_link(page_4, true)) {
-							return [page_4, baseobj_11];
+							return [page_4, baseobj_12];
 						} else {
-							return baseobj_11;
+							return baseobj_12;
 						}
 					}
 				} catch (e) {
@@ -64642,6 +64785,170 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "zoro.com") return src.replace(/(\/static\/+cms\/+product\/+)[^/]+\/+([^/]+)(?:[?#].*)?$/, "$1$2");
 		if (domain_nowww === "pngfind.com") return src.replace(/(\/pngs\/+)m\/+/, "$1b/");
 		if (domain === "spng.pngfind.com") return src.replace(/:\/\/[^/]+\/+(pngs\/+)[a-z]+\/+/, "://www.pngfind.com/$1m/");
+		if (domain_nosub === "vtcnews.vn" && /^cdn-i[0-9]*\./.test(domain)) {
+			return src.replace(/\/resize\/+[^/]+\/+upload\//, "/upload/");
+		}
+		if (domain === "files.madamefigaro.gr" ||
+			domain_nowww === "esquire.com.gr") {
+			return src.replace(/(\/content\/+imagesdatabase\/+)(?:p\/+.*?\/)?([0-9a-f]{2}\/+[0-9a-f]{10,}\.[a-z]+)(?:[?#].*)?$/i, "$1$2");
+		}
+		if (domain === "ids.si.edu") {
+			match = src.match(/\/ids\/+deliveryService\?id=([^&]+)$/);
+			if (match) {
+				return "https://ids.si.edu/ids/iiif/" + match[1] + "/full/full/0/default.jpg";
+			}
+			newsrc = src.replace(/(\/ids\/+deliveryService\?)(?:.*?&)?(id=[^&#]+)(?:.*)?$/, "$1$2");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					head_wrong_contenttype: true
+				};
+		}
+		if (domain === "media.borsen.dk") {
+			return {
+				url: src.replace(/(\/brapi\/+size\/+)[0-9]+\/+/, "$199999/"),
+				can_head: false // 415
+			};
+		}
+		if (domain === "images.cdn.hyvaterveys.fi") {
+			newsrc = src.replace(/^.*\/(hyvaterveys\.fi\/+s3fs.*)$/, "https://$1");
+			if (newsrc !== src)
+				return newsrc;
+		}
+		if (domain_nowww === "streamdo.org") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+videos\/+([^/]+)\/*(?:[?#].*)?$/,
+				query_for_id: {
+					url: "https://" + domain + "/videos/${id}/",
+					headers: {
+						Referer: "https://3minx.com/"
+					}
+				},
+				process: function(done, resp, cache_key) {
+					var obj = common_functions["get_videotag_obj"](resp, {
+						videotag: true
+					});
+					done(obj, obj ? 60 * 60 : false);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "3minx.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+([^/]+)\/*(?:[?#].*)?$/,
+				query_for_id: "https://3minx.com/video/${id}/",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<div[^>]+class="[^"]*pd-player[^"]*"[^>]*>\s*<iframe[^>]+src="([^"]+)"/);
+					if (!match) {
+						console_warn(cache_key, "Unable to find iframe match from", resp);
+						return done(null, false);
+					}
+					var iframesrc = decode_entities(match[1]);
+					return done({
+						url: iframesrc,
+						is_pagelink: true
+					}, 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "ishtarandbrute.com") return src.replace(/(\/product_image\/+image\/+[0-9]+\/+)w[0-9]+_/, "$1");
+		if (host_domain_nowww === "krekib.com" && options.element && !/^[a-z]+:\/\/[^/]+\/+artwork\/+/.test(src)) {
+			if (options.element.tagName === "IMG") {
+				newsrc = common_functions["get_pagelink_host_el_matching"](options, {
+					url_match: /\/artwork\/+image\//,
+					el_match: function(x) { return x.id === "cover-placeholder"; }
+				});
+				if (newsrc)
+					return newsrc;
+			}
+		}
+		if (domain_nowww === "krekib.com") {
+			var query_krekib_api_1 = function(id, cb) {
+				api_query("krekib:" + id, {
+					url: "https://krekib.com/api/v1/images/" + id + "?include=images%2Caudio%2Cvideos%2Ctags",
+					imu_mode: "xhr",
+					headers: {
+						Referer: "https://krekib.com/artwork/image/" + id
+					},
+					json: true
+				}, cb, function(done, resp, cache_key) {
+					if (!resp || !resp.data) {
+						console.error(cache_key, "No data in resp", resp);
+						return done(null, false);
+					}
+					if (resp.data.images && resp.data.images.data) {
+						for (var _i = 0, _a = resp.data.images.data; _i < _a.length; _i++) {
+							var img = _a[_i];
+							api_cache.set("krekib:" + img.id, resp);
+						}
+					}
+					return done(resp, 60 * 60);
+				});
+			};
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+artwork\/+image\/+([-0-9a-f]{10,})(?:[?#].*)?$/,
+				run: function(cb, match) {
+					var id = match[1];
+					query_krekib_api_1(id, function(resp) {
+						if (!resp)
+							return cb(null);
+						var ids = {};
+						var current_id = null;
+						var album_links = [];
+						if (!resp.data.images || !resp.data.images.data) {
+							console_error("Unable to find images in", resp);
+							return cb(null);
+						}
+						for (var _i = 0, _a = resp.data.images.data; _i < _a.length; _i++) {
+							var img = _a[_i];
+							if (!current_id || img.id === id)
+								current_id = img.id;
+							var album_obj = {
+								url: "https://krekib.com/artwork/image/" + img.id,
+								is_current: false
+							};
+							album_links.push(album_obj);
+							img.album_obj = album_obj;
+							ids[img.id] = img;
+						}
+						if (!current_id) {
+							console_error("Unable to find", current_id, "in", resp);
+							return cb(null);
+						}
+						var currobj = ids[current_id];
+						currobj.album_obj.is_current = true;
+						var urls = [];
+						if (currobj.source_url)
+							urls.push({
+								url: currobj.source_url,
+								headers: {
+									Referer: currobj.source_url
+								}
+							});
+						if (currobj.url)
+							urls.push(urljoin("https://krekib.com/", currobj.url));
+						var extra = {};
+						if (resp.data.created_at)
+							extra.created_date = new Date(resp.data.created_at).getTime();
+						if (resp.data.title)
+							extra.title = resp.data.title;
+						return cb(fillobj_urls(urls, {
+							album_info: {
+								type: "links",
+								links: album_links
+							},
+							extra: extra
+						}));
+					});
+				}
+			});
+			if (newsrc)
+				return newsrc;
+			return src.replace(/\/cache\/+[^/]+\/+(images\/+)/, "/$1");
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -71908,27 +72215,50 @@ var $$IMU_EXPORT$$;
 							return do_request(req);
 						};
 					}
-					ffmpeg = ffmpeg_lib.lib.createFFmpeg({
-						log: true,
-						progress: function(progress) {
-							//console_log(progress.ratio);
-							if (ffmpeg_progress_cb) {
-								ffmpeg_progress_cb(progress.ratio);
-							}
+					ffmpeg = new ffmpeg_lib.lib.FFmpeg();
+					ffmpeg.on("log", function(_a) {
+						var message = _a.message;
+						console_log("[FF]", message);
+					});
+					ffmpeg.on("progress", function(_a) {
+						var progress = _a.progress, time = _a.time;
+						if (ffmpeg_progress_cb) {
+							ffmpeg_progress_cb(progress);
 						}
 					});
 					ffmpeg_lib._imu_instance = ffmpeg;
+					ffmpeg_lib._imu_loaded = false;
 				} else {
 					ffmpeg = ffmpeg_lib._imu_instance;
 				}
-				if (!ffmpeg.isLoaded()) {
-					ffmpeg.load().then(function() {
-						cb(ffmpeg);
-					}, function(err) {
-						console_error(err);
-						// since compilation takes 100% cpu for a few seconds, we really don't want to run it more than once if it continually fails
-						ffmpeg_lib._imu_failed_loading = true; // untested
-						cb(null);
+				if (!ffmpeg_lib._imu_loaded) {
+					do_request({
+						method: "GET",
+						url: "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm",
+						headers: {
+							Referer: "",
+							Origin: ""
+						},
+						responseType: "blob",
+						onload: function(resp) {
+							if (resp.status !== 200 || !resp.response) {
+								console_error("Unable to fetch ffmpeg-core.wasm", resp);
+								return cb(null);
+							}
+							create_dataurl(resp.response, function(dataurl) {
+								ffmpeg.load({
+									wasmURL: dataurl
+								}).then(function() {
+									ffmpeg_lib._imu_loaded = true;
+									cb(ffmpeg);
+								}, function(err) {
+									console_error(err);
+									// since compilation takes 100% cpu for a few seconds, we really don't want to run it more than once if it continually fails
+									ffmpeg_lib._imu_failed_loading = true; // untested
+									cb(null);
+								});
+							});
+						}
 					});
 				} else {
 					cb(ffmpeg);
@@ -71940,14 +72270,16 @@ var $$IMU_EXPORT$$;
 				console_error("Unable to load FFmpeg library: disabled for this build");
 				return cb(null);
 			}
-			check_sharedarraybuffer(function(success) {
+			get_ffmpeg_inner(cb);
+			/*check_sharedarraybuffer(function(success) {
 				// if we don't check for this, ffmpeg will hang under firefox
 				if (!success) {
 					console_error("Unable to load FFmpeg library: SharedArrayBuffer is missing or unusable");
 					return cb(null);
 				}
+
 				get_ffmpeg_inner(cb);
-			});
+			});*/
 		};
 		var ffmpeg_join;
 		(function() {
@@ -71976,7 +72308,8 @@ var $$IMU_EXPORT$$;
 				ffmpeg_running = true;
 				var promise = null;
 				try {
-					promise = ffmpeg.run.apply(this, opobj.op);
+					console_log("Running FFmpeg:", opobj.op);
+					promise = ffmpeg.exec(opobj.op);
 				} catch (e) {
 					console_error(e);
 					end(true);
@@ -71987,8 +72320,16 @@ var $$IMU_EXPORT$$;
 					end();
 					opobj.success(data);
 				}, function(data) {
-					end(true);
-					opobj.fail(false);
+					// for some reason it errors out with: TypeError: Cannot read properties of undefined (reading 'apply')
+					if (/properties of undefined.*apply/.test(data + "")) {
+						console_warn("Known FFmpeg error", data);
+						end();
+						opobj.success();
+					} else {
+						console_error("Error running FFmpeg", data);
+						end(true);
+						opobj.fail(false);
+					}
 				});
 			};
 			var ffmpeg_run = function(ffmpeg, op, progress, success, fail) {
@@ -72008,60 +72349,129 @@ var $$IMU_EXPORT$$;
 			};
 			// files = array of {data: uint8array, mime: ...}, not filenames
 			var ffmpeg_concat = function(ffmpeg, files, cb) {
-				if (true) {
-					var total_size = 0;
-					array_foreach(files, function(file) {
-						total_size += file.data.byteLength;
-					});
-					var out = new Uint8Array(total_size);
-					var current_size = 0;
-					array_foreach(files, function(file) {
-						out.set(file.data, current_size);
-						current_size += file.data.byteLength;
-					});
-					var ourfilename = get_ffmpeg_prefix("concat");
-					ffmpeg.FS("writeFile", ourfilename, out);
-					return cb(ourfilename);
-				} else {
-					if (!ffmpeg)
-						cb(null);
-					var prefix = get_ffmpeg_prefix("concat");
-					var files_txt_filename = prefix + "files.txt";
-					var files_txt_files = [];
-					var filenames = [];
-					array_foreach(files, function(file, i) {
-						// todo: file extensions? are they even necessary?
-						var filename = prefix + i;
-						if (file.mime) {
-							filename += file.mime.replace(/.*\//, ".");
+				return __awaiter(this, void 0, void 0, function() {
+					var total_size, _i, files_2, file, out, current_size, _a, files_3, file, ourfilename, prefix, files_txt_filename, files_txt_files, filenames, i, file, filename, out_filename, cleanup;
+					return __generator(this, function(_b) {
+						switch (_b.label) {
+							case 0:
+								if (!true) return [3 /*break*/, 2];
+								total_size = 0;
+								for (_i = 0, files_2 = files; _i < files_2.length; _i++) {
+									file = files_2[_i];
+									total_size += file.data.byteLength;
+								}
+								out = new Uint8Array(total_size);
+								current_size = 0;
+								for (_a = 0, files_3 = files; _a < files_3.length; _a++) {
+									file = files_3[_a];
+									out.set(file.data, current_size);
+									current_size += file.data.byteLength;
+								}
+								ourfilename = get_ffmpeg_prefix("concat");
+								return [4 /*yield*/, ffmpeg.writeFile(ourfilename, out)];
+							case 1:
+								_b.sent();
+								return [2 /*return*/, cb(ourfilename)];
+							case 2:
+								if (!ffmpeg)
+									cb(null);
+								prefix = get_ffmpeg_prefix("concat");
+								files_txt_filename = prefix + "files.txt";
+								files_txt_files = [];
+								filenames = [];
+								i = 0;
+								_b.label = 3;
+							case 3:
+								if (!(i < files.length)) return [3 /*break*/, 6];
+								file = files[i];
+								filename = prefix + i;
+								if (file.mime) {
+									filename += file.mime.replace(/.*\//, ".");
+								}
+								filenames.push(filename);
+								files_txt_files.push("file '" + filename + "'");
+								return [4 /*yield*/, ffmpeg.writeFile(filename, file.data)];
+							case 4:
+								_b.sent();
+								_b.label = 5;
+							case 5:
+								i++;
+								return [3 /*break*/, 3];
+							case 6: return [4 /*yield*/, ffmpeg.writeFile(files_txt_filename, files_txt_files.join("\n"))];
+							case 7:
+								_b.sent();
+								out_filename = prefix + "out";
+								cleanup = function(delete_out) {
+									return __awaiter(this, void 0, void 0, function() {
+										var _i, filenames_1, filename_3, e_1;
+										return __generator(this, function(_a) {
+											switch (_a.label) {
+												case 0:
+													_i = 0, filenames_1 = filenames;
+													_a.label = 1;
+												case 1:
+													if (!(_i < filenames_1.length)) return [3 /*break*/, 4];
+													filename_3 = filenames_1[_i];
+													return [4 /*yield*/, ffmpeg.deleteFile(filename_3)];
+												case 2:
+													_a.sent();
+													_a.label = 3;
+												case 3:
+													_i++;
+													return [3 /*break*/, 1];
+												case 4: return [4 /*yield*/, ffmpeg.deleteFile(files_txt_filename)];
+												case 5:
+													_a.sent();
+													if (!delete_out) return [3 /*break*/, 9];
+													_a.label = 6;
+												case 6:
+													_a.trys.push([6, 8, , 9]);
+													// this can fail if ffmpeg failed to create the out file entirely
+													return [4 /*yield*/, ffmpeg.deleteFile(out_filename)];
+												case 7:
+													// this can fail if ffmpeg failed to create the out file entirely
+													_a.sent();
+													return [3 /*break*/, 9];
+												case 8:
+													e_1 = _a.sent();
+													return [3 /*break*/, 9];
+												case 9: return [2 /*return*/];
+											}
+										});
+									});
+								};
+								ffmpeg_run(ffmpeg, ["-f", "concat", "-safe", "0", "-i", files_txt_filename, "-c", "copy", out_filename], null, function() {
+									return __awaiter(this, void 0, void 0, function() {
+										return __generator(this, function(_a) {
+											switch (_a.label) {
+												case 0: return [4 /*yield*/, cleanup()];
+												case 1:
+													_a.sent();
+													cb(out_filename);
+													return [2 /*return*/];
+											}
+										});
+									});
+								}, function(err) {
+									return __awaiter(this, void 0, void 0, function() {
+										return __generator(this, function(_a) {
+											switch (_a.label) {
+												case 0:
+													console_error(err);
+													return [4 /*yield*/, cleanup(true)];
+												case 1:
+													_a.sent();
+													cb(null);
+													return [2 /*return*/];
+											}
+										});
+									});
+								});
+								_b.label = 8;
+							case 8: return [2 /*return*/];
 						}
-						filenames.push(filename);
-						files_txt_files.push("file '" + filename + "'");
-						ffmpeg.FS("writeFile", filename, file.data);
 					});
-					ffmpeg.FS("writeFile", files_txt_filename, files_txt_files.join("\n"));
-					var out_filename = prefix + "out";
-					var cleanup = function(out) {
-						array_foreach(filenames, function(filename) {
-							ffmpeg.FS("unlink", filename);
-						});
-						ffmpeg.FS("unlink", files_txt_filename);
-						if (out) {
-							try {
-								// this can fail if ffmpeg failed to create the out file entirely
-								ffmpeg.FS("unlink", out_filename);
-							} catch (e) { }
-						}
-					};
-					ffmpeg_run(ffmpeg, ["-f", "concat", "-safe", "0", "-i", files_txt_filename, "-c", "copy", out_filename], null, function() {
-						cleanup();
-						cb(out_filename);
-					}, function(err) {
-						console_error(err);
-						cleanup(true);
-						cb(null);
-					});
-				}
+				});
 			};
 			var ffmpeg_fs_size = function(ffmpeg, file) {
 				try {
@@ -72075,12 +72485,46 @@ var $$IMU_EXPORT$$;
 				}
 				;
 			};
+			var ffmpeg_fs_exists = function(ffmpeg, file) {
+				return __awaiter(this, void 0, void 0, function() {
+					var entries, _i, entries_1, entry;
+					return __generator(this, function(_a) {
+						switch (_a.label) {
+							case 0: return [4 /*yield*/, ffmpeg.listDir("/")];
+							case 1:
+								entries = _a.sent();
+								console.log("ENTRIES", entries);
+								for (_i = 0, entries_1 = entries; _i < entries_1.length; _i++) {
+									entry = entries_1[_i];
+									if (entry.name === file)
+										return [2 /*return*/, true];
+								}
+								return [2 /*return*/, false];
+						}
+					});
+				});
+			};
 			var ffmpeg_mux_single = function(ffmpeg, video_file, audio_file, out_filename, progress, success, fail) {
 				var failfunc = function(err) {
-					try {
-						ffmpeg.FS("unlink", out_filename);
-					} catch (e) { }
-					fail(err);
+					return __awaiter(this, void 0, void 0, function() {
+						var e_2;
+						return __generator(this, function(_a) {
+							switch (_a.label) {
+								case 0:
+									_a.trys.push([0, 2, , 3]);
+									return [4 /*yield*/, ffmpeg.deleteFile(out_filename)];
+								case 1:
+									_a.sent();
+									return [3 /*break*/, 3];
+								case 2:
+									e_2 = _a.sent();
+									return [3 /*break*/, 3];
+								case 3:
+									fail(err);
+									return [2 /*return*/];
+							}
+						});
+					});
 				};
 				var args = [];
 				if (video_file)
@@ -72089,11 +72533,20 @@ var $$IMU_EXPORT$$;
 					args.push("-i", audio_file);
 				args.push("-c", "copy", out_filename);
 				ffmpeg_run(ffmpeg, args, progress, function(data) {
-					// it'll always succeed, so this is needed to check if it actually wrote the file
-					if (!ffmpeg_fs_size(ffmpeg, out_filename)) {
-						return failfunc();
-					}
-					success(data);
+					return __awaiter(this, void 0, void 0, function() {
+						return __generator(this, function(_a) {
+							switch (_a.label) {
+								case 0: return [4 /*yield*/, ffmpeg_fs_exists(ffmpeg, out_filename)];
+								case 1:
+									// it'll always succeed, so this is needed to check if it actually wrote the file
+									if (!(_a.sent())) {
+										return [2 /*return*/, failfunc()];
+									}
+									success(data);
+									return [2 /*return*/];
+							}
+						});
+					});
 				}, failfunc);
 			};
 			var ffmpeg_mux = function(ffmpeg, video_file, audio_file, progress, cb) {
@@ -72135,41 +72588,82 @@ var $$IMU_EXPORT$$;
 				var files = [];
 				var prefix = get_ffmpeg_prefix("join");
 				var cleanup = function() {
-					array_foreach(files, function(filename) {
-						ffmpeg.FS("unlink", filename);
+					return __awaiter(this, void 0, void 0, function() {
+						var _i, files_4, filename;
+						return __generator(this, function(_a) {
+							switch (_a.label) {
+								case 0:
+									_i = 0, files_4 = files;
+									_a.label = 1;
+								case 1:
+									if (!(_i < files_4.length)) return [3 /*break*/, 4];
+									filename = files_4[_i];
+									return [4 /*yield*/, ffmpeg.deleteFile(filename)];
+								case 2:
+									_a.sent();
+									_a.label = 3;
+								case 3:
+									_i++;
+									return [3 /*break*/, 1];
+								case 4:
+									progress(1);
+									return [2 /*return*/];
+							}
+						});
 					});
-					progress(1);
 				};
 				var err = function() {
-					cleanup();
-					cb(null);
+					return __awaiter(this, void 0, void 0, function() {
+						return __generator(this, function(_a) {
+							switch (_a.label) {
+								case 0: return [4 /*yield*/, cleanup()];
+								case 1:
+									_a.sent();
+									cb(null);
+									return [2 /*return*/];
+							}
+						});
+					});
 				};
 				var process_stream = function(i) {
-					if (i >= streams.length) {
-						return mux_files();
-					} else {
-						progress((i / streams.length) * 0.5);
-					}
-					var stream = streams[i];
-					if (!stream.length) {
-						// shouldn't happen?
-						console_warn("No stream data for", i);
-						process_stream(i + 1);
-					} else if (stream.length === 1) {
-						// no need to concat
-						var filename = prefix + "stream" + i;
-						ffmpeg.FS("writeFile", filename, stream[0].data);
-						files.push(filename);
-						process_stream(i + 1);
-					} else {
-						// todo: progress
-						ffmpeg_concat(ffmpeg, stream, function(filename) {
-							if (!filename)
-								return err();
-							files.push(filename);
-							process_stream(i + 1);
+					return __awaiter(this, void 0, void 0, function() {
+						var stream, filename;
+						return __generator(this, function(_a) {
+							switch (_a.label) {
+								case 0:
+									if (i >= streams.length) {
+										return [2 /*return*/, mux_files()];
+									} else {
+										progress((i / streams.length) * 0.5);
+									}
+									stream = streams[i];
+									if (!!stream.length) return [3 /*break*/, 1];
+									// shouldn't happen?
+									console_warn("No stream data for", i);
+									process_stream(i + 1);
+									return [3 /*break*/, 4];
+								case 1:
+									if (!(stream.length === 1)) return [3 /*break*/, 3];
+									filename = prefix + "stream" + i;
+									return [4 /*yield*/, ffmpeg.writeFile(filename, stream[0].data)];
+								case 2:
+									_a.sent();
+									files.push(filename);
+									process_stream(i + 1);
+									return [3 /*break*/, 4];
+								case 3:
+									// todo: progress
+									ffmpeg_concat(ffmpeg, stream, function(filename) {
+										if (!filename)
+											return err();
+										files.push(filename);
+										process_stream(i + 1);
+									});
+									_a.label = 4;
+								case 4: return [2 /*return*/];
+							}
 						});
-					}
+					});
 				};
 				var mux_files = function() {
 					progress(0.5);
@@ -72346,8 +72840,10 @@ var $$IMU_EXPORT$$;
 			};
 			var create_shaka = function(info_obj, el, src, success, fail) {
 				get_library("shaka", settings, do_request, function(_shaka) {
-					if (!_shaka)
+					if (!_shaka) {
+						console_warn("Unable to load Shaka");
 						return fail();
+					}
 					var shaka = _shaka.lib;
 					if (true) {
 						shaka.log.setLevel(shaka.log.Level.ERROR);
@@ -78800,14 +79296,24 @@ var $$IMU_EXPORT$$;
 							ffmpeg_join(ffmpeg, data, function(percent) {
 								update_progress_el(progress_el, 0.9 + (percent * 0.1), true);
 							}, function(filename) {
-								update_progress_el(progress_el, 1, true);
-								//console_log(filename);
-								var data = ffmpeg.FS("readFile", filename);
-								new_blob(data, function(blob) {
-									var out_ext = url_basename(filename, { split_ext: true })[1];
-									var out_filename = url_basename(popup_obj.filename || "download", { split_ext: true, known_ext: true })[0] + "." + out_ext;
-									do_blob_download(blob, out_filename, function() {
-										ffmpeg.FS("unlink", filename);
+								return __awaiter(this, void 0, void 0, function() {
+									var data;
+									return __generator(this, function(_a) {
+										switch (_a.label) {
+											case 0:
+												update_progress_el(progress_el, 1, true);
+												return [4 /*yield*/, ffmpeg.readFile(filename)];
+											case 1:
+												data = _a.sent();
+												new_blob(data, function(blob) {
+													var out_ext = url_basename(filename, { split_ext: true })[1];
+													var out_filename = url_basename(popup_obj.filename || "download", { split_ext: true, known_ext: true })[0] + "." + out_ext;
+													do_blob_download(blob, out_filename, function() {
+														ffmpeg.deleteFile(filename);
+													});
+												});
+												return [2 /*return*/];
+										}
 									});
 								});
 							});
@@ -80337,6 +80843,85 @@ var $$IMU_EXPORT$$;
 				return false;
 			}
 		};
+		var do_node_request = function(reqobj) {
+			var base_headers = {
+				"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.3"
+			};
+			if (!reqobj.headers)
+				reqobj.headers = {};
+			for (var headername in base_headers) {
+				if (headerobj_get(reqobj.headers, headername) === void 0)
+					headerobj_set(reqobj.headers, headername, base_headers[headername]);
+			}
+			if (!reqobj.method)
+				reqobj.method = "GET";
+			return do_request(reqobj);
+		};
+		var do_node_dl = function(reqobj, outpath) {
+			return __awaiter(this, void 0, void 0, function() {
+				var fs, handle, chunks_to_append, total_size, written_size, append_to_file;
+				return __generator(this, function(_a) {
+					switch (_a.label) {
+						case 0:
+							fs = require("fs/promises");
+							return [4 /*yield*/, fs.open(outpath, "wb", 438)];
+						case 1:
+							handle = _a.sent();
+							chunks_to_append = [];
+							total_size = null;
+							written_size = 0;
+							append_to_file = function(chunk) {
+								return __awaiter(this, void 0, void 0, function() {
+									var our_chunk, percent;
+									return __generator(this, function(_a) {
+										switch (_a.label) {
+											case 0:
+												chunks_to_append.push(chunk);
+												// already writing
+												if (chunks_to_append.length > 1)
+													return [2 /*return*/];
+												_a.label = 1;
+											case 1:
+												if (!(chunks_to_append.length > 0)) return [3 /*break*/, 3];
+												our_chunk = chunks_to_append[0];
+												return [4 /*yield*/, handle.write(our_chunk)];
+											case 2:
+												_a.sent();
+												written_size += our_chunk.length;
+												chunks_to_append.shift(); // only shift *after* we finished writing to avoid race
+												percent = "";
+												if (total_size !== null) {
+													percent = (written_size / total_size).toFixed(1) + "%";
+												}
+												console.log("[DL] " + outpath + percent);
+												return [3 /*break*/, 1];
+											case 3: return [2 /*return*/];
+										}
+									});
+								});
+							};
+							return [2 /*return*/, new Promise(function(resolve, reject) {
+									do_node_request(__assign(__assign({}, reqobj), { responseType: "none", onprogress: function(progress) {
+											return __awaiter(this, void 0, void 0, function() {
+												return __generator(this, function(_a) {
+													if (progress.total)
+														total_size = progress.total;
+													append_to_file(progress._node_chunks[progress._node_chunks.length - 1]);
+													return [2 /*return*/];
+												});
+											});
+										}, onload: function(resp) {
+											if (resp.status !== 200) {
+												console.error("[FAIL] " + outpath + " (status " + resp.status + ")");
+												return resolve(false);
+											}
+											return resolve(true);
+										} }));
+								})];
+					}
+				});
+			});
+		};
 		var run_node_dlserver = function() {
 			// WIP
 			var port = get_node_config("dlport", 30130);
@@ -80353,47 +80938,42 @@ var $$IMU_EXPORT$$;
 			}
 			var http = require("http");
 			http.createServer(function(req, res) {
-				var client_token = req.getHeader("X-IMU-Token");
-				if (client_token !== token) {
-					console.log("Invalid token:", client_token);
-					return res.end();
-				}
-				var fail = function(status) {
-					res.writeHead(400, { 'Content-Type': 'text/plain' });
-					res.write(JSON.stringify({ "error": status }));
-					res.end();
-				};
-				var info = req.getHeader("X-IMU-Info");
-				if (!info) {
-					return fail("No info");
-				}
-				var parsedinfo;
-				try {
-					parsedinfo = JSON.parse(info);
-				} catch (e) {
-					console.error(e);
-					return fail("Invalid info");
-				}
-				var headers = {
-					"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.3"
-				};
-				for (var headername in parsedinfo.headers) {
-					headerobj_set(headers, headername, parsedinfo.headers[headername]);
-				}
-				console.log("[DL] " + parsedinfo.url);
-				do_request({
-					method: parsedinfo.method || "GET",
-					url: parsedinfo.url,
-					headers: headers,
-					onload: function(resp) {
-						if (resp.status !== 200) {
-							console.log("[FAIL] " + parsedinfo.url, resp);
-							return;
+				return __awaiter(this, void 0, void 0, function() {
+					var client_token, fail, info, parsedinfo;
+					return __generator(this, function(_a) {
+						switch (_a.label) {
+							case 0:
+								client_token = req.getHeader("X-IMU-Token");
+								if (client_token !== token) {
+									console.log("Invalid token:", client_token);
+									return [2 /*return*/, res.end()];
+								}
+								fail = function(status) {
+									res.writeHead(400, { 'Content-Type': 'text/plain' });
+									res.write(JSON.stringify({ "error": status }));
+									res.end();
+								};
+								info = req.getHeader("X-IMU-Info");
+								if (!info) {
+									return [2 /*return*/, fail("No info")];
+								}
+								try {
+									parsedinfo = JSON.parse(info);
+								} catch (e) {
+									console.error(e);
+									return [2 /*return*/, fail("Invalid info")];
+								}
+								return [4 /*yield*/, do_node_dl({
+										method: parsedinfo.method,
+										url: parsedinfo.url,
+										headers: parsedinfo.headers,
+									}, outpath + "/" + parsedinfo.filename)];
+							case 1:
+								_a.sent();
+								return [2 /*return*/, fail("")];
 						}
-						//outpath + "/" + parsedinfo.filename;
-					}
+					});
 				});
-				return fail("");
 			}).listen(port);
 			console.log("IMU Download server:");
 			console.log("http://127.0.0.1:" + port + "/?token=" + token);
