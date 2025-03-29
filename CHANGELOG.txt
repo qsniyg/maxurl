@@ -3,6 +3,7 @@
 New features:
 
  * Option to autoplay only when tab is active (#1399)
+ * Re-enable downloading HLS/DASH streams for non-AMO builds (#753)
 
 Improvements:
 
@@ -11,9 +12,8 @@ Improvements:
 Bugfixes:
 
  * Fix "Clicking link downloads" downloading when dragging the popup (#1378)
- * Fix HLS/DASH downloads not working under userscript (#753)
 
-Special thanks to byjrg, TanatOSz, skbeh, F640, Gavin, vscum, sn3akyb3ar, elevate, karpuzikov, Froktime, LemonMeringueTie895, fireattack, chalklog, ljcool2006, fyhtma, karpuzikov, Floorbound, ANaPhOrAX for their contributions and reports for this release
+Special thanks to byjrg, TanatOSz, skbeh, F640, Gavin, vscum, sn3akyb3ar, elevate, karpuzikov, Froktime, LemonMeringueTie895, fireattack, chalklog, ljcool2006, fyhtma, karpuzikov, Floorbound, ANaPhOrAX, Earthworm-Banana for their contributions and reports for this release
 
 ---
 
