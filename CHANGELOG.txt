@@ -4,6 +4,7 @@ New features:
 
  * Option to autoplay only when tab is active (#1399)
  * Re-enable downloading HLS/DASH streams for non-AMO builds (#753)
+ * Option to enable chunked downloads for userscript
 
 Improvements:
 
