@@ -8,7 +8,7 @@ New features:
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including Reddit)
+ * Various improvements/fixes to existing rules (including Reddit, Soundcloud)
 
 Bugfixes:
 
