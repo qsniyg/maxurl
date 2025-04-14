@@ -981,6 +981,7 @@ booktrust.org.uk
 boombj.com
 boorp.com
 booru.org
+booru.soyjak.st
 booth.pm
 booth.pximg.net
 bootysource.com
@@ -8002,7 +8003,7 @@ soup.onerpm.com
 soupcdn.com
 southbank-ipcmedia-com.s3.amazonaws.com
 soycarmin.com
-soyjak.party
+soyjak.st
 soyuz.ru
 soz.lk
 sozcucdn.com

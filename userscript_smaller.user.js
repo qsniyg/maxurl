@@ -467,7 +467,7 @@ var $$IMU_EXPORT$$;
 	var base64_decode_urlsafe = function(s) {
 		return base64_decode_base(s, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_");
 	};
-	var base64_decode, base64_encode, is_array, array_indexof, string_indexof, 
+	var base64_decode, base64_encode, is_array, array_indexof, string_indexof,
 	// https://www.bing.com/ overrides Blob
 	// https://www.dpreview.com/ overrides URL
 	native_blob, native_URL, new_blob, our_EventTarget, our_addEventListener, our_removeEventListener, string_fromcharcode, string_charat, array_reduce, array_reduce_prototype, document_createElement;
@@ -1111,9 +1111,9 @@ var $$IMU_EXPORT$$;
 			var args_count = inst.length - 1;
 			ops.push(
 			// push data
-			0, null, 
+			0, null,
 			// run operation
-			opcode, null, 
+			opcode, null,
 			// pop data+args
 			2, 1 + args_count);
 		});
@@ -26416,7 +26416,8 @@ var $$IMU_EXPORT$$;
 				return obj;
 			}
 		}
-		if (domain_nowww === "soyjak.party") return src.replace(/\/thumb\//, "/src/");
+		if (domain_nowww === "soyjak.st") return src.replace("/thumb/", "/src/");
+		if (domain_nowww === "booru.soyjak.st") return src.replace("/_thumbs/", "/_images/");
 		if (domain === "file.tinnhac.com" ||
 			domain === "file.tintuckpop.net" ||
 			domain === "media.bongda.com.vn" ||
