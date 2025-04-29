@@ -5,6 +5,7 @@ New features:
  * Option to autoplay only when tab is active (#1399)
  * Re-enable downloading HLS/DASH streams for non-AMO builds (#753)
  * Option to enable chunked downloads for userscript
+ * Option to enable gallery download button (disabled by default, thanks to Dietz for the idea)
 
 Improvements:
 
@@ -14,7 +15,7 @@ Bugfixes:
 
  * Fix "Clicking link downloads" downloading when dragging the popup (#1378)
 
-Special thanks to byjrg, TanatOSz, skbeh, F640, Gavin, vscum, sn3akyb3ar, elevate, karpuzikov, Froktime, LemonMeringueTie895, fireattack, chalklog, ljcool2006, fyhtma, karpuzikov, Floorbound, ANaPhOrAX, Earthworm-Banana for their contributions and reports for this release
+Special thanks to byjrg, TanatOSz, skbeh, F640, Gavin, vscum, sn3akyb3ar, elevate, karpuzikov, Froktime, LemonMeringueTie895, fireattack, chalklog, ljcool2006, fyhtma, karpuzikov, Floorbound, ANaPhOrAX, Earthworm-Banana, Dietz for their contributions and reports for this release
 
 ---
 
