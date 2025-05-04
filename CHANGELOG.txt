@@ -1,4 +1,4 @@
-2025.4.0 (in-dev)
+2025.5.0 (in-dev)
 
 New features:
 
