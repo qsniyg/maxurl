@@ -10,6 +10,7 @@ New features:
 Improvements:
 
  * Various improvements/fixes to existing rules (including Reddit, Soundcloud, Steam, VK)
+ * Gallery detection now treats picture and img elements as the same
 
 Bugfixes:
 
