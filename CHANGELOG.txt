@@ -18,7 +18,7 @@ Bugfixes:
  * Fix "Clicking link downloads" downloading when dragging the popup (#1378)
  * Fix SVG downloads returning a ".svg.svg+xml" extension (thanks to Dietz for reporting)
 
-Special thanks to byjrg, TanatOSz, skbeh, F640, Gavin, vscum, sn3akyb3ar, elevate, karpuzikov, Froktime, LemonMeringueTie895, fireattack, chalklog, ljcool2006, fyhtma, karpuzikov, Floorbound, ANaPhOrAX, Earthworm-Banana, Dietz, Oddbrother for their contributions and reports for this release
+Special thanks to byjrg, TanatOSz, skbeh, F640, Gavin, vscum, sn3akyb3ar, elevate, karpuzikov, Froktime, LemonMeringueTie895, fireattack, chalklog, ljcool2006, fyhtma, karpuzikov, Floorbound, ANaPhOrAX, Earthworm-Banana, Dietz, Oddbrother, Velocidensity for their contributions and reports for this release
 
 ---
 
