@@ -77,7 +77,7 @@ var __assign = (this && this.__assign) || function() {
 // @description:zh-TW 為9800多個網站查找更大或原始圖像
 // @description:zh-HK 為9800多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2025.2.0
+// @version           2025.5.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -218,7 +218,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
 	var imu_icon = "https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png";
-	var current_version = "2025.2.0";
+	var current_version = "2025.5.0";
 	var imagetab_ok_override = false;
 	var has_ffmpeg_lib = true;
 	// -- Currently this is unused, it'll be used in a future release (to workaround the 1MB and 2MB limits for OUJS and Greasyfork respectively) --
@@ -8053,6 +8053,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				},
 				download: {
 					name: "Download"
+				},
+				download_album: {
+					name: "Gallery download"
 				},
 				// thanks to lnp5131 on github for the idea: https://github.com/qsniyg/maxurl/issues/435
 				copylink: {
@@ -74085,7 +74088,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				add_link_to_history(orig_url);
 			}
 			var openb = get_tprofile_single_setting("mouseover_open_behavior");
-			if (openb === "newtab" || openb === "newtab_bg" || openb === "download" || openb === "copylink" || openb === "replace") {
+			if (processing.force_open_behavior)
+				openb = processing.force_open_behavior;
+			if (openb === "newtab" ||
+				openb === "newtab_bg" ||
+				openb === "download" ||
+				openb === "download_album" ||
+				openb === "copylink" ||
+				openb === "replace") {
 				stop_waiting();
 				var theobj = data.data.obj;
 				// TODO: improve fix (for data: urls)
@@ -74101,6 +74111,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					open_in_tab_imu(theobj, openb === "newtab_bg");
 				} else if (openb === "download") {
 					download_popup_media();
+				} else if (openb === "download_album") {
+					download_album();
 				} else if (openb === "copylink") {
 					clipboard_write_link(theobj.url);
 				} else if (openb === "replace") {
@@ -77659,13 +77671,17 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				delay_handle_triggering = false;
 			}
 		}
-		function trigger_popup_with_source(source, automatic, use_last_pos, cb) {
+		function trigger_popup_with_source(source, options) {
+			if (!options)
+				options = {};
 			next_popup_el = get_physical_popup_el(source.el);
-			if (!cb)
-				cb = common_functions["nullfunc"];
+			if (!options.cb)
+				options.cb = common_functions["nullfunc"];
 			var use_head = false;
 			var openb = get_tprofile_single_setting("mouseover_open_behavior");
-			if (openb === "newtab" || openb === "newtab_bg" || openb === "download" || openb === "copylink") {
+			if (options.force_open_behavior)
+				openb = options.force_open_behavior;
+			if (openb === "newtab" || openb === "newtab_bg" || openb === "download" || openb === "download_album" || openb === "copylink") {
 				use_head = true;
 			}
 			var browser_viewable = !use_head; // incidentally the same
@@ -77684,13 +77700,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				incomplete_video = true;
 			}
 			return get_final_from_source(source, {
-				automatic: automatic,
+				automatic: options.automatic,
 				multi: false,
 				use_head: use_head,
 				incomplete_image: incomplete_image,
 				incomplete_video: incomplete_video,
-				use_last_pos: use_last_pos,
-				browser_viewable: browser_viewable
+				use_last_pos: options.use_last_pos,
+				browser_viewable: browser_viewable,
+				force_open_behavior: options.force_open_behavior
 			}, function(source_imu, source, processing, data) {
 				if (!source_imu && !source && !processing && !data) {
 					delay_handle_triggering = false;
@@ -77699,23 +77716,23 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					} else {
 						stop_waiting();
 					}
-					return cb(false);
+					return options.cb(false);
 				}
 				// FIXME: this shouldn't fail, but rather go to the next element
-				if (automatic && previous_album_links && source_imu && source_imu[0]) {
+				if (options.automatic && previous_album_links && source_imu && source_imu[0]) {
 					if (array_indexof(previous_album_links, source_imu[0].url) >= 0) {
 						delay_handle_triggering = false;
 						stop_waiting();
-						return cb(false);
+						return options.cb(false);
 					}
 				}
 				var was_fullscreen = is_popup_fullscreen();
 				//console_log(source_imu);
 				resetpopups({
 					new_popup: true,
-					automatic: automatic
+					automatic: options.automatic
 				});
-				if (automatic) {
+				if (options.automatic) {
 					popup_el_automatic = true;
 					removepopups(); // don't fade out
 				}
@@ -77726,7 +77743,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				popup_el_mediatype = el_media_type(popup_el);
 				popup_el_is_stream = popup_el_mediatype === "video" || popup_el_mediatype === "audio";
 				popup_orig_url = get_img_src(popup_el);
-				if (is_in_iframe && can_iframe_popout() && get_tprofile_single_setting("mouseover_open_behavior") === "popup") {
+				if (is_in_iframe && can_iframe_popout() && openb === "popup") {
 					data.data.img = serialize_img(data.data.img);
 					remote_send_message("top", {
 						type: "make_popup",
@@ -77739,7 +77756,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					});
 				} else {
 					makePopup(source_imu, source.src, processing, data);
-					if (is_in_iframe && can_use_remote() && get_tprofile_single_setting("mouseover_open_behavior") === "popup") {
+					if (is_in_iframe && can_use_remote() && openb === "popup") {
 						remote_send_message("top", {
 							type: "popup_open"
 						});
@@ -77749,7 +77766,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						popup_set_fullscreen();
 					}
 				}
-				cb(true);
+				options.cb(true);
 			});
 		}
 		function get_final_from_source(source, options, cb) {
@@ -77829,6 +77846,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						processing.incomplete_video = options.incomplete_video;
 						processing.progress_cb = options.progress_cb;
 						processing.browser_viewable = options.browser_viewable;
+						processing.force_open_behavior = options.force_open_behavior;
 						if (options.use_head) {
 							processing.head = true;
 						}
@@ -78087,8 +78105,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (newel) {
 					var source = find_source([newel]);
 					if (source) {
-						trigger_popup_with_source(source, true, true, function(changed) {
-							cb(changed);
+						trigger_popup_with_source(source, {
+							automatic: true,
+							use_last_pos: true,
+							cb: function(changed) {
+								cb(changed);
+							}
 						});
 						return;
 					}
@@ -78786,12 +78808,42 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 				set_remove(source_el_set, source.el);
 			};
+			var reposition_source_outlines = function() {
+				for (var _i = 0, sources_2 = sources; _i < sources_2.length; _i++) {
+					var source = sources_2[_i];
+					var rect = source._real_el.getBoundingClientRect();
+					var outline_el = source._outline_el;
+					if (!outline_el)
+						continue;
+					set_important_style(outline_el, "left", (rect.left + window.scrollX) + "px");
+					set_important_style(outline_el, "top", (rect.top + window.scrollY) + "px");
+					set_important_style(outline_el, "width", rect.width + "px");
+					set_important_style(outline_el, "height", rect.height + "px");
+				}
+			};
+			var resize_handler = function() {
+				reposition_source_outlines();
+			};
+			our_addEventListener(window, "resize", resize_handler);
 			exit_custom_gallery = function() {
 				if (alt_keydown_cb === our_keydown_cb)
 					alt_keydown_cb = null;
 				set_remove(exclude_find_els, maskel);
 				base_maskel.parentElement.removeChild(base_maskel);
+				our_removeEventListener(window, "resize", resize_handler);
 				exit_custom_gallery = null;
+			};
+			var trigger_popup = function(options) {
+				options.automatic = true;
+				exit_custom_gallery();
+				if (!sources.length)
+					return;
+				override_album = [];
+				for (var _i = 0, sources_3 = sources; _i < sources_3.length; _i++) {
+					var source = sources_3[_i];
+					override_album.push(source.el);
+				}
+				trigger_popup_with_source(sources[0], options);
 			};
 			var our_keydown_cb = alt_keydown_cb = function(e) {
 				var actions = [
@@ -78802,15 +78854,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					{
 						key: settings.customgallery_apply_key,
 						action: function() {
-							exit_custom_gallery();
-							if (!sources.length)
-								return;
-							override_album = [];
-							for (var _i = 0, sources_2 = sources; _i < sources_2.length; _i++) {
-								var source = sources_2[_i];
-								override_album.push(source.el);
-							}
-							trigger_popup_with_source(sources[0], true);
+							trigger_popup({});
+						}
+					},
+					{
+						key: settings.mouseover_gallery_download_key,
+						action: function() {
+							trigger_popup({ force_open_behavior: "download_album" });
 						}
 					}
 				];
@@ -78824,19 +78874,53 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 			var current_mode = "none";
 			var last_mousemove = 0;
-			var add_cb = function(mouseX, mouseY, is_mousemove) {
-				var point = [mouseX, mouseY];
-				var els = find_els_at_point(point);
-				var source = find_source(els, { point: point });
+			var add_cb = function(options) {
+				var source = null;
+				var point = null;
+				var els = [];
+				if ("mouseX" in options) {
+					point = [options.mouseX, options.mouseY];
+				}
+				if (options.el) {
+					els = [options.el];
+				} else {
+					els = find_els_at_point(point);
+				}
+				if (point) {
+					source = find_source(els, { point: point });
+				} else {
+					source = find_source(els);
+				}
 				if (!source || !source.el)
 					return;
 				source = add_source(source);
 				source._real_el = source.el;
 				if (source.picture)
 					source._real_el = source.picture;
-				if (source._outline_el) {
-					// if _outline_el exists, then the source was already added previously
-					if (is_mousemove) {
+				// if _outline_el exists, then the source was already added previously
+				var our_mode = source._outline_el ? "remove" : "add";
+				if (options.mode) {
+					our_mode = options.mode;
+				}
+				if (options.add_gallery) {
+					setTimeout(function() {
+						get_gallery_elements(function(els) {
+							for (var _i = 0, els_1 = els; _i < els_1.length; _i++) {
+								var el = els_1[_i];
+								if (el === source._real_el)
+									continue;
+								add_cb({
+									el: el,
+									is_mousemove: false,
+									add_gallery: false,
+									mode: our_mode
+								});
+							}
+						}, null, source._real_el);
+					}, 1);
+				}
+				if (our_mode === "remove") {
+					if (options.is_mousemove) {
 						if (current_mode === "add")
 							return;
 					}
@@ -78849,7 +78933,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						current_mode = "remove";
 					return;
 				} else {
-					if (is_mousemove) {
+					// our_mode == "remove" if options.mode overrides it
+					if (source._outline_el)
+						return;
+					if (options.is_mousemove) {
 						if (current_mode === "remove")
 							return;
 					}
@@ -78875,7 +78962,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				e.stopPropagation();
 				last_mousemove = Date.now();
 				current_mode = "unk";
-				add_cb(e.clientX, e.clientY, false);
+				var add_gallery = false;
+				if (e.shiftKey) {
+					add_gallery = true;
+				}
+				add_cb({
+					mouseX: e.clientX,
+					mouseY: e.clientY,
+					is_mousemove: false,
+					add_gallery: add_gallery
+				});
 			}, { capture: true });
 			our_addEventListener(maskel, "mouseup", function(e) {
 				if (current_mode === "none")
@@ -78895,7 +78991,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (now - last_mousemove < 16)
 					return;
 				last_mousemove = Date.now();
-				add_cb(e.clientX, e.clientY, true);
+				add_cb({
+					mouseX: e.clientX,
+					mouseY: e.clientY,
+					is_mousemove: true
+				});
 			}, { capture: true });
 			document.documentElement.appendChild(base_maskel);
 		};
