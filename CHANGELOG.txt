@@ -13,6 +13,7 @@ Improvements:
  * Various improvements/fixes to existing rules (including Reddit, Soundcloud, Steam, VK)
  * Gallery detection now treats picture and img elements as the same
  * Support dragging to select images for custom gallery
+ * Shift+click in custom gallery will now (un)select all detected gallery images
 
 Bugfixes:
 
