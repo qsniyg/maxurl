@@ -15,6 +15,7 @@ Improvements:
 
  * Various improvements/fixes to existing rules (including Reddit, Soundcloud, Steam, VK)
  * Gallery detection now treats picture and img elements as the same
+ * Custom gallery outlines remain correct on window resize
 
 Bugfixes:
 
