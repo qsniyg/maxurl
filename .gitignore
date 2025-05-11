@@ -11,3 +11,4 @@ maxurl.zip
 *.pub
 *.sig
 build/tsout.js
+standalone_config.json
