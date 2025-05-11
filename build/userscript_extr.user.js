@@ -1,5 +1,16 @@
 // @license http://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
 // ^ for LibreJS (this has to be the first comment in the file)
+var __assign = (this && this.__assign) || function() {
+	__assign = Object.assign || function(t) {
+		for (var s, i = 1, n = arguments.length; i < n; i++) {
+			s = arguments[i];
+			for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+				t[p] = s[p];
+		}
+		return t;
+	};
+	return __assign.apply(this, arguments);
+};
 // ==UserScript==
 // @name              Image Max URL
 // @name:ar           Image Max URL
@@ -32,39 +43,39 @@
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 9700+ websites, including a powerful media popup and download feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 9700 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 9700 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 9700 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 9700 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 9700 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 9700 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 9700 sitios
-// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 9700 verkkosivustolle
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 700 sites web, y compris une puissante fonction de popup média
-// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 700 sites web, y compris une puissante fonction de popup média
-// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-9700 אתרים
-// @description:hi    9700 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
-// @description:hu    Több mint 9700 webhely képének és videóinak nagyobb vagy eredeti változatát találja
-// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 9700 situs web
-// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 9700 siti web
-// @description:ja    9700以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ko    9700개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 9700 nettsteder
-// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 9700 websites
-// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 9700 stron internetowych
-// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 9700 sites
-// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 9700+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 9700 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 9700 веб-сайтів
-// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 9700 งเว็บไซต์
-// @description:tr    9700'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
-// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 9700 trang web
+// @description       Finds larger or original versions of images and videos for 9800+ websites, including a powerful media popup and download feature
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 9800 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 9800 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 9800 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 9800 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 9800 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 9800 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 9800 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 9800 verkkosivustolle
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 800 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 800 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-9800 אתרים
+// @description:hi    9800 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
+// @description:hu    Több mint 9800 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 9800 situs web
+// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 9800 siti web
+// @description:ja    9800以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ko    9800개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 9800 nettsteder
+// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 9800 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 9800 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 9800 sites
+// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 9800+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 9800 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 9800 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 9800 งเว็บไซต์
+// @description:tr    9800'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 9800 trang web
 // @description:zh-CN 在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能
-// @description:zh-TW 為9700多個網站查找更大或原始圖像
-// @description:zh-HK 為9700多個網站查找更大或原始圖像
+// @description:zh-TW 為9800多個網站查找更大或原始圖像
+// @description:zh-HK 為9800多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2025.2.0
+// @version           2025.5.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -100,7 +111,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@44efc00e158520262c187772d9117f87101a0006/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@ee51d2202e14a5d3267ecdc0dfccdafd57a5f9f8/build/rules.js
 // ==/UserScript==
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
 //   * Detecting whether or not the destination URL exists before redirecting
@@ -134,6 +145,42 @@ var $$IMU_EXPORT$$;
 (function() {
 	// Don't 'use strict', as it prevents nested functions
 	//'use strict';
+var __awaiter = (this && this.__awaiter) || function(thisArg, _arguments, P, generator) {
+	function adopt(value) { return value instanceof P ? value : new P(function(resolve) { resolve(value); }); }
+	return new (P || (P = Promise))(function(resolve, reject) {
+		function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+		function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+		function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+		step((generator = generator.apply(thisArg, _arguments || [])).next());
+	});
+};
+var __generator = (this && this.__generator) || function(thisArg, body) {
+	var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+	return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+	function verb(n) { return function(v) { return step([n, v]); }; }
+	function step(op) {
+		if (f) throw new TypeError("Generator is already executing.");
+		while (g && (g = 0, op[0] && (_ = 0)), _) try {
+			if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+			if (y = 0, t) op = [op[0] & 2, t.value];
+			switch (op[0]) {
+				case 0: case 1: t = op; break;
+				case 4: _.label++; return { value: op[1], done: false };
+				case 5: _.label++; y = op[1]; op = [0]; continue;
+				case 7: op = _.ops.pop(); _.trys.pop(); continue;
+				default:
+					if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+					if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+					if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+					if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+					if (t[2]) _.ops.pop();
+					_.trys.pop(); continue;
+			}
+			op = body.call(thisArg, _);
+		} catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+		if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+	}
+};
 	var _nir_debug_ = false;
 	if (_nir_debug_) {
 		_nir_debug_ = {
@@ -173,7 +220,7 @@ var $$IMU_EXPORT$$;
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
 	var imu_icon = "https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png";
-	var current_version = "2025.2.0";
+	var current_version = "2025.5.0";
 	var imagetab_ok_override = false;
 	var has_ffmpeg_lib = true;
 	// -- Currently this is unused, it'll be used in a future release (to workaround the 1MB and 2MB limits for OUJS and Greasyfork respectively) --
@@ -445,6 +492,9 @@ var $$IMU_EXPORT$$;
 		}
 		return floor;
 	};
+	if (typeof Promise === "undefined") {
+		console_warn("Unable to find Promise, expect code to break.");
+	}
 	// https://stackoverflow.com/a/15016605
 	// unminified version: https://stackoverflow.com/a/3058974
 	var base64_decode_base = function(s, dict) {
@@ -1126,8 +1176,6 @@ var $$IMU_EXPORT$$;
 	// ublock blocks accessing Math on sites like gfycat
 	var Math_floor, Math_round, Math_random, Math_max, Math_min, Math_abs, Math_pow;
 	var get_compat_math = function() {
-		if (is_node)
-			return;
 		try {
 			Math_floor = Math.floor;
 			Math_round = Math.round;
@@ -1640,13 +1688,37 @@ var $$IMU_EXPORT$$;
 				var chunks = [];
 				res.on("data", function(chunk) {
 					chunks.push(chunk);
+					if (request.onprogress) {
+						var total_length = 0;
+						for (var _i = 0, chunks_1 = chunks; _i < chunks_1.length; _i++) {
+							var chunk_1 = chunks_1[_i];
+							total_length += chunk_1.length;
+						}
+						var res_length = null;
+						for (var i = 0; i < res.rawHeaders.length; i += 2) {
+							if (res.rawHeaders[i].toLowerCase() === "content-length") {
+								res_length = parseInt(res.rawHeaders[i + 1]);
+								break;
+							}
+						}
+						var progressobj = {
+							lengthComputable: false,
+							loaded: total_length,
+							total: 0,
+							_node_chunks: chunks
+						};
+						if (res_length) {
+							progressobj.lengthComputable = true;
+							progressobj.total = res_length;
+						}
+						request.onprogress(progressobj);
+					}
 				});
 				var done_final = false;
 				var finalcb = function() {
 					if (done_final)
 						return;
 					done_final = true;
-					var rawdata = Buffer.concat(chunks);
 					var headersstrs = [];
 					for (var i = 0; i < res.rawHeaders.length; i += 2) {
 						headersstrs.push([res.rawHeaders[i] + ": " + res.rawHeaders[i + 1]].join(""));
@@ -1662,20 +1734,26 @@ var $$IMU_EXPORT$$;
 						status: res.statusCode,
 						statusText: res.statusMessage
 					};
-					resp.response = rawdata;
-					try {
-						resp.responseText = rawdata.toString("utf8"); // FIXME
-					} catch (e) { }
+					if (request.responseType !== "none") {
+						var rawdata = Buffer.concat(chunks);
+						resp.response = rawdata;
+						try {
+							resp.responseText = rawdata.toString("utf8"); // FIXME
+						} catch (e) { }
+					}
 					if (req.destroyed) {
-						request.onabort();
+						if (request.onabort)
+							request.onabort();
+						else
+							request.onload(resp);
 					} else if (!req.complete) {
-						request.onerror(resp);
+						if (request.onerror)
+							request.onerror(resp);
 					} else {
 						// FIXME: more onerror?
 						request.onload(resp);
 					}
 				};
-				// TODO: onprogress
 				// TODO: ontimeout
 				res.on("close", function() {
 					finalcb();
@@ -2019,6 +2097,8 @@ var $$IMU_EXPORT$$;
 		var norm = function(url) { return url.replace(/^([a-z]+:\/\/[^/]+\/+).*/, "$1"); };
 		return norm(url1) === norm(url2);
 	};
+	var create_progress_el = null;
+	var update_progress_el = null;
 	var do_browser_download = function(imu, filename, cb) {
 		if (_nir_debug_) {
 			console_log("do_browser_download", imu, filename, cb);
@@ -2052,27 +2132,6 @@ var $$IMU_EXPORT$$;
 	var do_download = function(imu, filename, size, cb) {
 		if (true || _nir_debug_) {
 			console_log("do_download", imu, filename, size, cb);
-		}
-		if (false) {
-			request_chunked(imu, {
-				onload: function(data) {
-					console_log("finished", data);
-					var blob = new native_blob([data.data], {
-						type: data.mime || void 0
-					});
-					var objurl = create_objecturl(blob);
-					do_browser_download({
-						url: objurl,
-					}, filename, cb);
-					setTimeout(function() {
-						revoke_objecturl(objurl);
-					}, 500);
-				},
-				onprogress: function(progobj) {
-					console_log(progobj.percent, progobj);
-				}
-			});
-			return;
 		}
 		var use_gm_download = is_userscript && typeof GM_download !== "undefined" && settings.enable_gm_download;
 		var gm_download_max = parseFloat(settings.gm_download_max) || 0;
@@ -2130,6 +2189,34 @@ var $$IMU_EXPORT$$;
 				console_log("GM_download", deepcopy(download_obj));
 			}
 			GM_download(download_obj);
+		} else if (settings.enable_chunked_download) {
+			var progressel_1 = null;
+			if (create_progress_el) {
+				progressel_1 = create_progress_el(true);
+			}
+			request_chunked(imu, {
+				onload: function(data) {
+					console_log("finished", data);
+					if (progressel_1)
+						update_progress_el(progressel_1, 1, true);
+					var blob = new native_blob([data.data], {
+						type: data.mime || void 0
+					});
+					var objurl = create_objecturl(blob);
+					do_browser_download({
+						url: objurl,
+					}, filename, cb);
+					setTimeout(function() {
+						revoke_objecturl(objurl);
+					}, 500);
+				},
+				onprogress: function(progobj) {
+					console_log(progobj.percent, progobj);
+					if (progressel_1)
+						update_progress_el(progressel_1, progobj.percent, true);
+				}
+			});
+			return;
 		} else {
 			do_browser_download(imu, filename, cb);
 		}
@@ -5326,9 +5413,6 @@ var $$IMU_EXPORT$$;
 			"ru": "\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u0441\u043A\u0430\u0447\u0438\u0432\u0430\u043D\u0438\u0435 \u043F\u043E\u0442\u043E\u043A\u043E\u0432 HLS/DASH",
 			"zh-CN": "\u542F\u7528 HLS/DASH \u6D41\u5A92\u4F53\u7684\u4E0B\u8F7D"
 		},
-		"Downloads and muxes the contents of the streams rather than the stream information file.\nThis currently does not work under modern browsers due to `SharedArrayBuffer` restrictions.": {
-			"pt-BR": "Baixa e multiplexa o conte\u00FAdo dos streams em vez do arquivo de informa\u00E7\u00F5es do stream.\nAtualmente, isso n\u00E3o funciona em navegadores modernos devido a restri\u00E7\u00F5es do `SharedArrayBuffer`."
-		},
 		"Prefer MP4 over MKV": {
 			"pt-BR": "Preferir MP4 em vez de MKV",
 			"ru": "\u041F\u0440\u0435\u0434\u043F\u043E\u0447\u0438\u0442\u0430\u0442\u044C MP4, \u0430 \u043D\u0435 MKV",
@@ -7189,6 +7273,7 @@ var $$IMU_EXPORT$$;
 		disable_keybind_when_editing: true,
 		enable_gm_download: true,
 		gm_download_max: 15,
+		enable_chunked_download: false,
 		// thanks to pax romana on discord for the idea: https://github.com/qsniyg/maxurl/issues/372
 		// this must be false, because it requires a permission
 		enable_webextension_download: false,
@@ -7334,6 +7419,8 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_closebtn: true,
 		mouseover_ui_optionsbtn: is_userscript ? true : false,
 		mouseover_ui_downloadbtn: false,
+		// thanks to Dietz on discord for the idea
+		mouseover_ui_download_gallery_btn: false,
 		mouseover_ui_rotationbtns: false,
 		mouseover_ui_caption: true,
 		mouseover_ui_wrap_caption: true,
@@ -7792,6 +7879,14 @@ var $$IMU_EXPORT$$;
 			number_unit: "MB",
 			advanced: true
 		},
+		enable_chunked_download: {
+			name: "Enable chunked download",
+			description: "Prefers chunked downloads over simple browser-based downloads. Allows downloading files requiring custom headers. Note that it will download the entire file into memory before displaying the save dialog, and can be slower than regular downloads.",
+			category: "general",
+			userscript_only: true,
+			imu_enabled_exempt: true,
+			advanced: true
+		},
 		enable_webextension_download: {
 			name: "Force save dialog when downloading",
 			description: "Tries to ensure the 'save as' dialog displays when downloading. This requires the 'downloads' permission to work, and will sometimes not work when custom headers are required.",
@@ -7960,6 +8055,9 @@ var $$IMU_EXPORT$$;
 				},
 				download: {
 					name: "Download"
+				},
+				download_album: {
+					name: "Gallery download"
 				},
 				// thanks to lnp5131 on github for the idea: https://github.com/qsniyg/maxurl/issues/435
 				copylink: {
@@ -8328,6 +8426,9 @@ var $$IMU_EXPORT$$;
 				},
 				"active": {
 					name: "If active tab"
+				},
+				"onactive": {
+					name: "When active tab"
 				},
 				"disabled": {
 					name: "Disabled"
@@ -8792,6 +8893,15 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_downloadbtn: {
 			name: "Download Button",
 			description: "Enables a button to download the image.\nCSS ID: `#downloadbtn`",
+			requires: {
+				mouseover_ui: true
+			},
+			category: "popup",
+			subcategory: "ui"
+		},
+		mouseover_ui_download_gallery_btn: {
+			name: "Gallery Download Button",
+			description: "Enables a button to download the gallery.\nCSS ID: `#gallerydlbtn`",
 			requires: {
 				mouseover_ui: true
 			},
@@ -9627,7 +9737,7 @@ var $$IMU_EXPORT$$;
 		},
 		enable_stream_download: {
 			name: "Enable downloading HLS/DASH streams",
-			description: "Downloads and muxes the contents of the streams rather than the stream information file.\nThis currently does not work under modern browsers due to `SharedArrayBuffer` restrictions.",
+			description: "Downloads and muxes the contents of the streams rather than the stream information file.",
 			requires: {
 				_condition: "action:popup",
 				mouseover_allow_hlsdash: true
@@ -11954,7 +12064,7 @@ var $$IMU_EXPORT$$;
 		var match;
 		if (options.known_ext) {
 			// todo: factor out?
-			match = basename.match(/(.*?)\.(mp4|mpe?g|jpe?g|jfif|png|tiff|og[agv]|m4[av]|web[pm]|mkv|mov|avi|gif|mpd|m3u8|zip)$/i);
+			match = basename.match(/(.*?)\.(mp4|mpe?g|jpe?g|jfif|png|tiff|og[agv]|m4[av]|web[pm]|mkv|mov|avi|gif|mpd|m3u8|zip|svg)$/i);
 		} else {
 			match = basename.match(/(.*)\.([^.]*)$/);
 		}
@@ -12827,7 +12937,7 @@ var $$IMU_EXPORT$$;
 		contenttype = contenttype.replace(/^\s*\[?([^/]+)\/([^/]+?)\]?\s*$/, "$1/$2");
 		if (contenttype in contenttype_map)
 			return contenttype_map[contenttype];
-		var split = contenttype.match(/^([^/]+)\/([^/]+)$/);
+		var split = contenttype.match(/^([^/]+)\/([^/]+?)(?:\+xml)?$/);
 		if (!split)
 			return null;
 		if (split[1] !== "image" && split[1] !== "video")
@@ -13146,6 +13256,7 @@ var $$IMU_EXPORT$$;
 			return result;
 		} catch (e) {
 			console_error(e);
+			cb(null);
 			return null;
 		}
 	};
@@ -13185,11 +13296,11 @@ var $$IMU_EXPORT$$;
 		},
 		"ffmpeg": {
 			name: "ffmpeg",
-			url: "https://raw.githubusercontent.com/qsniyg/maxurl/2178819a193656245ce1a2bd885ff12aaaa04ea9/lib/ffmpeg.js",
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/5d8a153e7ccb2272cc1162422ece252c2666aab0/lib/ffmpeg.js",
 			archive_time: "20210403204304",
-			size: 285642,
-			crc32: 2587771391,
-			crc32_size: 2632494853,
+			size: 190178,
+			crc32: 1792613332,
+			crc32_size: 1070694591,
 			xhr: true
 		},
 		"jszip": {
@@ -13252,8 +13363,10 @@ var $$IMU_EXPORT$$;
 							name: lib_obj.name
 						}
 					}, function(response) {
-						if (!response || !response.data || !response.data.text)
+						if (!response || !response.data || !response.data.text) {
+							console_error("Invalid response when trying to load library", { lib_obj: lib_obj, response: response });
 							return done(null, 0); // 0 instead of false because it will never be available
+						}
 						//done(new Function(response.data.text + ";return lib_export;")(), 0);
 						run_sandboxed_lib(response.data.text, lib_obj.xhr, function(exported) {
 							done(exported, 0);
@@ -14462,6 +14575,45 @@ var $$IMU_EXPORT$$;
 		var table_length = parseInt(match[3]);
 		var table = match[4].split("|");
 		return common_functions["static_unpack_packer"](format, base, table_length, table);
+	};
+	common_functions["unpack_aaencode"] = function(str) {
+		var decodemap = {
+			// URI-encoded to avoid unicode issues
+			"(o%5E_%5Eo)": "(3)",
+			"(%EF%BE%9F%CE%98%EF%BE%9F)": "(1)",
+			"(%EF%BE%9F%C9%86%EF%BE%9F)%5B%EF%BE%9F%CE%B5%EF%BE%9F%5D": "'\\\\'",
+			"(%EF%BE%9F%C9%86%EF%BE%9F)%5B%EF%BE%9Fo%EF%BE%9F%5D": "'\"'",
+			"(%EF%BE%9F%EF%BD%B0%EF%BE%9F)": "(4)",
+			"(%E1%83%A6%5E_%5Eo)": "(0)"
+		};
+		for (var m in decodemap) {
+			str = str.split(decodeURIComponent(m)).join(decodemap[m]);
+		}
+		str = str.replace(/\(\(([0-9]+)\)\s*([+-])\s*\(([0-9]+)\)\)/g, function(_, m1, op, m2) {
+			var val;
+			if (op === "+") {
+				val = (m1 | 0) + (m2 | 0);
+			} else {
+				val = (m1 | 0) - (m2 | 0);
+			}
+			return "(" + val + ")";
+		});
+		var newstr = str;
+		do {
+			str = newstr;
+			newstr = str
+				.replace(/'\s*\+\s*\(([0-9]+)\)/g, "$1'")
+				.replace(/'\s*\+\s*'/g, "");
+		} while (newstr !== str);
+		var strmatch = str.match(/'"([\\0-9]+)"'/);
+		if (!strmatch) {
+			console_log("Unable to find strmatch in", { str: str });
+			return null;
+		}
+		str = strmatch[1].replace(/\\\\([0-9]+)/g, function(_, x) {
+			return string_fromcharcode(parseInt(x, 8));
+		});
+		return str;
 	};
 	common_functions["instagram_username_from_sharedData"] = function(json) {
 		if (json.username)
@@ -17698,10 +17850,25 @@ var $$IMU_EXPORT$$;
 		var caption = get_meta(resp.responseText, "og:title");
 		if (caption)
 			obj.extra.caption = caption;
+		var qualities = ["4k", "uhd", "fhd", "hd", "hq", "sd", "lq"];
+		var compare_qualities = function(qa, qb) {
+			if (/^[0-9]+$/.test(qa) && /^[0-9]+$/.test(qb)) {
+				return qb - qa;
+			}
+			var qai = array_indexof(qualities, qa.toLowerCase());
+			var qbi = array_indexof(qualities, qb.toLowerCase());
+			if (qai >= 0 && qbi >= 0) {
+				return qai - qbi;
+			}
+			return 0;
+		};
 		// todo: should this be in get_videotag_sources instead?
 		sources.video.sort(function(a, b) {
 			if (a.args.res && b.args.res) {
-				return b.args.res - a.args.res;
+				return compare_qualities(a.args.res, b.args.res);
+			}
+			if (a.args.title && b.args.title) {
+				return compare_qualities(a.args.title, b.args.title);
 			}
 			return 0;
 		});
@@ -17737,9 +17904,14 @@ var $$IMU_EXPORT$$;
 		}
 		var urls = [];
 		array_foreach(video_urls, function(url) {
+			var videotype = true;
+			if (/\.m3u8(?:[?#].*)?$/i.test(url))
+				videotype = "hls";
+			else if (/\.mpd(?:[?#].*)?$/i.test(url))
+				videotype = "dash";
 			var obj = {
 				url: url,
-				video: true
+				video: videotype
 			};
 			if (subs) {
 				obj.subtitles = deepcopy(subs);
@@ -17750,6 +17922,43 @@ var $$IMU_EXPORT$$;
 		if (!urls.length)
 			return null;
 		return fillobj_urls(urls, obj);
+	};
+	common_functions["get_jwplayer_obj"] = function(resp, options) {
+		if (!options)
+			options = {};
+		var jwplayerstr = resp.responseText;
+		if (options.unpack) {
+			jwplayerstr = common_functions["unpack_packer"](resp.responseText);
+			if (!jwplayerstr) {
+				console_error("Unable to find packed data for", resp);
+				return null;
+			}
+		}
+		//var match = jwplayerstr.match(/\.setup\({[\s\S]*?file:\s*"([^"]+)"[,}]/);
+		var match = jwplayerstr.match(/\.setup\(({[\s\S]*?file:\s*"[\s\S]*?})\);/);
+		if (!match) {
+			console_error("Unable to find jwplayer match for", { resp: resp, jwplayerstr: jwplayerstr });
+			return null;
+		}
+		var proper_json = fixup_js_obj_proper(match[1]);
+		var json = null;
+		try {
+			json = JSON_parse(proper_json);
+		} catch (e) {
+			console_error(e, { resp: resp, proper_json: proper_json, jwplayerstr: jwplayerstr });
+			return null;
+		}
+		var videotype = true;
+		var videourl = json.sources[0].file;
+		if (/\.m3u8/.test(videourl))
+			videotype = "hls";
+		return {
+			url: videourl,
+			headers: {
+				Referer: resp.finalUrl
+			},
+			video: videotype
+		};
 	};
 	common_functions["update_album_info_links"] = function(obj, cmp) {
 		if (!obj.album_info)
@@ -18849,7 +19058,8 @@ var $$IMU_EXPORT$$;
 		var domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*)$/, "$1");
 		// stream.ne.jp
 		// *.edu.tr
-		if (/^(?:(?:com?|org|net|edu)\.[a-z]{2}|(?:ne|or)\.jp)$/.test(domain_nosub)) {
+		// *.in.ua
+		if (/^(?:(?:com?|org|net|edu)\.[a-z]{2}|(?:ne|or)\.jp|in\.ua)$/.test(domain_nosub)) {
 			domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*\.[^.]*)$/, "$1");
 		}
 		return domain_nosub;
@@ -19002,13 +19212,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "4j7lgjo7642128no") {
+	            } else if (bigimage_obj.nonce !== "317hgm32h127ck1b") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "4j7lgjo7642128no"
+	                    message: "Bad nonce, expected: " + "317hgm32h127ck1b"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -20048,9 +20258,9 @@ var $$IMU_EXPORT$$;
 				element_ok: function(el) {
 					if (el.tagName.toUpperCase() === "BUTTON" && (el.classList.contains("gallery-inline__next-overlay") ||
 						el.classList.contains("gallery-inline__prev-overlay"))) {
-						var parent_8 = el.parentElement;
-						if (parent_8.classList.contains("gallery-inline__container")) {
-							var slides = parent_8.querySelector(".gallery-inline__slides");
+						var parent_9 = el.parentElement;
+						if (parent_9.classList.contains("gallery-inline__container")) {
+							var slides = parent_9.querySelector(".gallery-inline__slides");
 							return {
 								el: slides,
 								search: true
@@ -21367,20 +21577,27 @@ var $$IMU_EXPORT$$;
 					//"origin": url_domain,
 					"referer": page_url,
 					// e.g. for Tumblr URLs, this is sent by the browser when redirecting
-					"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+					"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
 					"sec-fetch-dest": "document",
 					"sec-fetch-mode": "navigate",
 					"sec-fetch-site": "cross-site"
 				};
+				var domain = page_url;
+				domain = domain.replace(/^[a-z]+:\/\/([^/]*).*?$/, "$1");
+				var url_domain = url.replace(/^[a-z]+:\/\/([^/]*).*?$/, "$1");
+				var page_domain_nosub = get_domain_nosub(domain);
+				var url_domain_nosub = get_domain_nosub(url_domain);
+				if (domain === url_domain) {
+					base_headers["sec-fetch-site"] = "same-origin";
+				} else if (page_domain_nosub === url_domain_nosub) {
+					base_headers["sec-fetch-site"] = "same-site";
+				}
 				for (var header in base_headers) {
 					if (!set_has(specified_headers, header)) {
 						headers[header] = base_headers[header];
 					}
 				}
 				if (customheaders && Object.keys(origheaders).length === 1 && ("Referer" in origheaders)) {
-					var domain = page_url;
-					domain = domain.replace(/^[a-z]+:\/\/([^/]*).*?$/, "$1");
-					var url_domain = url.replace(/^[a-z]+:\/\/([^/]*).*?$/, "$1");
 					if (obj.referer_ok.same_domain && domain === url_domain) {
 						customheaders = false;
 					} else if (obj.referer_ok.same_domain_nosub && get_domain_nosub(domain) === get_domain_nosub(url_domain)) {
@@ -24065,15 +24282,37 @@ var $$IMU_EXPORT$$;
 			return true;
 		return !document.hidden;
 	};
+	var tabactive_cbs = [];
+	var tabactive_cb = function() {
+		if (!tabactive_cbs.length)
+			return;
+		for (var _i = 0, tabactive_cbs_1 = tabactive_cbs; _i < tabactive_cbs_1.length; _i++) {
+			var cb = tabactive_cbs_1[_i];
+			cb();
+		}
+		tabactive_cbs = [];
+	};
+	var on_tabactive = function(cb) {
+		if (is_tab_active()) {
+			return cb();
+		}
+		tabactive_cbs.push(cb);
+	};
 	var autoplay_enabled = function() {
 		return settings.mouseover_video_autoplay === "always" ||
-			(settings.mouseover_video_autoplay === "active" && is_tab_active());
+			((settings.mouseover_video_autoplay === "active" ||
+				settings.mouseover_video_autoplay === "onactive") && is_tab_active());
 	};
 	var create_streaming_el = function(obj, type, processing, good_cb, err_cb) {
 		var video = document_createElement(type);
 		set_common_el_properties(video, obj);
-		if (autoplay_enabled())
+		if (autoplay_enabled()) {
 			video.setAttribute("autoplay", "autoplay");
+		} else if (settings.mouseover_video_autoplay === "onactive") {
+			on_tabactive(function() {
+				video.play();
+			});
+		}
 		if (settings.mouseover_video_controls || type === "audio")
 			video.setAttribute("controls", "controls");
 		if (settings.mouseover_video_loop && !settings.mouseover_gallery_move_after_video)
@@ -25558,27 +25797,50 @@ var $$IMU_EXPORT$$;
 							return do_request(req);
 						};
 					}
-					ffmpeg = ffmpeg_lib.lib.createFFmpeg({
-						log: true,
-						progress: function(progress) {
-							//console_log(progress.ratio);
-							if (ffmpeg_progress_cb) {
-								ffmpeg_progress_cb(progress.ratio);
-							}
+					ffmpeg = new ffmpeg_lib.lib.FFmpeg();
+					ffmpeg.on("log", function(_a) {
+						var message = _a.message;
+						console_log("[FF]", message);
+					});
+					ffmpeg.on("progress", function(_a) {
+						var progress = _a.progress, time = _a.time;
+						if (ffmpeg_progress_cb) {
+							ffmpeg_progress_cb(progress);
 						}
 					});
 					ffmpeg_lib._imu_instance = ffmpeg;
+					ffmpeg_lib._imu_loaded = false;
 				} else {
 					ffmpeg = ffmpeg_lib._imu_instance;
 				}
-				if (!ffmpeg.isLoaded()) {
-					ffmpeg.load().then(function() {
-						cb(ffmpeg);
-					}, function(err) {
-						console_error(err);
-						// since compilation takes 100% cpu for a few seconds, we really don't want to run it more than once if it continually fails
-						ffmpeg_lib._imu_failed_loading = true; // untested
-						cb(null);
+				if (!ffmpeg_lib._imu_loaded) {
+					do_request({
+						method: "GET",
+						url: "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm",
+						headers: {
+							Referer: "",
+							Origin: ""
+						},
+						responseType: "blob",
+						onload: function(resp) {
+							if (resp.status !== 200 || !resp.response) {
+								console_error("Unable to fetch ffmpeg-core.wasm", resp);
+								return cb(null);
+							}
+							create_dataurl(resp.response, function(dataurl) {
+								ffmpeg.load({
+									wasmURL: dataurl
+								}).then(function() {
+									ffmpeg_lib._imu_loaded = true;
+									cb(ffmpeg);
+								}, function(err) {
+									console_error(err);
+									// since compilation takes 100% cpu for a few seconds, we really don't want to run it more than once if it continually fails
+									ffmpeg_lib._imu_failed_loading = true; // untested
+									cb(null);
+								});
+							});
+						}
 					});
 				} else {
 					cb(ffmpeg);
@@ -25590,14 +25852,16 @@ var $$IMU_EXPORT$$;
 				console_error("Unable to load FFmpeg library: disabled for this build");
 				return cb(null);
 			}
-			check_sharedarraybuffer(function(success) {
+			get_ffmpeg_inner(cb);
+			/*check_sharedarraybuffer(function(success) {
 				// if we don't check for this, ffmpeg will hang under firefox
 				if (!success) {
 					console_error("Unable to load FFmpeg library: SharedArrayBuffer is missing or unusable");
 					return cb(null);
 				}
+
 				get_ffmpeg_inner(cb);
-			});
+			});*/
 		};
 		var ffmpeg_join;
 		(function() {
@@ -25626,7 +25890,8 @@ var $$IMU_EXPORT$$;
 				ffmpeg_running = true;
 				var promise = null;
 				try {
-					promise = ffmpeg.run.apply(this, opobj.op);
+					console_log("Running FFmpeg:", opobj.op);
+					promise = ffmpeg.exec(opobj.op);
 				} catch (e) {
 					console_error(e);
 					end(true);
@@ -25637,8 +25902,16 @@ var $$IMU_EXPORT$$;
 					end();
 					opobj.success(data);
 				}, function(data) {
-					end(true);
-					opobj.fail(false);
+					// for some reason it errors out with: TypeError: Cannot read properties of undefined (reading 'apply')
+					if (/properties of undefined.*apply/.test(data + "")) {
+						console_warn("Known FFmpeg error", data);
+						end();
+						opobj.success();
+					} else {
+						console_error("Error running FFmpeg", data);
+						end(true);
+						opobj.fail(false);
+					}
 				});
 			};
 			var ffmpeg_run = function(ffmpeg, op, progress, success, fail) {
@@ -25658,60 +25931,129 @@ var $$IMU_EXPORT$$;
 			};
 			// files = array of {data: uint8array, mime: ...}, not filenames
 			var ffmpeg_concat = function(ffmpeg, files, cb) {
-				if (true) {
-					var total_size = 0;
-					array_foreach(files, function(file) {
-						total_size += file.data.byteLength;
-					});
-					var out = new Uint8Array(total_size);
-					var current_size = 0;
-					array_foreach(files, function(file) {
-						out.set(file.data, current_size);
-						current_size += file.data.byteLength;
-					});
-					var ourfilename = get_ffmpeg_prefix("concat");
-					ffmpeg.FS("writeFile", ourfilename, out);
-					return cb(ourfilename);
-				} else {
-					if (!ffmpeg)
-						cb(null);
-					var prefix = get_ffmpeg_prefix("concat");
-					var files_txt_filename = prefix + "files.txt";
-					var files_txt_files = [];
-					var filenames = [];
-					array_foreach(files, function(file, i) {
-						// todo: file extensions? are they even necessary?
-						var filename = prefix + i;
-						if (file.mime) {
-							filename += file.mime.replace(/.*\//, ".");
+				return __awaiter(this, void 0, void 0, function() {
+					var total_size, _i, files_2, file, out, current_size, _a, files_3, file, ourfilename, prefix, files_txt_filename, files_txt_files, filenames, i, file, filename, out_filename, cleanup;
+					return __generator(this, function(_b) {
+						switch (_b.label) {
+							case 0:
+								if (!true) return [3 /*break*/, 2];
+								total_size = 0;
+								for (_i = 0, files_2 = files; _i < files_2.length; _i++) {
+									file = files_2[_i];
+									total_size += file.data.byteLength;
+								}
+								out = new Uint8Array(total_size);
+								current_size = 0;
+								for (_a = 0, files_3 = files; _a < files_3.length; _a++) {
+									file = files_3[_a];
+									out.set(file.data, current_size);
+									current_size += file.data.byteLength;
+								}
+								ourfilename = get_ffmpeg_prefix("concat");
+								return [4 /*yield*/, ffmpeg.writeFile(ourfilename, out)];
+							case 1:
+								_b.sent();
+								return [2 /*return*/, cb(ourfilename)];
+							case 2:
+								if (!ffmpeg)
+									cb(null);
+								prefix = get_ffmpeg_prefix("concat");
+								files_txt_filename = prefix + "files.txt";
+								files_txt_files = [];
+								filenames = [];
+								i = 0;
+								_b.label = 3;
+							case 3:
+								if (!(i < files.length)) return [3 /*break*/, 6];
+								file = files[i];
+								filename = prefix + i;
+								if (file.mime) {
+									filename += file.mime.replace(/.*\//, ".");
+								}
+								filenames.push(filename);
+								files_txt_files.push("file '" + filename + "'");
+								return [4 /*yield*/, ffmpeg.writeFile(filename, file.data)];
+							case 4:
+								_b.sent();
+								_b.label = 5;
+							case 5:
+								i++;
+								return [3 /*break*/, 3];
+							case 6: return [4 /*yield*/, ffmpeg.writeFile(files_txt_filename, files_txt_files.join("\n"))];
+							case 7:
+								_b.sent();
+								out_filename = prefix + "out";
+								cleanup = function(delete_out) {
+									return __awaiter(this, void 0, void 0, function() {
+										var _i, filenames_1, filename_3, e_1;
+										return __generator(this, function(_a) {
+											switch (_a.label) {
+												case 0:
+													_i = 0, filenames_1 = filenames;
+													_a.label = 1;
+												case 1:
+													if (!(_i < filenames_1.length)) return [3 /*break*/, 4];
+													filename_3 = filenames_1[_i];
+													return [4 /*yield*/, ffmpeg.deleteFile(filename_3)];
+												case 2:
+													_a.sent();
+													_a.label = 3;
+												case 3:
+													_i++;
+													return [3 /*break*/, 1];
+												case 4: return [4 /*yield*/, ffmpeg.deleteFile(files_txt_filename)];
+												case 5:
+													_a.sent();
+													if (!delete_out) return [3 /*break*/, 9];
+													_a.label = 6;
+												case 6:
+													_a.trys.push([6, 8, , 9]);
+													// this can fail if ffmpeg failed to create the out file entirely
+													return [4 /*yield*/, ffmpeg.deleteFile(out_filename)];
+												case 7:
+													// this can fail if ffmpeg failed to create the out file entirely
+													_a.sent();
+													return [3 /*break*/, 9];
+												case 8:
+													e_1 = _a.sent();
+													return [3 /*break*/, 9];
+												case 9: return [2 /*return*/];
+											}
+										});
+									});
+								};
+								ffmpeg_run(ffmpeg, ["-f", "concat", "-safe", "0", "-i", files_txt_filename, "-c", "copy", out_filename], null, function() {
+									return __awaiter(this, void 0, void 0, function() {
+										return __generator(this, function(_a) {
+											switch (_a.label) {
+												case 0: return [4 /*yield*/, cleanup()];
+												case 1:
+													_a.sent();
+													cb(out_filename);
+													return [2 /*return*/];
+											}
+										});
+									});
+								}, function(err) {
+									return __awaiter(this, void 0, void 0, function() {
+										return __generator(this, function(_a) {
+											switch (_a.label) {
+												case 0:
+													console_error(err);
+													return [4 /*yield*/, cleanup(true)];
+												case 1:
+													_a.sent();
+													cb(null);
+													return [2 /*return*/];
+											}
+										});
+									});
+								});
+								_b.label = 8;
+							case 8: return [2 /*return*/];
 						}
-						filenames.push(filename);
-						files_txt_files.push("file '" + filename + "'");
-						ffmpeg.FS("writeFile", filename, file.data);
 					});
-					ffmpeg.FS("writeFile", files_txt_filename, files_txt_files.join("\n"));
-					var out_filename = prefix + "out";
-					var cleanup = function(out) {
-						array_foreach(filenames, function(filename) {
-							ffmpeg.FS("unlink", filename);
-						});
-						ffmpeg.FS("unlink", files_txt_filename);
-						if (out) {
-							try {
-								// this can fail if ffmpeg failed to create the out file entirely
-								ffmpeg.FS("unlink", out_filename);
-							} catch (e) { }
-						}
-					};
-					ffmpeg_run(ffmpeg, ["-f", "concat", "-safe", "0", "-i", files_txt_filename, "-c", "copy", out_filename], null, function() {
-						cleanup();
-						cb(out_filename);
-					}, function(err) {
-						console_error(err);
-						cleanup(true);
-						cb(null);
-					});
-				}
+				});
 			};
 			var ffmpeg_fs_size = function(ffmpeg, file) {
 				try {
@@ -25725,12 +26067,46 @@ var $$IMU_EXPORT$$;
 				}
 				;
 			};
+			var ffmpeg_fs_exists = function(ffmpeg, file) {
+				return __awaiter(this, void 0, void 0, function() {
+					var entries, _i, entries_1, entry;
+					return __generator(this, function(_a) {
+						switch (_a.label) {
+							case 0: return [4 /*yield*/, ffmpeg.listDir("/")];
+							case 1:
+								entries = _a.sent();
+								console.log("ENTRIES", entries);
+								for (_i = 0, entries_1 = entries; _i < entries_1.length; _i++) {
+									entry = entries_1[_i];
+									if (entry.name === file)
+										return [2 /*return*/, true];
+								}
+								return [2 /*return*/, false];
+						}
+					});
+				});
+			};
 			var ffmpeg_mux_single = function(ffmpeg, video_file, audio_file, out_filename, progress, success, fail) {
 				var failfunc = function(err) {
-					try {
-						ffmpeg.FS("unlink", out_filename);
-					} catch (e) { }
-					fail(err);
+					return __awaiter(this, void 0, void 0, function() {
+						var e_2;
+						return __generator(this, function(_a) {
+							switch (_a.label) {
+								case 0:
+									_a.trys.push([0, 2, , 3]);
+									return [4 /*yield*/, ffmpeg.deleteFile(out_filename)];
+								case 1:
+									_a.sent();
+									return [3 /*break*/, 3];
+								case 2:
+									e_2 = _a.sent();
+									return [3 /*break*/, 3];
+								case 3:
+									fail(err);
+									return [2 /*return*/];
+							}
+						});
+					});
 				};
 				var args = [];
 				if (video_file)
@@ -25739,11 +26115,20 @@ var $$IMU_EXPORT$$;
 					args.push("-i", audio_file);
 				args.push("-c", "copy", out_filename);
 				ffmpeg_run(ffmpeg, args, progress, function(data) {
-					// it'll always succeed, so this is needed to check if it actually wrote the file
-					if (!ffmpeg_fs_size(ffmpeg, out_filename)) {
-						return failfunc();
-					}
-					success(data);
+					return __awaiter(this, void 0, void 0, function() {
+						return __generator(this, function(_a) {
+							switch (_a.label) {
+								case 0: return [4 /*yield*/, ffmpeg_fs_exists(ffmpeg, out_filename)];
+								case 1:
+									// it'll always succeed, so this is needed to check if it actually wrote the file
+									if (!(_a.sent())) {
+										return [2 /*return*/, failfunc()];
+									}
+									success(data);
+									return [2 /*return*/];
+							}
+						});
+					});
 				}, failfunc);
 			};
 			var ffmpeg_mux = function(ffmpeg, video_file, audio_file, progress, cb) {
@@ -25785,41 +26170,82 @@ var $$IMU_EXPORT$$;
 				var files = [];
 				var prefix = get_ffmpeg_prefix("join");
 				var cleanup = function() {
-					array_foreach(files, function(filename) {
-						ffmpeg.FS("unlink", filename);
+					return __awaiter(this, void 0, void 0, function() {
+						var _i, files_4, filename;
+						return __generator(this, function(_a) {
+							switch (_a.label) {
+								case 0:
+									_i = 0, files_4 = files;
+									_a.label = 1;
+								case 1:
+									if (!(_i < files_4.length)) return [3 /*break*/, 4];
+									filename = files_4[_i];
+									return [4 /*yield*/, ffmpeg.deleteFile(filename)];
+								case 2:
+									_a.sent();
+									_a.label = 3;
+								case 3:
+									_i++;
+									return [3 /*break*/, 1];
+								case 4:
+									progress(1);
+									return [2 /*return*/];
+							}
+						});
 					});
-					progress(1);
 				};
 				var err = function() {
-					cleanup();
-					cb(null);
+					return __awaiter(this, void 0, void 0, function() {
+						return __generator(this, function(_a) {
+							switch (_a.label) {
+								case 0: return [4 /*yield*/, cleanup()];
+								case 1:
+									_a.sent();
+									cb(null);
+									return [2 /*return*/];
+							}
+						});
+					});
 				};
 				var process_stream = function(i) {
-					if (i >= streams.length) {
-						return mux_files();
-					} else {
-						progress((i / streams.length) * 0.5);
-					}
-					var stream = streams[i];
-					if (!stream.length) {
-						// shouldn't happen?
-						console_warn("No stream data for", i);
-						process_stream(i + 1);
-					} else if (stream.length === 1) {
-						// no need to concat
-						var filename = prefix + "stream" + i;
-						ffmpeg.FS("writeFile", filename, stream[0].data);
-						files.push(filename);
-						process_stream(i + 1);
-					} else {
-						// todo: progress
-						ffmpeg_concat(ffmpeg, stream, function(filename) {
-							if (!filename)
-								return err();
-							files.push(filename);
-							process_stream(i + 1);
+					return __awaiter(this, void 0, void 0, function() {
+						var stream, filename;
+						return __generator(this, function(_a) {
+							switch (_a.label) {
+								case 0:
+									if (i >= streams.length) {
+										return [2 /*return*/, mux_files()];
+									} else {
+										progress((i / streams.length) * 0.5);
+									}
+									stream = streams[i];
+									if (!!stream.length) return [3 /*break*/, 1];
+									// shouldn't happen?
+									console_warn("No stream data for", i);
+									process_stream(i + 1);
+									return [3 /*break*/, 4];
+								case 1:
+									if (!(stream.length === 1)) return [3 /*break*/, 3];
+									filename = prefix + "stream" + i;
+									return [4 /*yield*/, ffmpeg.writeFile(filename, stream[0].data)];
+								case 2:
+									_a.sent();
+									files.push(filename);
+									process_stream(i + 1);
+									return [3 /*break*/, 4];
+								case 3:
+									// todo: progress
+									ffmpeg_concat(ffmpeg, stream, function(filename) {
+										if (!filename)
+											return err();
+										files.push(filename);
+										process_stream(i + 1);
+									});
+									_a.label = 4;
+								case 4: return [2 /*return*/];
+							}
 						});
-					}
+					});
 				};
 				var mux_files = function() {
 					progress(0.5);
@@ -25996,8 +26422,10 @@ var $$IMU_EXPORT$$;
 			};
 			var create_shaka = function(info_obj, el, src, success, fail) {
 				get_library("shaka", settings, do_request, function(_shaka) {
-					if (!_shaka)
+					if (!_shaka) {
+						console_warn("Unable to load Shaka");
 						return fail();
+					}
 					var shaka = _shaka.lib;
 					if (true) {
 						shaka.log.setLevel(shaka.log.Level.ERROR);
@@ -26445,18 +26873,18 @@ var $$IMU_EXPORT$$;
 									console.error("Invalid regex stage:", { stage: stage, c: c, regexval: regexval_1 });
 								}
 							};
-							for (var i_18 = 0; i_18 < regexval_1.length; i_18++) {
-								var c = regexval_1[i_18];
+							for (var i_22 = 0; i_22 < regexval_1.length; i_22++) {
+								var c = regexval_1[i_22];
 								var nextc = null;
-								if (i_18 + 1 < regexval_1.length)
-									nextc = regexval_1[i_18 + 1];
+								if (i_22 + 1 < regexval_1.length)
+									nextc = regexval_1[i_22 + 1];
 								if (stage === 2) {
 									commit(c);
 									continue;
 								}
 								if (c === "\\" && nextc === "/") {
 									commit("/");
-									i_18++;
+									i_22++;
 									continue;
 								}
 								if (c === "/") {
@@ -26905,7 +27333,14 @@ var $$IMU_EXPORT$$;
 				add_link_to_history(orig_url);
 			}
 			var openb = get_tprofile_single_setting("mouseover_open_behavior");
-			if (openb === "newtab" || openb === "newtab_bg" || openb === "download" || openb === "copylink" || openb === "replace") {
+			if (processing.force_open_behavior)
+				openb = processing.force_open_behavior;
+			if (openb === "newtab" ||
+				openb === "newtab_bg" ||
+				openb === "download" ||
+				openb === "download_album" ||
+				openb === "copylink" ||
+				openb === "replace") {
 				stop_waiting();
 				var theobj = data.data.obj;
 				// TODO: improve fix (for data: urls)
@@ -26921,6 +27356,8 @@ var $$IMU_EXPORT$$;
 					open_in_tab_imu(theobj, openb === "newtab_bg");
 				} else if (openb === "download") {
 					download_popup_media();
+				} else if (openb === "download_album") {
+					download_album();
 				} else if (openb === "copylink") {
 					clipboard_write_link(theobj.url);
 				} else if (openb === "replace") {
@@ -28115,6 +28552,18 @@ var $$IMU_EXPORT$$;
 							containers: containers
 						});
 					}
+					if (settings.mouseover_ui_download_gallery_btn) {
+						// \u21CA = ⇊
+						// \u2b87 = ⮇
+						var downloadbtn = addbtn({
+							id: "gallerydlbtn",
+							text: "\u21CA",
+							title: _("Gallery Download (" + get_trigger_key_text(settings.mouseover_gallery_download_key) + ")"),
+							action: { type: "download_gallery" },
+							pos: "top-left",
+							containers: containers
+						});
+					}
 					if (settings.mouseover_ui_rotationbtns) {
 						var get_rotate_title = function(leftright) {
 							var btn_name = leftright === "left" ? "Rotate Left" : "Rotate Right";
@@ -28354,6 +28803,8 @@ var $$IMU_EXPORT$$;
 						} else {
 							a.href = "#"; // fixme: is this really required? this prevents it from right click->copy link location, etc.
 							our_addEventListener(a, "click", function(e) {
+								if (dragged)
+									return;
 								download_popup_media();
 								e.preventDefault();
 								e.stopPropagation();
@@ -28841,6 +29292,11 @@ var $$IMU_EXPORT$$;
 						play_video(img);
 					} else {
 						img.pause();
+						if (settings.mouseover_video_autoplay === "onactive") {
+							on_tabactive(function() {
+								img.play();
+							});
+						}
 					}
 				}
 				popups.push(outerdiv);
@@ -29945,6 +30401,14 @@ var $$IMU_EXPORT$$;
 			else
 				return getfirstsource(sources);
 		}
+		var gallery_similar_tagname = function(tagname1, tagname2) {
+			if (tagname1 === tagname2)
+				return true;
+			var similar = ["IMG", "SOURCE", "PICTURE"];
+			if (array_indexof(similar, tagname1) >= 0 && array_indexof(similar, tagname2) >= 0)
+				return true;
+			return false;
+		};
 		var get_next_in_gallery_generic = function(el, nextprev) {
 			if (!el)
 				return null;
@@ -29972,7 +30436,7 @@ var $$IMU_EXPORT$$;
 				} else {
 					firstchild = false;
 				}
-				if (current_el.tagName === stack[0]) {
+				if (gallery_similar_tagname(current_el.tagName, stack[0])) {
 					if (stack.length === 1) {
 						//if (valid_source(current_el))
 						if (is_valid_el(current_el))
@@ -29981,7 +30445,7 @@ var $$IMU_EXPORT$$;
 					}
 					if (nextprev) {
 						for (var i = 0; i < current_el.children.length; i++) {
-							if (current_el.children[i].tagName === stack[1]) {
+							if (gallery_similar_tagname(current_el.children[i].tagName, stack[1])) {
 								current_el = current_el.children[i];
 								stack.shift();
 								firstchild = true;
@@ -29990,7 +30454,7 @@ var $$IMU_EXPORT$$;
 						}
 					} else {
 						for (var i = current_el.children.length - 1; i >= 0; i--) {
-							if (current_el.children[i].tagName === stack[1]) {
+							if (gallery_similar_tagname(current_el.children[i].tagName, stack[1])) {
 								current_el = current_el.children[i];
 								stack.shift();
 								firstchild = true;
@@ -30452,13 +30916,17 @@ var $$IMU_EXPORT$$;
 				delay_handle_triggering = false;
 			}
 		}
-		function trigger_popup_with_source(source, automatic, use_last_pos, cb) {
+		function trigger_popup_with_source(source, options) {
+			if (!options)
+				options = {};
 			next_popup_el = get_physical_popup_el(source.el);
-			if (!cb)
-				cb = common_functions["nullfunc"];
+			if (!options.cb)
+				options.cb = common_functions["nullfunc"];
 			var use_head = false;
 			var openb = get_tprofile_single_setting("mouseover_open_behavior");
-			if (openb === "newtab" || openb === "newtab_bg" || openb === "download" || openb === "copylink") {
+			if (options.force_open_behavior)
+				openb = options.force_open_behavior;
+			if (openb === "newtab" || openb === "newtab_bg" || openb === "download" || openb === "download_album" || openb === "copylink") {
 				use_head = true;
 			}
 			var browser_viewable = !use_head; // incidentally the same
@@ -30477,13 +30945,14 @@ var $$IMU_EXPORT$$;
 				incomplete_video = true;
 			}
 			return get_final_from_source(source, {
-				automatic: automatic,
+				automatic: options.automatic,
 				multi: false,
 				use_head: use_head,
 				incomplete_image: incomplete_image,
 				incomplete_video: incomplete_video,
-				use_last_pos: use_last_pos,
-				browser_viewable: browser_viewable
+				use_last_pos: options.use_last_pos,
+				browser_viewable: browser_viewable,
+				force_open_behavior: options.force_open_behavior
 			}, function(source_imu, source, processing, data) {
 				if (!source_imu && !source && !processing && !data) {
 					delay_handle_triggering = false;
@@ -30492,23 +30961,23 @@ var $$IMU_EXPORT$$;
 					} else {
 						stop_waiting();
 					}
-					return cb(false);
+					return options.cb(false);
 				}
 				// FIXME: this shouldn't fail, but rather go to the next element
-				if (automatic && previous_album_links && source_imu && source_imu[0]) {
+				if (options.automatic && previous_album_links && source_imu && source_imu[0]) {
 					if (array_indexof(previous_album_links, source_imu[0].url) >= 0) {
 						delay_handle_triggering = false;
 						stop_waiting();
-						return cb(false);
+						return options.cb(false);
 					}
 				}
 				var was_fullscreen = is_popup_fullscreen();
 				//console_log(source_imu);
 				resetpopups({
 					new_popup: true,
-					automatic: automatic
+					automatic: options.automatic
 				});
-				if (automatic) {
+				if (options.automatic) {
 					popup_el_automatic = true;
 					removepopups(); // don't fade out
 				}
@@ -30519,7 +30988,7 @@ var $$IMU_EXPORT$$;
 				popup_el_mediatype = el_media_type(popup_el);
 				popup_el_is_stream = popup_el_mediatype === "video" || popup_el_mediatype === "audio";
 				popup_orig_url = get_img_src(popup_el);
-				if (is_in_iframe && can_iframe_popout() && get_tprofile_single_setting("mouseover_open_behavior") === "popup") {
+				if (is_in_iframe && can_iframe_popout() && openb === "popup") {
 					data.data.img = serialize_img(data.data.img);
 					remote_send_message("top", {
 						type: "make_popup",
@@ -30532,7 +31001,7 @@ var $$IMU_EXPORT$$;
 					});
 				} else {
 					makePopup(source_imu, source.src, processing, data);
-					if (is_in_iframe && can_use_remote() && get_tprofile_single_setting("mouseover_open_behavior") === "popup") {
+					if (is_in_iframe && can_use_remote() && openb === "popup") {
 						remote_send_message("top", {
 							type: "popup_open"
 						});
@@ -30542,7 +31011,7 @@ var $$IMU_EXPORT$$;
 						popup_set_fullscreen();
 					}
 				}
-				cb(true);
+				options.cb(true);
 			});
 		}
 		function get_final_from_source(source, options, cb) {
@@ -30622,6 +31091,7 @@ var $$IMU_EXPORT$$;
 						processing.incomplete_video = options.incomplete_video;
 						processing.progress_cb = options.progress_cb;
 						processing.browser_viewable = options.browser_viewable;
+						processing.force_open_behavior = options.force_open_behavior;
 						if (options.use_head) {
 							processing.head = true;
 						}
@@ -30880,8 +31350,12 @@ var $$IMU_EXPORT$$;
 				if (newel) {
 					var source = find_source([newel]);
 					if (source) {
-						trigger_popup_with_source(source, true, true, function(changed) {
-							cb(changed);
+						trigger_popup_with_source(source, {
+							automatic: true,
+							use_last_pos: true,
+							cb: function(changed) {
+								cb(changed);
+							}
 						});
 						return;
 					}
@@ -31002,7 +31476,7 @@ var $$IMU_EXPORT$$;
 			}
 			return format_number_decimal(bytes, 2) + units[0];
 		};
-		function create_progress_el(position_top) {
+		create_progress_el = function(position_top) {
 			var progressc_el = document_createElement("div");
 			set_el_all_initial(progressc_el);
 			progressc_el.style.backgroundColor = "rgba(0,0,0,0.7)";
@@ -31030,8 +31504,8 @@ var $$IMU_EXPORT$$;
 				document.documentElement.appendChild(progressc_el);
 			}
 			return progressc_el;
-		}
-		function update_progress_el(el, percent, remove_on_complete) {
+		};
+		update_progress_el = function(el, percent, remove_on_complete) {
 			var bar = el.children[0];
 			if (typeof percent === "number") {
 				if (bar.getAttribute("data-timer")) {
@@ -31070,7 +31544,7 @@ var $$IMU_EXPORT$$;
 					bar.setAttribute("data-timer", timer);
 				}
 			}
-		}
+		};
 		var is_el_pic = function(el) {
 			return el.tagName === "IMG" || el.tagName === "PICTURE";
 		};
@@ -31579,12 +32053,42 @@ var $$IMU_EXPORT$$;
 				}
 				set_remove(source_el_set, source.el);
 			};
+			var reposition_source_outlines = function() {
+				for (var _i = 0, sources_2 = sources; _i < sources_2.length; _i++) {
+					var source = sources_2[_i];
+					var rect = source._real_el.getBoundingClientRect();
+					var outline_el = source._outline_el;
+					if (!outline_el)
+						continue;
+					set_important_style(outline_el, "left", (rect.left + window.scrollX) + "px");
+					set_important_style(outline_el, "top", (rect.top + window.scrollY) + "px");
+					set_important_style(outline_el, "width", rect.width + "px");
+					set_important_style(outline_el, "height", rect.height + "px");
+				}
+			};
+			var resize_handler = function() {
+				reposition_source_outlines();
+			};
+			our_addEventListener(window, "resize", resize_handler);
 			exit_custom_gallery = function() {
 				if (alt_keydown_cb === our_keydown_cb)
 					alt_keydown_cb = null;
 				set_remove(exclude_find_els, maskel);
 				base_maskel.parentElement.removeChild(base_maskel);
+				our_removeEventListener(window, "resize", resize_handler);
 				exit_custom_gallery = null;
+			};
+			var trigger_popup = function(options) {
+				options.automatic = true;
+				exit_custom_gallery();
+				if (!sources.length)
+					return;
+				override_album = [];
+				for (var _i = 0, sources_3 = sources; _i < sources_3.length; _i++) {
+					var source = sources_3[_i];
+					override_album.push(source.el);
+				}
+				trigger_popup_with_source(sources[0], options);
 			};
 			var our_keydown_cb = alt_keydown_cb = function(e) {
 				var actions = [
@@ -31595,15 +32099,13 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.customgallery_apply_key,
 						action: function() {
-							exit_custom_gallery();
-							if (!sources.length)
-								return;
-							override_album = [];
-							for (var _i = 0, sources_2 = sources; _i < sources_2.length; _i++) {
-								var source = sources_2[_i];
-								override_album.push(source.el);
-							}
-							trigger_popup_with_source(sources[0], true);
+							trigger_popup({});
+						}
+					},
+					{
+						key: settings.mouseover_gallery_download_key,
+						action: function() {
+							trigger_popup({ force_open_behavior: "download_album" });
 						}
 					}
 				];
@@ -31615,27 +32117,74 @@ var $$IMU_EXPORT$$;
 					return false;
 				}
 			};
-			our_addEventListener(maskel, "click", function(e) {
-				e.preventDefault();
-				e.stopImmediatePropagation();
-				e.stopPropagation();
-				var point = [mouseX, mouseY];
-				var els = find_els_at_point(point);
-				var source = find_source(els, { point: point });
+			var current_mode = "none";
+			var last_mousemove = 0;
+			var add_cb = function(options) {
+				var source = null;
+				var point = null;
+				var els = [];
+				if ("mouseX" in options) {
+					point = [options.mouseX, options.mouseY];
+				}
+				if (options.el) {
+					els = [options.el];
+				} else {
+					els = find_els_at_point(point);
+				}
+				if (point) {
+					source = find_source(els, { point: point });
+				} else {
+					source = find_source(els);
+				}
 				if (!source || !source.el)
 					return;
 				source = add_source(source);
 				source._real_el = source.el;
 				if (source.picture)
 					source._real_el = source.picture;
-				if (source._outline_el) {
-					// if _outline_el exists, then the source was already added previously
+				// if _outline_el exists, then the source was already added previously
+				var our_mode = source._outline_el ? "remove" : "add";
+				if (options.mode) {
+					our_mode = options.mode;
+				}
+				if (options.add_gallery) {
+					setTimeout(function() {
+						get_gallery_elements(function(els) {
+							for (var _i = 0, els_1 = els; _i < els_1.length; _i++) {
+								var el = els_1[_i];
+								if (el === source._real_el)
+									continue;
+								add_cb({
+									el: el,
+									is_mousemove: false,
+									add_gallery: false,
+									mode: our_mode
+								});
+							}
+						}, null, source._real_el);
+					}, 1);
+				}
+				if (our_mode === "remove") {
+					if (options.is_mousemove) {
+						if (current_mode === "add")
+							return;
+					}
 					// toggle
 					remove_source(source);
 					if (source._outline_el) {
 						source._outline_el.parentElement.removeChild(source._outline_el);
 					}
+					if (current_mode === "unk")
+						current_mode = "remove";
 					return;
+				} else {
+					// our_mode == "remove" if options.mode overrides it
+					if (source._outline_el)
+						return;
+					if (options.is_mousemove) {
+						if (current_mode === "remove")
+							return;
+					}
 				}
 				var rect = source._real_el.getBoundingClientRect();
 				var outline_el = document_createElement("div");
@@ -31649,6 +32198,49 @@ var $$IMU_EXPORT$$;
 				set_important_style(outline_el, "height", rect.height + "px");
 				mask_outlines_el.appendChild(outline_el);
 				source._outline_el = outline_el;
+				if (current_mode === "unk")
+					current_mode = "add";
+			};
+			our_addEventListener(maskel, "mousedown", function(e) {
+				e.preventDefault();
+				e.stopImmediatePropagation();
+				e.stopPropagation();
+				last_mousemove = Date.now();
+				current_mode = "unk";
+				var add_gallery = false;
+				if (e.shiftKey) {
+					add_gallery = true;
+				}
+				add_cb({
+					mouseX: e.clientX,
+					mouseY: e.clientY,
+					is_mousemove: false,
+					add_gallery: add_gallery
+				});
+			}, { capture: true });
+			our_addEventListener(maskel, "mouseup", function(e) {
+				if (current_mode === "none")
+					return;
+				e.preventDefault();
+				e.stopImmediatePropagation();
+				e.stopPropagation();
+				current_mode = "none";
+			}, { capture: true });
+			our_addEventListener(maskel, "mousemove", function(e) {
+				if (current_mode === "none")
+					return;
+				e.preventDefault();
+				e.stopImmediatePropagation();
+				e.stopPropagation();
+				var now = Date.now();
+				if (now - last_mousemove < 16)
+					return;
+				last_mousemove = Date.now();
+				add_cb({
+					mouseX: e.clientX,
+					mouseY: e.clientY,
+					is_mousemove: true
+				});
 			}, { capture: true });
 			document.documentElement.appendChild(base_maskel);
 		};
@@ -32443,14 +33035,24 @@ var $$IMU_EXPORT$$;
 							ffmpeg_join(ffmpeg, data, function(percent) {
 								update_progress_el(progress_el, 0.9 + (percent * 0.1), true);
 							}, function(filename) {
-								update_progress_el(progress_el, 1, true);
-								//console_log(filename);
-								var data = ffmpeg.FS("readFile", filename);
-								new_blob(data, function(blob) {
-									var out_ext = url_basename(filename, { split_ext: true })[1];
-									var out_filename = url_basename(popup_obj.filename || "download", { split_ext: true, known_ext: true })[0] + "." + out_ext;
-									do_blob_download(blob, out_filename, function() {
-										ffmpeg.FS("unlink", filename);
+								return __awaiter(this, void 0, void 0, function() {
+									var data;
+									return __generator(this, function(_a) {
+										switch (_a.label) {
+											case 0:
+												update_progress_el(progress_el, 1, true);
+												return [4 /*yield*/, ffmpeg.readFile(filename)];
+											case 1:
+												data = _a.sent();
+												new_blob(data, function(blob) {
+													var out_ext = url_basename(filename, { split_ext: true })[1];
+													var out_filename = url_basename(popup_obj.filename || "download", { split_ext: true, known_ext: true })[0] + "." + out_ext;
+													do_blob_download(blob, out_filename, function() {
+														ffmpeg.deleteFile(filename);
+													});
+												});
+												return [2 /*return*/];
+										}
 									});
 								});
 							});
@@ -33480,6 +34082,11 @@ var $$IMU_EXPORT$$;
 			our_addEventListener(document, 'keyup', keyup_cb, eventlistener_opts);
 			our_addEventListener(document, 'mouseup', keyup_cb, eventlistener_opts);
 			our_addEventListener(document, 'contextmenu', update_contextmenu_pos);
+			our_addEventListener(document, 'focus', tabactive_cb);
+			our_addEventListener(window, 'focus', tabactive_cb);
+			our_addEventListener(document, 'keydown', tabactive_cb);
+			our_addEventListener(document, 'wheel', tabactive_cb);
+			our_addEventListener(document, 'mousemove', tabactive_cb);
 			var wheel_cb = function(event) {
 				if (settings.scroll_override_page && popups_active && popup_wheel_cb) {
 					return popup_wheel_cb(event, true);
@@ -33870,70 +34477,274 @@ var $$IMU_EXPORT$$;
 		}
 		do_userscript_page(imgel, latest_version);
 	};
-	var parse_node_args = function(args_info) {
-		var parsed = { _positional: [] };
-		for (var i = 2; i < process.argv.length; i++) {
-			var arg = process.argv[i];
-			if (arg[0] !== '-') {
-				parsed["_positional"].push(arg);
-				continue;
-			}
-			if (arg === '--') {
-				array_extend(parsed._positional, process.argv.slice(i + 1));
-				break;
-			}
-			var shortarg = null;
-			var longarg = null;
-			var argval = null;
-			if (arg[1] === '-') {
-				longarg = arg.substr(2);
-			} else {
-				// TODO: support chained args (-abc == -a -b -c)
-				shortarg = arg.substr(1);
-			}
-			var our_arg = null;
+	var do_node_main = function() {
+		var parse_node_args = function(args_info) {
+			var parsed = { _positional: [] };
 			for (var _i = 0, args_info_1 = args_info; _i < args_info_1.length; _i++) {
-				var arg_info = args_info_1[_i];
-				if (shortarg) {
-					if (arg_info.short === shortarg) {
-						our_arg = arg_info;
-						break;
+				var info = args_info_1[_i];
+				if (!info.name && info.long)
+					info.name = info.long;
+			}
+			for (var i = 2; i < process.argv.length; i++) {
+				var arg = process.argv[i];
+				if (arg[0] !== '-') {
+					parsed["_positional"].push(arg);
+					continue;
+				}
+				if (arg === '--') {
+					array_extend(parsed._positional, process.argv.slice(i + 1));
+					break;
+				}
+				var shortarg = null;
+				var longarg = null;
+				var argval = null;
+				if (arg[1] === '-') {
+					longarg = arg.substr(2);
+				} else {
+					// TODO: support chained args (-abc == -a -b -c)
+					shortarg = arg.substr(1);
+				}
+				var our_arg = null;
+				for (var _a = 0, args_info_2 = args_info; _a < args_info_2.length; _a++) {
+					var arg_info = args_info_2[_a];
+					if (shortarg) {
+						if (arg_info.short === shortarg) {
+							our_arg = arg_info;
+							break;
+						}
+					}
+					if (longarg) {
+						if (arg_info.long === longarg) {
+							our_arg = arg_info;
+							break;
+						}
 					}
 				}
-				if (longarg) {
-					if (arg_info.long === longarg) {
-						our_arg = arg_info;
-						break;
-					}
-				}
-			}
-			if (!our_arg) {
-				console.error("Unable to find argument:", process.argv[i]);
-				return null;
-			}
-			if (our_arg.needs_arg) {
-				i++;
-				if (i >= process.argv.length) {
-					console.error("Argument", process.argv[i - 1], "needs an argument");
+				if (!our_arg) {
+					console.error("Unable to find argument:", process.argv[i]);
 					return null;
 				}
-				argval = process.argv[i];
-			} else {
-				argval = true;
+				if (our_arg.needs_arg) {
+					i++;
+					if (i >= process.argv.length) {
+						console.error("Argument", process.argv[i - 1], "needs an argument");
+						return null;
+					}
+					argval = process.argv[i];
+				} else {
+					argval = true;
+				}
+				parsed[our_arg.name] = argval;
 			}
-			parsed[our_arg.name] = argval;
-		}
-		return parsed;
-	};
-	var do_node_main = function() {
-		var parsed = parse_node_args({});
-		if (!parsed)
+			return parsed;
+		};
+		var get_node_config_file = function() {
+			if (!__dirname)
+				return null;
+			return __dirname + "/standalone_config.json";
+		};
+		var node_config = {};
+		var parsedargs = {};
+		var read_node_config = function() {
+			var configpath = get_node_config_file();
+			if (!configpath)
+				return {};
+			var fs = require("fs");
+			try {
+				var text = fs.readFileSync(configpath, "utf8");
+				var json = JSON.parse(text);
+				return json;
+			} catch (e) {
+				return {};
+			}
+		};
+		var get_node_config = function(arg, def) {
+			if (arg in parsedargs) {
+				return deepcopy(parsedargs[arg]);
+			}
+			if (arg in node_config)
+				return deepcopy(node_config[arg]);
+			return deepcopy(def);
+		};
+		var save_node_config = function(config) {
+			var configpath = get_node_config_file();
+			if (!configpath)
+				return false;
+			if (!config)
+				config = node_config;
+			var fs = require("fs");
+			try {
+				var str = JSON.stringify(config);
+				fs.writeFileSync(configpath, str, "utf8");
+				return true;
+			} catch (e) {
+				console.error(e);
+				return false;
+			}
+		};
+		var do_node_request = function(reqobj) {
+			var base_headers = {
+				"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.3"
+			};
+			if (!reqobj.headers)
+				reqobj.headers = {};
+			for (var headername in base_headers) {
+				if (headerobj_get(reqobj.headers, headername) === void 0)
+					headerobj_set(reqobj.headers, headername, base_headers[headername]);
+			}
+			if (!reqobj.method)
+				reqobj.method = "GET";
+			return do_request(reqobj);
+		};
+		var do_node_dl = function(reqobj, outpath) {
+			return __awaiter(this, void 0, void 0, function() {
+				var fs, handle, chunks_to_append, total_size, written_size, append_to_file;
+				return __generator(this, function(_a) {
+					switch (_a.label) {
+						case 0:
+							fs = require("fs/promises");
+							return [4 /*yield*/, fs.open(outpath, "wb", 438)];
+						case 1:
+							handle = _a.sent();
+							chunks_to_append = [];
+							total_size = null;
+							written_size = 0;
+							append_to_file = function(chunk) {
+								return __awaiter(this, void 0, void 0, function() {
+									var our_chunk, percent;
+									return __generator(this, function(_a) {
+										switch (_a.label) {
+											case 0:
+												chunks_to_append.push(chunk);
+												// already writing
+												if (chunks_to_append.length > 1)
+													return [2 /*return*/];
+												_a.label = 1;
+											case 1:
+												if (!(chunks_to_append.length > 0)) return [3 /*break*/, 3];
+												our_chunk = chunks_to_append[0];
+												return [4 /*yield*/, handle.write(our_chunk)];
+											case 2:
+												_a.sent();
+												written_size += our_chunk.length;
+												chunks_to_append.shift(); // only shift *after* we finished writing to avoid race
+												percent = "";
+												if (total_size !== null) {
+													percent = (written_size / total_size).toFixed(1) + "%";
+												}
+												console.log("[DL] " + outpath + percent);
+												return [3 /*break*/, 1];
+											case 3: return [2 /*return*/];
+										}
+									});
+								});
+							};
+							return [2 /*return*/, new Promise(function(resolve, reject) {
+									do_node_request(__assign(__assign({}, reqobj), { responseType: "none", onprogress: function(progress) {
+											return __awaiter(this, void 0, void 0, function() {
+												return __generator(this, function(_a) {
+													if (progress.total)
+														total_size = progress.total;
+													append_to_file(progress._node_chunks[progress._node_chunks.length - 1]);
+													return [2 /*return*/];
+												});
+											});
+										}, onload: function(resp) {
+											if (resp.status !== 200) {
+												console.error("[FAIL] " + outpath + " (status " + resp.status + ")");
+												return resolve(false);
+											}
+											return resolve(true);
+										} }));
+								})];
+					}
+				});
+			});
+		};
+		var run_node_dlserver = function() {
+			// WIP
+			var port = get_node_config("dlport", 30130);
+			var randomtoken = get_random_text(32, "both");
+			var token = get_node_config("dltoken", randomtoken);
+			if (token === randomtoken) {
+				node_config.dltoken = randomtoken;
+				save_node_config();
+			}
+			var outpath = get_node_config("out", null);
+			if (!outpath) {
+				console.error("No --out path");
+				return;
+			}
+			var http = require("http");
+			http.createServer(function(req, res) {
+				return __awaiter(this, void 0, void 0, function() {
+					var client_token, fail, info, parsedinfo;
+					return __generator(this, function(_a) {
+						switch (_a.label) {
+							case 0:
+								client_token = req.getHeader("X-IMU-Token");
+								if (client_token !== token) {
+									console.log("Invalid token:", client_token);
+									return [2 /*return*/, res.end()];
+								}
+								fail = function(status) {
+									res.writeHead(400, { 'Content-Type': 'text/plain' });
+									res.write(JSON.stringify({ "error": status }));
+									res.end();
+								};
+								info = req.getHeader("X-IMU-Info");
+								if (!info) {
+									return [2 /*return*/, fail("No info")];
+								}
+								try {
+									parsedinfo = JSON.parse(info);
+								} catch (e) {
+									console.error(e);
+									return [2 /*return*/, fail("Invalid info")];
+								}
+								return [4 /*yield*/, do_node_dl({
+										method: parsedinfo.method,
+										url: parsedinfo.url,
+										headers: parsedinfo.headers,
+									}, outpath + "/" + parsedinfo.filename)];
+							case 1:
+								_a.sent();
+								return [2 /*return*/, fail("")];
+						}
+					});
+				});
+			}).listen(port);
+			console.log("IMU Download server:");
+			console.log("http://127.0.0.1:" + port + "/?token=" + token);
+		};
+		parsedargs = parse_node_args([
+			{
+				short: "D",
+				long: "dlserver"
+			},
+			{
+				short: "p",
+				long: "dlport"
+			},
+			{
+				long: "dltoken"
+			},
+			{
+				short: "o",
+				long: "out"
+			}
+		]);
+		if (!parsedargs)
 			return;
-		if (!parsed._positional.length) {
+		node_config = read_node_config();
+		if (parsedargs.dlserver) {
+			return run_node_dlserver();
+		}
+		if (!parsedargs._positional.length) {
 			console.error("Usage:", process.argv[0], process.argv[1], "url");
 			return;
 		}
-		var url = parsed._positional[0];
+		var url = parsedargs._positional[0];
 		var window = {
 			location: {
 				href: url

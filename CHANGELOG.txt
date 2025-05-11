@@ -1,4 +1,4 @@
-2025.5.0 (in-dev)
+2025.5.0
 
 New features:
 
@@ -10,6 +10,7 @@ New features:
  * Support dragging to select images for custom gallery
  * Shift+click in custom gallery will now (un)select all detected gallery images
  * Gallery download key can now be triggered directly in custom gallery
+ * Support for ~160 new websites (using ~85 new rules)
 
 Improvements:
 
