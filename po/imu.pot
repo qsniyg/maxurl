@@ -394,6 +394,14 @@ msgstr ""
 msgid "MB"
 msgstr ""
 
+#. enable_chunked_download.name
+msgid "Enable chunked download"
+msgstr ""
+
+#. enable_chunked_download.description
+msgid "Prefers chunked downloads over simple browser-based downloads. Allows downloading files requiring custom headers. Note that it will download the entire file into memory before displaying the save dialog, and can be slower than regular downloads."
+msgstr ""
+
 #. enable_webextension_download.name
 msgid "Force save dialog when downloading"
 msgstr ""
@@ -1128,6 +1136,16 @@ msgstr ""
 msgid ""
 "Enables a button to download the image.\n"
 "CSS ID: `#downloadbtn`"
+msgstr ""
+
+#. mouseover_ui_download_gallery_btn.name
+msgid "Gallery Download Button"
+msgstr ""
+
+#. mouseover_ui_download_gallery_btn.description
+msgid ""
+"Enables a button to download the gallery.\n"
+"CSS ID: `#gallerydlbtn`"
 msgstr ""
 
 #. mouseover_ui_rotationbtns.name
@@ -3220,6 +3238,10 @@ msgstr ""
 
 #. mouseover_open_behavior.options.download.name, t2_mouseover_open_behavior.options.download.name, t3_mouseover_open_behavior.options.download.name
 msgid "Download"
+msgstr ""
+
+#. mouseover_open_behavior.options.download_album.name, t2_mouseover_open_behavior.options.download_album.name, t3_mouseover_open_behavior.options.download_album.name
+msgid "Gallery download"
 msgstr ""
 
 #. mouseover_open_behavior.options.copylink.name, t2_mouseover_open_behavior.options.copylink.name, t3_mouseover_open_behavior.options.copylink.name
