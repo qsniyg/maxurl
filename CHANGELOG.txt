@@ -7,13 +7,14 @@ New features:
  * Option to enable chunked downloads for userscript
  * Option to enable gallery download button in popup (disabled by default, thanks to Dietz for the idea)
  * Gallery download popup action
+ * Support dragging to select images for custom gallery
+ * Shift+click in custom gallery will now (un)select all detected gallery images
+ * Gallery download key can now be triggered directly in custom gallery
 
 Improvements:
 
  * Various improvements/fixes to existing rules (including Reddit, Soundcloud, Steam, VK)
  * Gallery detection now treats picture and img elements as the same
- * Support dragging to select images for custom gallery
- * Shift+click in custom gallery will now (un)select all detected gallery images
 
 Bugfixes:
 
