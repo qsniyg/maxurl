@@ -1,6 +1,6 @@
 2025.5.1 (in-dev)
 
-Special thanks to nimbuz, remlap, fyhtma for their contributions and reports for this release
+Special thanks to nimbuz, remlap, fyhtma, sn3akybear for their contributions and reports for this release
 
 ---
 
