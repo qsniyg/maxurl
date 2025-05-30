@@ -5,7 +5,7 @@ Bugfixes:
  * Work around hang when downloading gallery under Tampermonkey (thanks to remlap for reporting)
  * Fix custom gallery failing under Violentmonkey
 
-Special thanks to nimbuz, remlap, fyhtma, sn3akybear, wikigen for their contributions and reports for this release
+Special thanks to nimbuz, remlap, fyhtma, sn3akybear, wikigen, kidonng for their contributions and reports for this release
 
 ---
 
