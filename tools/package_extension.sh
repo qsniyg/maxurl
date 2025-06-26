@@ -166,6 +166,7 @@ NONFFFILES="lib/ffmpeg.js lib/stream_parser.js"
 NONAMOFILES="lib/testcookie_slowaes.js lib/cryptojs_aes.js lib/jszip.js lib/shaka.debug.js lib/acorn_interpreter.js lib/BigInteger.js"
 AMOFILES="lib/orig/slowaes.js lib/orig/cryptojs_aes.js lib/orig/jszip.js lib/orig/mux.js lib/orig/shaka-player.compiled.debug.js lib/orig/acorn_interpreter.js lib/orig/BigInteger.min.js"
 SOURCEFILES="tools/fetch_libs.sh tools/build_libs.sh lib/libs.txt EXTENSION_README.txt tools/package_extension.sh tools/remcomments.js tools/util.js tools/patch_libs.js tools/watch_tsc.sh src/userscript.ts src/module.d.ts package.json tsconfig.json"
+SOURCEFILES_REMOVE="userscript.user.js"
 DIRS="extension lib lib/orig resources tools src"
 
 zip_tempcreate() {
@@ -276,6 +277,10 @@ rm -rf tempzip
 zip_tempcreate
 cp userscript.user.js tempzip/userscript.user.js
 
+for file in $SOURCEFILES_REMOVE; do
+    rm -f tempzip/"$file"
+done
+
 sourcezip=build/extension_source.zip
 rm -f "$sourcezip"
 zipsourcecmd "$sourcezip"
@@ -284,6 +289,9 @@ FILES=$(getzipfiles "$sourcezip")
 echo "$FILES" > files.txt
 
 assemble_file_list files1.txt $BASEFILES $AMOFILES $SOURCEFILES
+for file in $SOURCEFILES_REMOVE; do
+    sed -i '/^'"$file"'/d' files1.txt
+done
 
 DIFF="$(diffzipfiles files.txt files1.txt)"
 if [ ! -z "$DIFF" ]; then
