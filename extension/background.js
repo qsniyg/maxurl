@@ -860,12 +860,15 @@ var onHeadersReceived = function(details) {
 		if (overrides.length && (overrides[0].anonymous || overrides[0].content_type)) {
 			var override_hdrs = [];
 
-			if (overrides[0].anonymous) {
-				override_hdrs.push({
-					name: "Access-Control-Allow-Origin",
-					value: "*"
-				});
-			}
+			/*AMO_REMOVE*/// FIXME: find a better alternative
+			/*AMO_REMOVE*/// for now, this is removed in the AMO (Firefox addons) build, as we cannot relax security headers
+			/*AMO_REMOVE*/// AMO_REMOVE is automatically removed by the packaging script
+			/*AMO_REMOVE*/if (overrides[0].anonymous) {
+			/*AMO_REMOVE*/	override_hdrs.push({
+			/*AMO_REMOVE*/		name: "Access-Control-Allow-Origin",
+			/*AMO_REMOVE*/		value: "*"
+			/*AMO_REMOVE*/	});
+			/*AMO_REMOVE*/}
 
 			if (overrides[0].content_type) {
 				override_hdrs.push({

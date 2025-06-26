@@ -9,6 +9,26 @@ if [ "$1" == "release" ]; then
     RELEASE=1
 fi
 
+
+# If the watcher (`npm run watch`) is running, `npm run build` may fail or produce inconsistent results
+ps -ef | grep -v grep | grep 'maxurl/.*/concurrently.*npm:' >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo 'Kill watcher before running this'
+    exit 1
+fi
+
+
+if [ ! -d "node_modules" ]; then
+    echo "Installing node packages"
+    npm install
+fi
+
+
+# This needs to be done before the version checks, as userscript.user.js needs to exist
+echo "Building userscript"
+npm run build
+
+
 get_userscript_version() {
     cat $1 | grep '@version *[0-9.]* *$' | sed 's/.*@version *\([0-9.]*\) *$/\1/g'
 }
@@ -29,38 +49,29 @@ if [ -z "$USERVERSION" -o -z "$MANIFESTVERSION" -o -z "$PACKAGEVERSION" ]; then
     exit 1
 fi
 
-if [ "$USERVERSION" != "$MANIFESTVERSION" ]; then
-    echo 'Conflicting versions (userscript and manifest)'
-    echo "Userscript: $USERVERSION"
-    echo "Manifest: $MANIFESTVERSION"
-    exit 1
+# Ensure versions remain consistent
+if [ ! -z "$RELEASE" ]; then
+    if [ "$USERVERSION" != "$MANIFESTVERSION" ]; then
+        echo 'Conflicting versions (userscript and manifest)'
+        echo "Userscript: $USERVERSION"
+        echo "Manifest: $MANIFESTVERSION"
+        exit 1
+    fi
+
+    if [ "$USERVERSION" != "$PACKAGEVERSION" ]; then
+        echo 'Conflicting versions (userscript and npm package)'
+        echo "Userscript: $USERVERSION"
+        echo "Package: $PACKAGEVERSION"
+        exit 1
+    fi
+
+    if [ $HASCHANGELOG -eq 1 ] && [ "$USERVERSION" != "$CHANGELOGVERSION" ]; then
+        echo 'Conflicting versions (userscript and changelog)'
+        exit 1
+    fi
 fi
 
-if [ "$USERVERSION" != "$PACKAGEVERSION" ]; then
-    echo 'Conflicting versions (userscript and npm package)'
-    echo "Userscript: $USERVERSION"
-    echo "Package: $PACKAGEVERSION"
-    exit 1
-fi
-
-if [ $HASCHANGELOG -eq 1 ] && [ "$USERVERSION" != "$CHANGELOGVERSION" ]; then
-    echo 'Conflicting versions (userscript and changelog)'
-    exit 1
-fi
-
-ps -ef | grep -v grep | grep 'maxurl/.*/concurrently.*npm:' >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-    echo 'Kill watcher before running this'
-    exit 1
-fi
-
-if [ ! -d "node_modules" ]; then
-    npm install
-fi
-
-echo "Building userscript"
-npm run build
-
+# Generate minified version of the userscript (for OpenUserJS)
 if [ ! -z $RELEASE ]; then
     if [ -f ./tools/gen_minified.js ]; then
         node ./tools/gen_minified.js
@@ -75,6 +86,7 @@ if [ ! -z $RELEASE ]; then
     fi
 fi
 
+# Ensure userscript_extr is built properly (for OpenUserJS)
 if [ ! -z $RELEASE ]; then
     if [ -f ./build/userscript_extr.user.js ]; then
         grep '// imu:require_rules' ./build/userscript_extr.user.js 2>&1 >/dev/null
@@ -87,6 +99,7 @@ if [ ! -z $RELEASE ]; then
     fi
 fi
 
+# Update github website
 if [ ! -z $RELEASE ]; then
     if [ -d site ]; then
         echo "Updating website files"
@@ -96,6 +109,9 @@ if [ ! -z $RELEASE ]; then
         echo "Warning: website is not available, skipping website build"
     fi
 fi
+
+
+# Build extension README for Mozilla Addons (AMO)
 
 echo
 echo Creating extension readme file
@@ -124,7 +140,6 @@ The userscript has the following changes applied:
   * Unneeded strings within the strings object have been removed
 
 This version is identical to userscript_smaller.user.js in the Github repository.
- This is generated when running package_extension.sh, or manually by using: npx tsc && node ./tools/remcomments.js userscript.user.js nowatch
 
 Below are the versions of the programs used to generate this extension:
 
@@ -158,6 +173,7 @@ echo -n "Node.js " >> EXTENSION_README.txt
 node --version >> EXTENSION_README.txt
 separator EXTENSION_README.txt
 
+
 echo
 echo Building Firefox extension
 
@@ -186,18 +202,24 @@ zip_tempcreate() {
     done
 }
 
+remove_amoremove() {
+    # Remove all lines with AMO_REMOVE to comply with Mozilla policies
+    sed -i '/\/\* *AMO_REMOVE *\*\//d' "$1"
+}
+
 zip_tempcreate
 
-# firefox doesn't currently support ffmpeg.wasm (lacking proper SharedArrayBuffer support)
-# even if it were to support it, we'd still be running foreign code because a 20MB .wasm file cannot be reasonably included in the extension
-# the proper fix is likely to build our own version, or better yet, find a way to avoid using it
+# Disabling ffmpeg for the firefox build because a 20MB .wasm file cannot be reasonably included in the extension
 sed -i 's/has_ffmpeg_lib = true/has_ffmpeg_lib = false/' tempzip/userscript.user.js
 
-# remove chrome/opera-specific properties for firefox build
+# Remove chrome/opera-specific properties for firefox build
 sed -i \
     -e '/"options_page": /d' \
     -e '/"key": /d' \
     -e '/"update_url": /d' tempzip/manifest.json
+
+# Remove all lines with AMO_REMOVE to comply with Mozilla policies
+remove_amoremove tempzip/extension/background.js
 
 zipcmd() {
     echo
