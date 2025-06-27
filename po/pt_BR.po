@@ -3265,10 +3265,6 @@ msgstr "Tecla de disparo"
 msgid "Trigger keybinding that will run the Custom Gallery function"
 msgstr "Atalho de teclado que executará a função 'Galeria Personalizada'"
 
-#. highlightimgs_enable.name, customgallery_enable_button.name
-msgid "Enable button"
-msgstr "Habilitar botão"
-
 #. customgallery_enable_button.description
 msgid "Enables the 'Custom Gallery' button"
 msgstr "Habilita o botão 'Galeria Personalizada'"
@@ -3296,6 +3292,16 @@ msgstr "CSS de Contorno"
 #. customgallery_outline_css.description
 msgid "CSS style to apply for element outlines"
 msgstr "Estilo CSS para aplicar aos contornos dos elementos"
+
+#. highlightimgs_enable.name, customgallery_enable_button.name, website_request_enable_button.name
+msgid "Enable button"
+msgstr "Habilitar botão"
+
+#. website_request_enable_button.description
+msgid ""
+"Enables the website request button.\n"
+"Clicking this button will send the page (or image) you're currently visiting to the development team in order for us to take a look at the website to support it."
+msgstr ""
 
 #. mouseover_open_behavior.name, t2_mouseover_open_behavior.name, t3_mouseover_open_behavior.name
 #. English: Popup action
