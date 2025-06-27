@@ -1,4 +1,8 @@
-2025.5.1 (in-dev)
+2025.6.0 (in-dev)
+
+New features:
+
+ * Option to toggle the website request button
 
 Bugfixes:
 
