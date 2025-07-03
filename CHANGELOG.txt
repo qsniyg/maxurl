@@ -1,4 +1,4 @@
-2025.6.0 (in-dev)
+2025.7.0 (in-dev)
 
 New features:
 
@@ -10,7 +10,7 @@ Bugfixes:
  * Fix custom gallery failing under Violentmonkey
  * Fall through on zero content length images
 
-Special thanks to nimbuz, remlap, fyhtma, sn3akybear, wikigen, kidonng, FecklessFeck, f2005, Egor Popov, Liz, haarp, F640, fireattack, karpuzikov, drunub, Froktime, in-the-halfway, James Joint for their contributions and reports for this release
+Special thanks to nimbuz, remlap, fyhtma, sn3akybear, wikigen, kidonng, FecklessFeck, f2005, Egor Popov, Liz, haarp, F640, fireattack, karpuzikov, drunub, Froktime, in-the-halfway, James Joint, XiaoSong-CPE for their contributions and reports for this release
 
 ---
 
