@@ -3,10 +3,12 @@
 New features:
 
  * Option to toggle the website request button
+ * Option for userscript to enable XHR hotpatching (disabled by default)
 
 Improvements:
 
  * Various improvements/fixes to existing rules (including VK)
+ * Chunked downloads can also be used in extension
 
 Bugfixes:
 
