@@ -17,7 +17,7 @@ Bugfixes:
  * Fall through on zero content length images
  * Fix crash when popping up for video removed from page
 
-Special thanks to nimbuz, remlap, fyhtma, sn3akybear, wikigen, kidonng, FecklessFeck, f2005, Egor Popov, Liz, haarp, F640, fireattack, karpuzikov, drunub, Froktime, in-the-halfway, James Joint, XiaoSong-CPE, meloner, Earthworm-Banana for their contributions and reports for this release
+Special thanks to nimbuz, remlap, fyhtma, sn3akybear, wikigen, kidonng, FecklessFeck, f2005, Egor Popov, Liz, haarp, F640, fireattack, karpuzikov, drunub, Froktime, in-the-halfway, James Joint, XiaoSong-CPE, meloner, Earthworm-Banana, RAT for their contributions and reports for this release
 
 ---
 
