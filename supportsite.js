@@ -49,7 +49,9 @@ var reqsite_invalid_domains = [
     // Frequently requested domains that are already supported.
     // If you encounter an issue with these, please open an issue on Github or message me.
     /pimeyes\.com$/,
-    /i\.pinimg\.com$/
+    /i\.pinimg\.com$/,
+
+    /qsniyg\.github\.io$/
 ];
 
 var reqsite_invalid_urls = [
