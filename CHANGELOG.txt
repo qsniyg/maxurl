@@ -7,7 +7,7 @@ New features:
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including Flickr, VK)
+ * Various improvements/fixes to existing rules (including Google Docs, Flickr, VK)
  * Chunked downloads can also be used in extension
 
 Bugfixes:
