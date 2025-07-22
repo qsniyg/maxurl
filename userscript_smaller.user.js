@@ -13258,7 +13258,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (!func)
-			console_error("new_function: Unknown error occurred", { func: func });
+			console_error("new_function: Unknown error occurred", { func: func, scriptbody: scriptbody, data: data });
 		cb(func);
 	};
 	var run_sandboxed_lib = function(fdata, xhr, cb) {
@@ -13349,11 +13349,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		},
 		"jszip": {
 			name: "jszip",
-			url: "https://raw.githubusercontent.com/qsniyg/maxurl/3d8d6b4415b8dd58cb405910647c940ea122b3a0/lib/jszip.js",
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/062630b90b5048f9b83d2048041bf7758ef1bbbd/lib/jszip.js",
 			archive_time: "20231116183309",
-			size: 99559,
-			crc32: 2407465226,
-			crc32_size: 689840937
+			size: 99601,
+			crc32: 3952915381,
+			crc32_size: 3610065033
 		},
 		"BigInteger": {
 			name: "BigInteger",
@@ -37351,6 +37351,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "notfans.org" ||
 			domain_nowww === "xasiat.com" ||
 			domain_nowww === "x-video.tube" ||
+			domain_nowww === "camwhores.lol" ||
+			domain_nowww === "weleaked.com" ||
+			domain_nowww === "leak.xxx" ||
 			domain_nosub === "mylust.com" ||
 			domain_nosub === "yourlust.com" ||
 			domain_nowww === "pornrewind.com") {
@@ -37418,6 +37421,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var cache_host = domain_nosub;
 			var can_add_referer_1 = true;
 			var can_head_media = true;
+			var replace_basedomain_in_finalurl_1 = false;
 			if (domain_nosub === "porntrex.com" || domain_nosub === "cdntrex.com") {
 				basedomain = "https://www.porntrex.com/";
 				cache_host = "porntrex.com";
@@ -37614,6 +37618,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				domain_nosub === "xcafe.com") {
 				videos_component = "";
 				videos_slash = "";
+			} else if (domain_nowww === "camwhores.lol") {
+				replace_basedomain_in_finalurl_1 = true; // canonical url is camwhores.tv
 			}
 			var detected_url = null;
 			if (can_detect_videourl) {
@@ -38010,6 +38016,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								var match = resp.responseText.match(/<link href="(https?:\/\/[^"]+)" rel="canonical"\s*\/>/);
 								if (match) {
 									finalurl = decode_entities(match[1]);
+								}
+								if (replace_basedomain_in_finalurl_1) {
+									finalurl = finalurl.replace(/^[a-z]+:\/\/[^/]+\/+/, basedomain.replace(/\/*$/, "") + "/");
 								}
 								var baseobj = {
 									headers: {
@@ -42118,53 +42127,61 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var get_norm_sb_url_1 = function(url) {
 				return url.replace(/.*\/([0-9]+-[0-9]+[a-z]+\.[^/.?]+)(?:[?#].*)?$/, "$1");
 			};
+			var process_sb_page = function(done, resp, cache_key) {
+				var match = resp.responseText.match(/data-videoid=["'][0-9]+["']\s+data-streamkey=["']([^"']+)["']/);
+				if (!match) {
+					console_warn(cache_key, "Unable to find streamkey match from", resp);
+					return done(null, false);
+				}
+				var streamkey = match[1];
+				var caption = null;
+				match = resp.responseText.match(/"@type":\s*"VideoObject",\s*"name":\s*("[^"]+"),/);
+				if (match) {
+					caption = JSON_parse(match[1]);
+				}
+				var created_date = null;
+				match = resp.responseText.match(/"uploadDate":\s*("[^"]+"),/);
+				if (match) {
+					created_date = new Date(JSON_parse(match[1])).getTime();
+				}
+				get_streamdata_1(streamkey, function(streamdata) {
+					if (!streamdata)
+						return done(null, false);
+					var largest = find_largest_from_streamdata_1(streamdata);
+					if (!largest) {
+						console_warn(cache_key, "Unable to find video URL from", { resp: resp, streamkey: streamkey, streamdata: streamdata });
+						return done(null, false);
+					}
+					var urls = [];
+					var imuhash = common_functions["parse_imu_hash"](src);
+					if (imuhash && imuhash.orig) {
+						if (get_norm_sb_url_1(imuhash.orig) === get_norm_sb_url_1(largest))
+							largest = imuhash.orig;
+					}
+					urls.push({
+						url: largest,
+						is_private: true,
+						extra: {
+							page: resp.finalUrl,
+							caption: caption,
+							created_date: created_date
+						},
+						video: true
+					});
+					return done(urls, 60 * 60);
+				});
+			};
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+([0-9a-z]+)\/+(?:video|embed)(?:\/+[^/]*)(?:[?#].*)?$/,
 				query_for_id: "https://" + domain + "/${id}/video/",
-				process: function(done, resp, cache_key) {
-					var match = resp.responseText.match(/data-videoid=["'][0-9]+["']\s+data-streamkey=["']([^"']+)["']/);
-					if (!match) {
-						console_warn(cache_key, "Unable to find streamkey match from", resp);
-						return done(null, false);
-					}
-					var streamkey = match[1];
-					var caption = null;
-					match = resp.responseText.match(/"@type":\s*"VideoObject",\s*"name":\s*("[^"]+"),/);
-					if (match) {
-						caption = JSON_parse(match[1]);
-					}
-					var created_date = null;
-					match = resp.responseText.match(/"uploadDate":\s*("[^"]+"),/);
-					if (match) {
-						created_date = new Date(JSON_parse(match[1])).getTime();
-					}
-					get_streamdata_1(streamkey, function(streamdata) {
-						if (!streamdata)
-							return done(null, false);
-						var largest = find_largest_from_streamdata_1(streamdata);
-						if (!largest) {
-							console_warn(cache_key, "Unable to find video URL from", { resp: resp, streamkey: streamkey, streamdata: streamdata });
-							return done(null, false);
-						}
-						var urls = [];
-						var imuhash = common_functions["parse_imu_hash"](src);
-						if (imuhash && imuhash.orig) {
-							if (get_norm_sb_url_1(imuhash.orig) === get_norm_sb_url_1(largest))
-								largest = imuhash.orig;
-						}
-						urls.push({
-							url: largest,
-							is_private: true,
-							extra: {
-								page: resp.finalUrl,
-								caption: caption,
-								created_date: created_date
-							},
-							video: true
-						});
-						return done(urls, 60 * 60);
-					});
-				}
+				process: process_sb_page
+			});
+			if (newsrc)
+				return newsrc;
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+([-0-9a-z]+)\/+(?:playlist)(?:\/+[^/]*)(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/${id}/playlist/a",
+				process: process_sb_page
 			});
 			if (newsrc)
 				return newsrc;
@@ -68997,6 +69014,23 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		settings_meta: settings_meta,
 		strings: strings
 	};
+	var bigimage_recursive_promise = function(url, options) {
+		return new Promise(function(resolve, reject) {
+			var newoptions = {};
+			// shallowcopy
+			for (var option_1 in options) {
+				newoptions[option_1] = options[option_1];
+			}
+			var origcb = newoptions.cb;
+			newoptions.cb = function(result) {
+				if (origcb) {
+					origcb(result);
+				}
+				resolve(result);
+			};
+			bigimage_recursive(url, newoptions);
+		});
+	};
 	function is_internet_url(url) {
 		if (!url || typeof url !== "string")
 			return false;
@@ -69061,7 +69095,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		return newobj;
 	};
-	var bigimage_recursive_loop = function(url, options, query, state) {
+	var bigimage_recursive_loop_old = function(url, options, query, state) {
 		var newoptions = {};
 		if (!state) {
 			state = {
@@ -69110,6 +69144,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							image_urls.splice(i, 1);
 							i--;
 							for (var j = 0; j < tried_urls.length; j++) {
+								console.log(tried_urls.length, tried_urls[j], tried_urls[j].newurl, bad_url, tried_urls[j].newurl === bad_url);
 								if (tried_urls[j].newurl === bad_url) {
 									var orig_url = tried_urls[j].newobj.url;
 									var index = array_indexof(image_urls, orig_url);
@@ -69234,6 +69269,134 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			console_log("bigimage_recursive_loop", url, deepcopy(options), query, deepcopy(state));
 		}
 		return bigimage_recursive(url, newoptions);
+	};
+	var bigimage_recursive_loop = function(url, options, query) {
+		var _this_1 = this;
+		var query_promise = function(obj) {
+			return new Promise(function(resolve, reject) {
+				query(obj, function(newurl, newobj, data) {
+					resolve({
+						newurl: newurl,
+						newobj: newobj,
+						data: data
+					});
+				});
+			});
+		};
+		(function() { return __awaiter(_this_1, void 0, void 0, function() {
+			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_13, sobj, _a, queryobj_1, obj_14, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
+			return __generator(this, function(_c) {
+				switch (_c.label) {
+					case 0:
+						finalcb = options.cb;
+						oldobj = [];
+						redirect_map = {};
+						bad_urls = new Set();
+						skipped_urls = new Set();
+						tried_urls = new Set();
+						is_bad_url = function(url) { return bad_urls.has(url) || skipped_urls.has(url); };
+						last_data = null;
+						last_newurl = url;
+						_c.label = 1;
+					case 1:
+						if (!true) return [3 /*break*/, 4];
+						newoptions = {};
+						for (option_2 in options) {
+							if (option_2 === "cb")
+								continue;
+							newoptions[option_2] = options[option_2];
+						}
+						return [4 /*yield*/, bigimage_recursive_promise(last_newurl, newoptions)];
+					case 2:
+						obj = (_c.sent());
+						obj = obj_merge(obj, oldobj);
+						obj_urls = obj_to_simplelist(obj);
+						for (i = 0; i < obj.length; i++) {
+							// TODO: also remove bad_if
+							if (obj[i].bad) {
+								bad_urls.add(obj[i].url);
+								// also add all urls that redirect to bad
+								for (orig_url_1 in redirect_map) {
+									redirected = redirect_map[orig_url_1];
+									if (redirected === obj[i].url) {
+										bad_urls.add(orig_url_1);
+									}
+								}
+							}
+						}
+						queryobj = [];
+						for (_i = 0, obj_13 = obj; _i < obj_13.length; _i++) {
+							sobj = obj_13[_i];
+							if (is_bad_url(sobj.url)) {
+								continue;
+							}
+							queryobj.push(sobj);
+						}
+						// required to avoid querying an ok url twice
+						for (_a = 0, queryobj_1 = queryobj; _a < queryobj_1.length; _a++) {
+							obj_14 = queryobj_1[_a];
+							if (tried_urls.has(obj_14.url) && !is_bad_url(obj_14.url))
+								return [2 /*return*/, options.cb([obj_14], last_data)];
+						}
+						if (!queryobj.length) {
+							if (_nir_debug_) {
+								console_log("bigimage_recursive_loop: no valid results found", last_data);
+							}
+							return [2 /*return*/, options.cb(null, last_data)];
+						}
+						if (_nir_debug_) {
+							console_log("bigimage_recursive_loop: about to query", deepcopy(queryobj), Array.from(bad_urls));
+						}
+						return [4 /*yield*/, query_promise(queryobj)];
+					case 3:
+						_b = _c.sent(), newurl = _b.newurl, newobj = _b.newobj, data = _b.data;
+						last_data = data;
+						last_newurl = newurl;
+						if (_nir_debug_) {
+							console_log("bigimage_recursive_loop (query: newurl, newobj, data):", deepcopy(newurl), deepcopy(newobj), last_data);
+						}
+						if (!newurl) {
+							if (_nir_debug_) {
+								console_log("bigimage_recursive_loop (query): returning null", last_data);
+							}
+							return [2 /*return*/, options.cb(null, data)];
+						}
+						orig_url = null;
+						if (newobj) {
+							orig_url = newobj.url;
+							tried_index = obj_indexOf(obj, orig_url);
+							for (i = 0; i < tried_index; i++) {
+								skipped_urls.add(obj[i].url);
+							}
+						}
+						if (orig_url && newurl !== orig_url) {
+							redirect_map[orig_url] = newurl;
+						}
+						newurl_index = array_indexof(obj_urls, newurl);
+						if (tried_urls.has(newurl)) {
+							if (_nir_debug_) {
+								console_log("bigimage_recursive_loop (query): already tried url", newurl, obj_urls);
+							}
+							return [2 /*return*/, options.cb(null, data)];
+						}
+						if (orig_url)
+							tried_urls.add(orig_url);
+						tried_urls.add(newurl); // FIXME?
+						if (newurl_index < 0 || !obj[newurl_index].norecurse) {
+							oldobj = obj;
+							return [3 /*break*/, 1];
+						} else {
+							obj = [obj[newurl_index]];
+							if (true || _nir_debug_) {
+								console_log("bigimage_recursive_loop (query): returning", deepcopy(obj), data);
+							}
+							return [2 /*return*/, options.cb(obj, last_data)];
+						}
+						return [3 /*break*/, 1];
+					case 4: return [2 /*return*/];
+				}
+			});
+		}); })();
 	};
 	bigimage_recursive.loop = bigimage_recursive_loop;
 	var get_tagname = function(el) {
