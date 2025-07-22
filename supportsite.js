@@ -46,6 +46,7 @@ var reqsite_invalid_domains = [
     /kitty-kats\.net$/,
     /onlyfans\.com$/,
     /\.xhcdn\.com$/,
+    /imagefap\.com$/,
 
     // Frequently requested domains that are already supported.
     // If you encounter an issue with these, please open an issue on Github or message me.
