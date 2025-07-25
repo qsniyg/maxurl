@@ -9,6 +9,7 @@ Improvements:
 
  * Various improvements/fixes to existing rules (including Google Docs, Flickr, VK)
  * Chunked downloads can also be used in extension
+ * Support web archive images
 
 Bugfixes:
 
