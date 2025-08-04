@@ -17876,8 +17876,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			options.videotag = true;
 		var sources = { video: [], image: [], subtitles: [] };
 		if (options.videotag) {
-			sources = common_functions["get_videotag_sources"](resp.responseText);
-			if (!sources)
+			var newsources = common_functions["get_videotag_sources"](resp.responseText);
+			if (!options.ogvideo || newsources) {
+				sources = newsources;
+			} else if (!options.ogvideo)
 				return null;
 		}
 		var page = get_meta(resp.responseText, "og:url");
@@ -17939,7 +17941,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (options.ogvideo) {
-			var ogvideo = get_meta(resp.responseText, "og:video");
+			var ogvideo = get_meta(resp.responseText, "og:video:url");
+			if (!ogvideo)
+				ogvideo = get_meta(resp.responseText, "og:video");
+			//var ogvideo = get_meta(resp.responseText, "og:video");
 			if (ogvideo) {
 				array_upush(video_urls, urljoin(baseurl, ogvideo, true));
 			}
@@ -17987,7 +17992,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		//var match = jwplayerstr.match(/\.setup\({[\s\S]*?file:\s*"([^"]+)"[,}]/);
-		var match = jwplayerstr.match(/\.setup\(({[\s\S]*?file:\s*"[\s\S]*?})\);/);
+		var match = jwplayerstr.match(/\.setup\s*\(({[\s\S]*?file:\s*"[\s\S]*?})\);/);
 		if (!match) {
 			console_error("Unable to find jwplayer match for", { resp: resp, jwplayerstr: jwplayerstr });
 			return null;
@@ -18003,7 +18008,19 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return null;
 		}
 		var videotype = true;
-		var videourl = json.sources[0].file;
+		var jsonsources = json.sources;
+		if (!jsonsources) {
+			// yuvutu.com
+			if (json.playlist) {
+				// FIXME: support other playlist entries
+				jsonsources = json.playlist[0].sources;
+			}
+		}
+		if (!jsonsources) {
+			console_error("Unable to find sources or playlist object in", { resp: resp, json: json });
+			return null;
+		}
+		var videourl = jsonsources[0].file;
 		if (/\.m3u8/.test(videourl))
 			videotype = "hls";
 		var urls = [
@@ -18796,7 +18813,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nosub === "xhtotal.com" ||
 			domain_nosub === "localxh.com" || // 1-5
 			// 1-4
-			domain_nosub === "xhofficial.com";
+			domain_nosub === "xhofficial.com" ||
+			domain_nosub === "xh.partners";
 	};
 	common_functions["multidomain__searx"] = function(domain, domain_nowww) {
 		// instance list: https://searx.space/
@@ -34563,7 +34581,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nosub === "xhtotal.com" ||
 			domain_nosub === "localxh.com" || // 1-5
 			// 1-4
-			domain_nosub === "xhofficial.com")) {
+			domain_nosub === "xhofficial.com" ||
+			domain_nosub === "xh.partners")) {
 			var query_xhamster_hashslug_by_id = function(id, cb) {
 				if (/^xh/.test(id))
 					return cb(id);
@@ -34587,7 +34606,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				});
 			};
 			var get_xhamster_initials = function(resp) {
-				var match = resp.responseText.match(/window\.initials\s*=\s*({.*});/);
+				var match = resp.responseText.match(/window\.initials\s*=\s*({.*?});/);
 				if (!match) {
 					console_error("Unable to find initials from", resp);
 					return null;
@@ -34632,6 +34651,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 									return done(null, false);
 								try {
 									var videomodel = initials.videoModel;
+									var xplayerSettings = initials.xplayerSettings;
+									if (videomodel && !videomodel.sources && xplayerSettings && xplayerSettings.sources) {
+										videomodel.sources = xplayerSettings.sources;
+									}
 									if (videomodel.title && videomodel.pageURL) {
 										return done(videomodel, 60 * 60);
 									}
@@ -34698,28 +34721,79 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 				var urls = [];
 				if ("sources" in model) {
-					var goodsources = [
-						"mp4",
-						"download"
-					];
-					for (var i = 0; i < goodsources.length; i++) {
-						var our_source = goodsources[i];
-						var max = get_max_source(model.sources[our_source]);
-						if (max) {
-							var our_obj = {
-								headers: {
-									Accept: "*/*",
-									Origin: origin,
-									Referer: baseobj.extra.page,
-									"Sec-Fetch-Dest": "empty"
-								},
-								url: max,
-								video: true
-							};
-							urls.push(our_obj);
-							break;
+					var urlmap = {};
+					for (var type_2 in model.sources) {
+						for (var codec in model.sources[type_2]) {
+							var codecobj = model.sources[type_2][codec];
+							if (!is_array(codecobj)) {
+								codecobj = [codecobj];
+							}
+							for (var _i = 0, codecobj_1 = codecobj; _i < codecobj_1.length; _i++) {
+								var item = codecobj_1[_i];
+								item.codec = codec;
+								if (!item.url) {
+									console_warn("No URL for item", item);
+									continue;
+								}
+								if (!item.quality) {
+									if (/\.m3u8(?:[?#].*)?$/.test(item.url)) {
+										item.quality = "auto";
+									}
+								}
+								if (item.url in urlmap) {
+									for (var _a = 0, item_1 = item; _a < item_1.length; _a++) {
+										var key_5 = item_1[_a];
+										if (!(key_5 in urlmap[item.url]))
+											urlmap[item.url][key_5] = item[key_5];
+									}
+								} else {
+									urlmap[item.url] = item;
+								}
+							}
 						}
 					}
+					var urlobjs = [];
+					for (var url_4 in urlmap) {
+						urlobjs.push(urlmap[url_4]);
+					}
+					var codecsort_1 = [
+						"av1",
+						"h264"
+					];
+					urlobjs.sort(function(a, b) {
+						if (a.quality === "auto" && b.quality !== "auto")
+							return -1;
+						if (b.quality === "auto" && a.quality !== "auto")
+							return 1;
+						var a_quality = parse_int(a.quality);
+						var b_quality = parse_int(b.quality);
+						if (a_quality !== b_quality)
+							return b_quality - a_quality;
+						var a_codec = array_indexof(codecsort_1, a.codec);
+						var b_codec = array_indexof(codecsort_1, b.codec);
+						if (a_codec !== b_codec)
+							return a_codec - b_codec;
+						return 0;
+					});
+					for (var _b = 0, urlobjs_1 = urlobjs; _b < urlobjs_1.length; _b++) {
+						var urlobj = urlobjs_1[_b];
+						var video = true;
+						if (/\.m3u8(?:[?#].*)?$/.test(urlobj.url))
+							video = "hls";
+						var our_obj = {
+							headers: {
+								Accept: "*/*",
+								Origin: origin,
+								Referer: baseobj.extra.page,
+								"Sec-Fetch-Dest": "empty"
+							},
+							url: urlobj.url,
+							video: video
+						};
+						urls.push(our_obj);
+					}
+				} else if (model.modelName === "videoModel") {
+					console_warn("No sources for", model);
 				}
 				if (model.imageURL)
 					urls.push(model.imageURL); // for photos
@@ -34786,7 +34860,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			host_domain_nosub === "xhtotal.com" ||
 			host_domain_nosub === "localxh.com" || // 1-5
 			// 1-4
-			host_domain_nosub === "xhofficial.com")) {
+			host_domain_nosub === "xhofficial.com" ||
+			host_domain_nosub === "xh.partners")) {
 			newsrc = common_functions["get_pagelink_el_matching"](options.element, /^[a-z]+:\/\/[^/]+\/+photos\/+gallery\/+[0-9]+\/+[0-9]+/);
 			if (newsrc)
 				return newsrc;
@@ -44962,6 +45037,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain === "oshiete.xgoo.jp") return src.replace(/(\/images\/+[^/]*\/+[0-9a-z]+\/+[0-9]+_[0-9a-f]+\/+)[A-Z]+(\.[^/.]*)(?:[?#].*)?$/, "$1ORG$2");
 		if (domain === "p.mamastar.jp") return src.replace(/(:\/\/[^/]*\/)[a-z]\/+([0-9]{4}-[0-9]{2}\/+)/, "$1$2");
 		if (domain === "image.gamechosun.co.kr") return src.replace(/(\/dataroom\/+[^/]*\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2})thumb\/+/, "$1");
+		if (domain_nowww === "sportschosun.com") {
+			return src
+				.replace(/(\/[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9]{10,})\./, "$1_w.")
+				.replace(/(\/[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9]{10,})_[lm]\./, "$1.");
+		}
 		if (domain_nowww === "ascii.jp") {
 			return src
 				.replace(/(\/img\/.*\/)[a-z]\/+([0-9a-f]+\.)/, "$1o/$2")
@@ -47946,8 +48026,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						if (matched_urls) {
 							var processed_urls = [];
 							for (var _i = 0, matched_urls_1 = matched_urls; _i < matched_urls_1.length; _i++) {
-								var url_4 = matched_urls_1[_i];
-								processed_urls.push(decode_entities(JSON_parse(url_4)));
+								var url_5 = matched_urls_1[_i];
+								processed_urls.push(decode_entities(JSON_parse(url_5)));
 							}
 							console_log(processed_urls);
 						}
@@ -50304,11 +50384,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 			match = src.match(/\/uploads\/+(manga)\/+([0-9]+)\/+chapters\/+([0-9]+)\/+(?:thumb_)?([0-9]+)\./);
 			if (match) {
-				var type_2 = match[1];
+				var type_3 = match[1];
 				var typeid = match[2];
 				var chapter = match[3];
 				var page_2 = parseInt(match[4]);
-				obj.extra = { page: "https://www.hentaishark.com/" + type_2 + "/" + typeid + "/" + chapter + "/" + page_2 };
+				obj.extra = { page: "https://www.hentaishark.com/" + type_3 + "/" + typeid + "/" + chapter + "/" + page_2 };
 			}
 			return obj;
 		}
@@ -51049,8 +51129,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							return done(null, false);
 						var urls = [];
 						var urlmap = {};
-						for (var type_3 in result.sources) {
-							for (var _i = 0, _a = result.sources[type_3]; _i < _a.length; _i++) {
+						for (var type_4 in result.sources) {
+							for (var _i = 0, _a = result.sources[type_4]; _i < _a.length; _i++) {
 								var src_1 = _a[_i];
 								var link_4 = src_1.link;
 								if (/\/signup/.test(link_4))
@@ -53577,6 +53657,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+([0-9a-z]{5,})(?:[?#].*)?$/,
 				query_for_id: "https://" + domain + "/${id}",
+				process: function(done, resp, cache_key) {
+					var obj = common_functions["get_jwplayer_obj"](resp);
+					if (!obj)
+						return done(null, false);
+					return done(obj, 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "yuvutu.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+([0-9]{5,})\/+(?:[^/]+\/*)?(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/video/${id}/",
 				process: function(done, resp, cache_key) {
 					var obj = common_functions["get_jwplayer_obj"](resp);
 					if (!obj)
@@ -57146,12 +57240,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								continue;
 							}
 						}
-						var url_5 = url1
+						var url_6 = url1
 							.replace(/['"+ ]/g, "")
 							.replace(/^\/(stream)/, "//$1");
-						url_5 = urljoin(resp.finalUrl, url_5 + "&stream=1", true);
+						url_6 = urljoin(resp.finalUrl, url_6 + "&stream=1", true);
 						urls.push({
-							url: url_5,
+							url: url_6,
 							video: true,
 							headers: {
 								Referer: "https://" + domain + "/",
@@ -59848,14 +59942,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			newsrc = website_query({
 				website_regex: [
 					/^[a-z]+:\/\/[^/]+\/+([0-9a-zA-Z_]{10,12})\/+/,
-					/^[a-z]+:\/\/[^/]+\/+embed\/+([0-9a-zA-Z_]{10,12})(?:[?#].*)?$/
+					/^[a-z]+:\/\/[^/]+\/+(?:embed|v)\/+([0-9a-zA-Z_]{10,12})(?:[?#].*)?$/
 				],
 				query_for_id: "https://www.playvids.com/embed/${id}",
 				process: function(done, resp, cache_key) {
 					var match = resp.responseText.match(/<video[^>]+\s+data-dash-src="(https?:\/\/[^"]+)"/);
 					if (!match) {
-						console_error(cache_key, "Unable to find match for", resp);
-						return done(null, false);
+						var obj = common_functions["get_videotag_obj"](resp, {
+							videotag: true
+						});
+						return done(obj, obj ? 60 * 60 : false);
 					}
 					return done({
 						extra: {
@@ -60921,17 +61017,17 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (host_domain_nowww === "mym.fans" && options.element) {
 			if (options.element.tagName === "VIDEO") {
-				var url_6 = options.element.getAttribute("data-url");
-				if (url_6) {
-					if (/\.m3u8(?:[?#].*)?$/i.test(url_6)) {
+				var url_7 = options.element.getAttribute("data-url");
+				if (url_7) {
+					if (/\.m3u8(?:[?#].*)?$/i.test(url_7)) {
 						return {
-							url: url_6,
+							url: url_7,
 							can_head: false,
 							video: "hls"
 						};
 					} else {
 						return {
-							url: url_6,
+							url: url_7,
 							can_head: false,
 							video: true
 						};
@@ -63428,11 +63524,28 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc)
 				return newsrc;
 		}
-		if (domain_nowww === "pornkai.com") {
+		if (domain_nowww === "pornkai.com" ||
+			domain_nowww === "tubesafari.com") {
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+view\?(?:.*&)?key=([a-z]{2}[0-9a-z]+)(?:[?&].*)?$/,
+				website_regex: [
+					/^[a-z]+:\/\/[^/]+\/+view\?(?:.*&)?key=([-_a-zA-Z0-9]+)(?:[?&].*)?$/, // pornkai
+					/^[a-z]+:\/\/[^/]+\/+video\?(?:.*&)?id=([-_a-zA-Z0-9]+)(?:[?&].*)?$/ // tubesafari
+				],
 				run: function(cb, match, cache_key) {
-					var submatch = match[1].match(/^(ph|xv|xh)([0-9a-z]+)$/);
+					var submatch = match[1].match(/^(ph|xv|xh)([0-9a-zA-Z]+)$/);
+					if (!submatch) {
+						submatch = match[1].match(/^[a-f0-9]{10,}$/); // pornhub video id (13 hex)
+						if (submatch) {
+							return cb({
+								url: "https://www.pornhub.com/view_video.php?viewkey=" + match[1],
+								is_pagelink: true
+							});
+						}
+						return cb({
+							url: "https://xh.video/e/" + match[1],
+							is_pagelink: true
+						});
+					}
 					if (!submatch) {
 						console_error(cache_key, "Unhandled video ID:", match[1]);
 						return cb(null);
@@ -64005,13 +64118,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
 							var item = items_1[_i];
 							var is_current = item == chosenitem;
-							var url_7 = "https://gofile.io/d/" + content.code + "#imu-id=" + item.extra.id;
+							var url_8 = "https://gofile.io/d/" + content.code + "#imu-id=" + item.extra.id;
 							links.push({
-								url: url_7,
+								url: url_8,
 								is_current: is_current
 							});
 							if (is_current)
-								newobj.url = url_7;
+								newobj.url = url_8;
 						}
 						if (!newobj.url) {
 							console_error("Unable to get URL from", chosenitem, items);
@@ -66373,6 +66486,35 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc)
 				return newsrc;
 		}
+		if (domain_nowww === "eroticmv.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+([^/]+)\/*(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/${id}/",
+				process: function(done, resp, cache_key) {
+					var obj = common_functions["get_videotag_obj"](resp, {
+						ogvideo: true, // newer videos use og:video:url
+						videotag: true
+					});
+					done(obj, obj ? 60 * 60 : false);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "bravoporn.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+videos\/+([0-9]+)\/+(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/videos/${id}/",
+				process: function(done, resp, cache_key) {
+					var obj = common_functions["get_videotag_obj"](resp, {
+						videotag: true
+					});
+					done(obj, obj ? 60 * 60 : false);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
 		if (domain_nowww === "dirtyship.com") {
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+([^/]+)\/*(?:[?#].*)?$/,
@@ -66494,10 +66636,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (!appel)
 					return null;
 				var datakey = null;
-				for (var key_5 in appel) {
-					if (string_indexof(key_5, "jQuery") !== 0)
+				for (var key_6 in appel) {
+					if (string_indexof(key_6, "jQuery") !== 0)
 						continue;
-					datakey = key_5;
+					datakey = key_6;
 					break;
 				}
 				if (!datakey) {
@@ -66561,6 +66703,209 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					url: src,
 					bad: "mask"
 				};
+			}
+		}
+		if (domain_nowww === "yslbeauty.com.hk" ||
+			domain_nosub === "eshops.hk") {
+			return src.replace(/\/image-cache(\/+uploads\/.*\.[a-zA-Z]+)@[0-9]+\.[a-z]+(?:[?#].*)?$/, "$1");
+		}
+		if (domain === "play.reelcrafter.com") {
+			var simplify_reelcrafter_1 = function(obj, no_direct_simplify) {
+				if (!no_direct_simplify && is_array(obj) && obj.length === 2 && typeof obj[0] === "number") {
+					var can_simplify_array = false;
+					if (is_array(obj[1])) {
+						if (obj[0] === 1) {
+							can_simplify_array = true;
+						}
+					} else if (obj[0] === 0) {
+						can_simplify_array = true;
+					}
+					if (can_simplify_array) {
+						return simplify_reelcrafter_1(obj[1], true);
+					}
+				}
+				if (is_array(obj)) {
+					var newarray = [];
+					for (var _i = 0, obj_13 = obj; _i < obj_13.length; _i++) {
+						var item = obj_13[_i];
+						newarray.push(simplify_reelcrafter_1(item));
+					}
+					return newarray;
+				} else if (typeof obj === "object") {
+					var newobj_1 = {};
+					for (var key_7 in obj) {
+						newobj_1[key_7] = simplify_reelcrafter_1(obj[key_7]);
+					}
+					return newobj_1;
+				} else {
+					return obj;
+				}
+			};
+			var get_obj_for_reelcrafter_mediaid_1 = function(id) {
+				var media = api_cache.get("reelcrafter:media:" + id);
+				if (!media)
+					return null;
+				return {
+					extra: {
+						caption: media.name
+					},
+					media_info: {
+						type: "audio" // FIXME
+					},
+					url: media.url
+				};
+			};
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+embed\/+([-0-9a-f]{10,})(?:[?#].*)?$/,
+				query_for_id: "https://play.reelcrafter.com/embed/${id}",
+				override_cb: function(cb, data) {
+					var wanted_image = null;
+					var queries = common_functions["parse_imu_hash"](src);
+					if (queries && queries.mediaid)
+						wanted_image = queries.mediaid;
+					if (!wanted_image)
+						return cb(data);
+					var newobj = get_obj_for_reelcrafter_mediaid_1(wanted_image);
+					if (!newobj)
+						return cb(newobj);
+					newobj.album_info = data.album_info;
+					for (var _i = 0, _a = newobj.album_info; _i < _a.length; _i++) {
+						var item = _a[_i];
+						var item_queries = common_functions["parse_imu_hash"](item.url);
+						if (item_queries && item_queries.mediaid)
+							item.is_current = item_queries.mediaid === wanted_image;
+						else
+							item.is_current = false;
+					}
+					return cb(newobj);
+				},
+				process: function(done, resp, cache_key, url_match) {
+					var propsmatch = resp.responseText.match(/ props="([^"]+)" /);
+					if (!propsmatch) {
+						console_error(cache_key, "Unable to find props match from", resp);
+						return done(null, false);
+					}
+					var props_txt = decode_entities(propsmatch[1]);
+					var json = JSON_parse(props_txt);
+					var simplified = simplify_reelcrafter_1(json);
+					var playlists = simplified.embed.playlists;
+					if (playlists.length !== 1) {
+						console_error(cache_key, "Unhandled playlist number", { json: json, simplified: simplified, playlists: playlists });
+						return done(null, false);
+					}
+					var media = playlists[0].media;
+					var album_links = [];
+					var baseobj = null;
+					for (var _i = 0, media_1 = media; _i < media_1.length; _i++) {
+						var item = media_1[_i];
+						if (item.mediaType !== "TRACK") {
+							console_warn(cache_key, "Unhandled mediaType for item", { item: item });
+							continue;
+						}
+						api_cache.set("reelcrafter:media:" + item.id, item, 6 * 60 * 60);
+						var current_1 = false;
+						if (!baseobj) {
+							baseobj = get_obj_for_reelcrafter_mediaid_1(item.id);
+							if (baseobj)
+								current_1 = true;
+						}
+						album_links.push({
+							url: "https://play.reelcrafter.com/embed/" + simplified.embed.id + "#imu-mediaid=" + item.id,
+							is_current: current_1
+						});
+					}
+					if (!baseobj) {
+						console_error(cache_key, "No media for", { json: json, simplified: simplified, playlists: playlists, media: media });
+						return done(null, false);
+					}
+					baseobj.album_info = {
+						type: "links",
+						links: album_links
+					};
+					return done(baseobj, 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "madchensex.com" ||
+			domain_nowww === "freundinsex.com") {
+			newsrc = website_query({
+				website_regex: [
+					/^[a-z]+:\/\/[^/]+\/+(video\/+[^/]+)\/*(?:[?#].*)?$/, // freundinsex
+					/^[a-z]+:\/\/[^/]+\/+([^/]+)\/*(?:[?#].*)?$/, // madchensex
+				],
+				query_for_id: "https://" + domain + "/${id}/",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/playerOptions\s*=\s*({[\s\S]*?});/);
+					if (!match) {
+						console_error(cache_key, "Unable to find playerOptions match for", resp);
+						return done(null, false);
+					}
+					var fixup = fixup_js_obj_proper(match[1]);
+					var json = JSON_parse(fixup);
+					var sources = json.sources.sort(function(a, b) {
+						return b.res - a.res;
+					});
+					var extra = {
+						page: resp.finalUrl
+					};
+					var title = get_meta(resp.responseText, "name");
+					if (title)
+						extra.caption = title;
+					var created_date = get_meta(resp.responseText, "uploadDate");
+					if (created_date)
+						extra.created_date = new Date(created_date).getTime();
+					var urls = [];
+					for (var _i = 0, sources_1 = sources; _i < sources_1.length; _i++) {
+						var source = sources_1[_i];
+						urls.push({
+							url: source.src,
+							video: true
+						});
+					}
+					return done(fillobj_urls(urls, { extra: extra }), 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nosub === "blazestreaming.com") {
+			var fetch_scriptvod_1 = function(domain, cb) {
+				api_query("blazestreaming_scriptvod:" + domain, {
+					url: "https://" + domain + "/script_VOD.js"
+				}, cb, function(done, resp, cache_key) {
+					var match = resp.responseText.match(/PLAYBACK_URL\s*=\s*'(https?:\/\/[^']*?'\s*\+\s*videoId\s*\+\s*'[^']+)';/);
+					if (!match) {
+						console_error(cache_key, "Unable to find PLAYBACK_URL match for", resp);
+						return done(null, false);
+					}
+					var replaced = match[1].replace(/'\s*\+\s*videoId\s*\+\s*'/, "{VIDEOID}");
+					return done(replaced, 6 * 60 * 60);
+				});
+			};
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+\?(?:.*&)?id=([0-9a-f]+)(?:[&#].*)?$/,
+				query_for_id: "https://" + domain + "/?id=${id}",
+				run: function(cb, match) {
+					fetch_scriptvod_1(domain, function(playback_url) {
+						if (!playback_url) {
+							return cb(null);
+						}
+						return cb({
+							url: playback_url.replace("{VIDEOID}", match[1]),
+							video: "hls" // FIXME
+						});
+					});
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "at-s.com") {
+			match = src.match(/\/ats-tool\/+thumb\.php\?(?:.*&)?file=([^&]+)/);
+			if (match) {
+				return urljoin("https://" + domain + "/", decodeuri_ifneeded(match[1]), true);
 			}
 		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
@@ -69393,7 +69738,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			});
 		};
 		(function() { return __awaiter(_this_1, void 0, void 0, function() {
-			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_13, sobj, _a, queryobj_1, obj_14, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
+			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_14, sobj, _a, queryobj_1, obj_15, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
 			return __generator(this, function(_c) {
 				switch (_c.label) {
 					case 0:
@@ -69434,8 +69779,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							}
 						}
 						queryobj = [];
-						for (_i = 0, obj_13 = obj; _i < obj_13.length; _i++) {
-							sobj = obj_13[_i];
+						for (_i = 0, obj_14 = obj; _i < obj_14.length; _i++) {
+							sobj = obj_14[_i];
 							if (is_bad_url(sobj.url)) {
 								continue;
 							}
@@ -69443,9 +69788,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						}
 						// required to avoid querying an ok url twice
 						for (_a = 0, queryobj_1 = queryobj; _a < queryobj_1.length; _a++) {
-							obj_14 = queryobj_1[_a];
-							if (tried_urls.has(obj_14.url) && !is_bad_url(obj_14.url))
-								return [2 /*return*/, options.cb([obj_14], last_data)];
+							obj_15 = queryobj_1[_a];
+							if (tried_urls.has(obj_15.url) && !is_bad_url(obj_15.url))
+								return [2 /*return*/, options.cb([obj_15], last_data)];
 						}
 						if (!queryobj.length) {
 							if (_nir_debug_) {
@@ -80354,8 +80699,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var sources = [];
 			var source_el_set = new_set();
 			var _find_source = function(source) {
-				for (var _i = 0, sources_1 = sources; _i < sources_1.length; _i++) {
-					var src = sources_1[_i];
+				for (var _i = 0, sources_2 = sources; _i < sources_2.length; _i++) {
+					var src = sources_2[_i];
 					if (src.el === source.el)
 						return src;
 				}
@@ -80380,8 +80725,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				set_remove(source_el_set, source.el);
 			};
 			var reposition_source_outlines = function() {
-				for (var _i = 0, sources_2 = sources; _i < sources_2.length; _i++) {
-					var source = sources_2[_i];
+				for (var _i = 0, sources_3 = sources; _i < sources_3.length; _i++) {
+					var source = sources_3[_i];
 					var rect = source._real_el.getBoundingClientRect();
 					var outline_el = source._outline_el;
 					if (!outline_el)
@@ -80410,8 +80755,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (!sources.length)
 					return;
 				override_album = [];
-				for (var _i = 0, sources_3 = sources; _i < sources_3.length; _i++) {
-					var source = sources_3[_i];
+				for (var _i = 0, sources_4 = sources; _i < sources_4.length; _i++) {
+					var source = sources_4[_i];
 					override_album.push(source.el);
 				}
 				trigger_popup_with_source(sources[0], options);
