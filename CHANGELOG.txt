@@ -19,8 +19,9 @@ Bugfixes:
  * Fix crash when popping up for video removed from page
  * Fix gallery downloads failing for websites that use requirejs
  * Fix infinite loop on some bad images
+ * Fix open in new tab under ScriptCat (thanks to fireattack for reporting)
 
-Special thanks to nimbuz, remlap, fyhtma, sn3akybear, wikigen, kidonng, FecklessFeck, f2005, Egor Popov, Liz, haarp, F640, fireattack, karpuzikov, drunub, Froktime, in-the-halfway, James Joint, XiaoSong-CPE, meloner, Earthworm-Banana, RAT, schleeb, siloricity for their contributions and reports for this release
+Special thanks to nimbuz, remlap, fyhtma, sn3akybear, wikigen, kidonng, FecklessFeck, f2005, Egor Popov, Liz, haarp, F640, fireattack, karpuzikov, drunub, Froktime, in-the-halfway, James Joint, XiaoSong-CPE, meloner, Earthworm-Banana, RAT, schleeb, siloricity, WolfSkin0 for their contributions and reports for this release
 
 ---
 
