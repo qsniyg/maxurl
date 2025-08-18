@@ -22637,6 +22637,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "cdn.occtoo-media.com" ||
 			domain === "cdn.cbpaas.net" ||
 			domain === "static.the-independent.com" ||
+			domain === "file.kbb.com" ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -31365,7 +31366,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nosub === "etsystatic.com" &&
 			(domain.match(/img[0-9]*\.etsystatic\.com/) ||
 				domain === "i.etsystatic.com")) {
-			return src.replace(/(\/[a-z]+_)[0-9a-zA-Z]+x[0-9a-zA-Z]+\./, "$1fullxfull.");
+			return src.replace(/(\/[a-z]+_)[0-9a-zA-Z]+x[0-9a-zA-Z]+\./, "$1origxorig.");
 		}
 		if (domain_nosub === "twnmm.com") {
 			return urljoin(src, src.replace(/^[a-z]+:\/\/[^/]*\/thumb.*?[?&]src=([^?&]*).*/, "$1"), true);
@@ -37195,8 +37196,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return urljoin(src, decodeURIComponent(newsrc), true);
 		}
 		if (domain_nowww === "nudostar.tv" ||
-			domain_nowww === "fapomania.com") {
-			return src.replace(/(\/content(?:s|[0-9]+)\/+.\/+.\/+[^/]+\/+[0-9]+\/+[^/]+)_[0-9]+px\./, "$1.");
+			domain_nowww === "fapomania.com" ||
+			domain_nowww === "thefappeningblog.com") {
+			return src.replace(/(\/(?:content(?:s|[0-9]+)|data)\/+.\/+.\/+[^/]+\/+[0-9]+\/+[^/]+)_[0-9]+px\./, "$1.");
 		}
 		if (domain_nowww === "nudogram.com") {
 			newsrc = src.replace(/(\/contents\/+.\/+.\/+[^/]+\/+[0-9]+\/+[^/]+)_280\./, "$1.");
@@ -66381,7 +66383,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nowww === "saint2.su" ||
 			domain_nowww === "saint2.cr") {
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+embed\/+([-0-9a-zA-Z]+)(?:[?#].*)?$/,
+				website_regex: /^[a-z]+:\/\/[^/]+\/+embed\/+([-_0-9a-zA-Z]+)(?:[?#].*)?$/,
 				query_for_id: "https://" + domain + "/embed/${id}",
 				process: function(done, resp, cache_key) {
 					var obj = common_functions["get_videotag_obj"](resp, {
