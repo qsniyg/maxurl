@@ -99,6 +99,7 @@ var __assign = (this && this.__assign) || function() {
 // @grant             GM.notification
 // @grant             GM_setClipboard
 // @grant             GM.setClipboard
+// @grant             GM_cookie
 // @connect           *
 // api.github.com is used for checking for updates (can be disabled through the "Check Updates" setting)
 // @connect           api.github.com
@@ -2092,10 +2093,49 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				data.responseType = "arraybuffer";
 				data.imu_responseType = "blob";
 			}
+			var promises = [];
+			if (data.imu_cookies) {
+				var cookies_dict_1 = {};
+				var setcookies_1 = function() {
+					for (var cookiename in data.imu_cookies) {
+						cookies_dict_1[cookiename] = data.imu_cookies[cookiename];
+					}
+					var cookies_list = headers_dict_to_list(cookies_dict_1);
+					var cookie_header = cookies_to_httpheader(cookies_list);
+					headerobj_set(data.headers, "Cookie", cookie_header);
+				};
+				if (get_cookies && data.url) {
+					promises.push(new Promise(function(resolve, reject) {
+						get_cookies(data.url, function(cookies) {
+							if (cookies)
+								cookies_dict_1 = headers_list_to_dict(cookies);
+							setcookies_1();
+							resolve(null);
+						});
+					}));
+				} else {
+					setcookies_1();
+				}
+			}
 			if (_nir_debug_) {
 				console_log("do_request (modified data):", deepcopy(data));
 			}
-			return raw_request_do(data);
+			var req_obj = null;
+			var do_abort = false;
+			Promise.all(promises).then(function() {
+				req_obj = raw_request_do(data);
+				if (do_abort)
+					req_obj.abort();
+			});
+			return {
+				abort: function() {
+					if (!req_obj) {
+						do_abort = true;
+					} else {
+						req_obj.abort();
+					}
+				}
+			};
 		};
 	} else if (is_interactive) {
 		console.warn("Unable to initialize do_request, most functions will likely fail");
@@ -2627,7 +2667,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		};
 	} else if (is_userscript) {
 		// TODO: support GM_cookie
-		get_cookies = function(url, cb, options) {
+		var get_cookies_browser_1 = function(url, cb, options) {
 			if (settings.browser_cookies === false) {
 				return cb(null);
 			}
@@ -2648,6 +2688,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				cb(null);
 			}
 		};
+		if (typeof GM_cookie === "function") {
+			get_cookies = function(url, cb, options) {
+				GM_cookie("list", { url: url }, function(cookies) {
+					if (!cookies || !cookies.length) {
+						return get_cookies_browser_1(url, cb, options);
+					}
+					return cb(cookies);
+				});
+			};
+		} else {
+			get_cookies = get_cookies_browser_1;
+		}
 	}
 	var _localstorage_check_origin = function(url) {
 		var url_domain = get_domain_from_url(url);
@@ -19668,6 +19720,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/\/News\/NewsThumbnail(\/[0-9]+\/)(?:[0-9]+_)?([0-9]+\.[^/.]*)$/, "/News/Contents$1$2")
 				.replace(/(\/Photo\/Contents\/[0-9]+\/)[0-9]+_([0-9]+\.[^/.]*)$/, "$1$2");
 		}
+		if (domain === "poc-cf-image.cjenm.com") return src.replace(/\/resize\/+[0-9]+\/+public\/+/, "/public/");
 		if (domain_nosub === "stardailynews.co.kr" ||
 			domain_nosub === "liveen.co.kr" ||
 			domain_nosub === "ilyoseoul.co.kr" ||
@@ -22638,6 +22691,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "cdn.cbpaas.net" ||
 			domain === "static.the-independent.com" ||
 			domain === "file.kbb.com" ||
+			domain_nosub === "1stdibscdn.com" ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -22679,7 +22733,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "mz.eastday.com" ||
 			domain === "s.isanook.com" ||
 			domain === "img.kwcdn.com" ||
-			domain_nosub === "fengimg.com") {
+			domain === "aimg.kwcdn.com" ||
+			domain_nosub === "fengimg.com" ||
+			/\?image(?:Mogr|View)2\/(?:format|thumbnail|auto-orient|crop|strip)\//.test(src)) {
 			src = src.replace(/\?.*$/, "");
 		}
 		if ((domain_nosub === "tradesy.com" && domain.match(/^item[0-9]*\.tradesy/) && string_indexof(src, "/images/") >= 0) ||
@@ -27226,7 +27282,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/(\/books\/[0-9]*)[a-z]\//, "$1l/");
 		}
 		if (domain === "dynamic.indigoimages.ca") return src.replace(/(\?.*)?$/, "?width=999999999");
-		if (domain === "cdn.mos.cms.futurecdn.net") return src.replace(/-[0-9]+-[0-9]+(\.[^/.]*(?:\.webp)?)(?:[?#].*)?$/, "$1");
+		if (domain === "cdn.mos.cms.futurecdn.net") {
+			return src
+				.replace(/(\/[0-9a-zA-Z]+\.[a-z]+)\.webp(?:[?#].*)?$/, "$1")
+				.replace(/-[0-9]+-[0-9]+(\.[^/.]*(?:\.webp)?)(?:[?#].*)?$/, "$1");
+		}
 		if (domain === "www.allkpop.com") {
 			return src
 				.replace(/\/af\/([0-9]*\/[^/]*)$/, "/af_org/$1")
@@ -27314,7 +27374,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nowww === "sass.com.ua" ||
 			domain === "media.globalcitizen.org" ||
 			(domain_nowww === "kexp.org" && /:\/\/[^/]+\/+media\//.test(src)) ||
-			domain === "bento.cdn.pbs.org") {
+			domain_nosub === "pbs.org") {
 			return src.replace(/\/(?:filer_)?(?:public_)?thumbnails\/+(.*\/[^/]*?\.[a-z]+)__[^/]*(?:[?#].*)?$/, "/$1");
 		}
 		if (domain === "files.sharenator.com") return src.replace(/(:\/\/[^/]*\/)[^/.]+-s[0-9]+x[0-9]+-([0-9]{4,})(?:-[0-9]*)?(\.[^/.]*)$/, "$1$2$3");
@@ -28738,6 +28798,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (amazon_container === "bucket.scribblelive.com" ||
 			domain === "images.scribblelive.com") {
 			return src.replace(/_[0-9]+(\.[^/.]*)$/, "$1");
+		}
+		if (domain === "cdn.images.express.co.uk") {
+			return src
+				.replace(/\.avif(?:[?#].*)?$/, ".jpg")
+				.replace(/(\/img\/+dynamic\/+[0-9]+\/+)[1-8][0-9]{2}x[0-9]*\/+/, "$1940x/");
 		}
 		if (domain === "www.dhresource.com" ||
 			domain === "image.dhgate.com") {
@@ -32569,6 +32634,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nosub === "crunchyroll.com" && domain.match(/img[0-9]*\.[^/.]*\.crunchyroll\.com/)) {
 			return src.replace(/(\/[0-9a-f]+)_(?:thumb|full)(\.[^/.]*)$/, "$1_main$2");
 		}
+		if (domain_nowww === "crunchyroll.com") return src.replace(/:\/\/[^/]+\/+imgsrv\/+.*?\/(catalog\/+crunchyroll\/)/, "://imgsrv.crunchyroll.com/$1");
 		if (domain === "d3ieicw58ybon5.cloudfront.net") {
 			return {
 				url: src
@@ -35968,7 +36034,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (domain === "d2pqhom6oey9wx.cloudfront.net") return src.replace(/\/img_(?:thumb|resize)\//, "/img_original/");
-		if (domain === "i.gyazo.com") return src.replace(/\/thumb\/[0-9]+\/([0-9a-f]+)-([a-z]+)\.[^/.]*$/, "/$1.$2");
+		if (domain === "i.gyazo.com") {
+			return {
+				url: src.replace(/\/thumb\/[0-9]+\/([0-9a-f]+)-([a-z]+)\.[^/.]*$/, "/$1.$2"),
+				headers: {
+					Referer: "https://gyazo.com/"
+				}
+			};
+		}
+		if (domain === "thumb.gyazo.com") return src.replace(/(\/thumb\/+)[0-9]+(?:_w)?\/+/, "$19999/");
 		if (domain === "cdn.theatlantic.com") {
 			newsrc = src.replace(/\/thumbor\/.*\/(?:assets\/+)?media\/+/, "/assets/media/");
 			if (newsrc !== src)
@@ -36172,14 +36246,26 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+image\/+([0-9a-f]+)(?:[?#].*)?$/,
-				query_for_id: "https://www.imagebam.com/image/${id}",
+				query_for_id: {
+					url: "https://www.imagebam.com/image/${id}",
+					imu_cookies: {
+						sfw_inter: "1",
+						nsfw_inter: "1"
+					}
+				},
 				process: process_imagebam
 			});
 			if (newsrc)
 				return newsrc;
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+view\/+([0-9A-Z]+)(?:[?#].*)?$/,
-				query_for_id: "https://www.imagebam.com/view/${id}",
+				query_for_id: {
+					url: "https://www.imagebam.com/view/${id}",
+					imu_cookies: {
+						sfw_inter: "1",
+						nsfw_inter: "1"
+					}
+				},
 				process: process_imagebam
 			});
 			if (newsrc)
@@ -37422,6 +37508,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "weleaked.com" ||
 			domain_nowww === "leak.xxx" ||
 			domain_nowww === "sexvid.xxx" ||
+			domain_nowww === "sortporn.com" ||
+			domain_nowww === "85po.com" ||
+			domain_nowww === "femdomvc.com" ||
+			domain_nowww === "camstreams.tv" ||
+			domain_nowww === "oncams.tv" ||
 			domain_nosub === "mylust.com" ||
 			domain_nosub === "yourlust.com" ||
 			domain_nowww === "pornrewind.com") {
@@ -37517,7 +37608,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			} else if (domain_nosub === "smutr.com") {
 				videos_component = "v";
 				a_component = "";
-			} else if (domain_nosub === "mature-porn.xxx") {
+			} else if (domain_nosub === "mature-porn.xxx" || domain_nosub === "85po.com") {
 				videos_component = "v";
 				addslash = "";
 				basedomain = "http://www." + domain_nosub + "/";
@@ -38424,6 +38515,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							Referer: resp.finalUrl
 						}
 					}), 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "pornoxo.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+videos\/+([^/]+)\/+(?:[^/]*\/*)?(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/videos/${id}/",
+				process: function(done, resp) {
+					var obj = common_functions["get_videotag_obj"](resp);
+					done(obj, obj ? 60 * 60 : false);
 				}
 			});
 			if (newsrc)
@@ -40249,7 +40352,19 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "cdn.xnxxpics.top" ||
 			domain === "cdn.hdpornpics.net" ||
 			domain === "cdn.pussy-porn-pics.com") {
-			return src.replace(/(:\/\/[^/]*\/)[0-9]\//, "$10/");
+			newsrc = src.replace(/(:\/\/[^/]*\/)[0-9]\//, "$10/");
+			if (newsrc !== src)
+				return newsrc;
+		}
+		if ((domain_nosub === "porn7.net" ||
+			domain_nosub === "pornpic.xxx" ||
+			domain_nosub === "xpics.me") && /^cdn[0-9]*\./.test(domain)) {
+			return {
+				url: src
+					.replace(/(:\/\/[^/]+\/+photo\/+)[0-9]+\/+([0-9]{4}\/+[0-9]{2}\/+[0-9]+_[0-9]+\.)/, "$1$2")
+					.replace(/(:\/\/[^/]+\/+photo\/+)([0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9]+\/+[0-9a-zA-Z]+\.)/, "$1300/$2"),
+				can_head: false // 415
+			};
 		}
 		if (domain_nowww === "nehuha.net" && string_indexof(src, "/data/photo/") >= 0) {
 			return src.replace(/\/thumb\.([^/]*)$/, "/$1");
@@ -42845,13 +42960,32 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nowww === "asianthumbs.org") return src.replace(/(\/gallery\/+.*\/+)tn\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		if (domain === "pics.r18.com" ||
 			domain === "pics.dmm.co.jp" ||
+			domain === "awsimgsrc.dmm.co.jp" ||
 			domain === "pics.avdmm.top") {
+			newsrc = src.replace(/:\/\/pics(\.[^/]+\/+)(digital\/+)/, "://awsimgsrc$1pics_dig/$2");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					head_wrong_contenttype: true
+				};
+			newsrc = src.replace(/\?.*/, "");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					head_wrong_contenttype: true
+				};
 			newsrc = src.replace(/(\/digital\/+video\/+[0-9a-z_]+[0-9]+\/+[0-9a-z_]+[0-9]+)(-[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1jp$2");
 			if (newsrc !== src)
-				return newsrc;
+				return {
+					url: newsrc,
+					head_wrong_contenttype: true
+				};
 			newsrc = src.replace(/(\/digital\/+video\/+[0-9a-z_]+[0-9]+\/+[0-9a-z_]+[0-9]+p)[ts](\.[^/.]+)(?:[?#].*)?$/, "$1l$2");
 			if (newsrc !== src)
-				return newsrc;
+				return {
+					url: newsrc,
+					head_wrong_contenttype: true
+				};
 		}
 		if (domain === "pics.dmm.com" ||
 			domain === "pics.dmm.co.jp") {
@@ -44926,12 +45060,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return src.replace(/\/br(\/+pb\/+[0-9]+\/+[0-9a-f]+)\/+[0-9]+(?:[?#].*)?$/, "/bg$1");
 		}
 		if (domain_nowww === "mosaically.com") return src.replace(/\/photo\/+[0-9]+\/+([0-9]{4}\/+)/, "/photo/full/$1");
-		if (domain_nosub === "porn7.net" && /^cdn[0-9]*\./.test(domain)) {
-			return {
-				url: src.replace(/(:\/\/[^/]+\/+photo\/+)[0-9]+\/+([0-9]{4}\/+.*?\/[0-9]+_[0-9]+\.)/, "$1$2"),
-				can_head: false // 415
-			};
-		}
 		if (domain === "img.ecartelera.com") return src.replace(/(\/[0-9]+)(?:-[a-z0-9]+)?(\.[^/.]*)(?:[?#].*)?$/, "$1-m$2");
 		if (domain === "cdn.releases.com") return src.replace(/(\/img\/+postattachments\/+[0-9]+)\/+[0-9]+(?:[?#].*)?$/, "$1");
 		if (domain_nowww === "4words.ru") return src.replace(/\/gallery\/+thumbs\/+[0-9]+\/+/, "/gallery/");
@@ -52950,6 +53078,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nosub === "plibcdn.com" ||
 			domain_nosub === "vptpcs.com" ||
 			domain_nowww === "viptube.com" ||
+			domain_nosub === "yptpsn.com" ||
+			domain_nowww === "yeptube.com" ||
 			domain_nosub === "vptpsn.com" ||
 			domain_nosub === "viptube.com") && options.do_request && options.cb) {
 			newsrc = src.replace(/\/media\/+photos\/+tmb(?:_new)?\/+/, "/media/photos/");
@@ -53056,6 +53186,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			} else if (domain_nosub === "viptube.com" || domain_nosub === "vptpcs.com") {
 				iceporn_domain = "viptube.com";
 				iceporn_aid = 0;
+			} else if (domain_nosub === "yeptube.com" || domain_nosub === "yptpsn.com") {
+				iceporn_domain = "yeptube.com";
+				iceporn_aid = 4;
 			}
 			id = get_iceporn_id_from_url(src);
 			if (id) {
@@ -62927,7 +63060,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain === "media.comikey.com") return src.replace(/:\/\/[^/]+\/+gazo\/+[0-9]+\/+[a-z]+\/+/, "://comikey.com/media/");
 		if (domain_nowww === "wright20.com") return src.replace(/\/items\/+index\/+[0-9]+\/+/, "/items/index/0/");
 		if (domain === "image.civitai.com") return src.replace(/^([a-z]+:\/\/[^/]+\/+[^/]+\/+[^/]+\/+)(?:width|height|original)=[^/]+\/+/, "$1original=true/");
-		if (domain_nowww === "vxxx.com" && options.do_request && options.cb) {
+		if ((domain_nowww === "vxxx.com" ||
+			domain_nowww === "abmilf.com" ||
+			domain_nowww === "01tube.com" ||
+			domain_nowww === "inporn.com" ||
+			domain_nowww === "porntop.com" ||
+			domain_nowww === "xmilf.com" ||
+			domain_nowww === "bdsmx.tube" ||
+			domain_nowww === "blackporn.tube" ||
+			domain_nowww === "aniporn.com" ||
+			domain_nowww === "lesbigo.com" ||
+			domain_nowww === "vr-porn.tube" ||
+			domain_nowww === "xjav.tube" ||
+			domain_nowww === "manysex.com" ||
+			domain_nowww === "porn-latina.com") && options.do_request && options.cb) {
 			var vxxx_b64_1 = function(e) {
 				return base64_decode(e
 					.replace(/\u0410/g, "A") // А
@@ -62941,7 +63087,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 			var get_vxxx_video_1 = function(id, cb) {
 				api_query("vxxx:" + id, {
-					url: "https://vxxx.com/api/videofile.php?video_id=" + id + "&lifetime=8640000",
+					url: "https://" + domain_nosub + "/api/videofile.php?video_id=" + id + "&lifetime=8640000",
 					imu_mode: "xhr"
 				}, cb, function(done, resp, cache_key) {
 					var json = JSON_parse(resp.responseText);
@@ -62968,9 +63114,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					return done(urls, 12 * 60 * 60);
 				});
 			};
+			var get_page_for_vxxx_video_1 = function(id) {
+				if (domain_nosub === "vxxx.com") {
+					return "https://" + domain + "/video-" + id + "/";
+				} else if (domain_nosub === "porn-latina.com" ||
+					domain_nosub === "lesbigo.com" ||
+					domain_nosub === "01tube.com") {
+					return "https://" + domain + "/videos/" + id + "/";
+				} else {
+					return "https://" + domain + "/video/" + id + "/a";
+				}
+			};
 			var get_vxxx_meta_1 = function(id, cb) {
 				api_query("vxxx_meta:" + id, {
-					url: "https://vxxx.com/api/json/video/86400/0/" + ((id / 1000) | 0) + "/" + id + ".json",
+					url: "https://" + domain_nosub + "/api/json/video/86400/0/" + ((id / 1000) | 0) + "/" + id + ".json",
 					imu_mode: "xhr",
 					json: true
 				}, cb, function(done, resp, cache_key) {
@@ -62978,20 +63135,23 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						caption: resp.video.title,
 						author_username: resp.video.user.username,
 						created_date: new Date(resp.video.post_date).getTime(),
-						page: "https://vxxx.com/video-" + id + "/"
+						page: get_page_for_vxxx_video_1(id)
 					};
 					return done(extra, 6 * 60 * 60);
 				});
 			};
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+video-([0-9]+)\/*(?:[?#].*)?$/,
+				website_regex: [
+					/^[a-z]+:\/\/[^/]+\/+video-([0-9]+)\/*(?:[?#].*)?$/, // vxxx
+					/^[a-z]+:\/\/[^/]+\/+videos?\/+([0-9]+)(?:\/.*)?(?:[?#].*)?$/, // abmilf (video), porn-latina (videos)
+				],
 				run: function(cb, match) {
 					get_vxxx_video_1(match[1], function(resp) {
 						if (!resp)
 							return cb(null);
 						var baseobj = {
 							extra: {
-								page: "https://vxxx.com/video-" + match[1] + "/"
+								page: get_page_for_vxxx_video_1(match[1])
 							}
 						};
 						if (options.force_page) {
@@ -63111,7 +63271,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return src.replace(/(\/images\/+[^/]+\/+(?:timeline|profile)\/+[0-9]+_[0-9]+_[0-9]+_[0-9]+)_[^/.?#]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 		if (domain === "saint-laurent.dam.kering.com") {
-			return src.replace(/(\/m\/+[0-9a-f]+\/+)(?:Thumbnail|Small)-/i, "$1eCom-");
+			return src
+				.replace(/(\/m\/+[0-9a-f]+\/+)eCom-/i, "$1Original_eCom-")
+				.replace(/(\/m\/+[0-9a-f]+\/+)Large-/i, "$1eCom-")
+				.replace(/(\/m\/+[0-9a-f]+\/+)(?:Thumbnail|Small|Medium2?)-/i, "$1Large-");
 		}
 		if (domain_nowww === "igcdn.xyz") {
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+\?(?:.*&)?file=([^&]+)(?:[&#].*)?$/, "$1");
@@ -63557,7 +63720,19 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return newsrc;
 			match = src.match(/\/img\/+[^/]+\/+plain\/+(did:plc:[a-z0-9]+)\/+([0-9a-z]+)(?:@[a-z]+)?(?:[?#].*)?$/);
 			if (match) {
-				return "https://bsky.social/xrpc/com.atproto.sync.getBlob?did=" + match[1] + "&cid=" + match[2];
+				return {
+					url: "https://bsky.social/xrpc/com.atproto.sync.getBlob?did=" + match[1] + "&cid=" + match[2],
+					filename: match[2]
+				};
+			}
+		}
+		if (domain_nosub === "bsky.network") {
+			match = src.match(/\/com\.atproto\.sync\.getBlob\?(?:.*&)?cid=([0-9a-z]+)/);
+			if (match) {
+				return {
+					url: src,
+					filename: match[1]
+				};
 			}
 		}
 		if (domain_nosub === "24chasa.bg" && /^cache[0-9]*\./.test(domain)) {
@@ -66902,6 +67077,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return add_full_extensions(newsrc, ["webp", "jpg"]);
 			}
 		}
+		if (domain_nowww === "rightutors.com") return src.replace(/(\/image\/+show\/+[0-9]+\/+[0-9]+\/+)(?:SMALL|MEDIUM|LARGE)(?:[?#].*)?$/, "$1ORIGINAL");
+		if (domain === "catalog.m3net.jp") return src.replace(/(\/archive\/+.*\/)thumbnail\/+/, "$1large/");
+		if (domain_nowww === "honyaclub.com") {
+			return {
+				url: src.replace(/(\/img\/+goods\/+[^/]+\/+)S\/+/, "$1L/"),
+				can_head: false // 404
+			};
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -70122,6 +70305,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (!is_array(list[0])) {
 			list = [list];
 		}
+		list = list;
 		var result = [];
 		for (var i = 0; i < list.length; i++) {
 			result.push(get_single_trigger_key_text(list[i]));
@@ -70634,6 +70818,79 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		keys[str] = value;
 		return keys;
 	}
+	var IMUSingleChord = /** @class */ (function() {
+		function IMUSingleChord(chord) {
+			this.chord = [];
+			if (chord)
+				this.chord = chord;
+		}
+		IMUSingleChord.prototype.clear = function() {
+			this.chord = [];
+		};
+		IMUSingleChord.prototype.copy = function() {
+			return new IMUSingleChord(deepcopy(this.chord));
+		};
+		IMUSingleChord.prototype.hasKey = function(keystr) {
+			return array_indexof(this.chord, keystr) >= 0;
+		};
+		IMUSingleChord.prototype.setKey = function(keystr, value) {
+			if (value) {
+				if (!this.hasKey(keystr)) {
+					this.chord.push(keystr);
+				}
+			} else {
+				var index = array_indexof(this.chord, keystr);
+				if (index >= 0) {
+					this.chord.splice(index, 1);
+				}
+			}
+		};
+		IMUSingleChord.prototype.isEmpty = function() {
+			return this.chord.length === 0;
+		};
+		IMUSingleChord.prototype.isOnlyWheel = function() {
+			for (var _i = 0, _a = this.chord; _i < _a.length; _i++) {
+				var key = _a[_i];
+				if (!keystr_is_wheel(key) && !keystr_is_button12(key)) {
+					return false;
+				}
+			}
+			return true;
+		};
+		IMUSingleChord.prototype.isOnlyButton1 = function() {
+			if (this.chord.length !== 1)
+				return false;
+			return keystr_is_button12(this.chord[0]);
+		};
+		IMUSingleChord.prototype.isBad = function() {
+			if (this.isOnlyWheel())
+				return true;
+			if (this.isOnlyButton1())
+				return true;
+			return false;
+		};
+		IMUSingleChord.prototype.isValid = function() {
+			if (this.chord.length === 0)
+				return false;
+			if (this.isBad())
+				return false;
+			if (this.chord.length > 1)
+				return true;
+			return true;
+		};
+		IMUSingleChord.prototype.getTriggerKeyText = function() {
+			return get_single_trigger_key_text(this.chord);
+		};
+		IMUSingleChord.prototype.clearWheelKeys = function() {
+			for (var i = 0; i < this.chord.length; i++) {
+				if (keystr_is_wheel(this.chord[i])) {
+					this.chord.splice(i, 1);
+					i--;
+				}
+			}
+		};
+		return IMUSingleChord;
+	}());
 	var keystr_is_wheel = function(keystr) {
 		return /^wheel/.test(keystr);
 	};
@@ -70641,30 +70898,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		// allow rebinding right click
 		// todo: maybe add a warning if done globally (e.g. trigger key)?
 		return keystr === "button1"; // || keystr === "button2";
-	};
-	var chord_is_only_wheel = function(chord) {
-		for (var i = 0; i < chord.length; i++) {
-			if (!keystr_is_wheel(chord[i]) && !keystr_is_button12(chord[i])) {
-				return false;
-			}
-		}
-		return true;
-	};
-	var keysequence_bad = function(keyseq) {
-		if (chord_is_only_wheel(keyseq))
-			return true;
-		if (keyseq.length !== 1)
-			return false;
-		return keystr_is_button12(keyseq[0]);
-	};
-	var keysequence_valid = function(keyseq) {
-		if (keyseq.length === 0)
-			return false;
-		if (keysequence_bad(keyseq))
-			return false;
-		if (keyseq.length > 1)
-			return true;
-		return true;
 	};
 	var prefers_dark_mode = function() {
 		try {
@@ -70733,39 +70966,31 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	function do_options() {
 		update_dark_mode();
 		var recording_keys = false;
-		var options_chord = [];
-		var current_options_chord = [];
+		var options_chord = new IMUSingleChord();
+		var current_options_chord = new IMUSingleChord();
 		function update_options_chord(event, value) {
 			if (!recording_keys)
 				return;
 			var map = get_keystrs_map(event, value);
 			if ((keycode_to_str(event) || event.type === "mousedown") &&
-				current_options_chord.length === 0) {
+				current_options_chord.isEmpty()) {
 				// Don't clear the options chord for either left or right mouse buttons
 				if (event.button !== 0 && event.button !== 2)
-					options_chord = [];
+					options_chord.clear();
 			}
-			var old_options_chord = deepcopy(options_chord);
+			var old_options_chord = options_chord.copy();
 			for (var key in map) {
 				update_options_chord_sub(key, map[key]);
 			}
-			if (keysequence_bad(options_chord))
+			if (options_chord.isBad())
 				options_chord = old_options_chord;
 			recording_keys();
 		}
 		function update_options_chord_sub(str, value) {
 			if (value) {
-				if (array_indexof(options_chord, str) < 0) {
-					options_chord.push(str);
-				}
-				if (array_indexof(current_options_chord, str) < 0) {
-					current_options_chord.push(str);
-				}
-			} else {
-				if (array_indexof(current_options_chord, str) >= 0) {
-					current_options_chord.splice(array_indexof(current_options_chord, str), 1);
-				}
+				options_chord.setKey(str, value);
 			}
+			current_options_chord.setKey(str, value);
 		}
 		document.addEventListener('keydown', function(event) {
 			update_options_chord(event, true);
@@ -71918,22 +72143,22 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					sub_record_btn.innerText = _("Record");
 					var do_record = function() {
 						if (recording_keys) {
-							if (keysequence_valid(options_chord)) {
-								values[index] = options_chord;
+							if (options_chord.isValid()) {
+								values[index] = options_chord.chord;
 								update_keyseq_setting();
 								//do_update_setting(setting, options_chord, meta);
 								//settings[setting] = options_chord;
 								do_cancel();
 							}
 						} else {
-							options_chord = [];
-							current_options_chord = [];
+							options_chord.clear();
+							current_options_chord.clear();
 							recording_keys = function() {
 								var our_chord = options_chord;
-								if (our_chord.length === 0)
-									our_chord = values[index];
-								sub_key_td.innerText = get_trigger_key_texts(our_chord);
-								if (keysequence_valid(options_chord)) {
+								if (our_chord.isEmpty())
+									our_chord = new IMUSingleChord(values[index]);
+								sub_key_td.innerText = our_chord.getTriggerKeyText();
+								if (options_chord.isValid()) {
 									sub_record_btn.classList.remove("disabled");
 								} else {
 									sub_record_btn.classList.add("disabled");
@@ -73901,7 +74126,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		var elwaitingstyleclass = null;
 		var elwaitingstyleel = null;
 		var waitingsize = 200;
-		var current_chord = [];
+		var current_chord = new IMUSingleChord();
 		var current_chord_timeout = {};
 		var release_ignore = [];
 		var editing_text = false;
@@ -79208,22 +79433,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		function can_add_to_chord(str) {
 			if (!keystr_is_wheel(str))
 				return true;
-			return !chord_is_only_wheel(current_chord);
-		}
-		function clear_chord_wheel() {
-			for (var i = 0; i < current_chord.length; i++) {
-				if (keystr_is_wheel(current_chord[i])) {
-					current_chord.splice(i, 1);
-					i--;
-				}
-			}
+			return !current_chord.isOnlyWheel();
 		}
 		function clear_chord() {
-			current_chord = [];
+			current_chord.clear();
 			current_chord_timeout = {};
 		}
 		function clear_chord_if_only_wheel() {
-			if (chord_is_only_wheel(current_chord))
+			if (current_chord.isOnlyWheel())
 				clear_chord();
 		}
 		function keystr_in_trigger(str, wanted_chord) {
@@ -79233,10 +79450,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (value) {
 				if (!can_add_to_chord(str))
 					return false;
-				if (array_indexof(current_chord, str) < 0)
+				if (!current_chord.hasKey(str))
 					return true;
 			} else {
-				if (array_indexof(current_chord, str) >= 0)
+				if (current_chord.hasKey(str))
 					return true;
 			}
 			return false;
@@ -79246,15 +79463,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (!can_add_to_chord(str))
 					return false;
 				current_chord_timeout[str] = Date.now();
-				if (array_indexof(current_chord, str) < 0) {
-					current_chord.push(str);
+				if (!current_chord.hasKey(str)) {
+					current_chord.setKey(str, value);
 					//console_log("+" + str);
 					return true;
 				}
 			} else {
 				delete current_chord_timeout[str];
-				if (array_indexof(current_chord, str) >= 0) {
-					current_chord.splice(array_indexof(current_chord, str), 1);
+				if (current_chord.hasKey(str)) {
+					current_chord.setKey(str, value);
 					clear_chord_if_only_wheel();
 					//console_log("-" + str);
 					return true;
@@ -79321,14 +79538,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		function trigger_complete_single(wanted_chord) {
 			for (var i = 0; i < wanted_chord.length; i++) {
 				var key = wanted_chord[i];
-				if (array_indexof(current_chord, key) < 0)
+				if (!current_chord.hasKey(key))
 					return false;
 			}
 			// e.g. if the user presses shift+r, but the chord is r, then it should fail
-			for (var i = 0; i < current_chord.length; i++) {
-				if (keystr_is_wheel(current_chord[i]))
+			for (var i = 0; i < current_chord.chord.length; i++) {
+				if (keystr_is_wheel(current_chord.chord[i]))
 					continue;
-				if (array_indexof(wanted_chord, current_chord[i]) < 0)
+				if (array_indexof(wanted_chord, current_chord.chord[i]) < 0)
 					return false;
 			}
 			return true;
@@ -79344,7 +79561,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		function trigger_partially_complete_single(e, wanted_chord) {
 			for (var i = 0; i < wanted_chord.length; i++) {
 				var key = wanted_chord[i];
-				if (array_indexof(current_chord, key) >= 0)
+				if (current_chord.hasKey(key))
 					return true;
 			}
 			return false;
@@ -80734,13 +80951,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var resize_handler = function() {
 				reposition_source_outlines();
 			};
-			our_addEventListener(window, "resize", resize_handler);
+			our_addEventListener(get_window(), "resize", resize_handler);
 			exit_custom_gallery = function() {
 				if (alt_keydown_cb === our_keydown_cb)
 					alt_keydown_cb = null;
 				set_remove(exclude_find_els, maskel);
 				base_maskel.parentElement.removeChild(base_maskel);
-				our_removeEventListener(window, "resize", resize_handler);
+				our_removeEventListener(get_window(), "resize", resize_handler);
 				exit_custom_gallery = null;
 			};
 			var trigger_popup = function(options) {
@@ -82144,7 +82361,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (_nir_debug_) nir_debug("input", "keydown_cb", event);
 			if (!mouseover_base_enabled())
 				return;
-			if (event.type === "wheel" && chord_is_only_wheel(current_chord))
+			if (event.type === "wheel" && current_chord.isOnlyWheel())
 				return;
 			if (event.type === "keydown") {
 				// thanks to lnp5131 on github: https://github.com/qsniyg/maxurl/issues/415#issuecomment-684847125
@@ -82412,7 +82629,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				release_ignore = deepcopy(release_ignore);
 			}
 			if (actions && actions.length > 0) {
-				clear_chord_wheel();
+				current_chord.clearWheelKeys();
 				for (var i = 0; i < actions.length; i++) {
 					action_handler(actions[i]);
 				}
@@ -82748,7 +82965,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			our_addEventListener(document, 'mouseup', keyup_cb, eventlistener_opts);
 			our_addEventListener(document, 'contextmenu', update_contextmenu_pos);
 			our_addEventListener(document, 'focus', tabactive_cb);
-			our_addEventListener(window, 'focus', tabactive_cb);
+			our_addEventListener(get_window(), 'focus', tabactive_cb);
 			our_addEventListener(document, 'keydown', tabactive_cb);
 			our_addEventListener(document, 'wheel', tabactive_cb);
 			our_addEventListener(document, 'mousemove', tabactive_cb);
