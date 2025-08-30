@@ -34267,7 +34267,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain === "images.nintendolife.com") {
 			return src
 				.replace(/(\/attachment\/[^/]*\/)[^/]+(\.[^/.]*)$/, "$1original$2")
-				.replace(/(:\/\/[^/]+\/+[0-9a-f]{5,}\/+(?:[^/]+\.)?)(?:cover_)?(?:[0-9]*x[0-9]*|large|cover)(\.[^/.]+)(?:[?#].*)?$/, "$1original$2");
+				.replace(/(:\/\/[^/]+\/+[0-9a-f]{5,}\/+(?:[^/]+\.)?)(?:cover_)?(?:[0-9]*x[0-9]*|small|medium|large|cover)(\.[^/.]+)(?:[?#].*)?$/, "$1original$2");
 		}
 		if (domain === "cdn.igromania.ru") return src.replace(/(\/[0-9a-f]+)(?:_[^-_/.]*)?(\.[^/.]*)$/, "$1_original$2");
 		if (domain === "i.blogs.es") return src.replace(/\/[0-9]+_[0-9]+(\.[^/.]*)$/, "/original$1");
@@ -62570,6 +62570,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "cosplayrule34.com" ||
 			domain_nowww === "cosplayasian.com" ||
 			domain_nowww === "ocosplay.com" ||
+			domain_nowww === "vipthots.com" ||
 			domain_nowww === "cosplaythots.com") {
 			return src.replace(/\/images\/+a\/+604\/+/, "/images/a/1280/");
 		}
