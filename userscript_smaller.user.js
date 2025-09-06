@@ -23221,6 +23221,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain === "images.prestigeonline.com" && /\/content\/+uploads\//.test(src)) ||
 			(domain_nowww === "tennis.com.au" && /\/sa\/+files\//.test(src)) ||
 			(domain_nowww === "declic.org" && /\/uploads\/.*\/images\//.test(src)) ||
+			(domain === "assets.korearisk.com" && string_indexof(src, "/uploads/") >= 0) ||
 			domain === "cdn.entameclip.com") {
 			src = src.replace(/-[0-9]+x[0-9]+\.([^/]*(?:[?#].*)?)$/, ".$1");
 		}
@@ -64789,7 +64790,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "pictimecloudaf-m.azureedge.net") {
 			return src.replace(/(\/pictures\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9a-z]+\/+)(?:thumb|small)res\/+/, "$1lowres/");
 		}
-		if (domain === "static.pepper.ru") return src.replace(/\/(?:re\/+[0-9]+x[0-9]+|qt\/+[0-9]+)(\/+[^/]+)(?:[?#].*)?$/, "$1");
+		if (domain === "static.pepper.ru" ||
+			domain === "static.pepper.pl") {
+			return src.replace(/\/(?:(?:re|fs)\/+[0-9]+x[0-9]+|qt\/+[0-9]+)(\/+[^/]+)(?:[?#].*)?$/, "$1");
+		}
 		if (domain === "goods-photos.static1-sima-land.com") return src.replace(/(\/items\/+[0-9]+\/+[0-9]+\/+)(?:140|280|400|700)\./, "$11600.");
 		if (domain === "media.obi.ru") return src.replace(/\/resize\/+[0-9]+x[0-9]+\/+media\/+/, "/media/");
 		if (domain_nowww === "unc.ua") return src.replace(/\/thumbs\/+(?:medium|large)_/, "/thumbs/big_");
