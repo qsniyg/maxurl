@@ -38696,10 +38696,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nosub === "mt-static.com" && /^img[0-9]*\./.test(domain)) {
 			return src.replace(/(\/contents\/+albums_overview\/+[0-9]+\/+[0-9]+\/+)[0-9]+x[0-9]+\/+/, "$1sources/");
 		}
-		if (domain === "images.pushsquare.com") {
+		if (domain === "images.pushsquare.com" ||
+			domain === "images.purexbox.com") {
 			return src
 				.replace(/((?:\/news\/+[0-9]+\/+[0-9]+\/+[^/]+\/+)|(?:\/screenshots\/+[0-9]+\/+)|(?:\/reviews\/+[^/]*\/+[^/]*\/+))(?:[0-9]+x(?:[0-9]+)?|[a-z]+)(\.[^/.]*)$/, "$1original$2")
-				.replace(/(:\/\/[^/]+\/+[0-9a-f]{5,}\/+)(?:[0-9]+x(?:[0-9]+)?|large)\./, "$1original.")
+				.replace(/(:\/\/[^/]+\/+[0-9a-f]{5,}\/+(?:[^/?#]+?\.)?)(?:[0-9]+x(?:[0-9]+)?|large)\./, "$1original.")
 				.replace(/(\/games\/.*\/cover)(?:_[a-z]+)?(\.[^/.]*)$/, "$1_original$2");
 		}
 		if (domain_nowww === "pcgames.de") return src.replace(/\/screenshots\/+[0-9]*x[0-9]*\//, "/screenshots/original/");
@@ -60811,6 +60812,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/(\/gal\/+[^/]+\/+)tn_/, "$1");
 		}
 		if (domain === "images.tori.fi") return src.replace(/(\/api\/+v1\/+imagestori\/+images\/+[0-9]+\.[a-z]+)(?:[?#].*)?$/, "$1?rule=original");
+		if (domain === "img.tori.net") return src.replace(/\/dynamic\/+[0-9]+w\/+/, "/dynamic/original/");
 		if (domain_nosub === "discountdance.com" && /^cdn[0-9]*\./.test(domain)) {
 			return src.replace(/(\/image\/+)(?:[0-9]{1,3}x[0-9]{1,3}m?|1000x1333m)\/+/, "$11395x1860/");
 		}
@@ -62294,6 +62296,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (folder_1 === "thenational" ||
 				folder_1 === "qobuz")
 				loc = "eu-central-1";
+			if (folder_1 === "sanspo") {
+				loc = "ap-northeast-1";
+				folder_1 = "sankei";
+			}
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+resizer\/+v2\/+([^?#/]+)(?:[?#].*)?$/, "https://cloudfront-" + loc + ".images.arcpublishing.com/" + folder_1 + "/$1");
 			if (newsrc !== src)
 				return newsrc;
@@ -62327,6 +62333,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "rnd.de" ||
 			domain_nowww === "irishtimes.com" ||
 			domain_nowww === "lacuarta.com" ||
+			domain_nowww === "sanspo.com" ||
 			domain_nowww === "theglobeandmail.com") {
 			var info_2 = { folder: "", loc: "" };
 			if (domain_nowww === "nzherald.co.nz")
@@ -62373,6 +62380,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				info_2 = { folder: "irishtimes", loc: "eu-central-1" };
 			else if (domain_nowww === "lacuarta.com")
 				info_2 = { folder: "copesa", loc: "us-east-1" };
+			else if (domain_nowww === "sanspo.com")
+				info_2 = { folder: "sankei", loc: "ap-northeast-1" };
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+resizer\/+v2\/+([^?#/]+)(?:[?#].*)?$/, "https://cloudfront-" + info_2.loc + ".images.arcpublishing.com/" + info_2.folder + "/$1");
 			if (newsrc !== src)
 				return newsrc;
