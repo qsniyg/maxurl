@@ -7725,7 +7725,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		highlightimgs_css: "outline: 4px solid yellow",
 		customgallery_enable_keybinding: false,
 		customgallery_keybinding: ["shift", "alt", "g"],
-		customgallery_enable_button: false,
+		customgallery_enable_button: true,
 		customgallery_apply_key: ["enter"],
 		customgallery_bg_css: "background-color: rgba(0, 0, 0, 0.25)",
 		customgallery_outline_css: "background-color: rgba(255, 0, 0, 0.25)\nborder: 2px solid red",
@@ -11111,8 +11111,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					"<li><code>{domain/=instagram}{id}</code> - Will only run the current format (<code>{id}</code>) if the domain contains <code>instagram</code></li>",
 					"<li><code>{domain!/=instagram}{id}</code> - Likewise, but only if the domain does not contain <code>instagram</code></li>",
 					"<li><code>{domain/r=inst.*ram}{id}</code> - Likewise, but only if the domain matches the regex <code>inst.*ram</code></li>",
-					"<li><code>{window_title/c=Instagram}{id}</code> - Likewise, but only if the window's title contains <code>Instagram</code> (case-sensitively)</li>",
-					"<li><code>{window_title!/rc=Inst.*ram}{id}</code> - Likewise, but only if the window's title does not match the case-sensitive regex <code>Inst.*ram</code></li>",
+					"<li><code>{host_title/c=Instagram}{id}</code> - Likewise, but only if the window's title contains <code>Instagram</code> (case-sensitively)</li>",
+					"<li><code>{host_title!/rc=Inst.*ram}{id}</code> - Likewise, but only if the window's title does not match the case-sensitive regex <code>Inst.*ram</code></li>",
 					"</ul><br />",
 					"<p>You can set a custom variable with <code>:=</code>. For example:</p>",
 					"<ul><br />",
@@ -22887,6 +22887,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "sns-img-al.xhscdn.com" ||
 			domain === "sns-img-bd.xhscdn.com" ||
 			(domain_nosub === "xhscdn.com" && /^sns-[a-z]+-i[0-9]*\./.test(domain)) ||
+			domain === "sns-avatar-qc.xhscdn.com" ||
 			domain === "sns-webpic-qc.xhscdn.com") {
 			newsrc = src.replace(/:\/\/[^/]+\/+[0-9]{12}\/+[0-9a-f]{10,}\/+(.*?)(?:[?!#].*)?$/, "://ci.xiaohongshu.com/$1");
 			if (newsrc !== src)
@@ -22894,9 +22895,19 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return {
 				url: src.replace(/^([^!?]+)(?:[!?].*)?$/, "$1?imageView2/2/w/format/png"),
 				headers: {
-					Referer: ""
+					Referer: "https://www.xiaohongshu.com/"
 				}
 			};
+		}
+		if (domain === "sns-webpic-qc.xhscdn.com") {
+			newsrc = src.replace(/:\/\/[^/]+(\.xhscdn.com\/+)[0-9]+\/+[0-9a-f]{10,}\/+([^/.?#!]+)(?:[?#!].*)?$/, "://sns-img-al$1$2");
+			if (newsrc !== src)
+				return {
+					url: src.replace(/:\/\/[^/]+(\.xhscdn.com\/+)[0-9]+\/+[0-9a-f]{10,}\/+([^/.?#!]+)(?:[?#!].*)?$/, "://sns-img-al$1$2"),
+					headers: {
+						Referer: "https://www.xiaohongshu.com/"
+					}
+				};
 		}
 		if (domain_nowww === "dailyherald.com") {
 			newsrc = src.replace(/[?&].*$/, "");
@@ -27379,6 +27390,60 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/(:\/\/[^/]*\/)[0-9]+_[0-9]+\//, "$1")
 				.replace(/(\.[^/.]*)@[_0-9a-zQ]*(?:\.[^/.]*)?$/, "$1")
 				.replace(/(\/[0-9a-f]{20,}\.[^/._]+)_[0-9]+x[0-9]+\.[^/]+(?:[?#].*)?$/, "$1");
+		}
+		if (domain_nowww === "xiaohongshu.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+explore\/+([0-9a-f]{5,})\?(?:.*&)?(xsec_token=[^&#]+)(?:[&#].*)?$/,
+				query_for_id: "https://" + domain + "/explore/${id}?${2}",
+				process: function(done, resp, cache_key, urlmatch) {
+					var urls = [];
+					var baseobj = {
+						extra: {},
+						headers: {
+							Referer: "https://www.xiaohongshu.com/"
+						}
+					};
+					var initialstatematch = resp.responseText.match(/\.__INITIAL_STATE__\s*=\s*({.*?})<\/script>/);
+					if (!initialstatematch) {
+						console_warn(cache_key, "Unable to find initial state match for", resp);
+					} else {
+						var initialstatetxt = initialstatematch[1];
+						try {
+							var initialstatetxt_fixup = fixup_js_obj(initialstatetxt.replace(/:\s*undefined([,}])/g, ":null$1"));
+							var initialstate_1 = JSON_parse(initialstatetxt_fixup);
+							var noteinfo = initialstate_1.note.noteDetailMap[urlmatch[1]].note;
+							baseobj.extra.caption = noteinfo.title;
+							baseobj.extra.created_date = noteinfo.time;
+							if (noteinfo.video) {
+								if (noteinfo.video.consumer && noteinfo.video.consumer.originVideoKey) {
+									urls.push({
+										url: "https://sns-video-bd.xhscdn.com/" + noteinfo.video.consumer.originVideoKey,
+										video: true
+									});
+								}
+							}
+						} catch (e) {
+							console_error(cache_key, e, { resp: resp, initialstatetxt: initialstatetxt });
+						}
+					}
+					var video = get_meta(resp.responseText, "og:video");
+					if (video) {
+						urls.push({
+							url: video,
+							video: true
+						});
+					}
+					var image = get_meta(resp.responseText, "og:image");
+					if (image) {
+						urls.push(image);
+					}
+					if (!urls.length)
+						return done(null, false);
+					done(common_functions["fill_ldjson"](urls, resp), 60 * 60);
+				}
+			});
+			if (newsrc !== src)
+				return newsrc;
 		}
 		if (domain === "d.ifengimg.com") return src.replace(/.*?\/[a-z]+[0-9]*(?:_[whq][0-9]*)?\//, "http://");
 		if (domain_nowww === "nationalgeographic.com") return src.replace(/\.[^/]*(\.[^/.]*)$/, "$1");
@@ -62286,6 +62351,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return src.replace(/(\/image\/+[0-9a-f]{2}\/+[-0-9a-f]{10,})-[0-9]+x[0-9]+\./, "$1.");
 		}
 		if (domain === "img-baila.hpplus.jp" ||
+			domain === "img-spur.hpplus.jp" ||
 			domain === "img-maquia.hpplus.jp" // ||
 		) {
 			return src
@@ -65017,14 +65083,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc !== src) {
 				return add_full_extensions(newsrc);
 			}
-		}
-		if (domain === "sns-webpic-qc.xhscdn.com") {
-			return {
-				url: src.replace(/:\/\/[^/]+(\.xhscdn.com\/+)[0-9]+\/+[0-9a-f]{10,}\/+([^/.?#!]+)(?:[?#!].*)?$/, "://sns-img-al$1$2"),
-				headers: {
-					Referer: ""
-				}
-			};
 		}
 		if (domain_nowww === "musescore.com" && string_indexof(src, "/static/")) {
 			return src
