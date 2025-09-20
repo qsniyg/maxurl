@@ -2640,6 +2640,26 @@ msgstr "Включает правила, требующие использова
 msgid "Deezer"
 msgstr "Deezer"
 
+#. allow_xhr_hotpatch.name
+msgid "Rules intercepting HTTP requests"
+msgstr ""
+
+#. allow_xhr_hotpatch.description
+msgid "Enables rules that require intercepting HTTP requests from websites."
+msgstr ""
+
+#. hotpatch_unblock_nsfw.name
+msgid "Unblur NSFW media"
+msgstr ""
+
+#. hotpatch_unblock_nsfw.description
+msgid "Disables NSFW image tagging for websites"
+msgstr ""
+
+#. hotpatch_unblock_nsfw.example_websites[0]
+msgid "500px"
+msgstr ""
+
 #. allow_webarchive.name
 msgid "Web Archive support"
 msgstr ""
@@ -3014,8 +3034,8 @@ msgid ""
 "<li><code>{domain/=instagram}{id}</code> - Will only run the current format (<code>{id}</code>) if the domain contains <code>instagram</code></li>\n"
 "<li><code>{domain!/=instagram}{id}</code> - Likewise, but only if the domain does not contain <code>instagram</code></li>\n"
 "<li><code>{domain/r=inst.*ram}{id}</code> - Likewise, but only if the domain matches the regex <code>inst.*ram</code></li>\n"
-"<li><code>{window_title/c=Instagram}{id}</code> - Likewise, but only if the window's title contains <code>Instagram</code> (case-sensitively)</li>\n"
-"<li><code>{window_title!/rc=Inst.*ram}{id}</code> - Likewise, but only if the window's title does not match the case-sensitive regex <code>Inst.*ram</code></li>\n"
+"<li><code>{host_title/c=Instagram}{id}</code> - Likewise, but only if the window's title contains <code>Instagram</code> (case-sensitively)</li>\n"
+"<li><code>{host_title!/rc=Inst.*ram}{id}</code> - Likewise, but only if the window's title does not match the case-sensitive regex <code>Inst.*ram</code></li>\n"
 "</ul><br />\n"
 "<p>You can set a custom variable with <code>:=</code>. For example:</p>\n"
 "<ul><br />\n"
