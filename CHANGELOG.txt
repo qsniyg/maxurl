@@ -11,6 +11,7 @@ Improvements:
  * Chunked downloads can also be used in extension
  * Support web archive images
  * Support GM_cookie for userscript
+ * Enable custom gallery button by default
 
 Bugfixes:
 
