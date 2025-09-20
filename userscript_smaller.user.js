@@ -64813,6 +64813,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (domain === "images.comico.io") return src.replace(/\/dims\/+[^?#]*([?#].*)?$/, "$1");
+		if (domain === "statics.berriz.in") return src.replace(/(\/cdn\/+[^/]+\/+image\/+.*?\.[a-z]+)\/dims\/.*/, "$1");
 		if (domain === "photos.eruce.com") {
 			return src
 				.replace(/\/thumbs\/+(.*?)_[0-9]+x[0-9]+(\.jpg)(?:[?#].*)?$/, "/$1$2")
@@ -67195,7 +67196,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				};
 			}
 		}
-		if (domain === "bidspirit-images.global.ssl.fastly.net") return src.replace(/(\/cloned-images\/+[0-9]+\/+)([0-9]+)\/+[^/]+(\.[a-z]+)(?:[?#].*)?$/, "$1$2/$2$3");
+		if (domain === "bidspirit-images.global.ssl.fastly.net" ||
+			domain === "d2zofuu73zurgl.cloudfront.net") {
+			return src.replace(/(\/cloned-images\/+[0-9]+\/+)([0-9]+)\/+[^/]+(\.[a-z]+)(?:[?#].*)?$/, "$1$2/$2$3");
+		}
 		if (domain === "photos2.ice-dance.com") return src.replace(/\/cache\/+([0-9]{4}-[0-9]{2}\/+[0-9a-zA-Z]+\/+RD\/+[^/]+)_[0-9]+(?:_(?:c?[wh][0-9]+|thumb))*(\.[a-z]+)(?:[?#].*)?$/, "/albums/$1$2");
 		if (domain === "png.pngtree.com") {
 			page = null;
