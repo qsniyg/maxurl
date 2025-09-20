@@ -23080,6 +23080,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain_nosub === "game4v.com" && domain.match(/^cdn[0-9]*\./)) ||
 			(domain_nosub === "cosplaytime.pl" && string_indexof(src, "/uploads/") >= 0) ||
 			domain === "img.wkorea.com" ||
+			(domain_nowww === "wkorea.com" && string_indexof(src, "/wp_data/") >= 0) ||
 			(domain === "i.mdel.net" && string_indexof(src, "/newfaces/i/") >= 0) ||
 			domain === "media.celebmasta.com" ||
 			domain === "media.korea25.com" ||
