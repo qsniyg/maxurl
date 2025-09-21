@@ -93,6 +93,9 @@ if [ -f orig/mpd-parser.js ]; then
 	cp orig/m3u8-parser.js m3u8-parser.js
 	sed -i 's/}(this, function (exports/}(_fakeGlobal, function (exports/' m3u8-parser.js
 	echo "var _fakeGlobal={window: window};" > stream_parser.js
+	echo "var exports = void 0;" >> stream_parser.js
+	echo "var module = void 0;" >> stream_parser.js
+	echo "var define = void 0;" >> stream_parser.js
 	cat mpd-parser.js m3u8-parser.js >> stream_parser.js
 	echo "" >> stream_parser.js
 	echo "var lib_export = { dash: _fakeGlobal.mpdParser, hls: _fakeGlobal.m3u8Parser };" >> stream_parser.js
