@@ -69,6 +69,9 @@ EOF
 	sed -i 's/(!\([a-z]\)) *throw new Error("Automatic publicPath is not supported in this browser");/(!\1){\1=""}/' ffmpeg.min.orig.js
 	# finally cat it all together
 	echo "var FFMPEG_CORE_WORKER_SCRIPT;var _fakeGlobal={window:window};" > ffmpeg.js
+	echo "var exports = void 0;" >> ffmpeg.js
+	echo "var module = void 0;" >> ffmpeg.js
+	echo "var define = void 0;" >> ffmpeg.js
 	cat fetch_shim.js >> ffmpeg.js
 	#cat ffmpeg-core.js >> ffmpeg.js
 	echo "" >> ffmpeg.js
