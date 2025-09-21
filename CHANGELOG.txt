@@ -4,6 +4,7 @@ New features:
 
  * Option to toggle the website request button
  * Option for userscript to enable XHR hotpatching (disabled by default)
+ * Option to fill format variables with page format variables (disabled by default)
 
 Improvements:
 
