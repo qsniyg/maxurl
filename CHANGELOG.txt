@@ -20,7 +20,7 @@ Bugfixes:
  * Fix custom gallery failing under Violentmonkey
  * Fall through on zero content length images
  * Fix crash when popping up for video removed from page
- * Fix gallery downloads failing for websites that use requirejs
+ * Fix gallery and HLS/DASH downloads failing for websites that use requirejs
  * Fix infinite loop on some bad images
  * Fix open in new tab under ScriptCat (thanks to fireattack for reporting)
  * Fix popup not working on some image tabs when using Violentmonkey under Firefox (thanks to F640 on github for reporting)
