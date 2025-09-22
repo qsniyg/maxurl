@@ -7694,6 +7694,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		bigimage_blacklist_mode: "blacklist",
 		bigimage_blacklist_engine: "glob",
 		filename_format: "{author_username} {filename}",
+		format_fill_page: false,
 		filename_replace_special_underscores: true,
 		replaceimgs_enable_keybinding: false,
 		replaceimgs_keybinding: ["shift", "alt", "r"],
@@ -11141,6 +11142,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			description: "Replaces characters such as `/` or `\"` with `_` when downloading. Note that browsers will usually do this automatically, this is just to ensure consistent behavior.",
 			category: "rules"
 		},
+		format_fill_page: {
+			name: "Fill format with page variables",
+			description: "Fills extra format variables with variables from the host page (such as caption, creation date, etc.).",
+			category: "rules"
+		},
 		replaceimgs_enable_keybinding: {
 			name: "Enable trigger key",
 			description: "Enables the use of the trigger key to run it without needing to use the menu",
@@ -11974,9 +11980,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		return matched;
 	};
 	var real_website_query = function(options) {
-		if (!is_array(options.website_regex)) {
-			options.website_regex = [options.website_regex];
-		}
+		options.website_regex = force_array(options.website_regex);
 		var website_match = null;
 		for (var i = 0; i < options.website_regex.length; i++) {
 			website_match = compat_match(options.url, options.website_regex[i]);
@@ -11991,6 +11995,22 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		};
 		if (!options.do_request || !options.cb) {
 			return page_nullobj;
+		}
+		var hostresp = null;
+		if (options.allow_hostresp_for_match && options.bigimage_options && options.bigimage_options.host_url && options.bigimage_options.document) {
+			var doc = options.bigimage_options.document;
+			var host_url = options.bigimage_options.host_url;
+			for (var _i = 0, _a = options.website_regex; _i < _a.length; _i++) {
+				var regex = _a[_i];
+				website_match = compat_match(host_url, regex);
+				if (website_match) {
+					hostresp = {
+						finalUrl: host_url,
+						responseText: doc.documentElement.outerHTML
+					};
+					break;
+				}
+			}
 		}
 		var domain = options.url.replace(/^[a-z]+:\/\/([^/]+)\/+.*$/, "$1");
 		var domain_nosub = get_domain_nosub(domain);
@@ -12043,7 +12063,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				} else {
 					query = query(id, website_match);
 				}
-				real_api_query(options.api_cache, options.do_request, options.cache_key + ":" + id, query, cb, function(done, resp, cache_key) {
+				query = query;
+				var our_cache_key = options.cache_key + ":" + id;
+				if (hostresp) {
+					var done_cb = function(result) {
+						cb(result);
+					};
+					return options.process(done_cb, hostresp, our_cache_key, website_match, options);
+				}
+				real_api_query(options.api_cache, options.do_request, our_cache_key, query, cb, function(done, resp, cache_key) {
 					return options.process(done, resp, cache_key, website_match, options);
 				});
 			};
@@ -12212,6 +12240,51 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		});
 		return mobj;
 	};
+	var merge_objs = function(obj, baseobj, overwrite_mode) {
+		for (var item in baseobj) {
+			if (!(item in obj) || overwrite_mode === "all" || (obj[item] === null && overwrite_mode === "null")) {
+				obj[item] = deepcopy(baseobj[item]);
+			}
+			if (item === "extra") {
+				for (var ikey in baseobj[item]) {
+					if (!(ikey in obj[item]) || overwrite_mode === "all" || (obj[item][ikey] === null && overwrite_mode === "null")) {
+						obj[item][ikey] = deepcopy(baseobj[item][ikey]);
+					}
+				}
+			}
+		}
+		return obj;
+	};
+	var fillobj_single = function(obj, baseobj) {
+		// Only copy from baseobj if the urls are the same (or n/a)
+		if (!obj.url || !baseobj.url || baseobj.url === obj.url) {
+			obj = merge_objs(obj, baseobj, "none");
+		}
+		for (var item in default_object) {
+			if (!(item in obj)) {
+				obj[item] = deepcopy(default_object[item]);
+			}
+		}
+		// this is horrible
+		if (obj.video && obj.media_info.type === "image") {
+			if (obj.video === true) {
+				obj.media_info = {
+					type: "video"
+				};
+			} else if (typeof obj.video === "string") {
+				obj.media_info = {
+					type: "video",
+					delivery: obj.video
+				};
+			} else {
+				obj.media_info = deepcopy(obj.video);
+				// what is this usecase?
+				obj.media_info.delivery = obj.media_info.type;
+				obj.media_info.type = "video";
+			}
+		}
+		return obj;
+	};
 	var fillobj = function(p_obj, p_baseobj) {
 		//if (typeof p_obj === "undefined")
 		var obj = basic_fillobj(p_obj);
@@ -12221,53 +12294,28 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (typeof (obj[i]) === "undefined") {
 				continue;
 			}
-			var item;
-			// Only copy from baseobj if the urls are the same (or n/a)
-			if (!obj[i].url || !baseobj.url || baseobj.url === obj[i].url) {
-				for (item in baseobj) {
-					if (!(item in obj[i])) {
-						obj[i][item] = baseobj[item];
-					}
-				}
-			}
-			for (item in default_object) {
-				if (!(item in obj[i])) {
-					obj[i][item] = deepcopy(default_object[item]);
-				}
-			}
-			// this is horrible
-			if (obj[i].video && obj[i].media_info.type === "image") {
-				if (obj[i].video === true) {
-					obj[i].media_info = {
-						type: "video"
-					};
-				} else if (typeof obj[i].video === "string") {
-					obj[i].media_info = {
-						type: "video",
-						delivery: obj[i].video
-					};
-				} else {
-					obj[i].media_info = deepcopy(obj[i].video);
-					// what is this usecase?
-					obj[i].media_info.delivery = obj[i].media_info.type;
-					obj[i].media_info.type = "video";
-				}
-			}
+			obj[i] = fillobj_single(obj[i], baseobj);
 		}
 		//console_log("fillobj", deepcopy(oldobj), deepcopy(obj), deepcopy(baseobj));
 		return obj;
 	};
 	var fillobj_urls = function(urls, obj, overwrite) {
+		var overwrite_mode = "none";
+		if (overwrite === true)
+			overwrite_mode = "all";
+		else if (typeof overwrite === "string")
+			overwrite_mode = overwrite;
 		var newobj = [];
 		for (var i = 0; i < urls.length; i++) {
 			var currentobj = deepcopy(obj);
 			if (typeof urls[i] === "string") {
 				currentobj.url = urls[i];
-			} else {
-				for (var key in urls[i]) {
+			} else if (urls[i]) {
+				currentobj = merge_objs(shallowcopy(urls[i]), currentobj, overwrite_mode);
+				/*for (var key in (urls[i] as BigImageInfoSObject)) {
 					if (!overwrite || !(key in currentobj))
 						currentobj[key] = urls[i][key];
-				}
+				}*/
 			}
 			newobj.push(currentobj);
 		}
@@ -13419,19 +13467,19 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		},
 		"stream_parser": {
 			name: "stream_parser",
-			url: "https://raw.githubusercontent.com/qsniyg/maxurl/0655c317844fb7a652c6ee9f88ab65514c53b482/lib/stream_parser.js",
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/e47950c462f9b662d5b47eabb5d938e7491ecd00/lib/stream_parser.js",
 			archive_time: "20210403204309",
-			size: 115544,
-			crc32: 270289712,
-			crc32_size: 2967398805
+			size: 115608,
+			crc32: 2490081286,
+			crc32_size: 1118955492
 		},
 		"ffmpeg": {
 			name: "ffmpeg",
-			url: "https://raw.githubusercontent.com/qsniyg/maxurl/5d8a153e7ccb2272cc1162422ece252c2666aab0/lib/ffmpeg.js",
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/fcc05e8fe3cfd2b37d33d13af008f75e60d920a9/lib/ffmpeg.js",
 			archive_time: "20210403204304",
-			size: 190178,
-			crc32: 1792613332,
-			crc32_size: 1070694591,
+			size: 190242,
+			crc32: 4089915341,
+			crc32_size: 4100137276,
 			xhr: true
 		},
 		"jszip": {
@@ -17960,6 +18008,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			options.baseobj = {};
 		if (!("thumbnail" in options))
 			options.thumbnail = true;
+		if (!("overwrite_mode" in options))
+			options.overwrite_mode = "none";
 		var baseobj = deepcopy(options.baseobj);
 		if (!baseobj.extra)
 			baseobj.extra = {};
@@ -17985,6 +18035,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		var ogtitle = options.caption || baseobj.extra.caption;
 		if (!ogtitle)
+			ogtitle = ldjson.headline;
+		if (!ogtitle)
 			ogtitle = ldjson.name;
 		if (!ogtitle)
 			ogtitle = get_meta(resp.responseText, "og:title");
@@ -17992,11 +18044,17 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			ogtitle = get_meta(resp.responseText, "twitter:title");
 		if (!ogtitle)
 			ogtitle = get_meta(resp.responseText, "title");
+		if (!ogtitle)
+			ogtitle = get_meta(resp.responseText, "og:description");
+		if (!ogtitle)
+			ogtitle = get_meta(resp.responseText, "twitter:description");
 		if (ogtitle)
 			baseobj.extra.caption = ogtitle;
 		var created_date = options.created_date || baseobj.extra.created_date;
 		if (!created_date && ldjson.uploadDate)
 			created_date = new Date(ldjson.uploadDate).getTime();
+		if (!created_date && ldjson.datePublished)
+			created_date = new Date(ldjson.datePublished).getTime();
 		if (created_date)
 			baseobj.extra.created_date = created_date;
 		var page = options.page || baseobj.extra.page;
@@ -18013,13 +18071,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var ogimage = get_meta(resp.responseText, "og:image");
 			if (!ogimage)
 				ogimage = get_meta(resp.responseText, "twitter:image");
+			if (!ogimage && ldjson.image)
+				ogimage = ldjson.image;
 			if (!ogimage && is_array(ldjson.thumbnailUrl))
 				ogimage = ldjson.thumbnailUrl[0];
 			if (ogimage) {
 				urls.push(urljoin(resp.finalUrl, ogimage, true));
 			}
 		}
-		return fillobj_urls(urls, baseobj);
+		return fillobj_urls(urls, baseobj, options.overwrite_mode);
 	};
 	common_functions["get_videotag_obj"] = function(resp, options) {
 		if (!options)
@@ -19041,6 +19101,23 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "search.ohaa.xyz" ||
 			domain === "searx.tiekoetter.com";
 	};
+	common_functions["multidomain__doodstream"] = function(domain, domain_nowww) {
+		return domain_nowww === "dood.to" ||
+			domain_nowww === "doods.pro" ||
+			domain_nowww === "ds2play.com" ||
+			domain_nowww === "do0od.com" ||
+			domain_nowww === "dood.la" ||
+			domain_nowww === "dood.work" ||
+			domain_nowww === "dooodster.com" ||
+			domain_nowww === "d0000d.com" ||
+			domain_nowww === "d000d.com" ||
+			domain_nowww === "do7go.com" ||
+			domain_nowww === "dood.pm" ||
+			domain_nowww === "vide0.net" ||
+			domain_nowww === "d-s.io" ||
+			domain_nowww === "dsvplay.com" ||
+			domain_nowww === "doodstream.com";
+	};
 	// this requires removing everything before the thumbor url with /
 	common_functions["get_thumbor_url"] = function(src) {
 		// /S4Fr7rEpLL-QZnU3bsNT5ORJzYQ=/364x130/https%3A%2F%2Fblueprint-api-production.s3.amazonaws.com%2Fuploads%2Fstory%2Fthumbnail%2F73835%2Fd72a8d3f-baf0-4132-b6f9-358d27d1c0c9.JPG
@@ -19502,6 +19579,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				_options.cb = options.cb;
 			if (!_options.url)
 				_options.url = src;
+			_options.bigimage_options = options;
 			return real_website_query(_options);
 		};
 		var newsrc, i, id, size, origsize, regex, match;
@@ -22883,6 +22961,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				head_wrong_contenttype: true
 			};
 		}
+		if (domain_nowww === "bristolworld.com" && /\/jpim-static\/+image\//.test(src)) {
+			return {
+				url: src.replace(/\?.*/, "?quality=100"),
+				can_head: false
+			};
+		}
 		if (domain === "ci.xiaohongshu.com" ||
 			domain === "sns-img-al.xhscdn.com" ||
 			domain === "sns-img-bd.xhscdn.com" ||
@@ -24100,11 +24184,43 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return src.replace(/\/(?:crop|trim)\//, "/").replace(/(\/[0-9a-f]+)(?:\(|%28)[0-9]+x(?:[0-9]+)?(?:\)|%29)\//, "$1/");
 		}
 		if (host_domain_nowww === "zhihu.com" && options.element) {
-			if (options.element.tagName === "IMG" && options.element.hasAttribute("data-original-token")) {
-				var token = options.element.getAttribute("data-original-token");
-				newsrc = "https://pica.zhimg.com/" + token + ".jpg";
-				if (newsrc !== src)
-					return newsrc;
+			if (options.element.tagName === "IMG") {
+				if (options.element.hasAttribute("data-original-token")) {
+					var token = options.element.getAttribute("data-original-token");
+					newsrc = "https://pica.zhimg.com/" + token + ".jpg";
+					if (newsrc !== src)
+						return newsrc;
+				} else if (domain_nosub === "zhimg.com") {
+					var originaltokens = [];
+					var get_zhimg_id = function(src) {
+						if (!src)
+							return null;
+						var match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:[0-9]+\/+)?(?:v[0-9]+-)?([0-9a-f]{10,})[_.]/);
+						if (!match)
+							return null;
+						return match[1];
+					};
+					var imgid = get_zhimg_id(src);
+					if (imgid) {
+						for (var _a = 0, _b = document.querySelectorAll("img[data-original-token]"); _a < _b.length; _a++) {
+							var el_1 = _b[_a];
+							var el_urls = [];
+							array_upush(el_urls, el_1.src);
+							array_upush(el_urls, el_1.getAttribute("data-default-watermark-src"));
+							array_upush(el_urls, el_1.getAttribute("data-original"));
+							array_upush(el_urls, el_1.getAttribute("data-actualsrc"));
+							for (var _c = 0, el_urls_1 = el_urls; _c < el_urls_1.length; _c++) {
+								var url_3 = el_urls_1[_c];
+								var elid = get_zhimg_id(url_3);
+								if (elid === imgid) {
+									newsrc = "https://pica.zhimg.com/" + el_1.getAttribute("data-original-token") + ".jpg";
+									if (newsrc !== src)
+										return newsrc;
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 		if (domain_nosub === "zhimg.com" &&
@@ -25248,7 +25364,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain === "photos.imageevent.com") return src.replace(/\/(?:small|large|huge|giant|icons)\/([^/]*)$/, "/$1");
 		if (domain === "image.ajunews.com" ||
-			(domain_nosub === "caixin.com" && /^image[0-9]*\./.test(domain))) {
+			(domain_nosub === "caixin.com" && /^(?:image|img)[0-9]*\./.test(domain))) {
 			return src.replace(/_[0-9]+_[0-9]+(\.[^/.]*)$/, "$1");
 		}
 		if (domain_nosub === "telegraph.co.uk" &&
@@ -26389,11 +26505,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return false;
 			};
 			if (options.element.tagName === "IMG" && has_discord_class_1(options.element, "lazyImg")) {
-				var el_1 = common_functions["get_parent_el_matching"](options.element, function(x) {
+				var el_2 = common_functions["get_parent_el_matching"](options.element, function(x) {
 					return has_discord_class_1(x, "imageWrapper");
 				});
-				if (el_1) {
-					var ael_1 = el_1.querySelector('a[data-role="img"]');
+				if (el_2) {
+					var ael_1 = el_2.querySelector('a[data-role="img"]');
 					return ael_1.href;
 				}
 			}
@@ -32005,19 +32121,19 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					};
 					var urls = [];
 					for (var _i = 0, _a = videodata.video.streams; _i < _a.length; _i++) {
-						var url_3 = _a[_i];
-						if (/\.m3u8\?/.test(url_3)) {
+						var url_4 = _a[_i];
+						if (/\.m3u8\?/.test(url_4)) {
 							urls.push({
-								url: url_3,
+								url: url_4,
 								video: "hls"
 							});
-						} else if (/\.mpd\?/.test(url_3)) {
+						} else if (/\.mpd\?/.test(url_4)) {
 							urls.push({
-								url: url_3,
+								url: url_4,
 								video: "dash"
 							});
 						} else {
-							console_warn(cache_key, "Unhandled url", url_3);
+							console_warn(cache_key, "Unhandled url", url_4);
 						}
 					}
 					urls.push(videodata.image);
@@ -35044,8 +35160,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						}
 					}
 					var urlobjs = [];
-					for (var url_4 in urlmap) {
-						urlobjs.push(urlmap[url_4]);
+					for (var url_5 in urlmap) {
+						urlobjs.push(urlmap[url_5]);
 					}
 					var codecsort_1 = [
 						"av1",
@@ -36880,7 +36996,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					console_error(cache_key, "Unable to get URLs from", parsed_table, resp);
 					return done(page_nullobj, false);
 				}
-				return done(obj, 3 * 60 * 60);
+				return done(common_functions["fill_ldjson"](obj, resp), 3 * 60 * 60);
 			};
 			if (our_host === "xvideos") {
 				newsrc = website_query({
@@ -37461,8 +37577,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					fulldir = "";
 				if (!is_array(thumbdir))
 					thumbdir = [thumbdir];
-				for (var _a = 0, thumbdir_1 = thumbdir; _a < thumbdir_1.length; _a++) {
-					var thdir = thumbdir_1[_a];
+				for (var _d = 0, thumbdir_1 = thumbdir; _d < thumbdir_1.length; _d++) {
+					var thdir = thumbdir_1[_d];
 					regex = new RegExp("(:\/\/[^/]*\/)" + thdir + "\/+(.*\/)(?:u?hd|pin)-([^/]*)(?:[?#].*)?$");
 					newsrc = src.replace(regex, "$1" + fulldir + "$2$3");
 					if (newsrc !== src)
@@ -37745,6 +37861,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "adultdeepfakes.com" ||
 			domain_nowww === "realdeepfakes.com" ||
 			domain_nowww === "sexcelebrity.net" ||
+			domain_nowww === "camhub.tv" ||
 			domain_nosub === "mylust.com" ||
 			domain_nosub === "yourlust.com" ||
 			domain_nowww === "pornrewind.com") {
@@ -48416,8 +48533,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						if (matched_urls) {
 							var processed_urls = [];
 							for (var _i = 0, matched_urls_1 = matched_urls; _i < matched_urls_1.length; _i++) {
-								var url_5 = matched_urls_1[_i];
-								processed_urls.push(decode_entities(JSON_parse(url_5)));
+								var url_6 = matched_urls_1[_i];
+								processed_urls.push(decode_entities(JSON_parse(url_6)));
 							}
 							console_log(processed_urls);
 						}
@@ -48878,8 +48995,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				try {
 					var next = document.querySelector("script#__NEXT_DATA__");
 					var fullsize_matches = match_all(next.innerHTML, /"(https?:\/\/images1\.vinted\.net\/+tc\/+[^"]+)"/);
-					for (var _b = 0, fullsize_matches_1 = fullsize_matches; _b < fullsize_matches_1.length; _b++) {
-						var fsmatch = fullsize_matches_1[_b];
+					for (var _e = 0, fullsize_matches_1 = fullsize_matches; _e < fullsize_matches_1.length; _e++) {
+						var fsmatch = fullsize_matches_1[_e];
 						if (string_indexof(fsmatch[1], "/" + match[1] + "/") >= 0) {
 							return JSON_parse('"' + fsmatch[1] + '"');
 						}
@@ -49729,22 +49846,24 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return base64_decode(newsrc);
 		}
 		if (domain_nowww === "wallpapercave.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+w\/+([a-zA-Z0-9]+)(?:[?#].*)?$/,
+				query_for_id: "https://wallpapercave.com/w/${id}",
+				process: function(done, resp, cache_key) {
+					done(common_functions["fill_ldjson"]([], resp), 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "wallpapercave.com") {
 			obj = {
 				extra: {}
 			};
-			match = src.match(/\/wp([0-9]+)(?:\.[^/.]+)?(?:[?#].*)?$/);
+			match = src.match(/\/(?:fwp|wp|wpt)\/([0-9a-zA-Z]+)\.[^/.]+(?:[?#].*)?$/);
 			if (match)
-				obj.extra.page = "https://wallpapercave.com/w/wp" + match[1];
-			if (/:\/\/[^/]+\/+w\/+wp[0-9]+(?:[?#].*)?$/.test(src)) {
-				page_nullobj = {
-					url: src,
-					is_pagelink: true
-				};
-				var urls = add_extensions(src.replace(/\/w\/+(wp[0-9]+)(?:[?#].*)?$/, "/wp/$1.jpg"));
-				urls.push(page_nullobj);
-				return fillobj_urls(urls, obj);
-			}
-			newsrc = src.replace(/\/(?:fwp|wpt)\/+(wp[0-9]+\.)/, "/wp/$1");
+				obj.extra.page = "https://wallpapercave.com/w/" + match[1];
+			newsrc = src.replace(/\/(?:fwp|wpt)\/+([0-9a-zA-Z]+\.[a-z]+)(?:[?#].*)?$/, "/wp/$1");
 			obj.url = newsrc;
 			return obj;
 		}
@@ -52197,8 +52316,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (!src && options.element.tagName === "VIDEO") {
 				var source_els = options.element.querySelectorAll("source");
 				var sources = [];
-				for (var _c = 0, source_els_1 = source_els; _c < source_els_1.length; _c++) {
-					var source = source_els_1[_c];
+				for (var _f = 0, source_els_1 = source_els; _f < source_els_1.length; _f++) {
+					var source = source_els_1[_f];
 					array_upush(sources, source.getAttribute("src"));
 				}
 				if (sources[0]) {
@@ -55668,7 +55787,29 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				};
 			}
 		}
-		if (domain_nowww === "dood.to" ||
+		if (domain_nowww === "dsimgcdn.com" && (host_domain_nowww === "dood.to" ||
+		host_domain_nowww === "doods.pro" ||
+		host_domain_nowww === "ds2play.com" ||
+		host_domain_nowww === "do0od.com" ||
+		host_domain_nowww === "dood.la" ||
+		host_domain_nowww === "dood.work" ||
+		host_domain_nowww === "dooodster.com" ||
+		host_domain_nowww === "d0000d.com" ||
+		host_domain_nowww === "d000d.com" ||
+		host_domain_nowww === "do7go.com" ||
+		host_domain_nowww === "dood.pm" ||
+		host_domain_nowww === "vide0.net" ||
+		host_domain_nowww === "d-s.io" ||
+		host_domain_nowww === "dsvplay.com" ||
+		host_domain_nowww === "doodstream.com") && options.host_url) {
+			if (/:\/\/[^/]+\/+[de]\/+[0-9a-z]{10,}\/*(?:[?#].*)?$/.test(options.host_url)) {
+				return {
+					url: options.host_url,
+					is_pagelink: true
+				};
+			}
+		}
+		if ((domain_nowww === "dood.to" ||
 			domain_nowww === "doods.pro" ||
 			domain_nowww === "ds2play.com" ||
 			domain_nowww === "do0od.com" ||
@@ -55681,7 +55822,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "dood.pm" ||
 			domain_nowww === "vide0.net" ||
 			domain_nowww === "d-s.io" ||
-			domain_nowww === "doodstream.com") {
+			domain_nowww === "dsvplay.com" ||
+			domain_nowww === "doodstream.com")) {
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+[de]\/+([0-9a-z]{10,})\/*(?:[?#].*)?$/,
 				query_for_id: function(id) {
@@ -55697,6 +55839,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						imu_mode: "document"
 					};
 				},
+				allow_hostresp_for_match: true,
 				process: function(done, resp, cache_key) {
 					var match = resp.responseText.match(/\$\.get\('(\/pass_md5\/[^']+)', function/);
 					if (!match) {
@@ -57765,12 +57908,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								continue;
 							}
 						}
-						var url_6 = url1
+						var url_7 = url1
 							.replace(/['"+ ]/g, "")
 							.replace(/^\/(stream)/, "//$1");
-						url_6 = urljoin(resp.finalUrl, url_6 + "&stream=1", true);
+						url_7 = urljoin(resp.finalUrl, url_7 + "&stream=1", true);
 						urls.push({
-							url: url_6,
+							url: url_7,
 							video: true,
 							headers: {
 								Referer: "https://" + domain + "/",
@@ -61569,17 +61712,17 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (host_domain_nowww === "mym.fans" && options.element) {
 			if (options.element.tagName === "VIDEO") {
-				var url_7 = options.element.getAttribute("data-url");
-				if (url_7) {
-					if (/\.m3u8(?:[?#].*)?$/i.test(url_7)) {
+				var url_8 = options.element.getAttribute("data-url");
+				if (url_8) {
+					if (/\.m3u8(?:[?#].*)?$/i.test(url_8)) {
 						return {
-							url: url_7,
+							url: url_8,
 							can_head: false,
 							video: "hls"
 						};
 					} else {
 						return {
-							url: url_7,
+							url: url_8,
 							can_head: false,
 							video: true
 						};
@@ -62166,6 +62309,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "theboltonnews.co.uk" ||
 			domain_nowww === "thenorthernecho.co.uk" ||
 			domain_nowww === "glasgowtimes.co.uk" ||
+			domain_nowww === "eppingforestguardian.co.uk" ||
 			domain_nowww === "theargus.co.uk") && /\/resources\/+images\//.test(src)) {
 			return src
 				.replace(/\/images\/+[0-9]+x[0-9]+\/+[0-9]+x\/+[0-9]+\/+([0-9]+\.)/, "/images/$1")
@@ -63393,8 +63537,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc !== src) {
 				var splitted_3 = newsrc.split("/");
 				var decoded_6 = [];
-				for (var _d = 0, splitted_1 = splitted_3; _d < splitted_1.length; _d++) {
-					var s = splitted_1[_d];
+				for (var _g = 0, splitted_1 = splitted_3; _g < splitted_1.length; _g++) {
+					var s = splitted_1[_g];
 					decoded_6.push(base64_decode(s));
 				}
 				return decoded_6.join("");
@@ -64763,13 +64907,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
 							var item = items_1[_i];
 							var is_current = item == chosenitem;
-							var url_8 = "https://gofile.io/d/" + content.code + "#imu-id=" + item.extra.id;
+							var url_9 = "https://gofile.io/d/" + content.code + "#imu-id=" + item.extra.id;
 							links.push({
-								url: url_8,
+								url: url_9,
 								is_current: is_current
 							});
 							if (is_current)
-								newobj.url = url_8;
+								newobj.url = url_9;
 						}
 						if (!newobj.url) {
 							console_error("Unable to get URL from", chosenitem, items);
@@ -65099,7 +65243,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain === "i.abcnewsfe.com") {
 			return src
-				.replace(/_16x9(\.[a-z]+)$/, "$1")
+				.replace(/_(?:16x9|4x3)(\.[a-z]+)$/, "$1")
 				.replace(/\?.*/, "");
 		}
 		if (domain_nosub === "pandora.com" && /^mediaserver-cont-/.test(domain) ||
@@ -66109,7 +66253,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+([^/?#.]+)(?:[?#].*)?$/,
 				query_for_id: "https://" + domain + "/video/${id}",
 				process: function(done, resp, cache_key) {
-					var match = resp.responseText.match(/<div[^>]*\sclass=.embed-responsive[^>]*>\s*<iframe[^>]*\ssrc="([^"]+)"/);
+					var match = resp.responseText.match(/<div[^>]*\sclass=.(?:embed-responsive|video-container)[^>]*>\s*<iframe[^>]*\ssrc="([^"]+)"/);
 					if (!match) {
 						console_error(cache_key, "Unable to find iframe match from", resp);
 						return done(null, false);
@@ -66119,6 +66263,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						url: url,
 						is_pagelink: true
 					}, 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "topcamvideos.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+([^/?#.]+)(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/video/${id}",
+				process: function(done, resp, cache_key) {
+					var obj = common_functions["get_videotag_obj"](resp, {
+						videotag: true
+					});
+					done(obj, obj ? 60 * 60 : false);
 				}
 			});
 			if (newsrc)
@@ -67838,6 +67996,34 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return src.replace(/^([a-z]+:\/\/[^/]+\/+[0-9]+\/+[0-9]{4}\/+[0-9]{1,2}\/+[^?#]*)(?:[?#].*)?$/, "$1");
 		}
 		if (domain === "api.nucleusmedical.media") return src.replace(/(\/v1\/+thumb\/+[A-Z0-9]+\/+)(?:[01]?[0-9]{2}|2[0-4][0-9]|25[0-5])(?:[?#].*)?$/, "$1256");
+		if ((domain === "image-cdn.nct.vn" ||
+			domain === "avatar-ex-swe.nixcdn.com") && options.do_request && options.cb) {
+			newsrc = src.replace(/(\/[0-9]{5,})_[0-9]+(\.[a-z]+)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src) {
+				get_image_size(newsrc, function(x, y) {
+					if (!x || !y || x <= 160 || y <= 160)
+						return options.cb(src);
+					return options.cb(newsrc);
+				});
+				return {
+					waiting: true
+				};
+			}
+		}
+		if (domain_nowww === "artpictures.club") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+view\.php\?(?:.*&)?img=(http[^&]+)(?:[&#].*)?$/,
+				run: function(cb, match) {
+					return cb(decodeuri_ifneeded(match[1]));
+				}
+			});
+			if (newsrc)
+				return newsrc;
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+download\.php\?(?:.*&)?img=(http[^&]+)(?:[&#].*)?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+		if (domain_nowww === "aniplex.co.jp") return src.replace(/(\/SYS\/+CONTENTS\/+[-0-9a-f]{10,})\/+[hw][0-9]+(?:[?#].*)?$/, "$1");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -69838,11 +70024,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	var fullurl_obj = function(currenturl, obj) {
 		if (!obj)
 			return obj;
-		if (!is_array(obj)) {
-			obj = [obj];
-		}
+		obj = force_array(obj);
 		var newobj = [];
-		array_foreach(obj, function(url) {
+		for (var _i = 0, obj_15 = obj; _i < obj_15.length; _i++) {
+			var url = obj_15[_i];
 			if (typeof (url) === "string") {
 				newobj.push(fullurl(currenturl, url));
 			} else {
@@ -69857,7 +70042,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 				newobj.push(url);
 			}
-		});
+		}
 		return newobj;
 	};
 	var same_url = function(url, obj) {
@@ -70081,9 +70266,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					newhref = big;
 				return false;
 			}
-			var newhref1 = fullurl_obj(currenthref, big);
-			if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage (newhref1)", deepcopy(newhref1));
-			if (!newhref1) {
+			var big_fullurld = fullurl_obj(currenthref, big);
+			if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage (big_fullurld)", deepcopy(big_fullurld));
+			if (!big_fullurld) {
 				return false;
 			}
 			var copy_props = ["extra", "album_info"];
@@ -70094,14 +70279,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					important_properties.likely_broken = pastobjs[0].likely_broken;
 				if (pastobjs[0].fake)
 					important_properties.fake = pastobjs[0].fake;
-				array_foreach(copy_props, function(prop) {
+				for (var _i = 0, copy_props_1 = copy_props; _i < copy_props_1.length; _i++) {
+					var prop_1 = copy_props_1[_i];
 					//console_log(prop, deepcopy(pastobjs[0]));
-					if (prop in pastobjs[0] && pastobjs[0][prop]) {
-						important_properties[prop] = deepcopy(pastobjs[0][prop]);
+					if (prop_1 in pastobjs[0] && pastobjs[0][prop_1]) {
+						important_properties[prop_1] = deepcopy(pastobjs[0][prop_1]);
 					}
-				});
+				}
 			}
-			var objified = fillobj(deepcopy(newhref1), important_properties);
+			var objified = fillobj(deepcopy(big_fullurld), important_properties);
 			if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage (objified)", deepcopy(objified));
 			for (var i = 0; i < objified.length; i++) {
 				objified[i] = deepcopy(objified[i]); // ensure no references are kept between objects
@@ -70109,8 +70295,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var remove_obj = function() {
 					if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage (removing obj)");
 					objified.splice(i, 1);
-					if (is_array(newhref1)) {
-						newhref1.splice(i, 1);
+					if (is_array(big_fullurld)) {
+						big_fullurld.splice(i, 1);
 					}
 					i--;
 				};
@@ -70156,19 +70342,19 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			waiting = false;
 			forcerecurse = false;
-			var temp_newhref1 = newhref1;
-			if (is_array(newhref1))
-				temp_newhref1 = newhref1[0];
-			if (typeof (temp_newhref1) === "object") {
-				currentobj = newhref1;
-				if (temp_newhref1.waiting) {
+			var temp_big_fullurld = big_fullurld;
+			if (is_array(big_fullurld))
+				temp_big_fullurld = big_fullurld[0];
+			if (typeof (temp_big_fullurld) === "object") {
+				currentobj = big_fullurld;
+				if (temp_big_fullurld.waiting) {
 					waiting = true;
-					if (!temp_newhref1.url) {
-						newhref = newhref1;
+					if (!temp_big_fullurld.url) {
+						newhref = big_fullurld;
 						return false;
 					}
 				}
-				if (temp_newhref1.forcerecurse) {
+				if (temp_big_fullurld.forcerecurse) {
 					forcerecurse = true;
 				}
 			} else {
@@ -70176,7 +70362,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			// check if objified (our object) has the same url/href as the last url (currenthref)
 			if (same_url(currenthref, objified) && !forcerecurse) {
-				if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage: sameurl(currenthref, objified) == true (newhref, nh1, pastobjs)", deepcopy(currenthref), deepcopy(objified), deepcopy(newhref), deepcopy(newhref1), deepcopy(pastobjs));
+				if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage: sameurl(currenthref, objified) == true (newhref, nh1, pastobjs)", deepcopy(currenthref), deepcopy(objified), deepcopy(newhref), deepcopy(big_fullurld), deepcopy(pastobjs));
 				// FIXME: this is a terrible hack
 				try {
 					var cond = !options.fill_object || (newhref[0].waiting === true && !objified[0].waiting);
@@ -70193,19 +70379,27 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								}
 								for (var _i = 0, pastobjs_1 = pastobjs; _i < pastobjs_1.length; _i++) {
 									var psobj = pastobjs_1[_i];
-									if (psobj.url === sobj.url) {
-										for (prop in sobj) {
+									if (psobj.url !== sobj.url)
+										continue;
+									for (prop in sobj) {
+										if (prop === "extra" && typeof sobj[prop] === "object") {
+											if (!(prop in psobj))
+												psobj[prop] = {};
+											for (var prop_key in sobj[prop]) {
+												psobj[prop][prop_key] = sobj[prop][prop_key];
+											}
+										} else {
 											psobj[prop] = sobj[prop];
 										}
-										break;
 									}
+									break;
 								}
 							});
 						};
 						_apply(newhref);
-						// strikinglycdn needs newhref1 to be applied, because it has two rules, the cloudinary one, then the {url: src, can_head: false} one
-						// the second one is only set in newhref1, not newhref
-						_apply(newhref1);
+						// strikinglycdn needs big_fullurld to be applied, because it has two rules, the cloudinary one, then the {url: src, can_head: false} one
+						// the second one is only set in big_fullurld, not newhref
+						_apply(big_fullurld);
 						// _apply is also needed for bigimage'd album_links
 						// thanks to fireattack on discord for reporting:
 						// https://repotama.com/wp-content/uploads/2023/11/am_gakusai2023_01.jpg without audio redirection enabled crashes because the object isn't filled
@@ -70216,15 +70410,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (false) {
 						if (!cond) {
 							array_foreach(copy_props, function(prop) {
-								// using newhref1 instead of objified because otherwise it'll always be true (objified is the filled object, all props are in it)
+								// using big_fullurld instead of objified because otherwise it'll always be true (objified is the filled object, all props are in it)
 								// the prop_in_objified check breaks facebook albums
 								// [photo.php, post] -> [url+extra, photo.php] (album_info is missing because url is just a url, doesn't have album_info)
 								//   but newhref = [url+extra, photo.php]
 								//   we don't want to disregard newhref, as it contains new information (extra)
-								//   newhref1 = [url]
+								//   big_fullurld = [url]
 								// but removing it breaks normal photos, e.g. mixdrop:
 								// mp4(+headers) -> return src (.mp4 without headers)
-								if (!(prop in newhref[0]) && (prop in important_properties) /*&& prop_in_objified(prop, newhref1)*/) {
+								if (!(prop in newhref[0]) && (prop in important_properties) /*&& prop_in_objified(prop, big_fullurld)*/) {
 									cond = true;
 									return false;
 								}
@@ -70247,8 +70441,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							var cond = false;
 							if (false && newhref && newhref.length) {
 								array_foreach(copy_props, function(prop) {
-									// using newhref1 instead of objified because otherwise it'll always be true? (objified is the filled object, all props are in it)
-									if (!(typeof newhref[0] === "object" && (prop in newhref[0])) && (prop in important_properties) && prop_in_objified(prop, newhref1)) {
+									// using big_fullurld instead of objified because otherwise it'll always be true? (objified is the filled object, all props are in it)
+									if (!(typeof newhref[0] === "object" && (prop in newhref[0])) && (prop in important_properties) && prop_in_objified(prop, big_fullurld)) {
 										cond = true;
 										return false;
 									}
@@ -70262,7 +70456,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 				if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage: setting currenthref and newhref");
 				currenthref = get_currenthref(objified);
-				newhref = newhref1;
+				newhref = big_fullurld;
 			}
 			pasthrefs.push(currenthref);
 			// Prepend objified to pastobjs
@@ -70322,9 +70516,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					endhref = fillobj(deepcopy(newhref), currentobj);
 				}
 				if (options.include_pastobjs) {
-					for (var i = 0; i < pastobjs.length; i++) {
-						if (obj_indexOf(endhref, pastobjs[i].url) < 0 && !pastobjs[i].fake)
-							endhref.push(deepcopy(pastobjs[i]));
+					for (var _i = 0, pastobjs_2 = pastobjs; _i < pastobjs_2.length; _i++) {
+						var pastobj = pastobjs_2[_i];
+						if (pastobj.fake)
+							continue;
+						var index = obj_indexOf(endhref, pastobj.url);
+						if (index < 0) {
+							endhref.push(deepcopy(pastobj));
+						}
 					}
 				}
 			} else {
@@ -70677,7 +70876,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			});
 		};
 		(function() { return __awaiter(_this_1, void 0, void 0, function() {
-			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_15, sobj, _a, queryobj_1, obj_16, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
+			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_16, sobj, _a, queryobj_1, obj_17, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
 			return __generator(this, function(_c) {
 				switch (_c.label) {
 					case 0:
@@ -70718,8 +70917,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							}
 						}
 						queryobj = [];
-						for (_i = 0, obj_15 = obj; _i < obj_15.length; _i++) {
-							sobj = obj_15[_i];
+						for (_i = 0, obj_16 = obj; _i < obj_16.length; _i++) {
+							sobj = obj_16[_i];
 							if (is_bad_url(sobj.url)) {
 								continue;
 							}
@@ -70727,9 +70926,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						}
 						// required to avoid querying an ok url twice
 						for (_a = 0, queryobj_1 = queryobj; _a < queryobj_1.length; _a++) {
-							obj_16 = queryobj_1[_a];
-							if (tried_urls.has(obj_16.url) && !is_bad_url(obj_16.url))
-								return [2 /*return*/, options.cb([obj_16], last_data)];
+							obj_17 = queryobj_1[_a];
+							if (tried_urls.has(obj_17.url) && !is_bad_url(obj_17.url))
+								return [2 /*return*/, options.cb([obj_17], last_data)];
 						}
 						if (!queryobj.length) {
 							if (_nir_debug_) {
@@ -76919,10 +77118,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				format_vars[name + "_unix_ms"] = date.getTime();
 				format_vars[name + "_unix"] = (date.getTime() / 1000) | 0;
 			};
+			var pageobj = common_functions["fill_ldjson"]([{ "url": window_location }], {
+				responseText: document.documentElement.outerHTML,
+				finalUrl: window_location
+			}, {
+				thumbnail: false
+			})[0];
+			var newobj_filled = deepcopy(newobj);
+			if (settings.format_fill_page) {
+				newobj_filled = fillobj_urls([newobj_filled], pageobj, "null")[0];
+			}
 			var created_date = null;
 			var updated_date = null;
 			var download_date = new Date();
-			if (newobj.extra) {
+			if (newobj_filled.extra) {
 				var extra_copy = [
 					"caption",
 					"author_username",
@@ -76932,10 +77141,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					var prop = extra_copy_1[_i];
 					format_vars[prop] = newobj.extra[prop];
 				}
-				if (newobj.extra.created_date)
-					created_date = new Date(newobj.extra.created_date);
-				if (newobj.extra.updated_date)
-					updated_date = new Date(newobj.extra.updated_date);
+				if (newobj_filled.extra.created_date)
+					created_date = new Date(newobj_filled.extra.created_date);
+				if (newobj_filled.extra.updated_date)
+					updated_date = new Date(newobj_filled.extra.updated_date);
 			}
 			if (!updated_date && modified_date)
 				updated_date = modified_date;
@@ -76958,7 +77167,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			// thanks to Dietz on discord for reporting:
 			if (!format_vars.caption && popup_el) {
-				format_vars.caption = get_caption(newobj, popup_el);
+				format_vars.caption = get_caption(newobj_filled, popup_el);
 			}
 			newobj.format_vars = shallowcopy(format_vars);
 			var new_filename = get_filename_from_format(settings.filename_format, format_vars);
