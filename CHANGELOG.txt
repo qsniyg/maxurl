@@ -4,12 +4,13 @@ New features:
 
  * Option to toggle the website request button
  * Option for userscript to enable XHR hotpatching (disabled by default)
- * Host page variants for format variables can now be used
+ * Option to disable story views for Instagram (disabled by default)
+ * Host page variants for certain format variables can now be used
  * Option to fill format variables with page format variables (disabled by default)
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including Google Docs, Flickr, VK, Xiaohongshu)
+ * Various improvements/fixes to existing rules (including Flickr, Google Docs, Instagram, VK, Xiaohongshu)
  * Chunked downloads can also be used in extension
  * Support web archive images
  * Support GM_cookie for userscript
