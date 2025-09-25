@@ -7679,6 +7679,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		instagram_dont_use_web: false,
 		instagram_prefer_video_quality: true,
 		instagram_gallery_postlink: false,
+		instagram_disable_storyview: false,
 		snapchat_orig_media: true,
 		teddit_redirect_reddit: true,
 		tiktok_app_api: false,
@@ -10858,6 +10859,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			category: "rules",
 			subcategory: "rule_specific"
 		},
+		instagram_disable_storyview: {
+			name: "Instagram: Disable story views",
+			description: "Disables view tracking when looking at a story",
+			requires: [{ allow_xhr_hotpatch: true }],
+			category: "rules",
+			subcategory: "rule_specific"
+		},
 		snapchat_orig_media: {
 			name: "Snapchat: Use original media without captions",
 			description: "Prefers using original media instead of media with captions and tags overlayed",
@@ -11061,14 +11069,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				title: "Documentation",
 				value: [
 					"<p>Variables are specified between curly brackets (<code>{}</code>).</p>",
-					"<p>Below is a list of valid variables:</p>",
+					"<p>Below is a list of valid variables. Note that some of these can be prefixed with <code>page_</code> to receive the host page variant (for example: <code>page_caption</code> instead of <code>caption</code>):</p>",
 					"<ul><br />",
 					"<li><code>filename</code> - Original filename (with extension, if applicable)</li>",
 					"<li><code>filename_noext</code> - Original filename (without extension, if applicable)</li>",
 					"<li><code>ext</code> - Extension (with <code>.</code> prefixed)</li>",
-					"<li><code>caption</code> - Popup caption</li>",
-					"<li><code>author_username</code> - Author's username</li>",
-					"<li><code>id</code> - Post ID</li>",
+					"<li><code>caption</code> - Popup caption (has <code>page_</code> variant)</li>",
+					"<li><code>author_username</code> - Author's username (has <code>page_</code> variant)</li>",
+					"<li><code>id</code> - Post ID (has <code>page_</code> variant)</li>",
 					"<li><code>host_title</code> - Title of the current tab/window</li>",
 					"<li><code>host_url</code> - URL of the host webpage</li>",
 					"<li><code>host_domain</code> - Domain of the host webpage</li>",
@@ -11078,10 +11086,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					"<li><code>domain_nosub</code> - Domain (without subdomains) of the media</li>",
 					"<li><code>is_screenshot</code> - Blank, the line will only be processed when screenshotting a video</li>",
 					"<li><code>prefix</code>, <code>suffix</code> - Blank by default, these variables will be automatically prefixed/suffixed to the filename if set using <code>:=</code></li>",
-					"<li><code>created_...</code> - Created date (see note on Date objects below)</li>",
-					"<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below)</li>",
+					"<li><code>created_...</code> - Created date (see note on Date objects below, has <code>page_</code> variant)</li>",
+					"<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below, has <code>page_</code> variant)</li>",
+					"<li><code>date_...</code> - Created/updated date (see note on Date objects below, has <code>page_</code> variant)</li>",
 					"<li><code>download_...</code> - Download date (see note on Date objects below)</li>",
-					"<li><code>date_...</code> - Created/updated date (see note on Date objects below)</li>",
 					"</ul><br />",
 					"<p>You can modify the variable's value using regex by adding <code>/(match)/(replace)/[c]</code> before the end bracket (<code>}</code>). For example:</p>",
 					"<ul><br />",
@@ -12002,12 +12010,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var host_url = options.bigimage_options.host_url;
 			for (var _i = 0, _a = options.website_regex; _i < _a.length; _i++) {
 				var regex = _a[_i];
-				website_match = compat_match(host_url, regex);
-				if (website_match) {
+				var website_match2 = compat_match(host_url, regex);
+				if (website_match2) {
 					hostresp = {
 						finalUrl: host_url,
 						responseText: doc.documentElement.outerHTML
 					};
+					website_match = website_match2;
 					break;
 				}
 			}
@@ -13468,7 +13477,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		"stream_parser": {
 			name: "stream_parser",
 			url: "https://raw.githubusercontent.com/qsniyg/maxurl/e47950c462f9b662d5b47eabb5d938e7491ecd00/lib/stream_parser.js",
-			archive_time: "20210403204309",
+			archive_time: "20250922132632",
 			size: 115608,
 			crc32: 2490081286,
 			crc32_size: 1118955492
@@ -13476,7 +13485,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		"ffmpeg": {
 			name: "ffmpeg",
 			url: "https://raw.githubusercontent.com/qsniyg/maxurl/fcc05e8fe3cfd2b37d33d13af008f75e60d920a9/lib/ffmpeg.js",
-			archive_time: "20210403204304",
+			archive_time: "20250922132826",
 			size: 190242,
 			crc32: 4089915341,
 			crc32_size: 4100137276,
@@ -13485,7 +13494,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		"jszip": {
 			name: "jszip",
 			url: "https://raw.githubusercontent.com/qsniyg/maxurl/062630b90b5048f9b83d2048041bf7758ef1bbbd/lib/jszip.js",
-			archive_time: "20231116183309",
+			archive_time: "20250730213031",
 			size: 99601,
 			crc32: 3952915381,
 			crc32_size: 3610065033
@@ -14828,7 +14837,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		// _nc_cat is useless, but doesn't appear to change anything, so let's not remove it to avoid useless redirects
 		// no idea if ig_cache_key does anything or not, but since we're changing the url, perhaps, from the name, this could lead to issues?
 		// no idea what efg or _nc_rid do, haven't seen them change anything yet
-		return remove_queries(src, ["se", "ig_cache_key"]);
+		return remove_queries(src, ["se", "ig_cache_key",
+			// unsure what these do, but we can remove them
+			"ccb", "_nc_sid", "efg", "_nc_cat"
+		]);
 		//return remove_queries(src, ["se", "_nc_cat", "_nc_rid", "efg", "ig_cache_key"]);
 		// these remove_queries calls are separated in case the next one doesn't work.
 		/*newsrc = remove_queries(src, ["se"]);
@@ -14968,6 +14980,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				do_request({
 					method: "GET",
 					url: url,
+					imu_mode: "document",
 					onload: function(result) {
 						if (result.readyState !== 4)
 							return;
@@ -15139,11 +15152,34 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				cb(null);
 			}
 		};
+		var gen_ig_websessionid = function(session) {
+			if (!session)
+				session = get_random_text(6, "both");
+			return session + ":" + get_random_text(6, "both") + ":" + get_random_text(6, "both");
+		};
+		var get_ig_session_from_ls = function(cb) {
+			if (get_localstorage) {
+				get_localstorage("https://www.instagram.com/", ["Session"], function(data) {
+					if (data && data["Session"] && /^[0-9a-z]{6}:[0-9]+$/.test(data["Session"])) {
+						cb(data["Session"].slice(0, 6));
+					} else {
+						cb(null);
+					}
+				});
+			} else {
+				return cb(null);
+			}
+		};
 		var get_ig_websessionid = function(cb) {
 			var cache_key = "instagram_web_session_id";
 			api_cache.fetch(cache_key, cb, function(done) {
-				var websessionid = get_random_text(6, "both") + ":" + get_random_text(6, "both") + ":" + get_random_text(6, "both");
-				done(websessionid, 60 * 60);
+				// localStorage.Session[0-6]:sessionStorage.TabId:?
+				var websessionid = gen_ig_websessionid();
+				get_ig_session_from_ls(function(session) {
+					if (session)
+						websessionid = gen_ig_websessionid(session);
+					done(websessionid, 60 * 60);
+				});
 			});
 		};
 		var web_api_call = function(url, cb) {
@@ -15163,16 +15199,17 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				// https://www.instagram.com/static/bundles/es6/ConsumerLibCommons.js/...
 				var headers = {
 					"Accept": "*/*",
-					"X-ASBD-ID": "129477", // .ASBD_ID, todo: fetch! -- same as of june 28 2022
+					"X-ASBD-ID": "359341", // .ASBD_ID, todo: fetch! -- same as of june 28 2022
 					// not always sent though?
 					// id as of august 10 2023: 129477
 					// same as of jan 26 2025
+					// id as of sept 22 2025: 359341
 					// TODO: x-csrftoken (csrftoken cookie)
 					"X-IG-App-ID": "936619743392459", // instagramWebDesktopFBAppId
 					"X-Requested-With": "XMLHttpRequest",
 					"Origin": "https://www.instagram.com",
 					"Referer": "https://www.instagram.com/",
-					"Sec-Fetch-Site": "same-site",
+					"Sec-Fetch-Site": "same-origin",
 					"Sec-Fetch-Mode": "cors",
 					"Sec-Fetch-Dest": "empty"
 				};
@@ -15205,7 +15242,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return cb(null);
 			var cache_key = "instagram_mediainfo:" + id;
 			api_cache.fetch(cache_key, cb, function(done) {
-				var url = "https://i.instagram.com/api/v1/media/" + id + "/info/";
+				var url = "https://www.instagram.com/api/v1/media/" + id + "/info/?hl=en";
 				app_api_call(url, function(result) {
 					if (!result)
 						return done(null, false);
@@ -15969,6 +16006,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (id) {
 						return done(id, 24 * 60 * 60);
 					} else {
+						console_warn("Instagram get_shortcode_to_id: Unable to load BigInt, falling back to HTTP request");
 						request_ig_post(post_url, shortcode, function(media) {
 							if (!media || !media.id) {
 								return done(null, false);
@@ -15996,10 +16034,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						if (app_response !== null) {
 							images_app = get_maxsize_app(app_response.items[0]);
 						} else {
-							if (use_app_api) {
-								console_warn("Unable to use API to find Instagram image, you may need to login to Instagram");
-							}
-							need_graphql = true;
+							console_error("Unable to use API to load Instagram media");
+							return cb(null);
 						}
 						var final = function() {
 							if (_nir_debug_) {
@@ -18017,7 +18053,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			urls = [urls];
 		urls = urls;
 		var ldjson = {};
-		var ldjsonmatch = resp.responseText.match(/<script type="application\/ld\+json"[^>]*>\s*([\s\S]*?)\s*<\/script>/i);
+		var ldjsonmatch = resp.responseText.match(/<script[^>]* type="application\/ld\+json"[^>]*>\s*([\s\S]*?)\s*<\/script>/i);
 		if (ldjsonmatch) {
 			try {
 				ldjson = JSON_parse(ldjsonmatch[1]);
@@ -18055,8 +18091,48 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			created_date = new Date(ldjson.uploadDate).getTime();
 		if (!created_date && ldjson.datePublished)
 			created_date = new Date(ldjson.datePublished).getTime();
+		if (!created_date) {
+			// thanks to Bayraktar on discord for reporting:
+			// https://music.apple.com/us/album/loud-deluxe/1440895867
+			var date = get_meta(resp.responseText, "music:release_date");
+			if (date)
+				created_date = new Date(date).getTime();
+		}
 		if (created_date)
 			baseobj.extra.created_date = created_date;
+		var updated_date = options.updated_date || baseobj.extra.updated_date;
+		if (!updated_date) {
+			var dates = [];
+			if (created_date)
+				dates.push(created_date);
+			if (ldjson.tracks && is_array(ldjson.tracks)) {
+				// thanks to Bayraktar on discord for reporting:
+				// https://music.apple.com/us/album/loud-deluxe/1440895867
+				// find the latest upload date for any of the tracks
+				for (var _i = 0, _a = ldjson.tracks; _i < _a.length; _i++) {
+					var track = _a[_i];
+					var objs = [track];
+					if (typeof track.audio === "object")
+						objs.push(track.audio);
+					if (typeof track.video === "object")
+						objs.push(track.video);
+					for (var _b = 0, objs_1 = objs; _b < objs_1.length; _b++) {
+						var obj = objs_1[_b];
+						if (obj.uploadDate)
+							dates.push(new Date(obj.uploadDate).getTime());
+						if (obj.datePublished)
+							dates.push(new Date(obj.datePublished).getTime());
+					}
+				}
+			}
+			dates = dates.sort(function(a, b) {
+				return b - a;
+			});
+			if (dates.length > 0)
+				updated_date = dates[0];
+		}
+		if (updated_date && updated_date !== created_date)
+			baseobj.extra.updated_date = updated_date;
 		var page = options.page || baseobj.extra.page;
 		// don't use contentUrl for ld+json, as this can be the video link
 		if (!page)
@@ -51942,6 +52018,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 		}
 		if (domain === "image.bitautoimg.com") return src.replace(/\/appimage-[^/]+\/+mapi\/+media\/+/, "/mapi/media/");
+		if (domain_nowww === "bfa.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+home\/+photo\/+([0-9]+)(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/home/photo/${id}",
+				allow_hostresp_for_match: true,
+				process: function(done, resp, cache_key) {
+					return done(common_functions["fill_ldjson"]([], resp), 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
 		if (amazon_container === "miscellaneous-content" ||
 			domain === "d2qm30jidfbm96.cloudfront.net") {
 			regex = /(\/uploads\/+bfa\/+[0-9]+\/+([0-9]+)\/+)(?:thumb|large|wl|preview|original)_([0-9]+_[0-9]+\.[^/.]+)(?:[?#].*)?$/;
@@ -69090,6 +69178,49 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						return "waiting";
 					}
 					return "default";
+				},
+				xhr_override_req: function(req) {
+					if (/\/graphql\/+query(?:[?#].*)?$/.test(req.url) && req.data) {
+						if (/=PolarisStoriesV3SeenMutation&/.test(req.data) && settings.instagram_disable_storyview) {
+							return {
+								cancel: "hang"
+							};
+						}
+					}
+				},
+				xhr_override_resp: function(req, resp) {
+					var match = req.url.match(/\/+api\/+v1\/+media\/+([0-9]+)\/+info/);
+					if (match) {
+						var mediaid = match[1];
+						var parsed = JSON_parse(resp.response);
+						real_api_cache.set("instagram_mediainfo:" + mediaid, parsed, 60 * 60);
+						return;
+					}
+					if (/\/graphql\/+query(?:[?#].*)?$/.test(req.url) && req.data) {
+						var friendlynamematch = req.data.match(/&fb_api_req_friendly_name=([^&]+)&/);
+						if (!friendlynamematch)
+							return;
+						var friendlyname = friendlynamematch[1];
+						if (friendlyname === "PolarisStoriesV3ReelPageStandaloneQuery") {
+							var parsed = JSON_parse(resp.response);
+							var reels = parsed.data.xdt_api__v1__feed__reels_media.reels_media;
+							for (var _i = 0, reels_1 = reels; _i < reels_1.length; _i++) {
+								var user_reels = reels_1[_i];
+								// TODO: cache individual reels
+								real_api_cache.set("instagram_reels:" + user_reels.id, user_reels, 60 * 60);
+							}
+							return;
+						}
+						if (friendlyname === "PolarisProfilePageContentQuery") {
+							var parsed = JSON_parse(resp.response);
+							var user = parsed.data.user;
+							if (user) {
+								real_api_cache.set("instagram_uid_to_profile:" + user.id, user, 60 * 60);
+								real_api_cache.set("instagram_username_uid:" + user.username, user.id, 60 * 60);
+							}
+							return;
+						}
+					}
 				}
 			};
 		}
@@ -77128,34 +77259,38 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (settings.format_fill_page) {
 				newobj_filled = fillobj_urls([newobj_filled], pageobj, "null")[0];
 			}
-			var created_date = null;
-			var updated_date = null;
-			var download_date = new Date();
-			if (newobj_filled.extra) {
-				var extra_copy = [
-					"caption",
-					"author_username",
-					"id"
-				];
-				for (var _i = 0, extra_copy_1 = extra_copy; _i < extra_copy_1.length; _i++) {
-					var prop = extra_copy_1[_i];
-					format_vars[prop] = newobj.extra[prop];
+			var fill_format_vars_from_obj = function(prefix, obj) {
+				var created_date = null;
+				var updated_date = null;
+				if (obj.extra) {
+					var extra_copy = [
+						"caption",
+						"author_username",
+						"id"
+					];
+					for (var _i = 0, extra_copy_1 = extra_copy; _i < extra_copy_1.length; _i++) {
+						var prop = extra_copy_1[_i];
+						format_vars[prefix + prop] = obj.extra[prop];
+					}
+					if (obj.extra.created_date)
+						created_date = new Date(obj.extra.created_date);
+					if (obj.extra.updated_date)
+						updated_date = new Date(obj.extra.updated_date);
 				}
-				if (newobj_filled.extra.created_date)
-					created_date = new Date(newobj_filled.extra.created_date);
-				if (newobj_filled.extra.updated_date)
-					updated_date = new Date(newobj_filled.extra.updated_date);
-			}
-			if (!updated_date && modified_date)
-				updated_date = modified_date;
-			if (created_date)
-				create_date("created", created_date);
-			if (updated_date || created_date)
-				create_date("updated", updated_date || created_date);
+				if (!prefix && !updated_date && modified_date)
+					updated_date = modified_date;
+				if (created_date)
+					create_date(prefix + "created", created_date);
+				if (updated_date || created_date)
+					create_date(prefix + "updated", updated_date || created_date);
+				if (created_date || updated_date)
+					create_date(prefix + "date", created_date || updated_date);
+			};
+			fill_format_vars_from_obj("", newobj_filled);
+			fill_format_vars_from_obj("page_", pageobj);
+			var download_date = new Date();
 			if (download_date)
 				create_date("download", download_date);
-			if (created_date || updated_date)
-				create_date("date", created_date || updated_date);
 			if (format_vars.filename) {
 				var ext_split = url_basename(format_vars.filename, {
 					split_ext: true,
@@ -84224,6 +84359,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (newreq.responseType) {
 						this.responseType = newreq.responseType;
 					}
+					if (newreq.cancel === "hang") {
+						//console_log("[IMU] Cancelling request by hang:", get_req_info(this));
+						return;
+					}
 				}
 			}
 			real_xhr_open.bind(this)(this[get_hotprefixed("method")], this[get_hotprefixed("url")]);
@@ -84301,7 +84440,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		unsafeWindow["fetch"] = function(url, options) {
 			if (!options)
 				options = {};
-			var supported_options = ["method", "body", "headers", "credentials", "signal"];
+			var supported_options = ["method", "body", "headers", "credentials", "signal", "priority"];
 			for (var opt in options) {
 				if (array_indexof(supported_options, opt) < 0) {
 					console_warn("IMU: Unsupported fetch option:", opt, { url: url, options: options });
