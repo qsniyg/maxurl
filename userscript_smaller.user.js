@@ -20832,6 +20832,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "schreyer-photo.com" ||
 			domain_nowww === "stellapictures.co.uk" ||
 			domain_nowww === "capitalpictures.com" ||
+			domain_nowww === "sportimage.co.uk" ||
 			domain_nowww === "mgpstockphotos.com") {
 			return src.replace(/^[a-z]+:\/\/[^/]+\/+(img-get2?\/)/, "https://ssl.c.photoshelter.com/$1");
 		}
@@ -23480,7 +23481,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain === "cdn.fashionmagazine.com") return src.replace(/(\/+wp-content\/+uploads\/+[0-9]{4}\/+[0-9]{2}\/+[^/]*)-[0-9]+x[0-9]+-c-[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		if (domain === "cdn.heatworld.com" ||
-			domain_nowww === "sohobluesgallery.com" ||
+			((domain_nowww === "sohobluesgallery.com" ||
+				domain_nowww === "pckeyboard.com") && /\/mm5\/+graphics\//.test(src)) ||
 			domain === "media.indiatimes.in" ||
 			domain_nowww === "bangkokpost.com" ||
 			(domain_nosub === "mensxp.com" && domain.match(/media[0-9]*\./) && string_indexof(src, "/media/") >= 0) ||
@@ -43854,6 +43856,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					console_error(e);
 				}
 			}
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+.*\/v3\/+t\/+assets\/+(p[0-9]+_[^/?#]+)(?:[?#].*)?$/);
+			if (match) {
+				return "https://flxt.tmsimg.com/assets/" + match[1];
+			}
 		}
 		if (domain_nosub === "tmsimg.com") {
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(https?:\/\/)/, "$1");
@@ -54055,7 +54061,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc)
 				return newsrc;
 		}
-		if (domain_nowww === "casthq.to") {
+		if (domain_nowww === "casthq.to" ||
+			domain_nowww === "ups2up.fun") {
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+([0-9a-z]{5,})\.html(?:[?#].*)?$/,
 				query_for_id: "https://" + domain + "/${id}.html",
@@ -62575,7 +62582,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain === "cdn.7tv.app") {
 			return {
-				url: src.replace(/(\/emote\/+[0-9a-f]+\/+)[1-3]x\./, "$14x."),
+				url: src.replace(/(\/emote\/+[0-9a-fA-Z]+\/+)[1-3]x\./, "$14x."),
 				head_wrong_contenttype: true
 			};
 		}
