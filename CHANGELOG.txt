@@ -27,6 +27,7 @@ Bugfixes:
  * Fix open in new tab under ScriptCat (thanks to fireattack for reporting)
  * Fix popup not working on some image tabs when using Violentmonkey under Firefox (thanks to F640 on github for reporting)
  * Minor performance improvements
+ * Fix the userscript not working under later Tampermonkey versions
 
 Special thanks to nimbuz, remlap, fyhtma, sn3akybear, wikigen, kidonng, FecklessFeck, f2005, Egor Popov, Liz, haarp, F640, fireattack, karpuzikov, drunub, Froktime, in-the-halfway, James Joint, XiaoSong-CPE, meloner, Earthworm-Banana, RAT, schleeb, siloricity, WolfSkin0, bl8ejeans, Cirnyan, elevate, thomased9412, BlindWanda, adz, Dietz, Bayraktar, iotaOmicron, Emasoft for their contributions and reports for this release
 
