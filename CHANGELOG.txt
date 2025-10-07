@@ -1,4 +1,4 @@
-2025.9.0 (in-dev)
+2025.10.0 (in-dev)
 
 New features:
 
@@ -29,7 +29,7 @@ Bugfixes:
  * Minor performance improvements
  * Fix the userscript not working under later Tampermonkey versions (thanks to Liz and Noodlers for reporting)
 
-Special thanks to nimbuz, remlap, fyhtma, sn3akybear, wikigen, kidonng, FecklessFeck, f2005, Egor Popov, Liz, haarp, F640, fireattack, karpuzikov, drunub, Froktime, in-the-halfway, James Joint, XiaoSong-CPE, meloner, Earthworm-Banana, RAT, schleeb, siloricity, WolfSkin0, bl8ejeans, Cirnyan, elevate, thomased9412, BlindWanda, adz, Dietz, Bayraktar, iotaOmicron, Emasoft, Noodlers for their contributions and reports for this release
+Special thanks to nimbuz, remlap, fyhtma, sn3akybear, wikigen, kidonng, FecklessFeck, f2005, Egor Popov, Liz, haarp, F640, fireattack, karpuzikov, drunub, Froktime, in-the-halfway, James Joint, XiaoSong-CPE, meloner, Earthworm-Banana, RAT, schleeb, siloricity, WolfSkin0, bl8ejeans, Cirnyan, elevate, thomased9412, BlindWanda, adz, Dietz, Bayraktar, iotaOmicron, Emasoft, Noodlers, Mio for their contributions and reports for this release
 
 ---
 
