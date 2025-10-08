@@ -24267,7 +24267,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain.match(/i-[0-9]\.vcimg.com/)) {
 			return src.replace(/\/(?:crop|trim)\//, "/").replace(/(\/[0-9a-f]+)(?:\(|%28)[0-9]+x(?:[0-9]+)?(?:\)|%29)\//, "$1/");
 		}
-		if (host_domain_nowww === "zhihu.com" && options.element) {
+		if (host_domain_nosub === "zhihu.com" && options.element) {
 			if (options.element.tagName === "IMG") {
 				if (options.element.hasAttribute("data-original-token")) {
 					var token = options.element.getAttribute("data-original-token");
@@ -39445,6 +39445,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return src.replace(/(\/[0-9]+\/+)([0-9]+\.)/, "$1orig_$2");
 			}
 		}
+		if (domain_nowww === "kittysplanet.com") return src.replace(/(\/galleries\/+[^/]+\/+)tn_([0-9]+\.)/, "$1im_$2");
 		if (domain_nowww === "phun.org") return src.replace(/(\/galleries\/.*\/images\/+)tn_/, "$1");
 		if (domain_nosub === "livejasminbabes.net" && domain.match(/^content[0-9]*\./)) {
 			return src.replace(/\/upload\/main\/tn\//, "/upload/main/");
@@ -42215,7 +42216,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					};
 				},
 				process: function(done, resp, cache_key) {
-					var match = resp.responseText.match(/<a href="(https?:\/\/imx\.to\/+u\/+i\/+[^"]+)" title="([^"]+)"[^>]*><img class="[^"]+" src="https?:\/\/imx\.to\/+u\/+i\/+/);
+					var match = resp.responseText.match(/<a href="(https?:\/\/(?:[^/]+\.)?imx\.to\/+u\/+i\/+[^"]+)" title="([^"]+)"[^>]*><img class="[^"]+" src="https?:\/\/(?:[^/]+\.)?imx\.to\/+u\/+i\/+/);
 					if (!match) {
 						console_error(cache_key, "Unable to find match for", resp);
 						return done(null, false);
@@ -42234,7 +42235,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc)
 				return newsrc;
 		}
-		if (domain_nowww === "imx.to") {
+		if (domain_nowww === "imx.to" ||
+			domain === "image.imx.to") {
 			newsrc = src
 				.replace(/(:\/\/[^/]+\/+u\/+)t\/+/, "$1i/")
 				.replace(/(:\/\/[^/]+\/+)upload\/+[a-z]+\/+/, "$1u/i/");
