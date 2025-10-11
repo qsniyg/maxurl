@@ -67139,7 +67139,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nowww === "rockantenne.hamburg") return src.replace(/(\/cover\/+)(?:300x300|200x200)\/+/, "$1600x600/");
 		if (domain === "rep.10pm.studio") return src.replace(/(\/media\/+.*)-[0-9]+x\.webp(?:[?#].*)?$/, "$1.jpg");
 		if (domain_nowww === "wideapp.co") return src.replace(/(\/(?:image|video)-thumbnails\/+[^/]+\/+[0-9a-f]{10,}\/+[^/]+\/+file-storage\/+(?:private\/+)?[-0-9a-f]{10,})\/.*/, "$1/0/0/fit/ce");
-		if (domain === "cdn-ldhip.nitrocdn.com") {
+		if (domain === "cdn-ldhip.nitrocdn.com" ||
+			domain === "cdn-jfpdb.nitrocdn.com") {
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+[0-9a-zA-Z]{10,}\/+assets\/+images\/+optimized\/+rev-[^/]+\/+/, "");
 			if (newsrc !== src)
 				return add_http(newsrc);
@@ -68164,6 +68165,42 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain === "image-repository-cdn.tappytoon.com") {
 			return add_queries(src, { size: "original" });
 		}
+		if (domain === "cdn-images.kyruus.com") {
+			newsrc = src.replace(/\/photos\/+(?:85|200)\/+/, "/photos/500/");
+			if (newsrc !== src)
+				return newsrc;
+			newsrc = src.replace(/\/photos\/+(?:500|2000)\/+/, "/photos/orig/");
+			if (newsrc !== src && options.do_request && options.cb) {
+				get_image_size(src, function(x500, y500) {
+					get_image_size(newsrc, function(xorig, yorig) {
+						if (x500 === 214) // hack: dimensons of error image
+							x500 = null;
+						if (xorig && !x500) {
+							if (/\/photos\/+2000\//.test(src)) {
+								return options.cb([
+									src.replace(/\/photos\/+2000\//, "/photos/500/"),
+									newsrc
+								]);
+							} else {
+								return options.cb(newsrc);
+							}
+						}
+						if (Math_abs(xorig / yorig - x500 / y500) < 0.01 && xorig > x500) {
+							return options.cb(newsrc);
+						} else {
+							return options.cb([
+								src.replace(/\/photos\/+500\//, "/photos/2000/"),
+								src
+							]);
+						}
+					});
+				});
+				return {
+					waiting: true
+				};
+			}
+		}
+		if (domain === "static.slobodnadalmacija.hr") return src.replace(/(\/images\/+slike\/+[0-9]{4}\/+[0-9]{1,2}\/+[0-9]{1,2}\/+)[ho]_([0-9]+)_[0-9]+\./, "$1$2.");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -68703,6 +68740,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			digitalocean_container === "saywhofr" ||
 			(amazon_container === "sfmoma-media-dev" && string_indexof(src, "/www-media/") >= 0) ||
 			(domain === "media.pri.org" && /\/s3fs-public\/+uploads\//.test(src)) ||
+			(domain === "fastly.restofworld.org" && string_indexof(src, "/uploads/") >= 0) ||
 			/(\/wp-content\/+uploads\/+(?:sites\/+[0-9]+\/+)?(?:[0-9]{4}\/+[0-9]{2}\/+)?.*)-(?:scaled|e[0-9]{10,})(\.[^/.]+)(?:[?#].*)?$/.test(src)) {
 			newsrc = src.replace(/((?:(?:\/wp-content)?\/+uploads(?:\/+sites\/+[0-9]+)?)?\/+[0-9]{4}\/+[0-9]{2}\/+[^?#]*?|\/wp-content\/+uploads(?:\/+sites\/+[0-9]+)?\/+[^?#]*?)(?:-(?:scaled|e[0-9]{10,}|[0-9]+x[0-9]+))*(\.[^/.?]+)(?:[?#].*)?$/, "$1$2");
 			if (newsrc !== src) {
