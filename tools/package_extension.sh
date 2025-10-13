@@ -177,7 +177,7 @@ separator EXTENSION_README.txt
 echo
 echo Building Firefox extension
 
-BASEFILES="LICENSE.txt manifest.json userscript.user.js resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension/background.js extension/options.css extension/options.html extension/popup.js extension/popup.html"
+BASEFILES="LICENSE.txt manifest.json userscript.user.js resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension/background.js extension/options.css extension/options.html extension/popup.js extension/popup.html extension/welcome.html extension/welcome.js"
 NONFFFILES="lib/ffmpeg.js lib/stream_parser.js"
 NONAMOFILES="lib/testcookie_slowaes.js lib/cryptojs_aes.js lib/jszip.js lib/shaka.debug.js lib/acorn_interpreter.js lib/BigInteger.js"
 AMOFILES="lib/orig/slowaes.js lib/orig/cryptojs_aes.js lib/orig/jszip.js lib/orig/mux.js lib/orig/shaka-player.compiled.debug.js lib/orig/acorn_interpreter.js lib/orig/BigInteger.min.js"
@@ -220,6 +220,7 @@ sed -i \
 
 # Remove all lines with AMO_REMOVE to comply with Mozilla policies
 remove_amoremove tempzip/extension/background.js
+remove_amoremove tempzip/userscript.user.js
 
 zipcmd() {
     echo
