@@ -14,12 +14,6 @@
     "persistent": true
   },
 
-  "applications": {
-    "gecko": {
-      "id": "maxurl@qsniyg"
-    }
-  },
-
   "browser_specific_settings": {
     "gecko": {
       "id": "maxurl@qsniyg"
