@@ -12,9 +12,9 @@ msgstr ""
 msgid "$language_native$"
 msgstr ""
 
-#. English: Finds larger or original versions of images and videos for 9800+ websites, including a powerful media popup and download feature
+#. English: Finds larger or original versions of images and videos for 10,200+ websites, including a powerful media popup and download feature
 msgid "$description$"
-msgstr "Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 9800 Websites"
+msgstr "Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 10,200 Websites"
 
 #. English: Options
 msgid "options_header"
@@ -2698,6 +2698,14 @@ msgstr ""
 msgid "Queries Instagram for albums when using the popup on a post thumbnail"
 msgstr ""
 
+#. instagram_disable_storyview.name
+msgid "Instagram: Disable story views"
+msgstr ""
+
+#. instagram_disable_storyview.description
+msgid "Disables view tracking when looking at a story"
+msgstr ""
+
 #. snapchat_orig_media.name
 msgid "Snapchat: Use original media without captions"
 msgstr ""
@@ -2911,14 +2919,14 @@ msgstr ""
 #. filename_format.documentation.value
 msgid ""
 "<p>Variables are specified between curly brackets (<code>{}</code>).</p>\n"
-"<p>Below is a list of valid variables:</p>\n"
+"<p>Below is a list of valid variables. Note that some of these can be prefixed with <code>page_</code> to receive the host page variant (for example: <code>page_caption</code> instead of <code>caption</code>):</p>\n"
 "<ul><br />\n"
 "<li><code>filename</code> - Original filename (with extension, if applicable)</li>\n"
 "<li><code>filename_noext</code> - Original filename (without extension, if applicable)</li>\n"
 "<li><code>ext</code> - Extension (with <code>.</code> prefixed)</li>\n"
-"<li><code>caption</code> - Popup caption</li>\n"
-"<li><code>author_username</code> - Author's username</li>\n"
-"<li><code>id</code> - Post ID</li>\n"
+"<li><code>caption</code> - Popup caption (has <code>page_</code> variant)</li>\n"
+"<li><code>author_username</code> - Author's username (has <code>page_</code> variant)</li>\n"
+"<li><code>id</code> - Post ID (has <code>page_</code> variant)</li>\n"
 "<li><code>host_title</code> - Title of the current tab/window</li>\n"
 "<li><code>host_url</code> - URL of the host webpage</li>\n"
 "<li><code>host_domain</code> - Domain of the host webpage</li>\n"
@@ -2928,10 +2936,10 @@ msgid ""
 "<li><code>domain_nosub</code> - Domain (without subdomains) of the media</li>\n"
 "<li><code>is_screenshot</code> - Blank, the line will only be processed when screenshotting a video</li>\n"
 "<li><code>prefix</code>, <code>suffix</code> - Blank by default, these variables will be automatically prefixed/suffixed to the filename if set using <code>:=</code></li>\n"
-"<li><code>created_...</code> - Created date (see note on Date objects below)</li>\n"
-"<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below)</li>\n"
+"<li><code>created_...</code> - Created date (see note on Date objects below, has <code>page_</code> variant)</li>\n"
+"<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below, has <code>page_</code> variant)</li>\n"
+"<li><code>date_...</code> - Created/updated date (see note on Date objects below, has <code>page_</code> variant)</li>\n"
 "<li><code>download_...</code> - Download date (see note on Date objects below)</li>\n"
-"<li><code>date_...</code> - Created/updated date (see note on Date objects below)</li>\n"
 "</ul><br />\n"
 "<p>You can modify the variable's value using regex by adding <code>/(match)/(replace)/[c]</code> before the end bracket (<code>}</code>). For example:</p>\n"
 "<ul><br />\n"
@@ -2992,6 +3000,14 @@ msgstr ""
 
 #. filename_replace_special_underscores.description
 msgid "Replaces characters such as `/` or `\"` with `_` when downloading. Note that browsers will usually do this automatically, this is just to ensure consistent behavior."
+msgstr ""
+
+#. format_fill_page.name
+msgid "Fill format with page variables"
+msgstr ""
+
+#. format_fill_page.description
+msgid "Fills extra format variables with variables from the host page (such as caption, creation date, etc.)."
 msgstr ""
 
 #. replaceimgs_keybinding.description
