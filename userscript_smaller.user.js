@@ -44,38 +44,38 @@ var __assign = (this && this.__assign) || function() {
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 9800+ websites, including a powerful media popup and download feature
-// @description:en    Finds larger or original versions of images and videos for 9800+ websites, including a powerful media popup and download feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 9800 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 9800 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 9800 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 9800 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 9800 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 9800 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 9800 sitios
-// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 9800 verkkosivustolle
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 800 sites web, y compris une puissante fonction de popup média
-// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 800 sites web, y compris une puissante fonction de popup média
-// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-9800 אתרים
-// @description:hi    9800 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
-// @description:hu    Több mint 9800 webhely képének és videóinak nagyobb vagy eredeti változatát találja
-// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 9800 situs web
-// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 9800 siti web
-// @description:ja    9800以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ko    9800개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 9800 nettsteder
-// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 9800 websites
-// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 9800 stron internetowych
-// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 9800 sites
-// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 9800+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 9800 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 9800 веб-сайтів
-// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 9800 งเว็บไซต์
-// @description:tr    9800'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
-// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 9800 trang web
+// @description       Finds larger or original versions of images and videos for 10,200+ websites, including a powerful media popup and download feature
+// @description:en    Finds larger or original versions of images and videos for 10,200+ websites, including a powerful media popup and download feature
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 10,200 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 10,200 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 10,200 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 10,200 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 10,200 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 10,200 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 10,200 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 10,200 verkkosivustolle
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 10,200 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 10,200 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-10,200 אתרים
+// @description:hi    10,200 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
+// @description:hu    Több mint 10,200 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 10,200 situs web
+// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 10,200 siti web
+// @description:ja    10,200以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ko    10,200개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 10,200 nettsteder
+// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 10,200 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 10,200 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 10,200 sites
+// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 10,200+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 10,200 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 10,200 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 10,200 งเว็บไซต์
+// @description:tr    10,200'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 10,200 trang web
 // @description:zh-CN 在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能
-// @description:zh-TW 為9800多個網站查找更大或原始圖像
-// @description:zh-HK 為9800多個網站查找更大或原始圖像
+// @description:zh-TW 為10,200多個網站查找更大或原始圖像
+// @description:zh-HK 為10,200多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
 // @version           2025.5.0
 // @author            qsniyg
@@ -202,6 +202,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	var is_webextension = false;
 	var is_extension_bg = false;
 	var is_firefox_webextension = false;
+	var is_firefox_amo = false;
 	var extension_send_message = null;
 	var extension_error_handler = function(context) { };
 	var extension_options_page = null;
@@ -309,6 +310,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			is_webextension = true;
 			if (navigator.userAgent.indexOf("Firefox") >= 0)
 				is_firefox_webextension = true;
+			is_firefox_amo = true;
+			/*AMO_REMOVE*/ is_firefox_amo = false;
 			current_version = extension_manifest.version;
 			extension_send_message = function(message, respond) {
 				message = deepcopy(message, { json: true });
@@ -7736,9 +7739,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		// cache entries (not settings, but this is the most convenient way to do it)
 		last_update_check: 0,
 		last_update_version: null,
-		last_update_url: null
+		last_update_url: null,
+		extension_shown_welcome_message: false
 	};
 	//var orig_settings = deepcopy(settings);
+	if (is_firefox_amo) {
+		settings.redirect = false;
+		settings.allow_apicalls = false;
+		settings.website_request_enable_button = false;
+	}
 	var sensitive_settings = [
 		"tumblr_api_key"
 	];
@@ -10863,6 +10872,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		instagram_disable_storyview: {
 			name: "Instagram: Disable story views",
 			description: "Disables view tracking when looking at a story",
+			userscript_only: true,
 			requires: [{ allow_xhr_hotpatch: true }],
 			category: "rules",
 			subcategory: "rule_specific"
@@ -18238,6 +18248,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				ogvideo = get_meta(resp.responseText, "og:video");
 			if (!ogvideo)
 				ogvideo = get_meta(resp.responseText, "twitter:player");
+			if (!ogvideo && options.contentURL)
+				ogvideo = get_meta(resp.responseText, "contentURL");
 			//var ogvideo = get_meta(resp.responseText, "og:video");
 			if (ogvideo) {
 				array_upush(video_urls, urljoin(baseurl, ogvideo, true));
@@ -19871,7 +19883,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return src.replace(/(\/thumb\.[a-z0-9]+)\.mini(?:[?#].*)?$/, "$1");
 		}
 		if (domain === "image.news1.kr" ||
-			domain === "i2n.news1.kr") {
+			(domain_nosub === "news1.kr" && /^i[0-9]*n\./.test(domain))) {
 			newsrc = src.replace(/\/+dims\/.*/, "");
 			if (newsrc !== src)
 				return newsrc;
@@ -22314,7 +22326,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		) {
 			return src.replace(/^[a-z]+:\/\/[^/]+\/+imgre\//, "https://gal.img.pmdstatic.net/");
 		}
-		if (domain_nowww === "programme.tv") {
+		if (domain_nowww === "programme.tv" ||
+			domain_nowww === "programme-tv.net") {
 			match = src.match(/\/imgre\/+(?:fit|scale)\/+~1~(tls|tel|gal)~([0-9]{4})~([0-9]{2})~([0-9]{2})~([-0-9a-f]{10,}\.[a-z]+)\//);
 			if (match) {
 				return "https://i.pmdstatic.net/" + match[1] + "/" + match[2] + "/" + match[3] + "/" + match[4] + "/" + match[5];
@@ -22635,6 +22648,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "cdn-images.rtp.pt" ||
 			domain === "media.ouest-france.fr" ||
 			domain === "images.pluto.tv" ||
+			domain === "img.texasmonthly.com" ||
 			(domain_nowww === "rbsdirect.com.br" && string_indexof(src, "/imagesrc/") >= 0) ||
 			((domain_nowww === "newfoundlandlabrador.com" ||
 				domain_nowww === "mccormick.com" ||
@@ -23474,6 +23488,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain_nowww === "declic.org" && /\/uploads\/.*\/images\//.test(src)) ||
 			(domain === "assets.korearisk.com" && string_indexof(src, "/uploads/") >= 0) ||
 			domain === "images.elle.com.br" ||
+			domain === "img.vietcetera.com" ||
+			(domain_nowww === "mancover.xyz" && string_indexof(src, "/cover/") >= 0) ||
 			domain === "cdn.entameclip.com") {
 			src = src.replace(/-[0-9]+x[0-9]+\.([^/]*(?:[?#].*)?)$/, ".$1");
 		}
@@ -27572,6 +27588,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/(\/system\/+resources\/+)thumbnails\/+/, "$1previews/")
 				.replace(/(\/(?:(?:system|images)\/+)?(?:(?:attached|item)_images|App\/+BlogBody|post_pictures|events|posts|items|articles|file_uploads|screenshots|resources|pictures|guides|Image|item_cocreco_images|blog_headers)\/+(?:(?:images|photos|files|assets|pictures|posters|uploads|screenshots|previews|imgs|cropped_images|avatars|ultras)\/+)?(?:[0-9]{3}\/+){3})[a-z_0-9]+\/+/, "$1original/");
 		}
+		if (domain === "cloud.refsheet.net") return src.replace(/(\/images\/+[0-9]{3}\/+[0-9]{3}\/+[0-9]{3}\/+)(?:small|medium)\/+/, "$1large/");
 		if (domain === "pgw.udn.com.tw") return src.replace(/.*\/photo\.php.*?[?&]u=([^&]*).*/, "$1");
 		if (domain === "uc.udn.com.tw") {
 			return {
@@ -35085,6 +35102,58 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// 1-4
 			domain_nosub === "xhofficial.com" ||
 			domain_nosub === "xh.partners")) {
+			var decode_xhamster_url_1 = function(url) {
+				if (url.length % 2 !== 0 || !/^[0-9a-f]+$/.test(url))
+					return url;
+				var numbers = hex_to_numberarray(url);
+				if (numbers.length < 5)
+					return url;
+				var algo = numbers[0];
+				if (algo < 1 || algo > 3)
+					return url;
+				var c_ify = function(n) {
+					return n | 0;
+				};
+				var seed = numbers[1] | numbers[2] << 8 | numbers[3] << 16 | numbers[4] << 24;
+				var rng_sm64 = function() {
+					seed = Math.imul(seed, 0x19660D) + 0x3c6ef35f;
+					seed = c_ify(seed);
+					return seed;
+				};
+				var xorshift = function() {
+					seed = c_ify(seed);
+					seed ^= seed << 13;
+					seed ^= seed >>> 17;
+					seed ^= seed << 5;
+					return c_ify(seed);
+				};
+				var xxhash_avalanche = function() {
+					seed += 0x9e3779b9;
+					seed = c_ify(seed);
+					var temp = seed;
+					temp ^= temp >>> 16; // sic
+					temp = Math.imul(temp, 0x85ebca77) | 0;
+					temp ^= temp >>> 13;
+					temp = Math.imul(temp, 0xc2b2ae3d) | 0;
+					temp ^= temp >>> 16;
+					return temp;
+				};
+				var get_next_rng = function(algo) {
+					var result = seed;
+					if (algo === 1) {
+						result = rng_sm64();
+					} else if (algo === 2) {
+						result = xorshift();
+					} else if (algo === 3) {
+						result = xxhash_avalanche();
+					}
+					return result & 255;
+				};
+				var output = [];
+				for (var i_2 = 5; i_2 < numbers.length; i_2++)
+					output.push((numbers[i_2] ^ get_next_rng(algo)) & 255);
+				return hex_to_ascii(numberarray_to_hex(output));
+			};
 			var query_xhamster_hashslug_by_id = function(id, cb) {
 				if (/^xh/.test(id))
 					return cb(id);
@@ -35237,6 +35306,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 									console_warn("No URL for item", item);
 									continue;
 								}
+								item.url = decode_xhamster_url_1(item.url);
 								if (!item.quality) {
 									if (/\.m3u8(?:[?#].*)?$/.test(item.url)) {
 										item.quality = "auto";
@@ -35545,8 +35615,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (match) {
 				var splittedhex = match[1].replace(/\/+/g, "/").replace(/\..*/, "").split("/");
 				var endstr = "";
-				for (var i_2 = 0; i_2 < splittedhex.length; i_2++) {
-					endstr += base64_decode(splittedhex[i_2]);
+				for (var i_3 = 0; i_3 < splittedhex.length; i_3++) {
+					endstr += base64_decode(splittedhex[i_3]);
 				}
 				newsrc = endstr.replace(/^(?:.*&)?fileSource=([^&]*).*?$/, "$1");
 				if (newsrc !== src)
@@ -35677,9 +35747,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (match && array_indexof(sizes, match[1]) > 0) {
 				sizes = sizes.slice(0, array_indexof(sizes, match[1]));
 				var urls = [];
-				for (var i_3 = 0; i_3 < sizes.length; i_3++) {
+				for (var i_4 = 0; i_4 < sizes.length; i_4++) {
 					urls.push({
-						url: src.replace(/(\/films\/+[^/]+\/+[^/]+-)[0-9]+p\./, "$1" + sizes[i_3] + "."),
+						url: src.replace(/(\/films\/+[^/]+\/+[^/]+-)[0-9]+p\./, "$1" + sizes[i_4] + "."),
 						video: true
 					});
 				}
@@ -37958,6 +38028,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "realdeepfakes.com" ||
 			domain_nowww === "sexcelebrity.net" ||
 			domain_nowww === "camhub.tv" ||
+			domain_nowww === "gayhaus.com" ||
 			domain_nosub === "mylust.com" ||
 			domain_nosub === "yourlust.com" ||
 			domain_nowww === "pornrewind.com") {
@@ -38693,10 +38764,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			};
 		}
-		if (domain_nowww === "upornia.com" ||
-			domain_nowww === "hotmovs.com" ||
-			domain_nowww === "shemalez.com" ||
-			domain_nowww === "hdzog.com") {
+		if (false) {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:videos|embed)\/+([0-9]+)(?:\/+.*)?(?:[?#].*)?$/);
 			if (match) {
 				id = match[1];
@@ -38795,12 +38863,22 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (domain_nosub === "hclips.com" ||
+			domain_nosub === "privatehomeclips.com" ||
 			domain_nosub === "voyeurhit.com" ||
 			domain_nowww === "txxx.com" ||
 			domain_nowww === "thegay.com" ||
 			domain_nowww === "tubepornclassic.com" ||
 			domain_nowww === "pornl.com" ||
 			domain_nowww === "vjav.com" ||
+			domain_nowww === "fupxy.com" ||
+			domain_nowww === "fuxxx.com" ||
+			domain_nowww === "ooxxx.com" ||
+			domain_nowww === "upornia.com" ||
+			domain_nowww === "hotmovs.com" ||
+			domain_nowww === "hdzog.com" ||
+			domain_nowww === "shemalez.com" ||
+			domain_nosub === "keporn.vip" ||
+			domain_nosub === "kepxy.com" ||
 			domain_nosub === "videotxxx.com") {
 			var match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:videos|embed)\/+([0-9]+)\//);
 			if (match) {
@@ -38808,6 +38886,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var base_domain = domain_nosub;
 				if (domain_nosub === "videotxxx.com")
 					base_domain = "txxx.com";
+				if (domain_nosub === "fupxy.com")
+					base_domain = "fuxxx.com";
+				if (domain_nosub === "kepxy.com")
+					base_domain = "keporn.vip";
 				var decode_hclips_base64 = function(data) {
 					var charset = decodeURIComponent("%D0%90%D0%92%D0%A1D%D0%95FGHIJKL%D0%9CNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.%2C~"), output = "";
 					var invalid_regex = new RegExp(decodeURIComponent("%5B%5E%D0%90%D0%92%D0%A1%D0%95%D0%9CA-Za-z0-9.%2C~%5D"), "g");
@@ -40695,10 +40777,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							}
 						}
 					}
-					for (var i_5 = 0; i_5 < matches.length; i_5++) {
+					for (var i_6 = 0; i_6 < matches.length; i_6++) {
 						images.push({
-							url: decode_entities(matches[i_5][1]),
-							is_current: i_5 === 0
+							url: decode_entities(matches[i_6][1]),
+							is_current: i_6 === 0
 						});
 					}
 					return done({
@@ -42386,11 +42468,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			options.rule_specific && options.rule_specific.ehentai_full_image) {
 			if (options.element.tagName === "IMG" && options.element.id === "img" && options.element.src === src) {
 				var els = options.document.getElementsByTagName("a");
-				for (var i_6 = 0; i_6 < els.length; i_6++) {
-					var el = els[i_6];
-					if (!/^https?:\/\/(?:www\.)?e-hentai\.org\/fullimg\.php/.test(els[i_6].href))
+				for (var i_7 = 0; i_7 < els.length; i_7++) {
+					var el = els[i_7];
+					if (!/^https?:\/\/(?:www\.)?e-hentai\.org\/fullimg\.php/.test(els[i_7].href))
 						continue;
-					return els[i_6].href;
+					return els[i_7].href;
 				}
 			}
 		}
@@ -43890,10 +43972,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				match = src.match(/^([a-z]+:\/\/[^/]+\/+assets\/+p[0-9]+_[a-z]_[vh])([0-9]+)(_.*)$/);
 				if (match) {
 					var num_1 = parseInt(match[2]);
-					for (var i_7 = num_1 + 1; i_7 <= 12; i_7++) {
-						if (i_7 === 9)
+					for (var i_8 = num_1 + 1; i_8 <= 12; i_8++) {
+						if (i_8 === 9)
 							continue;
-						urls.push(match[1] + i_7 + match[3]);
+						urls.push(match[1] + i_8 + match[3]);
 					}
 					if (urls.length)
 						return urls;
@@ -43924,11 +44006,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 			var parse_pictures_json = function(json) {
 				var images = [];
-				for (var i_8 = 0; i_8 < json.length; i_8++) {
+				for (var i_9 = 0; i_9 < json.length; i_9++) {
 					var image = {};
-					image.full = json[i_8].srcFull;
+					image.full = json[i_9].srcFull;
 					image.id = get_thumborid_for_flixster(image.full);
-					image.caption = json[i_8].caption || null;
+					image.caption = json[i_9].caption || null;
 					images.push(image);
 				}
 				return images;
@@ -43953,11 +44035,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 			var parse_imagesjson = function(json) {
 				var images = [];
-				for (var i_9 = 0; i_9 < json.length; i_9++) {
+				for (var i_10 = 0; i_10 < json.length; i_10++) {
 					var image = {};
-					image.id = json[i_9].thumborId;
-					image.full = json[i_9].urls.fullscreen;
-					image.caption = json[i_9].caption || json[i_9].alt || null;
+					image.id = json[i_10].thumborId;
+					image.full = json[i_10].urls.fullscreen;
+					image.caption = json[i_10].caption || json[i_10].alt || null;
 					images.push(image);
 				}
 				return images;
@@ -50835,8 +50917,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					}
 					var decode_spirit = function(str, mod) {
 						var result = "";
-						for (var i_10 = 0; i_10 < str.length; i_10++) {
-							result += string_fromcharcode(str.charCodeAt(i_10) ^ mod);
+						for (var i_11 = 0; i_11 < str.length; i_11++) {
+							result += string_fromcharcode(str.charCodeAt(i_11) ^ mod);
 						}
 						return result;
 					};
@@ -52241,10 +52323,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			match = src.match(regex);
 			if (match) {
 				var obj_5 = [];
-				for (var i_11 = 0; i_11 < sizes_2.length; i_11++) {
-					if (sizes_2[i_11] <= match[1])
+				for (var i_12 = 0; i_12 < sizes_2.length; i_12++) {
+					if (sizes_2[i_12] <= match[1])
 						break;
-					obj_5.push(src.replace(regex, "$1" + sizes_2[i_11] + "$3"));
+					obj_5.push(src.replace(regex, "$1" + sizes_2[i_12] + "$3"));
 				}
 				return obj_5;
 			}
@@ -52993,8 +53075,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var sizes_index = array_indexof(sizes, match[2]);
 				var urls = [];
 				if (sizes_index >= 0) {
-					for (var i_12 = 0; i_12 < sizes_index; i_12++) {
-						urls.push(match[1] + "-" + sizes[i_12] + match[3]);
+					for (var i_13 = 0; i_13 < sizes_index; i_13++) {
+						urls.push(match[1] + "-" + sizes[i_13] + match[3]);
 					}
 					return urls;
 				}
@@ -55298,8 +55380,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (match) {
 				var splitted = decodeURIComponent(match[1]).split("_");
 				var splitted1 = [];
-				for (var i_13 = 0; i_13 < splitted.length; i_13++) {
-					splitted1.push(base64_decode(splitted[i_13]));
+				for (var i_14 = 0; i_14 < splitted.length; i_14++) {
+					splitted1.push(base64_decode(splitted[i_14]));
 				}
 				return {
 					url: splitted1.join("?"),
@@ -55449,14 +55531,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						strings.push(decoded2);
 					}
 					var found_1 = false;
-					for (var i_14 = 0; i_14 < strings.length; i_14++) {
-						strings[i_14] = strings[i_14].replace(/#/g, "-");
-						var newsrc = strings[i_14].replace(/^.*?(https?:\/\/)/, "$1");
-						if (newsrc !== strings[i_14]) {
+					for (var i_15 = 0; i_15 < strings.length; i_15++) {
+						strings[i_15] = strings[i_15].replace(/#/g, "-");
+						var newsrc = strings[i_15].replace(/^.*?(https?:\/\/)/, "$1");
+						if (newsrc !== strings[i_15]) {
 							found_1 = true;
-							strings[i_14] = newsrc;
-							if (i_14 > 0) {
-								strings.splice(0, i_14);
+							strings[i_15] = newsrc;
+							if (i_15 > 0) {
+								strings.splice(0, i_15);
 							}
 							break;
 						}
@@ -55743,8 +55825,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (match) {
 				try {
 					var splitted = match[1].split("_");
-					for (var i_15 = 0; i_15 < splitted.length; i_15++) {
-						splitted[i_15] = base64_decode(splitted[i_15]);
+					for (var i_16 = 0; i_16 < splitted.length; i_16++) {
+						splitted[i_16] = base64_decode(splitted[i_16]);
 					}
 					var jsonstr = splitted.join("?");
 					var json = JSON_parse(jsonstr);
@@ -56141,20 +56223,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					var stream = json.stream;
 					stream = stream.replace(/sig=([0-9a-f]+)&/, function(_, x) {
 						var newsig = [];
-						for (var i_16 = 0; i_16 < x.length; i_16 += 2) {
-							var y = x[i_16] + x[i_16 + 1];
+						for (var i_17 = 0; i_17 < x.length; i_17 += 2) {
+							var y = x[i_17] + x[i_17 + 1];
 							newsig.push(string_fromcharcode(parseInt(y, 16) ^ 2));
 						}
 						var newsigstr = base64_decode(newsig.join("")).substr(5);
 						var reversed = [];
-						for (var i_17 = newsigstr.length - 1 - 5; i_17 >= 0; i_17--) {
-							reversed.push(newsigstr[i_17]);
+						for (var i_18 = newsigstr.length - 1 - 5; i_18 >= 0; i_18--) {
+							reversed.push(newsigstr[i_18]);
 						}
-						for (var i_18 = 0; i_18 < reversed.length; i_18 += 2) {
-							var c = reversed[i_18];
-							var c1 = reversed[i_18 + 1];
-							reversed[i_18] = c1;
-							reversed[i_18 + 1] = c;
+						for (var i_19 = 0; i_19 < reversed.length; i_19 += 2) {
+							var c = reversed[i_19];
+							var c1 = reversed[i_19 + 1];
+							reversed[i_19] = c1;
+							reversed[i_19 + 1] = c;
 						}
 						return "sig=" + reversed.join("") + "&";
 					});
@@ -56297,8 +56379,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var splitted = match[1].split(/\/+/g);
 				var splitted_dec = [];
 				try {
-					for (var i_19 = 0; i_19 < splitted.length; i_19++) {
-						splitted_dec[i_19] = base64_decode(splitted[i_19]);
+					for (var i_20 = 0; i_20 < splitted.length; i_20++) {
+						splitted_dec[i_20] = base64_decode(splitted[i_20]);
 					}
 					var json = JSON_parse(splitted_dec.join(""));
 					console_log(json);
@@ -63819,6 +63901,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "vr-porn.tube" ||
 			domain_nowww === "xjav.tube" ||
 			domain_nowww === "manysex.com" ||
+			domain_nowww === "videovoyeurhit.com" ||
+			domain_nowww === "voyeurhit.tube" ||
 			domain_nowww === "porn-latina.com") && options.do_request && options.cb) {
 			var vxxx_b64_1 = function(e) {
 				return base64_decode(e
@@ -63865,6 +63949,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					return "https://" + domain + "/video-" + id + "/";
 				} else if (domain_nosub === "porn-latina.com" ||
 					domain_nosub === "lesbigo.com" ||
+					domain_nosub === "videovoyeurhit.com" ||
+					domain_nosub === "voyeurhit.tube" ||
 					domain_nosub === "01tube.com") {
 					return "https://" + domain + "/videos/" + id + "/";
 				} else {
@@ -63889,7 +63975,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			newsrc = website_query({
 				website_regex: [
 					/^[a-z]+:\/\/[^/]+\/+video-([0-9]+)\/*(?:[?#].*)?$/, // vxxx
-					/^[a-z]+:\/\/[^/]+\/+videos?\/+([0-9]+)(?:\/.*)?(?:[?#].*)?$/, // abmilf (video), porn-latina (videos)
+					/^[a-z]+:\/\/[^/]+\/+(?:videos?|embed)\/+([0-9]+)(?:\/.*)?(?:[?#].*)?$/, // abmilf (video), porn-latina (videos)
 				],
 				run: function(cb, match) {
 					get_vxxx_video_1(match[1], function(resp) {
@@ -64254,9 +64340,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				try {
 					var decoded_8 = base64_decode(match[1]);
 					var newstr = null;
-					for (var i_20 = 1; i_20 < decoded_8.length; i_20++) {
-						if (decoded_8[i_20] === "u" && decoded_8.charCodeAt(i_20 - 1) === 1) {
-							newstr = decoded_8.substr(i_20);
+					for (var i_21 = 1; i_21 < decoded_8.length; i_21++) {
+						if (decoded_8[i_21] === "u" && decoded_8.charCodeAt(i_21 - 1) === 1) {
+							newstr = decoded_8.substr(i_21);
 							if (/^upic\//.test(newstr))
 								break;
 							newstr = null;
@@ -65983,8 +66069,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							common_functions["update_album_info_links"](obj, function(x) {
 								var ids = x.split("|");
 								for (var _i = 0, ids_1 = ids; _i < ids_1.length; _i++) {
-									var i_21 = ids_1[_i];
-									if (imu_imageid === i_21)
+									var i_22 = ids_1[_i];
+									if (imu_imageid === i_22)
 										return true;
 								}
 								return false;
@@ -66357,6 +66443,35 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			});
 			if (newsrc)
 				return newsrc;
+		}
+		if (domain_nowww === "pornzog.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+([0-9]+)(?:\/.*)?(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/video/${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<div[^>]*\sclass="player"[^>]*>[\s\S]*?<iframe[^>]*\ssrc="([^"]+)"/);
+					if (!match) {
+						console_error(cache_key, "Unable to find iframe match from", resp);
+						return done(null, false);
+					}
+					var url = decode_entities(match[1]);
+					done({
+						url: url,
+						is_pagelink: true
+					}, 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nosub === "pornzog.com" && /^tn[0-9]*\./.test(domain)) {
+			match = src.match(/\/videos\/+tmb\/+([0-9]{3})\/+([0-9]{3})\/+([0-9]{3})\//);
+			if (match) {
+				return {
+					url: "https://" + domain_nosub + "/video/" + parse_int(match[1] + match[2] + match[3]) + "/",
+					is_pagelink: true
+				};
+			}
 		}
 		if (domain === "ver1.sptvp.com") {
 			match = src.match(/\/poster\/+.\/+..\/+([0-9a-f]{10,})\./);
@@ -67389,7 +67504,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (domain === "cdn.datesupport.net") return src.replace(/(\/photos\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+)t[sb]_/, "$1");
-		if (domain_nowww === "noodlemagazine.com") {
+		if (domain_nowww === "noodlemagazine.com" ||
+			domain_nowww === "ukdevilz.com" ||
+			domain_nowww === "mat6tube.com") {
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+watch\/+(-[0-9]+_[0-9]+)(?:[?#].*)?$/,
 				query_for_id: "https://" + domain + "/watch/${id}",
@@ -67408,6 +67525,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					return done(fillobj_urls([
 						{
 							url: parsed.sources[0].file,
+							headers: {
+								Accept: "*/*",
+								Referer: "https://" + domain + "/"
+							},
 							video: true
 						},
 						parsed.image
@@ -67473,6 +67594,21 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				process: function(done, resp, cache_key) {
 					var obj = common_functions["get_videotag_obj"](resp, {
 						videotag: true
+					});
+					done(obj, obj ? 60 * 60 : false);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "rahatupu.net") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+([^/]+)\/*(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/${id}/",
+				process: function(done, resp, cache_key) {
+					var obj = common_functions["get_videotag_obj"](resp, {
+						ogvideo: true,
+						contentURL: true
 					});
 					done(obj, obj ? 60 * 60 : false);
 				}
@@ -68201,6 +68337,64 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (domain === "static.slobodnadalmacija.hr") return src.replace(/(\/images\/+slike\/+[0-9]{4}\/+[0-9]{1,2}\/+[0-9]{1,2}\/+)[ho]_([0-9]+)_[0-9]+\./, "$1$2.");
+		if (domain_nowww === "bollywoodshaadis.com") return src.replace(/\/img-scale\/+[0-9]+\/+/, "/img/");
+		if (domain === "media.fanvue.com") return src.replace(/(\/public\/+[-0-9a-f]{10,}\/+images\/+[-0-9a-f]{10,})(?:__[^/]*)?(?:[?#].*)?$/, "$1");
+		if (domain_nowww === "javtiful.com") {
+			var query_javtiful_cdn_1 = function(token, vidid, cb) {
+				api_query("javtiful:" + vidid, {
+					url: "https://javtiful.com/ajax/get_cdn",
+					method: "POST",
+					imu_multipart: {
+						video_id: vidid,
+						pid_c: "",
+						token: token
+					},
+					json: true
+				}, cb, function(done, resp, cache_key) {
+					if (!resp || !resp.playlists) {
+						console_error(cache_key, "Unhandled get_cdn response:", resp);
+						return done(null, false);
+					}
+					return done(resp.playlists, 60 * 60);
+				});
+			};
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+([0-9]+)(?:\/.*)?(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/video/${id}/",
+				process: function(done, resp, cache_key, match) {
+					var vidid = match[1];
+					var csrfmatch = resp.responseText.match(/data-csrf-token="([^"]+)"/);
+					if (!csrfmatch) {
+						console_error(cache_key, "Unable to find csrf token match for", resp);
+						return done(null, false);
+					}
+					var csrftoken = decode_entities(csrfmatch[1]);
+					query_javtiful_cdn_1(csrftoken, vidid, function(url) {
+						if (!url)
+							return done(null, false);
+						done(common_functions["fill_ldjson"]({
+							url: url,
+							video: true,
+							can_head: false,
+							headers: {
+								Accept: "*/*",
+								Origin: "https://" + domain,
+								Referer: url.replace(/^([a-z]+:\/\/[^/]+\/+).*/, "$1")
+							}
+						}, resp), 60 * 60);
+					});
+				}
+			});
+			if (newsrc)
+				return newsrc;
+			match = src.match(/\/media\/+videos\/+tmb[0-9]*\/+([0-9]+)\//);
+			if (match) {
+				return {
+					url: "https://" + domain + "/video/" + match[1] + "/",
+					is_pagelink: true
+				};
+			}
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -69443,6 +69637,42 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			};
 		}
+		if (host_domain_nowww === "civitai.com") {
+			return {
+				xhr_override_req: function(req) {
+					if (!/\/api\/trpc\//.test(req.url))
+						return;
+					return {
+						// override fetch (blob)
+						responseType: "text"
+					};
+				},
+				xhr_override_resp: function(req, resp) {
+					if (!/\/api\/trpc\//.test(req.url))
+						return;
+					var parsed = JSON_parse(resp.response);
+					if (!parsed.result.data.json.items)
+						return;
+					if (settings.hotpatch_unblock_nsfw) {
+						for (var _i = 0, _a = parsed.result.data.json.items; _i < _a.length; _i++) {
+							var item = _a[_i];
+							if (item.nsfwLevel)
+								item.nsfwLevel = 1;
+							if (item.images) {
+								for (var _b = 0, _c = item.images; _b < _c.length; _b++) {
+									var image = _c[_b];
+									if (image.nsfwLevel)
+										image.nsfwLevel = 1;
+								}
+							}
+						}
+					}
+					return {
+						response: JSON_stringify(parsed)
+					};
+				}
+			};
+		}
 		if (host_domain_nosub === "snapchat.com") {
 			return {
 				gallery: function(el, nextprev) {
@@ -70180,6 +70410,22 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			};
 		}
+		if (host_domain_nosub === "redgifs.com") {
+			return {
+				gallery: function(el, nextprev) {
+					if (el.tagName === "SOURCE")
+						el = el.parentElement;
+					if (el.tagName === "VIDEO" && el.parentElement) {
+						var parent_10 = el.parentElement;
+						if (parent_10.tagName === "DIV" && parent_10.classList.contains("Player-Video"))
+							parent_10 = parent_10.parentElement;
+						var img = parent_10.querySelector("IMG");
+						if (img)
+							return get_next_in_gallery(img, nextprev);
+					}
+				}
+			};
+		}
 		return null;
 	};
 	var do_get_helpers = function(options) {
@@ -70195,6 +70441,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		return get_helpers(baseoptions);
 	};
+	// string = new url
+	// Element = new url's element
+	// false = end of album
+	// null = invalid album
 	var _get_album_info_gallery = function(album_info, el, nextprev) {
 		if (album_info.type === "links") {
 			var current_link_id = -1;
@@ -70219,6 +70469,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		// unsupported type
 		return null;
 	};
+	// element = next/prev element
+	// false = end of album
+	// null = invalid album
 	var get_album_info_gallery = function(popup_obj, el, nextprev) {
 		var album_info;
 		if (popup_obj)
@@ -70237,7 +70490,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return null;
 		album_info = deepcopy(album_info);
 		var result = _get_album_info_gallery(album_info, el, nextprev);
-		if (!result)
+		if (result === null || result === false)
 			return result;
 		if (typeof result === "string") {
 			var url = result;
@@ -76974,18 +77227,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 									console.error("Invalid regex stage:", { stage: stage, c: c, regexval: regexval_1 });
 								}
 							};
-							for (var i_22 = 0; i_22 < regexval_1.length; i_22++) {
-								var c = regexval_1[i_22];
+							for (var i_23 = 0; i_23 < regexval_1.length; i_23++) {
+								var c = regexval_1[i_23];
 								var nextc = null;
-								if (i_22 + 1 < regexval_1.length)
-									nextc = regexval_1[i_22 + 1];
+								if (i_23 + 1 < regexval_1.length)
+									nextc = regexval_1[i_23 + 1];
 								if (stage === 2) {
 									commit(c);
 									continue;
 								}
 								if (c === "\\" && nextc === "/") {
 									commit("/");
-									i_22++;
+									i_23++;
 									continue;
 								}
 								if (c === "/") {
@@ -84413,19 +84666,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		var get_hotprefixed = function(prop) {
 			return hotpatch_prefix + "_" + prop;
 		};
-		var real_xhr_open = unsafeWindow["XMLHttpRequest"].prototype.open;
-		var real_xhr_send = unsafeWindow["XMLHttpRequest"].prototype.send;
-		var real_xhr_srh = unsafeWindow["XMLHttpRequest"].prototype.setRequestHeader;
-		unsafeWindow["XMLHttpRequest"].prototype.open = function() {
-			this[get_hotprefixed("method")] = arguments[0];
-			this[get_hotprefixed("url")] = arguments[1];
-		};
-		unsafeWindow["XMLHttpRequest"].prototype.setRequestHeader = function(header, value) {
-			if (!this[get_hotprefixed("headers")]) {
-				this[get_hotprefixed("headers")] = {};
-			}
-			this[get_hotprefixed("headers")][header] = value;
-		};
 		var get_req_info = function(self) {
 			return {
 				method: self[get_hotprefixed("method")],
@@ -84441,7 +84681,63 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				response: self.response
 			};
 		};
-		unsafeWindow["XMLHttpRequest"].prototype.send = function(data) {
+		var real_xhr = unsafeWindow["XMLHttpRequest"];
+		var private_props = ["_actual", "method", "data", "url", "headers", "responseType", "response", "responseText"];
+		var passthrough_methods = ["addEventListener", "send", "open", "abort", "getAllResponseHeaders", "getResponseHeader", "overrideMimeType", "setRequestHeader"];
+		var hotxhr = unsafeWindow["XMLHttpRequest"] = function() {
+			var actual = new real_xhr();
+			var self = this;
+			this[get_hotprefixed("_actual")] = actual;
+			for (var _i = 0, private_props_1 = private_props; _i < private_props_1.length; _i++) {
+				var prop = private_props_1[_i];
+				continue;
+				Object.defineProperty(self, get_hotprefixed(prop), {
+					writable: true,
+					enumerable: false
+				});
+			}
+			// add all proxy getters
+			["status", "statusText", "response", "responseText",
+				"readyState", "responseXML", "upload"].forEach(function(item) {
+				Object.defineProperty(self, item, {
+					get: function() {
+						var proxyitem = get_hotprefixed(item);
+						if (proxyitem in self)
+							return self[proxyitem];
+						return actual[item];
+					}
+				});
+			});
+			// add all proxy getters/setters
+			["ontimeout, timeout", "withCredentials", "onload", "onloadend", "onerror", "onprogress", "onreadystatechange", "responseType"].forEach(function(item) {
+				Object.defineProperty(self, item, {
+					get: function() { return actual[item]; },
+					set: function(val) { actual[item] = val; }
+				});
+			});
+			// add all pure proxy pass-through methods
+			if (false)
+				passthrough_methods.forEach(function(item) {
+					Object.defineProperty(self, item, {
+						//value: function() {return actual[item].apply(actual, arguments);}
+						get: function() {
+							return real_xhr.prototype[item].bind(actual);
+						}
+					});
+				});
+		};
+		hotxhr.prototype.open = function() {
+			this[get_hotprefixed("method")] = arguments[0];
+			this[get_hotprefixed("url")] = arguments[1];
+		};
+		hotxhr.prototype.setRequestHeader = function(header, value) {
+			if (!this[get_hotprefixed("headers")]) {
+				this[get_hotprefixed("headers")] = {};
+			}
+			this[get_hotprefixed("headers")][header] = value;
+		};
+		hotxhr.prototype.send = function(data) {
+			var actual = this[get_hotprefixed("_actual")];
 			this[get_hotprefixed("data")] = data;
 			if (helpers.xhr_override_req) {
 				var newreq = null;
@@ -84466,10 +84762,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					}
 				}
 			}
-			real_xhr_open.bind(this)(this[get_hotprefixed("method")], this[get_hotprefixed("url")]);
+			actual.open(this[get_hotprefixed("method")], this[get_hotprefixed("url")]);
 			if (this[get_hotprefixed("headers")]) {
 				for (var header in this[get_hotprefixed("headers")]) {
-					real_xhr_srh.bind(this)(header, this[get_hotprefixed("headers")][header]);
+					actual.setRequestHeader(header, this[get_hotprefixed("headers")][header]);
 				}
 			}
 			var hotpatch_event = function(evt) {
@@ -84490,52 +84786,33 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								try {
 									this[get_hotprefixed("responseText")] = newresp.response.toString();
 								} catch (e) {
-									console.error(e);
+									console_error(e);
 								}
 							}
 						}
 					}
 					return real_cb.apply(this, arguments);
-				};
+				}.bind(this);
 			};
 			hotpatch_event.bind(this)("onload");
 			hotpatch_event.bind(this)("onloadend");
 			hotpatch_event.bind(this)("onreadystatechange");
-			return real_xhr_send.apply(this, [this[get_hotprefixed("data")]]);
+			return actual.send(this[get_hotprefixed("data")]);
 		};
-		(function() {
-			var real_xhr = unsafeWindow["XMLHttpRequest"];
-			unsafeWindow["XMLHttpRequest"] = function() {
-				var actual = new real_xhr();
-				var self = this;
-				// add all proxy getters
-				["status", "statusText", "response", "responseText",
-					"readyState", "responseXML", "upload"].forEach(function(item) {
-					Object.defineProperty(self, item, {
-						get: function() {
-							var proxyitem = get_hotprefixed(item);
-							if (proxyitem in actual)
-								return actual[proxyitem];
-							return actual[item];
-						}
-					});
-				});
-				// add all proxy getters/setters
-				["ontimeout, timeout", "withCredentials", "onload", "onloadend", "onerror", "onprogress", "onreadystatechange", "responseType"].forEach(function(item) {
-					Object.defineProperty(self, item, {
-						get: function() { return actual[item]; },
-						set: function(val) { actual[item] = val; }
-					});
-				});
-				// add all pure proxy pass-through methods
-				["addEventListener", "send", "open", "abort", "getAllResponseHeaders",
-					"getResponseHeader", "overrideMimeType", "setRequestHeader"].forEach(function(item) {
-					Object.defineProperty(self, item, {
-						value: function() { return actual[item].apply(actual, arguments); }
-					});
-				});
+		var _loop_4 = function(method) {
+			if (!(method in real_xhr.prototype))
+				return "continue";
+			if (method in hotxhr.prototype)
+				return "continue";
+			hotxhr.prototype[method] = function() {
+				var real_xhr = this[get_hotprefixed("_actual")];
+				return real_xhr[method].apply(real_xhr, arguments);
 			};
-		})();
+		};
+		for (var _i = 0, passthrough_methods_1 = passthrough_methods; _i < passthrough_methods_1.length; _i++) {
+			var method = passthrough_methods_1[_i];
+			_loop_4(method);
+		}
 		var real_fetch = unsafeWindow["fetch"];
 		// FIXME: copy/pasted from lib/fetch_shim.js. include it instead!
 		unsafeWindow["fetch"] = function(url, options) {
