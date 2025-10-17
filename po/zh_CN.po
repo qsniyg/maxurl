@@ -12,7 +12,7 @@ msgstr ""
 msgid "$language_native$"
 msgstr "简体中文"
 
-#. English: Finds larger or original versions of images and videos for 10,200+ websites, including a powerful media popup and download feature
+#. English: Finds larger or original versions of images and videos for 10,000+ websites, including a powerful media popup and download feature
 msgid "$description$"
 msgstr "在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能"
 
