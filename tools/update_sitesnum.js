@@ -13,14 +13,14 @@ var userscript = util.read_userscript(util.ts_userscript_filename);
 
 var sites = about.get_sites();
 var total_sites = sites.length;
-var fuzzy_sites = (((total_sites / 100)|0) * 100) | 0;
-var fuzzy_sites_str = fuzzy_sites + "";
-var fuzzy_sites_fstr = fuzzy_sites_str.replace(/^([0-9])/, "$1 "); // 1 234
+var fuzzy_sites = (((total_sites / 1000)|0) * 1000) | 0;
+var fuzzy_sites_str = (fuzzy_sites + "").replace(/^([0-9]{2})([0-9]{3})$/, "$1,$2");
+var fuzzy_sites_fstr = fuzzy_sites_str.replace(/,/, " "); // 1 234
 
 var update_sitesnum_line = function(line) {
 	return line
-		.replace(/([^0-9])[0-9]{4}([^0-9])/, "$1" + fuzzy_sites_str + "$2")
-		.replace(/([^0-9])[0-9] [0-9]{3}([^0-9])/, "$1" + fuzzy_sites_fstr + "$2");
+		.replace(/([^0-9])(?:[0-9]{4,5}|[0-9]{1,2},[0-9]{3})([^0-9])/, "$1" + fuzzy_sites_str + "$2")
+		.replace(/([^0-9])[0-9]{1,2} [0-9]{3,4}([^0-9])/, "$1" + fuzzy_sites_fstr + "$2");
 };
 
 var update_pofile = function(pofile) {
