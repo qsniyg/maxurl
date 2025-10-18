@@ -212,6 +212,18 @@ input, textarea {
   color: #e0e0e0;
 }
 
+a, a.crypto {
+  color: #33f;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:visited {
+  color: #93f;
+}
+
 .dark a, .dark a.crypto {
   color: #7af;
 }
@@ -292,6 +304,20 @@ hr {
   font-weight: 100;
 }
 
+#footer .current {
+  display: inline-block;
+  margin: 0;
+  color: white;
+  background: #0af;
+  padding: .1em .4em;
+  border-radius: 5px;
+}
+
+.dark #footer .current {
+  color: black;
+  background: #7af;
+}
+
 #footer a, #footer span.current {
   font-weight: 400;
 }
@@ -333,11 +359,15 @@ hr {
 }
 
 #footer a {
+  color: #777;
+}
+
+.dark #footer a {
   color: #999;
 }
 
 #footer a:hover {
-  color: #555;
+  color: #111;
 }
 
 .dark #footer a:hover {
