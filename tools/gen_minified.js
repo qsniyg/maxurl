@@ -76,6 +76,9 @@ prc.on('close', function(code) {
 
 		var extr_header = read_userscript_header(in_filename);
 
+		// OUJS doesn't allow GM_cookie
+		extr_header = extr_header.replace(/(\n)\s*\/\/\s*@grant\s+GM.cookie\s*?[\r\n]+/ig, "$1");
+
 		extr_header += "// Due to OpenUserJS's 1MB limit, the source code had to be minified.\n";
 		extr_header += "// The minification was done by gen_minified.js (in the maxurl repository below) using `uglifyjs -m -c` (" + version + ").\n";
 		extr_header += "// This unfortunately renders the code pretty much unreadable, but it was the only way to fit it within the 1MB limit.\n";

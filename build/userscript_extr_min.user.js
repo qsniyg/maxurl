@@ -85,7 +85,6 @@
 // @grant             GM.notification
 // @grant             GM_setClipboard
 // @grant             GM.setClipboard
-// @grant             GM_cookie
 // @connect           *
 // api.github.com is used for checking for updates (can be disabled through the "Check Updates" setting)
 // @connect           api.github.com
