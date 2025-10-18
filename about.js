@@ -78,16 +78,41 @@ function get_sites() {
 }
 module.exports.get_sites = get_sites;
 
+// to avoid scrapers
+function fill_crypto() {
+  var cryptoels = document.querySelectorAll(".crypto");
+  for (var i = 0; i < cryptoels.length; i++) {
+    var el = cryptoels[i];
+
+    if (el.classList.contains("decoded"))
+      continue;
+
+    try {
+      var cryptolink = atob(el.innerHTML).substring(1);
+      el.innerText = cryptolink;
+      if (el.tagName === "A")
+        el.href = cryptolink;
+      el.classList.add("decoded");
+    } catch (e) {
+      console.error(e);
+    }
+  }
+}
+
 var userscript_contents = null;
 var userscript_rcontents = null;
 if (typeof document !== "undefined") {
-  //var userscript_location = "https://gitcdn.xyz/repo/qsniyg/maxurl/master/userscript_smaller.user.js";
-  var userscript_location = "userscript_smaller.user.js";
+  if (document.location.href.toString().indexOf("/about.html") >= 0) {
+    //var userscript_location = "https://gitcdn.xyz/repo/qsniyg/maxurl/master/userscript_smaller.user.js";
+    var userscript_location = "userscript_smaller.user.js";
 
-  var oReq = new XMLHttpRequest();
-  oReq.addEventListener("load", reqListener);
-  oReq.open("GET", userscript_location);
-  oReq.send();
+    var oReq = new XMLHttpRequest();
+    oReq.addEventListener("load", reqListener);
+    oReq.open("GET", userscript_location);
+    oReq.send();
+  } else if (document.location.href.toString().indexOf("/donate.html") >= 0) {
+    fill_crypto();
+  }
 } else if (typeof require !== undefined && require.main == module) {
   var fs = require("fs");
   var data = fs.readFileSync(process.argv[2], {
