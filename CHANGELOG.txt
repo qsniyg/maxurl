@@ -1,7 +1,8 @@
-2025.11.0 (in-dev)
+2025.11.0
 
 New features:
 
+ * Support for ~400 new websites (using ~160 new rules)
  * Option to toggle the website request button
  * Option for userscript to enable XHR hotpatching (disabled by default)
  * Option to disable story views for Instagram (disabled by default)

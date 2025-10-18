@@ -43,44 +43,45 @@ var __assign = (this && this.__assign) || function() {
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 9800+ websites, including a powerful media popup and download feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 9800 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 9800 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 9800 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 9800 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 9800 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 9800 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 9800 sitios
-// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 9800 verkkosivustolle
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 800 sites web, y compris une puissante fonction de popup média
-// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 9 800 sites web, y compris une puissante fonction de popup média
-// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-9800 אתרים
-// @description:hi    9800 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
-// @description:hu    Több mint 9800 webhely képének és videóinak nagyobb vagy eredeti változatát találja
-// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 9800 situs web
-// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 9800 siti web
-// @description:ja    9800以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ko    9800개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 9800 nettsteder
-// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 9800 websites
-// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 9800 stron internetowych
-// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 9800 sites
-// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 9800+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 9800 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 9800 веб-сайтів
-// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 9800 งเว็บไซต์
-// @description:tr    9800'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
-// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 9800 trang web
+// @description       Finds larger or original versions of images and videos for 10,000+ websites, including a powerful media popup and download feature
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 10,000 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 10,000 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 10,000 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 10,000 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 10,000 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 10,000 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 10,000 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 10,000 verkkosivustolle
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 10 000 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 10 000 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-10,000 אתרים
+// @description:hi    10,000 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
+// @description:hu    Több mint 10,000 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 10,000 situs web
+// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 10,000 siti web
+// @description:ja    10,000以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ko    10,000개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 10,000 nettsteder
+// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 10,000 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 10,000 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 10,000 sites
+// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 10,000+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 10,000 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 10,000 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 10,000 งเว็บไซต์
+// @description:tr    10,000'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 10,000 trang web
 // @description:zh-CN 在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能
-// @description:zh-TW 為9800多個網站查找更大或原始圖像
-// @description:zh-HK 為9800多個網站查找更大或原始圖像
+// @description:zh-TW 為10,000多個網站查找更大或原始圖像
+// @description:zh-HK 為10,000多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2025.5.0
+// @version           2025.11.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
 // @icon              https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png
 // @include           *
+// @match             *://*/*
 // @grant             GM.xmlHttpRequest
 // @grant             GM_xmlhttpRequest
 // @grant             GM.setValue
@@ -97,6 +98,7 @@ var __assign = (this && this.__assign) || function() {
 // @grant             GM.notification
 // @grant             GM_setClipboard
 // @grant             GM.setClipboard
+// @grant             GM_cookie
 // @connect           *
 // api.github.com is used for checking for updates (can be disabled through the "Check Updates" setting)
 // @connect           api.github.com
@@ -107,11 +109,11 @@ var __assign = (this && this.__assign) || function() {
 // @downloadURL       https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript_smaller.user.js
 //
 //  Greasyfork and OpenUserJS have 2MB and 1MB limits for userscripts (respectively).
-//  Because of this, the rules (~1.8MB) have been split into a separate file, linked below.
+//  Because of this, the rules (~1.9MB) have been split into a separate file, linked below.
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@ee51d2202e14a5d3267ecdc0dfccdafd57a5f9f8/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@5cf54561fd45aa60827e43d2806cb31a991bab32/build/rules.js
 // ==/UserScript==
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
 //   * Detecting whether or not the destination URL exists before redirecting
@@ -202,6 +204,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	var is_webextension = false;
 	var is_extension_bg = false;
 	var is_firefox_webextension = false;
+	var is_firefox_amo = false;
 	var extension_send_message = null;
 	var extension_error_handler = function(context) { };
 	var extension_options_page = null;
@@ -220,7 +223,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
 	var imu_icon = "https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png";
-	var current_version = "2025.5.0";
+	var current_version = "2025.11.0";
 	var imagetab_ok_override = false;
 	var has_ffmpeg_lib = true;
 	// -- Currently this is unused, it'll be used in a future release (to workaround the 1MB and 2MB limits for OUJS and Greasyfork respectively) --
@@ -275,7 +278,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				is_options_page = true;
 				is_maxurl_website = true;
 			} else if (/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+/.test(our_url) ||
-				/^file:\/\/.*\/maxurl\/site\/(?:index|about|options)\.html/.test(window_location)) {
+				/^file:\/\/.*\/maxurl\/site\/(?:index|about|options|donate)\.html/.test(window_location)) {
 				is_maxurl_website = true;
 			}
 		})();
@@ -309,6 +312,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			is_webextension = true;
 			if (navigator.userAgent.indexOf("Firefox") >= 0)
 				is_firefox_webextension = true;
+			is_firefox_amo = true;
+			/*AMO_REMOVE*/ is_firefox_amo = false;
 			current_version = extension_manifest.version;
 			extension_send_message = function(message, respond) {
 				message = deepcopy(message, { json: true });
@@ -623,6 +628,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				EventTarget_addEventListener.call(element, event, new_handler, options);
 			};
 			our_removeEventListener = function(element, event, handler, options) {
+				// VM compatibility
+				if (element === window && element.unsafeWindow)
+					element = element.unsafeWindow;
 				init_eventhandler_map();
 				var new_handler = map_get(eventhandler_map, handler);
 				if (!new_handler) {
@@ -1039,7 +1047,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		return obj;
 	};
-	// todo: make type CommonFunctions
+	;
 	var common_functions = {};
 	common_functions["nullfunc"] = function() { };
 	common_functions["nullobjfunc"] = function() {
@@ -1120,7 +1128,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		var _run_vm = function(ops, data) {
 			var vm = {
 				stack: [],
-				data: data
+				data: data,
+				arg: null
 			};
 			for (var i = 0; i < ops.length; i += 2) {
 				var inst = ops[i];
@@ -1261,8 +1270,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	};
 	get_compat_math();
 	var get_random_text = function(length, num) {
-		var text = "";
-		while (text.length < length) {
+		var text_array = []; // faster than text +=
+		while (text_array.length < length) {
 			var newnum = Math_floor(Math_random() * 10e8);
 			var newtext;
 			if (!num) {
@@ -1272,8 +1281,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			} else {
 				newtext = newnum.toString(10);
 			}
-			text += newtext;
+			text_array.push(newtext);
 		}
+		var text = text_array.join("");
 		text = text.substr(0, length);
 		return text;
 	};
@@ -1405,8 +1415,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	var current_frame_id = null;
 	var current_frame_url = null;
 	var raw_remote_send_message = null;
-	var remote_send_message = common_functions["nullfunc"];
-	var remote_send_reply = common_functions["nullfunc"];
+	remote_send_message = common_functions["nullfunc"];
+	remote_send_reply = common_functions["nullfunc"];
 	var imu_message_key = "__IMU_MESSAGE__";
 	if (is_extension) {
 		raw_remote_send_message = function(to, message) {
@@ -1652,6 +1662,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 				return GM_xmlhttpRequest(data);
 			};
+		} else if (userscript_manager === "Tampermonkey") {
+			// Tampermonkey has a bug where requesting data: urls hangs
+			do_request_raw = function(data) {
+				if (/^data:/.test(data.url) && do_request_browser) {
+					return do_request_browser(data);
+				} else {
+					return GM_xmlhttpRequest(data);
+				}
+			};
 		} else {
 			do_request_raw = GM_xmlhttpRequest;
 		}
@@ -1869,23 +1888,27 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			}, cb);
 		} else if (is_userscript && open_in_tab) {
-			open_in_tab(imu.url, bg);
+			open_in_tab(imu.url, !!bg);
 			if (cb) {
 				cb();
 			}
 		}
 	};
+	var websiterequest_button = null;
 	if ((is_userscript && open_in_tab !== common_functions["nullfunc"]) || is_extension) {
 		if (is_userscript)
 			register_menucommand("Options", get_options_page());
-		register_menucommand("Request support for this page", function() {
-			if (is_in_iframe)
-				return;
-			var location = window.location.href;
-			open_in_tab_imu({
-				url: "https://qsniyg.github.io/maxurl/#imu-request-site&url=" + encodeURIComponent(location)
-			}, false);
-		});
+		if (!/^[a-z]+:\/\/qsniyg\.github\.io\//.test(window.location.href.toString())) {
+			// set websiterequest_button so we can remove it in do_mouseover() (the poorly-named onload cb) if the user disables this button (settings is not filled yet, so we can't check here)
+			websiterequest_button = register_menucommand("Request support for this page", function() {
+				if (is_in_iframe)
+					return;
+				var location = window.location.href;
+				open_in_tab_imu({
+					url: "https://qsniyg.github.io/maxurl/#imu-request-site&url=" + encodeURIComponent(location)
+				}, false);
+			});
+		}
 	}
 	var check_tracking_blocked = function(result) {
 		// FireMonkey returns null for result if blocked
@@ -2077,10 +2100,49 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				data.responseType = "arraybuffer";
 				data.imu_responseType = "blob";
 			}
+			var promises = [];
+			if (data.imu_cookies) {
+				var cookies_dict_1 = {};
+				var setcookies_1 = function() {
+					for (var cookiename in data.imu_cookies) {
+						cookies_dict_1[cookiename] = data.imu_cookies[cookiename];
+					}
+					var cookies_list = headers_dict_to_list(cookies_dict_1);
+					var cookie_header = cookies_to_httpheader(cookies_list);
+					headerobj_set(data.headers, "Cookie", cookie_header);
+				};
+				if (get_cookies && data.url) {
+					promises.push(new Promise(function(resolve, reject) {
+						get_cookies(data.url, function(cookies) {
+							if (cookies)
+								cookies_dict_1 = headers_list_to_dict(cookies);
+							setcookies_1();
+							resolve(null);
+						});
+					}));
+				} else {
+					setcookies_1();
+				}
+			}
 			if (_nir_debug_) {
 				console_log("do_request (modified data):", deepcopy(data));
 			}
-			return raw_request_do(data);
+			var req_obj = null;
+			var do_abort = false;
+			Promise.all(promises).then(function() {
+				req_obj = raw_request_do(data);
+				if (do_abort)
+					req_obj.abort();
+			});
+			return {
+				abort: function() {
+					if (!req_obj) {
+						do_abort = true;
+					} else {
+						req_obj.abort();
+					}
+				}
+			};
 		};
 	} else if (is_interactive) {
 		console.warn("Unable to initialize do_request, most functions will likely fail");
@@ -2612,7 +2674,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		};
 	} else if (is_userscript) {
 		// TODO: support GM_cookie
-		get_cookies = function(url, cb, options) {
+		var get_cookies_browser_1 = function(url, cb, options) {
 			if (settings.browser_cookies === false) {
 				return cb(null);
 			}
@@ -2633,6 +2695,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				cb(null);
 			}
 		};
+		if (typeof GM_cookie === "function") {
+			get_cookies = function(url, cb, options) {
+				GM_cookie("list", { url: url }, function(cookies) {
+					if (!cookies || !cookies.length) {
+						return get_cookies_browser_1(url, cb, options);
+					}
+					return cb(cookies);
+				});
+			};
+		} else {
+			get_cookies = get_cookies_browser_1;
+		}
 	}
 	var _localstorage_check_origin = function(url) {
 		var url_domain = get_domain_from_url(url);
@@ -2735,6 +2809,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return blackwhitelist_filter_1(url, host_html_blacklist_regexes, settings.host_html_blacklist_mode);
 		};
 	}
+	var global_helper_data = {};
 	var default_options = {
 		fill_object: true,
 		null_if_no_change: false,
@@ -2757,6 +2832,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		allow_thirdparty_code: false,
 		process_format: {},
 		filter: bigimage_filter,
+		helper_data: global_helper_data,
 		rule_specific: {
 			deviantart_prefer_size: false,
 			deviantart_support_download: true,
@@ -2844,6 +2920,17 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			bruteforce: false
 		}
 	};
+	var can_use_native_set = false;
+	(function() {
+		try {
+			if (("entries" in Set.prototype) &&
+				("set" in Set.prototype) &&
+				("values" in Set.prototype)) {
+				new Set();
+				can_use_native_set = true;
+			}
+		} catch (e) { }
+	})();
 	function is_element(x) {
 		if (!x || typeof x !== "object" || is_array(x))
 			return false;
@@ -2853,6 +2940,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		// window
 		if (typeof x.HTMLElement === "function" && typeof x.navigator === "object") {
 			return true;
+		}
+		// Element and HTMLDocument are subclasses of Node, all Nodes have nodeName
+		if (!("nodeName" in x)) {
+			return false;
 		}
 		// very slow
 		if (is_interactive) {
@@ -2907,28 +2998,39 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	function deepcopy(x, options) {
 		if (!options)
 			options = {};
-		if (!options["history"])
-			options["history"] = [];
+		if (!options.history) {
+			if (can_use_native_set)
+				options.history = new Set();
+			else
+				options.history = [];
+		}
 		var result;
 		if (typeof x === "string" || x === null || typeof x === "undefined") {
 			return x;
 		} else if (is_element(x) || x instanceof RegExp) {
-			if (options["json"]) {
+			if (options.json) {
 				return void 0;
 			} else {
 				return x;
 			}
 		} else if (typeof x === "function") {
-			if (options["json"]) {
+			if (options.json) {
 				return void 0;
 			} else {
 				return x;
 			}
 		} else if (typeof x === "object") {
-			if (array_indexof(options["history"], x) >= 0)
-				return;
-			else
-				options["history"].push(x);
+			if (can_use_native_set) {
+				if (options.history.has(x))
+					return;
+				else
+					options.history.add(x);
+			} else {
+				if (array_indexof(options.history, x) >= 0)
+					return;
+				else
+					options.history.push(x);
+			}
 			if (is_array(x)) {
 				result = [];
 				for (var i = 0; i < x.length; i++) {
@@ -2941,7 +3043,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					try {
 						result[key] = deepcopy(x[key], options);
 					} catch (e) {
-						if (options["json"])
+						if (options.json)
 							result[key] = void 0;
 						else
 							result[key] = x[key];
@@ -7002,11 +7104,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		"Trigger keybinding that will run the Custom Gallery function": {
 			"pt-BR": "Atalho de teclado que executar\u00E1 a fun\u00E7\u00E3o 'Galeria Personalizada'"
 		},
-		"Enable button": {
-			"pt-BR": "Habilitar bot\u00E3o",
-			"ru": "\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u043A\u043D\u043E\u043F\u043A\u0443",
-			"zh-CN": "\u542F\u7528\u6309\u94AE"
-		},
 		"Enables the 'Custom Gallery' button": {
 			"pt-BR": "Habilita o bot\u00E3o 'Galeria Personalizada'"
 		},
@@ -7027,6 +7124,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		},
 		"CSS style to apply for element outlines": {
 			"pt-BR": "Estilo CSS para aplicar aos contornos dos elementos"
+		},
+		"Enable button": {
+			"pt-BR": "Habilitar bot\u00E3o",
+			"ru": "\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u043A\u043D\u043E\u043F\u043A\u0443",
+			"zh-CN": "\u542F\u7528\u6309\u94AE"
 		},
 		"Mouseover popup action": {
 			"en": "Popup action",
@@ -7176,11 +7278,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			"zh-CN": "YouTube\uFF08\u66F4\u9AD8\u8D28\u91CF\uFF09"
 		}
 	};
+	var lang_alias_cache = {};
 	var get_language_aliases = function(language) {
+		if (language in lang_alias_cache)
+			return lang_alias_cache[language];
 		var aliases = [language];
 		var language_nosub = language.replace(/-.*/, "");
 		if (language_nosub !== language)
 			aliases.push(language_nosub);
+		lang_alias_cache[language] = aliases;
 		return aliases;
 	};
 	function _(str) {
@@ -7565,6 +7671,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		lib_integrity_check: true,
 		allow_thirdparty_code: false,
 		allow_bruteforce: false,
+		allow_xhr_hotpatch: false,
+		hotpatch_unblock_nsfw: false,
 		allow_webarchive: false,
 		process_format: {},
 		browser_cookies: true,
@@ -7577,6 +7685,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		instagram_dont_use_web: false,
 		instagram_prefer_video_quality: true,
 		instagram_gallery_postlink: false,
+		instagram_disable_storyview: false,
 		snapchat_orig_media: true,
 		teddit_redirect_reddit: true,
 		tiktok_app_api: false,
@@ -7592,6 +7701,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		bigimage_blacklist_mode: "blacklist",
 		bigimage_blacklist_engine: "glob",
 		filename_format: "{author_username} {filename}",
+		format_fill_page: false,
 		filename_replace_special_underscores: true,
 		replaceimgs_enable_keybinding: false,
 		replaceimgs_keybinding: ["shift", "alt", "r"],
@@ -7623,16 +7733,23 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		highlightimgs_css: "outline: 4px solid yellow",
 		customgallery_enable_keybinding: false,
 		customgallery_keybinding: ["shift", "alt", "g"],
-		customgallery_enable_button: false,
+		customgallery_enable_button: true,
 		customgallery_apply_key: ["enter"],
 		customgallery_bg_css: "background-color: rgba(0, 0, 0, 0.25)",
 		customgallery_outline_css: "background-color: rgba(255, 0, 0, 0.25)\nborder: 2px solid red",
+		website_request_enable_button: true,
 		// cache entries (not settings, but this is the most convenient way to do it)
 		last_update_check: 0,
 		last_update_version: null,
-		last_update_url: null
+		last_update_url: null,
+		extension_shown_welcome_message: false
 	};
 	//var orig_settings = deepcopy(settings);
+	if (is_firefox_amo) {
+		settings.redirect = false;
+		settings.allow_apicalls = false;
+		settings.website_request_enable_button = false;
+	}
 	var sensitive_settings = [
 		"tumblr_api_key"
 	];
@@ -7883,7 +8000,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			name: "Enable chunked download",
 			description: "Prefers chunked downloads over simple browser-based downloads. Allows downloading files requiring custom headers. Note that it will download the entire file into memory before displaying the save dialog, and can be slower than regular downloads.",
 			category: "general",
-			userscript_only: true,
 			imu_enabled_exempt: true,
 			advanced: true
 		},
@@ -10653,6 +10769,23 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			],
 			onupdate: update_rule_setting
 		},
+		allow_xhr_hotpatch: {
+			name: "Rules intercepting HTTP requests",
+			description: "Enables rules that require intercepting HTTP requests from websites.",
+			category: "rules",
+			userscript_only: true,
+			onupdate: update_rule_setting
+		},
+		hotpatch_unblock_nsfw: {
+			name: "Unblur NSFW media",
+			description: "Disables NSFW image tagging for websites",
+			category: "rules",
+			userscript_only: true,
+			requires: {
+				allow_xhr_hotpatch: true
+			},
+			example_websites: ["500px"]
+		},
 		allow_webarchive: {
 			name: "Web Archive support",
 			description: "Allows rules to be run under archive.org's Wayback Machine.",
@@ -10735,6 +10868,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		instagram_gallery_postlink: {
 			name: "Instagram: Use albums for post thumbnails",
 			description: "Queries Instagram for albums when using the popup on a post thumbnail",
+			category: "rules",
+			subcategory: "rule_specific"
+		},
+		instagram_disable_storyview: {
+			name: "Instagram: Disable story views",
+			description: "Disables view tracking when looking at a story",
+			userscript_only: true,
+			requires: [{ allow_xhr_hotpatch: true }],
 			category: "rules",
 			subcategory: "rule_specific"
 		},
@@ -10941,14 +11082,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				title: "Documentation",
 				value: [
 					"<p>Variables are specified between curly brackets (<code>{}</code>).</p>",
-					"<p>Below is a list of valid variables:</p>",
+					"<p>Below is a list of valid variables. Note that some of these can be prefixed with <code>page_</code> to receive the host page variant (for example: <code>page_caption</code> instead of <code>caption</code>):</p>",
 					"<ul><br />",
 					"<li><code>filename</code> - Original filename (with extension, if applicable)</li>",
 					"<li><code>filename_noext</code> - Original filename (without extension, if applicable)</li>",
 					"<li><code>ext</code> - Extension (with <code>.</code> prefixed)</li>",
-					"<li><code>caption</code> - Popup caption</li>",
-					"<li><code>author_username</code> - Author's username</li>",
-					"<li><code>id</code> - Post ID</li>",
+					"<li><code>caption</code> - Popup caption (has <code>page_</code> variant)</li>",
+					"<li><code>author_username</code> - Author's username (has <code>page_</code> variant)</li>",
+					"<li><code>id</code> - Post ID (has <code>page_</code> variant)</li>",
 					"<li><code>host_title</code> - Title of the current tab/window</li>",
 					"<li><code>host_url</code> - URL of the host webpage</li>",
 					"<li><code>host_domain</code> - Domain of the host webpage</li>",
@@ -10958,10 +11099,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					"<li><code>domain_nosub</code> - Domain (without subdomains) of the media</li>",
 					"<li><code>is_screenshot</code> - Blank, the line will only be processed when screenshotting a video</li>",
 					"<li><code>prefix</code>, <code>suffix</code> - Blank by default, these variables will be automatically prefixed/suffixed to the filename if set using <code>:=</code></li>",
-					"<li><code>created_...</code> - Created date (see note on Date objects below)</li>",
-					"<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below)</li>",
+					"<li><code>created_...</code> - Created date (see note on Date objects below, has <code>page_</code> variant)</li>",
+					"<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below, has <code>page_</code> variant)</li>",
+					"<li><code>date_...</code> - Created/updated date (see note on Date objects below, has <code>page_</code> variant)</li>",
 					"<li><code>download_...</code> - Download date (see note on Date objects below)</li>",
-					"<li><code>date_...</code> - Created/updated date (see note on Date objects below)</li>",
 					"</ul><br />",
 					"<p>You can modify the variable's value using regex by adding <code>/(match)/(replace)/[c]</code> before the end bracket (<code>}</code>). For example:</p>",
 					"<ul><br />",
@@ -10992,8 +11133,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					"<li><code>{domain/=instagram}{id}</code> - Will only run the current format (<code>{id}</code>) if the domain contains <code>instagram</code></li>",
 					"<li><code>{domain!/=instagram}{id}</code> - Likewise, but only if the domain does not contain <code>instagram</code></li>",
 					"<li><code>{domain/r=inst.*ram}{id}</code> - Likewise, but only if the domain matches the regex <code>inst.*ram</code></li>",
-					"<li><code>{window_title/c=Instagram}{id}</code> - Likewise, but only if the window's title contains <code>Instagram</code> (case-sensitively)</li>",
-					"<li><code>{window_title!/rc=Inst.*ram}{id}</code> - Likewise, but only if the window's title does not match the case-sensitive regex <code>Inst.*ram</code></li>",
+					"<li><code>{host_title/c=Instagram}{id}</code> - Likewise, but only if the window's title contains <code>Instagram</code> (case-sensitively)</li>",
+					"<li><code>{host_title!/rc=Inst.*ram}{id}</code> - Likewise, but only if the window's title does not match the case-sensitive regex <code>Inst.*ram</code></li>",
 					"</ul><br />",
 					"<p>You can set a custom variable with <code>:=</code>. For example:</p>",
 					"<ul><br />",
@@ -11020,6 +11161,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		filename_replace_special_underscores: {
 			name: "Replace special characters with underscores",
 			description: "Replaces characters such as `/` or `\"` with `_` when downloading. Note that browsers will usually do this automatically, this is just to ensure consistent behavior.",
+			category: "rules"
+		},
+		format_fill_page: {
+			name: "Fill format with page variables",
+			description: "Fills extra format variables with variables from the host page (such as caption, creation date, etc.).",
 			category: "rules"
 		},
 		replaceimgs_enable_keybinding: {
@@ -11332,6 +11478,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			subcategory: "customgallery",
 			imu_enabled_exempt: true
 		},
+		website_request_enable_button: {
+			name: "Enable button",
+			description: "Enables the website request button.\nClicking this button will send the page (or image) you're currently visiting to the development team in order for us to take a look at the website to support it.",
+			category: "extra",
+			subcategory: "websiterequest",
+			imu_enabled_exempt: true
+		}
 	};
 	var option_to_problems = {
 		allow_watermark: "watermark",
@@ -11381,7 +11534,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		"extra": {
 			"replaceimages": "subcategory_replaceimages",
 			"highlightimages": "subcategory_highlightimages",
-			"customgallery": "subcategory_customgallery"
+			"customgallery": "subcategory_customgallery",
+			"websiterequest": "Website Request"
 		}
 	};
 	var settings_conditions = {
@@ -11389,19 +11543,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			"mouseover_open_behavior": "popup"
 		}
 	};
-	// this is horrible, a better solution would be to just have a settings_list object and iterate over that instead
-	var obj_insertafter = function(obj, oldkey, newkey, value) {
-		var newobj = {};
-		for (var key in obj) {
-			newobj[key] = obj[key];
-			if (key === oldkey) {
-				newobj[newkey] = value;
-			}
+	(function populate_profiled_settings() {
+		// to preserve order
+		var orig_settings_keys = [];
+		for (var key in settings) {
+			orig_settings_keys.push(key);
 		}
-		return newobj;
-	};
-	// populate profiled settings
-	(function() {
 		for (var setting in settings_meta) {
 			var orig_meta = settings_meta[setting];
 			if (!orig_meta.profiled)
@@ -11414,7 +11561,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (i > 0) {
 					setting_before = "t" + (trigger_id - 1) + "_" + setting;
 				}
-				settings = obj_insertafter(settings, setting_before, profiled_setting_name, default_value);
+				var prev_setting_index = array_indexof(orig_settings_keys, setting_before);
+				orig_settings_keys.splice(prev_setting_index + 1, 0, profiled_setting_name);
+				settings[profiled_setting_name] = default_value;
 				var profiled_meta = deepcopy(orig_meta);
 				settings_meta[profiled_setting_name] = profiled_meta;
 				if (is_interactive) {
@@ -11426,13 +11575,21 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					var requires = profiled_meta.requires;
 					if (!is_array(requires))
 						requires = [requires];
-					array_foreach(requires, function(srequire) {
+					for (var _i = 0, _a = requires; _i < _a.length; _i++) {
+						var srequire = _a[_i];
 						srequire["mouseover_trigger_key_t" + trigger_id] = true;
-					});
+					}
 					profiled_meta.requires = requires;
 				}
 			}
 		}
+		// to return order
+		var new_settings = {};
+		for (var _b = 0, orig_settings_keys_1 = orig_settings_keys; _b < orig_settings_keys_1.length; _b++) {
+			var key = orig_settings_keys_1[_b];
+			new_settings[key] = settings[key];
+		}
+		settings = new_settings;
 	})();
 	var blacklist_settings = {
 		bigimage_blacklist: {
@@ -11844,9 +12001,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		return matched;
 	};
 	var real_website_query = function(options) {
-		if (!is_array(options.website_regex)) {
-			options.website_regex = [options.website_regex];
-		}
+		options.website_regex = force_array(options.website_regex);
 		var website_match = null;
 		for (var i = 0; i < options.website_regex.length; i++) {
 			website_match = compat_match(options.url, options.website_regex[i]);
@@ -11861,6 +12016,23 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		};
 		if (!options.do_request || !options.cb) {
 			return page_nullobj;
+		}
+		var hostresp = null;
+		if (options.allow_hostresp_for_match && options.bigimage_options && options.bigimage_options.host_url && options.bigimage_options.document) {
+			var doc = options.bigimage_options.document;
+			var host_url = options.bigimage_options.host_url;
+			for (var _i = 0, _a = options.website_regex; _i < _a.length; _i++) {
+				var regex = _a[_i];
+				var website_match2 = compat_match(host_url, regex);
+				if (website_match2) {
+					hostresp = {
+						finalUrl: host_url,
+						responseText: doc.documentElement.outerHTML
+					};
+					website_match = website_match2;
+					break;
+				}
+			}
 		}
 		var domain = options.url.replace(/^[a-z]+:\/\/([^/]+)\/+.*$/, "$1");
 		var domain_nosub = get_domain_nosub(domain);
@@ -11904,7 +12076,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var query = options.query_for_id;
 				if (typeof options.query_for_id === "string") {
 					query = {
-						url: query
+						url: query,
+						imu_mode: "document"
 					};
 				}
 				if (typeof query === "object" && query.url) {
@@ -11912,7 +12085,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				} else {
 					query = query(id, website_match);
 				}
-				real_api_query(options.api_cache, options.do_request, options.cache_key + ":" + id, query, cb, function(done, resp, cache_key) {
+				query = query;
+				var our_cache_key = options.cache_key + ":" + id;
+				if (hostresp) {
+					var done_cb = function(result) {
+						cb(result);
+					};
+					return options.process(done_cb, hostresp, our_cache_key, website_match, options);
+				}
+				real_api_query(options.api_cache, options.do_request, our_cache_key, query, cb, function(done, resp, cache_key) {
 					return options.process(done, resp, cache_key, website_match, options);
 				});
 			};
@@ -12081,6 +12262,51 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		});
 		return mobj;
 	};
+	var merge_objs = function(obj, baseobj, overwrite_mode) {
+		for (var item in baseobj) {
+			if (!(item in obj) || overwrite_mode === "all" || (obj[item] === null && overwrite_mode === "null")) {
+				obj[item] = deepcopy(baseobj[item]);
+			}
+			if (item === "extra") {
+				for (var ikey in baseobj[item]) {
+					if (!(ikey in obj[item]) || overwrite_mode === "all" || (obj[item][ikey] === null && overwrite_mode === "null")) {
+						obj[item][ikey] = deepcopy(baseobj[item][ikey]);
+					}
+				}
+			}
+		}
+		return obj;
+	};
+	var fillobj_single = function(obj, baseobj) {
+		// Only copy from baseobj if the urls are the same (or n/a)
+		if (!obj.url || !baseobj.url || baseobj.url === obj.url) {
+			obj = merge_objs(obj, baseobj, "none");
+		}
+		for (var item in default_object) {
+			if (!(item in obj)) {
+				obj[item] = deepcopy(default_object[item]);
+			}
+		}
+		// this is horrible
+		if (obj.video && obj.media_info.type === "image") {
+			if (obj.video === true) {
+				obj.media_info = {
+					type: "video"
+				};
+			} else if (typeof obj.video === "string") {
+				obj.media_info = {
+					type: "video",
+					delivery: obj.video
+				};
+			} else {
+				obj.media_info = deepcopy(obj.video);
+				// what is this usecase?
+				obj.media_info.delivery = obj.media_info.type;
+				obj.media_info.type = "video";
+			}
+		}
+		return obj;
+	};
 	var fillobj = function(p_obj, p_baseobj) {
 		//if (typeof p_obj === "undefined")
 		var obj = basic_fillobj(p_obj);
@@ -12090,53 +12316,28 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (typeof (obj[i]) === "undefined") {
 				continue;
 			}
-			var item;
-			// Only copy from baseobj if the urls are the same (or n/a)
-			if (!obj[i].url || !baseobj.url || baseobj.url === obj[i].url) {
-				for (item in baseobj) {
-					if (!(item in obj[i])) {
-						obj[i][item] = baseobj[item];
-					}
-				}
-			}
-			for (item in default_object) {
-				if (!(item in obj[i])) {
-					obj[i][item] = deepcopy(default_object[item]);
-				}
-			}
-			// this is horrible
-			if (obj[i].video && obj[i].media_info.type === "image") {
-				if (obj[i].video === true) {
-					obj[i].media_info = {
-						type: "video"
-					};
-				} else if (typeof obj[i].video === "string") {
-					obj[i].media_info = {
-						type: "video",
-						delivery: obj[i].video
-					};
-				} else {
-					obj[i].media_info = deepcopy(obj[i].video);
-					// what is this usecase?
-					obj[i].media_info.delivery = obj[i].media_info.type;
-					obj[i].media_info.type = "video";
-				}
-			}
+			obj[i] = fillobj_single(obj[i], baseobj);
 		}
 		//console_log("fillobj", deepcopy(oldobj), deepcopy(obj), deepcopy(baseobj));
 		return obj;
 	};
 	var fillobj_urls = function(urls, obj, overwrite) {
+		var overwrite_mode = "none";
+		if (overwrite === true)
+			overwrite_mode = "all";
+		else if (typeof overwrite === "string")
+			overwrite_mode = overwrite;
 		var newobj = [];
 		for (var i = 0; i < urls.length; i++) {
 			var currentobj = deepcopy(obj);
 			if (typeof urls[i] === "string") {
 				currentobj.url = urls[i];
-			} else {
-				for (var key in urls[i]) {
+			} else if (urls[i]) {
+				currentobj = merge_objs(shallowcopy(urls[i]), currentobj, overwrite_mode);
+				/*for (var key in (urls[i] as BigImageInfoSObject)) {
 					if (!overwrite || !(key in currentobj))
 						currentobj[key] = urls[i][key];
-				}
+				}*/
 			}
 			newobj.push(currentobj);
 		}
@@ -12148,9 +12349,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				"jpg", "jpeg", "png", "gif", "webp", "avif",
 				"JPG", "JPEG", "PNG", "GIF"
 			];
-		if (!is_array(obj)) {
-			obj = [obj];
-		}
+		obj = force_array(obj);
 		var result = [];
 		for (var i = 0; i < obj.length; i++) {
 			var currentobj = obj[i];
@@ -12158,6 +12357,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (typeof currentobj !== "string") {
 				url = currentobj.url;
 			}
+			url = url;
 			var regex = /(.*)\.([^/.]*?)([?#].*)?$/;
 			if (!url.match(regex)) {
 				result.push(currentobj);
@@ -13214,7 +13414,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (!func)
-			console_error("new_function: Unknown error occurred", { func: func });
+			console_error("new_function: Unknown error occurred", { func: func, scriptbody: scriptbody, data: data });
 		cb(func);
 	};
 	var run_sandboxed_lib = function(fdata, xhr, cb) {
@@ -13288,28 +13488,28 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		},
 		"stream_parser": {
 			name: "stream_parser",
-			url: "https://raw.githubusercontent.com/qsniyg/maxurl/0655c317844fb7a652c6ee9f88ab65514c53b482/lib/stream_parser.js",
-			archive_time: "20210403204309",
-			size: 115544,
-			crc32: 270289712,
-			crc32_size: 2967398805
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/e47950c462f9b662d5b47eabb5d938e7491ecd00/lib/stream_parser.js",
+			archive_time: "20250922132632",
+			size: 115608,
+			crc32: 2490081286,
+			crc32_size: 1118955492
 		},
 		"ffmpeg": {
 			name: "ffmpeg",
-			url: "https://raw.githubusercontent.com/qsniyg/maxurl/5d8a153e7ccb2272cc1162422ece252c2666aab0/lib/ffmpeg.js",
-			archive_time: "20210403204304",
-			size: 190178,
-			crc32: 1792613332,
-			crc32_size: 1070694591,
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/fcc05e8fe3cfd2b37d33d13af008f75e60d920a9/lib/ffmpeg.js",
+			archive_time: "20250922132826",
+			size: 190242,
+			crc32: 4089915341,
+			crc32_size: 4100137276,
 			xhr: true
 		},
 		"jszip": {
 			name: "jszip",
-			url: "https://raw.githubusercontent.com/qsniyg/maxurl/3d8d6b4415b8dd58cb405910647c940ea122b3a0/lib/jszip.js",
-			archive_time: "20231116183309",
-			size: 99559,
-			crc32: 2407465226,
-			crc32_size: 689840937
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/062630b90b5048f9b83d2048041bf7758ef1bbbd/lib/jszip.js",
+			archive_time: "20250730213031",
+			size: 99601,
+			crc32: 3952915381,
+			crc32_size: 3610065033
 		},
 		"BigInteger": {
 			name: "BigInteger",
@@ -13562,7 +13762,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		return array_to_sort;
 	};
 	var parse_tag_def = function(tag) {
-		var match = tag.match(/^<([-a-zA-Z0-9]+)((?:\s+[-a-z0-9A-Z]+(?:=(?:"[^"]*"|'[^']*'|[-_a-zA-Z0-9]+))?)*)\s*(\/?)>/);
+		var match = tag.match(/^<([-a-zA-Z0-9]+)((?:\s+[-a-z0-9A-Z]+(?:=(?:"[^"]*"|'[^']*'|[-_a-zA-Z0-9:/.]+))?)*)\s*(\/?)>/);
 		if (!match) {
 			return null;
 		}
@@ -13572,7 +13772,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			args: {},
 			args_array: []
 		};
-		var args_regex = /\s+([-a-z0-9A-Z]+)(?:=("[^"]+"|'[^']+'|[-_a-zA-Z0-9]+))?/;
+		var args_regex = /\s+([-a-z0-9A-Z]+)(?:=("[^"]+"|'[^']+'|[-_a-zA-Z0-9:/.]+))?/;
 		var args = match[2];
 		match = args.match(new RegExp(args_regex, "g"));
 		if (!match)
@@ -13592,7 +13792,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		return parsed;
 	};
 	var get_meta = function(text, property) {
-		var regex = new RegExp("<meta\\s+(?:(?:property|name|itemprop)=[\"']?" + property + "[\"']?\\s+(?:content|value|href)=[\"']([^'\"]+)[\"']|(?:content|value|href)=[\"']([^'\"]+)[\"']\\s+(?:property|name|itemprop)=[\"']?" + property + "[\"']?)\\s*\/?>");
+		var regex = new RegExp("<meta\\s+(?:(?:property|name|itemprop)=[\"']?" + property + "[\"']?\\s+(?:content|value|href)=[\"']([^'\"]+)[\"']|(?:content|value|href)=[\"']([^'\"]+)[\"']\\s+(?:property|name|itemprop)=[\"']?" + property + "[\"']?)\\s*\/?>", "i");
 		var match = text.match(regex);
 		if (!match)
 			return null;
@@ -14649,7 +14849,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		// _nc_cat is useless, but doesn't appear to change anything, so let's not remove it to avoid useless redirects
 		// no idea if ig_cache_key does anything or not, but since we're changing the url, perhaps, from the name, this could lead to issues?
 		// no idea what efg or _nc_rid do, haven't seen them change anything yet
-		return remove_queries(src, ["se", "ig_cache_key"]);
+		return remove_queries(src, ["se", "ig_cache_key",
+			// unsure what these do, but we can remove them
+			"ccb", "_nc_sid", "efg", "_nc_cat"
+		]);
 		//return remove_queries(src, ["se", "_nc_cat", "_nc_rid", "efg", "ig_cache_key"]);
 		// these remove_queries calls are separated in case the next one doesn't work.
 		/*newsrc = remove_queries(src, ["se"]);
@@ -14789,6 +14992,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				do_request({
 					method: "GET",
 					url: url,
+					imu_mode: "document",
 					onload: function(result) {
 						if (result.readyState !== 4)
 							return;
@@ -14960,11 +15164,34 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				cb(null);
 			}
 		};
+		var gen_ig_websessionid = function(session) {
+			if (!session)
+				session = get_random_text(6, "both");
+			return session + ":" + get_random_text(6, "both") + ":" + get_random_text(6, "both");
+		};
+		var get_ig_session_from_ls = function(cb) {
+			if (get_localstorage) {
+				get_localstorage("https://www.instagram.com/", ["Session"], function(data) {
+					if (data && data["Session"] && /^[0-9a-z]{6}:[0-9]+$/.test(data["Session"])) {
+						cb(data["Session"].slice(0, 6));
+					} else {
+						cb(null);
+					}
+				});
+			} else {
+				return cb(null);
+			}
+		};
 		var get_ig_websessionid = function(cb) {
 			var cache_key = "instagram_web_session_id";
 			api_cache.fetch(cache_key, cb, function(done) {
-				var websessionid = get_random_text(6, "both") + ":" + get_random_text(6, "both") + ":" + get_random_text(6, "both");
-				done(websessionid, 60 * 60);
+				// localStorage.Session[0-6]:sessionStorage.TabId:?
+				var websessionid = gen_ig_websessionid();
+				get_ig_session_from_ls(function(session) {
+					if (session)
+						websessionid = gen_ig_websessionid(session);
+					done(websessionid, 60 * 60);
+				});
 			});
 		};
 		var web_api_call = function(url, cb) {
@@ -14984,16 +15211,17 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				// https://www.instagram.com/static/bundles/es6/ConsumerLibCommons.js/...
 				var headers = {
 					"Accept": "*/*",
-					"X-ASBD-ID": "129477", // .ASBD_ID, todo: fetch! -- same as of june 28 2022
+					"X-ASBD-ID": "359341", // .ASBD_ID, todo: fetch! -- same as of june 28 2022
 					// not always sent though?
 					// id as of august 10 2023: 129477
 					// same as of jan 26 2025
+					// id as of sept 22 2025: 359341
 					// TODO: x-csrftoken (csrftoken cookie)
 					"X-IG-App-ID": "936619743392459", // instagramWebDesktopFBAppId
 					"X-Requested-With": "XMLHttpRequest",
 					"Origin": "https://www.instagram.com",
 					"Referer": "https://www.instagram.com/",
-					"Sec-Fetch-Site": "same-site",
+					"Sec-Fetch-Site": "same-origin",
 					"Sec-Fetch-Mode": "cors",
 					"Sec-Fetch-Dest": "empty"
 				};
@@ -15026,7 +15254,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return cb(null);
 			var cache_key = "instagram_mediainfo:" + id;
 			api_cache.fetch(cache_key, cb, function(done) {
-				var url = "https://i.instagram.com/api/v1/media/" + id + "/info/";
+				var url = "https://www.instagram.com/api/v1/media/" + id + "/info/?hl=en";
 				app_api_call(url, function(result) {
 					if (!result)
 						return done(null, false);
@@ -15790,6 +16018,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (id) {
 						return done(id, 24 * 60 * 60);
 					} else {
+						console_warn("Instagram get_shortcode_to_id: Unable to load BigInt, falling back to HTTP request");
 						request_ig_post(post_url, shortcode, function(media) {
 							if (!media || !media.id) {
 								return done(null, false);
@@ -15817,10 +16046,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						if (app_response !== null) {
 							images_app = get_maxsize_app(app_response.items[0]);
 						} else {
-							if (use_app_api) {
-								console_warn("Unable to use API to find Instagram image, you may need to login to Instagram");
-							}
-							need_graphql = true;
+							console_error("Unable to use API to load Instagram media");
+							return cb(null);
 						}
 						var final = function() {
 							if (_nir_debug_) {
@@ -17705,6 +17932,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		var add_source = function(parsed) {
 			parsed.name = parsed.args.res || parsed.args.title || parsed.args.label || null;
 			parsed.url = parsed.args.src;
+			if (parsed.args.type)
+				parsed.type = parsed.args.type;
 			sources.video.push(parsed);
 		};
 		var sources = {
@@ -17755,8 +17984,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		sources.video.sort(function(a, b) {
 			if (!a.name || !b.name)
 				return 0;
-			var amatch = a.name.match(/^([0-9]+)p$/);
-			var bmatch = b.name.match(/^([0-9]+)p$/);
+			var amatch = a.name.match(/^([0-9]+)p(?: [SH]D)?$/);
+			var bmatch = b.name.match(/^([0-9]+)p(?: [SH]D)?$/);
 			if (!amatch || !bmatch)
 				return 0;
 			return parse_int(bmatch[1]) - parse_int(amatch[1]);
@@ -17820,6 +18049,126 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		});
 		return urls;
 	};
+	common_functions["fill_ldjson"] = function(urls, resp, options) {
+		if (!options)
+			options = {};
+		if (!("baseobj" in options))
+			options.baseobj = {};
+		if (!("thumbnail" in options))
+			options.thumbnail = true;
+		if (!("overwrite_mode" in options))
+			options.overwrite_mode = "none";
+		var baseobj = deepcopy(options.baseobj);
+		if (!baseobj.extra)
+			baseobj.extra = {};
+		if (!is_array(urls))
+			urls = [urls];
+		urls = urls;
+		var ldjson = {};
+		var ldjsonmatch = resp.responseText.match(/<script[^>]* type="application\/ld\+json"[^>]*>\s*([\s\S]*?)\s*<\/script>/i);
+		if (ldjsonmatch) {
+			try {
+				ldjson = JSON_parse(ldjsonmatch[1]);
+			} catch (e) {
+				console_warn("Unable to parse ld+json", { e: e, ldjsonmatch: ldjsonmatch });
+			}
+			if (typeof ldjson !== "object")
+				ldjson = {};
+			if (ldjson.mainEntity) {
+				for (var key in ldjson.mainEntity) {
+					if (!(key in ldjson))
+						ldjson[key] = ldjson.mainEntity[key];
+				}
+			}
+		}
+		var ogtitle = options.caption || baseobj.extra.caption;
+		if (!ogtitle)
+			ogtitle = ldjson.headline;
+		if (!ogtitle)
+			ogtitle = ldjson.name;
+		if (!ogtitle)
+			ogtitle = get_meta(resp.responseText, "og:title");
+		if (!ogtitle)
+			ogtitle = get_meta(resp.responseText, "twitter:title");
+		if (!ogtitle)
+			ogtitle = get_meta(resp.responseText, "title");
+		if (!ogtitle)
+			ogtitle = get_meta(resp.responseText, "og:description");
+		if (!ogtitle)
+			ogtitle = get_meta(resp.responseText, "twitter:description");
+		if (ogtitle)
+			baseobj.extra.caption = ogtitle;
+		var created_date = options.created_date || baseobj.extra.created_date;
+		if (!created_date && ldjson.uploadDate)
+			created_date = new Date(ldjson.uploadDate).getTime();
+		if (!created_date && ldjson.datePublished)
+			created_date = new Date(ldjson.datePublished).getTime();
+		if (!created_date) {
+			// thanks to Bayraktar on discord for reporting:
+			// https://music.apple.com/us/album/loud-deluxe/1440895867
+			var date = get_meta(resp.responseText, "music:release_date");
+			if (date)
+				created_date = new Date(date).getTime();
+		}
+		if (created_date)
+			baseobj.extra.created_date = created_date;
+		var updated_date = options.updated_date || baseobj.extra.updated_date;
+		if (!updated_date) {
+			var dates = [];
+			if (created_date)
+				dates.push(created_date);
+			if (ldjson.tracks && is_array(ldjson.tracks)) {
+				// thanks to Bayraktar on discord for reporting:
+				// https://music.apple.com/us/album/loud-deluxe/1440895867
+				// find the latest upload date for any of the tracks
+				for (var _i = 0, _a = ldjson.tracks; _i < _a.length; _i++) {
+					var track = _a[_i];
+					var objs = [track];
+					if (typeof track.audio === "object")
+						objs.push(track.audio);
+					if (typeof track.video === "object")
+						objs.push(track.video);
+					for (var _b = 0, objs_1 = objs; _b < objs_1.length; _b++) {
+						var obj = objs_1[_b];
+						if (obj.uploadDate)
+							dates.push(new Date(obj.uploadDate).getTime());
+						if (obj.datePublished)
+							dates.push(new Date(obj.datePublished).getTime());
+					}
+				}
+			}
+			dates = dates.sort(function(a, b) {
+				return b - a;
+			});
+			if (dates.length > 0)
+				updated_date = dates[0];
+		}
+		if (updated_date && updated_date !== created_date)
+			baseobj.extra.updated_date = updated_date;
+		var page = options.page || baseobj.extra.page;
+		// don't use contentUrl for ld+json, as this can be the video link
+		if (!page)
+			page = get_meta(resp.responseText, "og:url");
+		if (!page)
+			page = get_meta(resp.responseText, "twitter:url");
+		if (!page)
+			page = resp.finalUrl;
+		if (page)
+			baseobj.extra.page = page;
+		if (options.thumbnail) {
+			var ogimage = get_meta(resp.responseText, "og:image");
+			if (!ogimage)
+				ogimage = get_meta(resp.responseText, "twitter:image");
+			if (!ogimage && ldjson.image)
+				ogimage = ldjson.image;
+			if (!ogimage && is_array(ldjson.thumbnailUrl))
+				ogimage = ldjson.thumbnailUrl[0];
+			if (ogimage) {
+				urls.push(urljoin(resp.finalUrl, ogimage, true));
+			}
+		}
+		return fillobj_urls(urls, baseobj, options.overwrite_mode);
+	};
 	common_functions["get_videotag_obj"] = function(resp, options) {
 		if (!options)
 			options = {};
@@ -17829,8 +18178,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			options.videotag = true;
 		var sources = { video: [], image: [], subtitles: [] };
 		if (options.videotag) {
-			sources = common_functions["get_videotag_sources"](resp.responseText);
-			if (!sources)
+			var newsources = common_functions["get_videotag_sources"](resp.responseText);
+			if (!options.ogvideo || newsources) {
+				sources = newsources;
+			} else if (!options.ogvideo)
 				return null;
 		}
 		var page = get_meta(resp.responseText, "og:url");
@@ -17851,7 +18202,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (caption)
 			obj.extra.caption = caption;
 		var qualities = ["4k", "uhd", "fhd", "hd", "hq", "sd", "lq"];
+		var normalize_quality = function(quality) {
+			return quality.replace(/^([0-9]{3,})p(?: .*)?$/, "$1"); // 720p HD
+		};
 		var compare_qualities = function(qa, qb) {
+			qa = normalize_quality(qa);
+			qb = normalize_quality(qb);
 			if (/^[0-9]+$/.test(qa) && /^[0-9]+$/.test(qb)) {
 				return qb - qa;
 			}
@@ -17887,7 +18243,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (options.ogvideo) {
-			var ogvideo = get_meta(resp.responseText, "og:video");
+			var ogvideo = get_meta(resp.responseText, "og:video:secure_url");
+			if (!ogvideo)
+				ogvideo = get_meta(resp.responseText, "og:video:url");
+			if (!ogvideo)
+				ogvideo = get_meta(resp.responseText, "og:video");
+			if (!ogvideo)
+				ogvideo = get_meta(resp.responseText, "twitter:player");
+			if (!ogvideo && options.contentURL)
+				ogvideo = get_meta(resp.responseText, "contentURL");
+			//var ogvideo = get_meta(resp.responseText, "og:video");
 			if (ogvideo) {
 				array_upush(video_urls, urljoin(baseurl, ogvideo, true));
 			}
@@ -17935,12 +18300,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		//var match = jwplayerstr.match(/\.setup\({[\s\S]*?file:\s*"([^"]+)"[,}]/);
-		var match = jwplayerstr.match(/\.setup\(({[\s\S]*?file:\s*"[\s\S]*?})\);/);
+		var match = jwplayerstr.match(/\.setup\s*\(({[\s\S]*?file:\s*"[\s\S]*?})\);/);
 		if (!match) {
 			console_error("Unable to find jwplayer match for", { resp: resp, jwplayerstr: jwplayerstr });
 			return null;
 		}
-		var proper_json = fixup_js_obj_proper(match[1]);
+		// remove comments
+		var jsontext = match[1].replace(/\n\s*\/\/.*/ig, "");
+		var proper_json = fixup_js_obj_proper(jsontext);
 		var json = null;
 		try {
 			json = JSON_parse(proper_json);
@@ -17949,16 +18316,33 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return null;
 		}
 		var videotype = true;
-		var videourl = json.sources[0].file;
+		var jsonsources = json.sources;
+		if (!jsonsources) {
+			// yuvutu.com
+			if (json.playlist) {
+				// FIXME: support other playlist entries
+				jsonsources = json.playlist[0].sources;
+			}
+		}
+		if (!jsonsources) {
+			console_error("Unable to find sources or playlist object in", { resp: resp, json: json });
+			return null;
+		}
+		var videourl = jsonsources[0].file;
 		if (/\.m3u8/.test(videourl))
 			videotype = "hls";
-		return {
-			url: videourl,
-			headers: {
-				Referer: resp.finalUrl
-			},
-			video: videotype
-		};
+		var urls = [
+			{
+				url: videourl,
+				headers: {
+					Referer: resp.finalUrl
+				},
+				video: videotype
+			}
+		];
+		if (json.image)
+			urls.push(json.image);
+		return urls;
 	};
 	common_functions["update_album_info_links"] = function(obj, cmp) {
 		if (!obj.album_info)
@@ -18737,7 +19121,92 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nosub === "xhtotal.com" ||
 			domain_nosub === "localxh.com" || // 1-5
 			// 1-4
-			domain_nosub === "xhofficial.com";
+			domain_nosub === "xhofficial.com" ||
+			domain_nosub === "xh.partners";
+	};
+	common_functions["multidomain__searx"] = function(domain, domain_nowww) {
+		// instance list: https://searx.space/
+		return domain_nowww === "searx.info" ||
+			domain_nowww === "searx.be" ||
+			domain === "search.rhscz.eu" ||
+			domain_nowww === "priv.au" ||
+			domain === "searx.perennialte.ch" ||
+			domain_nowww === "opnxng.com" ||
+			domain === "search.hbubli.cc" ||
+			domain === "searx.oloke.xyz" ||
+			domain === "search.ononoki.org" ||
+			domain === "searx.tuxcloud.net" ||
+			domain === "search.leptons.xyz" ||
+			//domain === "search.mdosch.de" || // FIXME: CSP
+			domain === "searx.foobar.vip" ||
+			domain === "search.sapti.me" ||
+			domain_nowww === "baresearch.org" ||
+			//domain === "suche.dasnetzundich.de" || // FIXME: CSP
+			domain_nowww === "searxng.site" ||
+			//domain === "search.citw.lgbt" || // FIXME: CSP
+			domain === "searxng.f24o.zip" ||
+			domain === "searxng.shreven.org" ||
+			//domain === "searx.dresden.network" || // FIXME: CSP
+			domain === "search.catboy.house" ||
+			domain_nowww === "ooglester.com" ||
+			//domain_nowww === "seek.fyi" || // FIXME: CSP
+			domain_nowww === "kantan.cat" ||
+			domain_nowww === "gruble.de" ||
+			domain === "search.im-in.space" ||
+			//domain === "search.nordh.tech" || // FIXME: CSP
+			domain === "searxng.deliberate.world" ||
+			domain === "search.080609.xyz" ||
+			domain === "s.mble.dk" ||
+			domain === "search.nerdvpn.de" ||
+			domain === "search.einfachzocken.eu" ||
+			domain === "searx.namejeff.xyz" ||
+			domain === "searx.sev.monster" ||
+			domain === "searxng.hweeren.com" ||
+			domain_nowww === "searx.ro" ||
+			domain_nowww === "searxng.website" ||
+			domain === "searxng.brihx.fr" ||
+			domain_nowww === "fairsuch.net" ||
+			domain === "searx.mxchange.org" ||
+			domain_nowww === "searx.party" ||
+			domain === "search.privacyredirect.com" ||
+			domain === "nyc1.sx.ggtyler.dev" ||
+			domain_nowww === "searxng.biz" ||
+			domain === "searx.mbuf.net" ||
+			domain_nowww === "etsi.me" ||
+			domain === "search.url4irl.com" ||
+			domain_nowww === "metacat.online" ||
+			domain === "searx.foss.family" ||
+			domain === "search.librenode.com" ||
+			domain === "searx.thefloatinglab.world" ||
+			domain === "searx.lunar.icu" ||
+			domain === "searx.juancord.xyz" ||
+			domain_nowww === "paulgo.io" ||
+			domain === "s.datuan.dev" ||
+			domain === "searx.oakleycord.dev" ||
+			domain === "search.mrblake.cc" ||
+			domain === "sx.catgirl.cloud" ||
+			domain === "search.fredix.xyz" ||
+			domain === "search.inetol.net" ||
+			domain === "search.cloakpanda.com" ||
+			domain === "search.ohaa.xyz" ||
+			domain === "searx.tiekoetter.com";
+	};
+	common_functions["multidomain__doodstream"] = function(domain, domain_nowww) {
+		return domain_nowww === "dood.to" ||
+			domain_nowww === "doods.pro" ||
+			domain_nowww === "ds2play.com" ||
+			domain_nowww === "do0od.com" ||
+			domain_nowww === "dood.la" ||
+			domain_nowww === "dood.work" ||
+			domain_nowww === "dooodster.com" ||
+			domain_nowww === "d0000d.com" ||
+			domain_nowww === "d000d.com" ||
+			domain_nowww === "do7go.com" ||
+			domain_nowww === "dood.pm" ||
+			domain_nowww === "vide0.net" ||
+			domain_nowww === "d-s.io" ||
+			domain_nowww === "dsvplay.com" ||
+			domain_nowww === "doodstream.com";
 	};
 	// this requires removing everything before the thumbor url with /
 	common_functions["get_thumbor_url"] = function(src) {
@@ -18752,11 +19221,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		// https://images.macrumors.com/t/H0ZN9uTQCAlcNAvgJLkUkfNyHDI=/112x112/smart/article-new/2021/05/Top-Stories-59-Feature.jpg
 		//   article-new/2021/05/Top-Stories-59-Feature.jpg
 		// https://images.vs-static.com/yfr09nm8pH3P694LHLLivqhMRDg=/0x314:2999x2001/1900x0/Getty_Images_1330811041_046fcd0f40/Getty_Images_1330811041_046fcd0f40.jpg
+		// https://data.sniffspot.com/filters:format(webp)/full-fit-in/256x256/Photos/Dogs/78491/65069CDE-6004-470C-A454-90441E32EB5F.jpg
 		src = src
 			.replace(/^\/*/, "/")
 			.replace(/^\/[-_0-9a-zA-Z]{20,}=?\/+/, "/")
 			.replace(/^\/(?:[0-9]+|orig)x(?:[0-9]+|orig)(?::[0-9]+x[0-9]+)?\/+/, "/")
-			.replace(/^\/fit-in\/+(?:[0-9]+|orig)x(?:[0-9]+|orig)\/+(?:top\/+)?/, "/")
+			.replace(/^\/(?:full-)?fit-in\/+(?:[0-9]+|orig)x(?:[0-9]+|orig)\/+(?:top\/+)?/, "/")
 			.replace(/^\/filters:[^/]+\/+/, "/")
 			.replace(/^\/smart\/+/, "/")
 			.replace(/^\/(?:[0-9]+|orig)x(?:[0-9]+|orig)(?::[0-9]+x[0-9]+)?\/+/, "/")
@@ -19050,6 +19520,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var req = options.do_request(reqobj);
 		});
 	};
+	common_functions["xor_str"] = function(str, key) {
+		var result = "";
+		for (var i = 0; i < str.length; i++) {
+			result += string_fromcharcode(str.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+		}
+		return result;
+	};
+	// -- end common_functions --
 	var get_domain_from_url = function(url) {
 		return url.replace(/^[a-z]+:\/\/([^/]*)(?:\/+.*)?$/, "$1");
 	};
@@ -19212,13 +19690,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "317hgm32h127ck1b") {
+	            } else if (bigimage_obj.nonce !== "32n88o2b8kmhi1di") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "317hgm32h127ck1b"
+	                    message: "Bad nonce, expected: " + "32n88o2b8kmhi1di"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -19563,6 +20041,49 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						return "waiting";
 					}
 					return "default";
+				},
+				xhr_override_req: function(req) {
+					if (/\/graphql\/+query(?:[?#].*)?$/.test(req.url) && req.data) {
+						if (/=PolarisStoriesV3SeenMutation&/.test(req.data) && settings.instagram_disable_storyview) {
+							return {
+								cancel: "hang"
+							};
+						}
+					}
+				},
+				xhr_override_resp: function(req, resp) {
+					var match = req.url.match(/\/+api\/+v1\/+media\/+([0-9]+)\/+info/);
+					if (match) {
+						var mediaid = match[1];
+						var parsed = JSON_parse(resp.response);
+						real_api_cache.set("instagram_mediainfo:" + mediaid, parsed, 60 * 60);
+						return;
+					}
+					if (/\/graphql\/+query(?:[?#].*)?$/.test(req.url) && req.data) {
+						var friendlynamematch = req.data.match(/&fb_api_req_friendly_name=([^&]+)&/);
+						if (!friendlynamematch)
+							return;
+						var friendlyname = friendlynamematch[1];
+						if (friendlyname === "PolarisStoriesV3ReelPageStandaloneQuery") {
+							var parsed = JSON_parse(resp.response);
+							var reels = parsed.data.xdt_api__v1__feed__reels_media.reels_media;
+							for (var _i = 0, reels_1 = reels; _i < reels_1.length; _i++) {
+								var user_reels = reels_1[_i];
+								// TODO: cache individual reels
+								real_api_cache.set("instagram_reels:" + user_reels.id, user_reels, 60 * 60);
+							}
+							return;
+						}
+						if (friendlyname === "PolarisProfilePageContentQuery") {
+							var parsed = JSON_parse(resp.response);
+							var user = parsed.data.user;
+							if (user) {
+								real_api_cache.set("instagram_uid_to_profile:" + user.id, user, 60 * 60);
+								real_api_cache.set("instagram_username_uid:" + user.username, user.id, 60 * 60);
+							}
+							return;
+						}
+					}
 				}
 			};
 		}
@@ -19653,6 +20174,81 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						return true;
 					}
 					return "default";
+				},
+				xhr_override_req: function(req) {
+					if (!/:\/\/api\.500px\.com\/graphql/.test(req.url))
+						return;
+					return {
+						// override fetch (blob)
+						responseType: "text"
+					};
+				},
+				xhr_override_resp: function(req, resp) {
+					if (!/:\/\/api\.500px\.com\/graphql/.test(req.url))
+						return;
+					var parsed = JSON_parse(resp.response);
+					if (!parsed.data)
+						return;
+					if (settings.hotpatch_unblock_nsfw) {
+						var photosedges = [];
+						// search results ( https://500px.com/popular?category=Boudoir )
+						if (parsed.data.photos && parsed.data.photos.edges)
+							photosedges.push(parsed.data.photos.edges);
+						if (parsed.data.gallery && parsed.data.gallery.photos && parsed.data.gallery.photos.edges)
+							photosedges.push(parsed.data.gallery.photos.edges);
+						if (parsed.data.photo)
+							photosedges.push([{ node: parsed.data.photo }]);
+						if (parsed.data.photo && parsed.data.photo.inGalleries && parsed.data.photo.inGalleries.edges)
+							photosedges.push(parsed.data.photo.inGalleries.edges);
+						if (parsed.data.photo && parsed.data.photo.similarPhotos && parsed.data.photo.similarPhotos.edges)
+							photosedges.push(parsed.data.photo.similarPhotos.edges);
+						for (var _i = 0, photosedges_1 = photosedges; _i < photosedges_1.length; _i++) {
+							var edges = photosedges_1[_i];
+							for (var _a = 0, edges_1 = edges; _a < edges_1.length; _a++) {
+								var edge = edges_1[_a];
+								edge.node.notSafeForWork = false;
+							}
+						}
+					}
+					return {
+						response: JSON_stringify(parsed)
+					};
+				}
+			};
+		}
+		if (host_domain_nowww === "civitai.com") {
+			return {
+				xhr_override_req: function(req) {
+					if (!/\/api\/trpc\//.test(req.url))
+						return;
+					return {
+						// override fetch (blob)
+						responseType: "text"
+					};
+				},
+				xhr_override_resp: function(req, resp) {
+					if (!/\/api\/trpc\//.test(req.url))
+						return;
+					var parsed = JSON_parse(resp.response);
+					if (!parsed.result.data.json.items)
+						return;
+					if (settings.hotpatch_unblock_nsfw) {
+						for (var _i = 0, _a = parsed.result.data.json.items; _i < _a.length; _i++) {
+							var item = _a[_i];
+							if (item.nsfwLevel)
+								item.nsfwLevel = 1;
+							if (item.images) {
+								for (var _b = 0, _c = item.images; _b < _c.length; _b++) {
+									var image = _c[_b];
+									if (image.nsfwLevel)
+										image.nsfwLevel = 1;
+								}
+							}
+						}
+					}
+					return {
+						response: JSON_stringify(parsed)
+					};
 				}
 			};
 		}
@@ -20199,6 +20795,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			};
 		}
+		// dearflip / DFLIP
+		if (host_domain_nowww === "glassgirl.info") {
+			return {
+				element_ok: function(el) {
+					if (el.tagName === "CANVAS")
+						return true;
+				}
+			};
+		}
 		if (host_domain_nowww === "behance.net") {
 			return {
 				element_replace: function(el) {
@@ -20302,8 +20907,123 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			};
 		}
+		if (host_domain_nowww === "lenso.ai") {
+			// thanks to Egor Popov
+			return {
+				xhr_override_resp: function(req, resp) {
+					if (!/\/api\/+search/.test(req.url))
+						return;
+					if (!global_helper_data.lensoai)
+						global_helper_data.lensoai = {};
+					var parsed = JSON_parse(resp.response);
+					for (var _i = 0, _a = parsed.results; _i < _a.length; _i++) {
+						var item = _a[_i];
+						if (item.type === "LOCKED")
+							continue;
+						/*
+						{
+							"hash": "...",
+							"distance": 0.5,
+							"proxyUrl": "https://api1.lenso.ai/proxy/[0-9a-f]",
+							"urlList": [
+								{
+									"imageUrl": "...",
+									"sourceUrl": "...",
+									"title": "...",
+									"lang": "en"
+								}
+							],
+							"width": ..., // thumb width
+							"height": ..., // thumb width
+							"debug": null,
+							"type": "FREE",
+							"category": "related",
+							"seeMore": false
+						}
+						*/
+						global_helper_data.lensoai[item.proxyUrl] = item;
+					}
+					return {
+						response: JSON_stringify(parsed)
+					};
+				}
+			};
+		}
+		if (host_domain_nowww === "leboncoin.fr") {
+			// thanks to anonymous for reporting:
+			return {
+				element_ok: function(el) {
+					if (el.tagName.toUpperCase() === "A" && el.parentElement && el.parentElement.tagName.toUpperCase() === "ARTICLE" && el.parentElement.getAttribute("data-test-id") === "ad") {
+						return el.parentElement.querySelector("div[data-test-id=\"image\"] img");
+					}
+				}
+			};
+		}
+		if (host_domain_nowww === "offline35mm.com") {
+			// thanks to anonymous for reporting:
+			return {
+				element_ok: function(el) {
+					if (el.classList.contains("dummy")) {
+						return el.parentElement.querySelector("img");
+					}
+				}
+			};
+		}
+		if (host_domain_nowww === "slant.co") {
+			// thanks to anonymous for reporting:
+			return {
+				element_ok: function(el) {
+					if (el.tagName === "DIV" && el.classList.contains("ImageCarousel-Item")) {
+						return el.querySelector("img");
+					}
+				}
+			};
+		}
+		if (host_domain_nosub === "pic-time.com") {
+			// thanks to anonymous for reporting:
+			return {
+				element_ok: function(el) {
+					if (el.tagName === "DIV" && el.classList.contains("Image")) {
+						return el.querySelector("div.img");
+					}
+				}
+			};
+		}
+		if (host_domain_nosub === "redgifs.com") {
+			return {
+				gallery: function(el, nextprev) {
+					if (el.tagName === "SOURCE")
+						el = el.parentElement;
+					if (el.tagName === "VIDEO" && el.parentElement) {
+						var parent_10 = el.parentElement;
+						if (parent_10.tagName === "DIV" && parent_10.classList.contains("Player-Video"))
+							parent_10 = parent_10.parentElement;
+						var img = parent_10.querySelector("IMG");
+						if (img)
+							return get_next_in_gallery(img, nextprev);
+					}
+				}
+			};
+		}
 		return null;
 	};
+	var do_get_helpers = function(options) {
+		var baseoptions = {
+			document: document,
+			window: get_window(),
+			host_url: window.location.href,
+			do_request: do_request,
+			rule_specific: {}
+		};
+		for (var option in options) {
+			baseoptions[option] = options[option];
+		}
+		return get_helpers(baseoptions);
+	};
+	// string = new url
+	// Element = new url's element
+	// false = end of album
+	// null = invalid album
 	var _get_album_info_gallery = function(album_info, el, nextprev) {
 		if (album_info.type === "links") {
 			var current_link_id = -1;
@@ -20328,6 +21048,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		// unsupported type
 		return null;
 	};
+	// element = next/prev element
+	// false = end of album
+	// null = invalid album
 	var get_album_info_gallery = function(popup_obj, el, nextprev) {
 		var album_info;
 		if (popup_obj)
@@ -20346,7 +21069,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return null;
 		album_info = deepcopy(album_info);
 		var result = _get_album_info_gallery(album_info, el, nextprev);
-		if (!result)
+		if (result === null || result === false)
 			return result;
 		if (typeof result === "string") {
 			var url = result;
@@ -20364,11 +21087,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	var fullurl_obj = function(currenturl, obj) {
 		if (!obj)
 			return obj;
-		if (!is_array(obj)) {
-			obj = [obj];
-		}
+		obj = force_array(obj);
 		var newobj = [];
-		array_foreach(obj, function(url) {
+		for (var _i = 0, obj_15 = obj; _i < obj_15.length; _i++) {
+			var url = obj_15[_i];
 			if (typeof (url) === "string") {
 				newobj.push(fullurl(currenturl, url));
 			} else {
@@ -20383,7 +21105,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 				newobj.push(url);
 			}
-		});
+		}
 		return newobj;
 	};
 	var same_url = function(url, obj) {
@@ -20393,7 +21115,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		return false;
 	};
 	var remove_webarchive_proxy = function(url) {
-		return url.replace(/^[a-z]+:\/\/[^/]+\/+web\/+[0-9*]+\/+(https?:\/\/)/, "$1");
+		return url.replace(/^[a-z]+:\/\/[^/]+\/+web\/+[0-9*]+(?:im_)?\/+(https?:\/\/)/, "$1");
 	};
 	var get_bigimage_extoptions_first = function(options) {
 		var our_settings = [
@@ -20607,9 +21329,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					newhref = big;
 				return false;
 			}
-			var newhref1 = fullurl_obj(currenthref, big);
-			if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage (newhref1)", deepcopy(newhref1));
-			if (!newhref1) {
+			var big_fullurld = fullurl_obj(currenthref, big);
+			if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage (big_fullurld)", deepcopy(big_fullurld));
+			if (!big_fullurld) {
 				return false;
 			}
 			var copy_props = ["extra", "album_info"];
@@ -20620,14 +21342,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					important_properties.likely_broken = pastobjs[0].likely_broken;
 				if (pastobjs[0].fake)
 					important_properties.fake = pastobjs[0].fake;
-				array_foreach(copy_props, function(prop) {
+				for (var _i = 0, copy_props_1 = copy_props; _i < copy_props_1.length; _i++) {
+					var prop_1 = copy_props_1[_i];
 					//console_log(prop, deepcopy(pastobjs[0]));
-					if (prop in pastobjs[0] && pastobjs[0][prop]) {
-						important_properties[prop] = deepcopy(pastobjs[0][prop]);
+					if (prop_1 in pastobjs[0] && pastobjs[0][prop_1]) {
+						important_properties[prop_1] = deepcopy(pastobjs[0][prop_1]);
 					}
-				});
+				}
 			}
-			var objified = fillobj(deepcopy(newhref1), important_properties);
+			var objified = fillobj(deepcopy(big_fullurld), important_properties);
 			if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage (objified)", deepcopy(objified));
 			for (var i = 0; i < objified.length; i++) {
 				objified[i] = deepcopy(objified[i]); // ensure no references are kept between objects
@@ -20635,8 +21358,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var remove_obj = function() {
 					if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage (removing obj)");
 					objified.splice(i, 1);
-					if (is_array(newhref1)) {
-						newhref1.splice(i, 1);
+					if (is_array(big_fullurld)) {
+						big_fullurld.splice(i, 1);
 					}
 					i--;
 				};
@@ -20682,19 +21405,19 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			waiting = false;
 			forcerecurse = false;
-			var temp_newhref1 = newhref1;
-			if (is_array(newhref1))
-				temp_newhref1 = newhref1[0];
-			if (typeof (temp_newhref1) === "object") {
-				currentobj = newhref1;
-				if (temp_newhref1.waiting) {
+			var temp_big_fullurld = big_fullurld;
+			if (is_array(big_fullurld))
+				temp_big_fullurld = big_fullurld[0];
+			if (typeof (temp_big_fullurld) === "object") {
+				currentobj = big_fullurld;
+				if (temp_big_fullurld.waiting) {
 					waiting = true;
-					if (!temp_newhref1.url) {
-						newhref = newhref1;
+					if (!temp_big_fullurld.url) {
+						newhref = big_fullurld;
 						return false;
 					}
 				}
-				if (temp_newhref1.forcerecurse) {
+				if (temp_big_fullurld.forcerecurse) {
 					forcerecurse = true;
 				}
 			} else {
@@ -20702,7 +21425,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			// check if objified (our object) has the same url/href as the last url (currenthref)
 			if (same_url(currenthref, objified) && !forcerecurse) {
-				if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage: sameurl(currenthref, objified) == true (newhref, nh1, pastobjs)", deepcopy(currenthref), deepcopy(objified), deepcopy(newhref), deepcopy(newhref1), deepcopy(pastobjs));
+				if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage: sameurl(currenthref, objified) == true (newhref, nh1, pastobjs)", deepcopy(currenthref), deepcopy(objified), deepcopy(newhref), deepcopy(big_fullurld), deepcopy(pastobjs));
 				// FIXME: this is a terrible hack
 				try {
 					var cond = !options.fill_object || (newhref[0].waiting === true && !objified[0].waiting);
@@ -20719,19 +21442,27 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								}
 								for (var _i = 0, pastobjs_1 = pastobjs; _i < pastobjs_1.length; _i++) {
 									var psobj = pastobjs_1[_i];
-									if (psobj.url === sobj.url) {
-										for (prop in sobj) {
+									if (psobj.url !== sobj.url)
+										continue;
+									for (prop in sobj) {
+										if (prop === "extra" && typeof sobj[prop] === "object") {
+											if (!(prop in psobj))
+												psobj[prop] = {};
+											for (var prop_key in sobj[prop]) {
+												psobj[prop][prop_key] = sobj[prop][prop_key];
+											}
+										} else {
 											psobj[prop] = sobj[prop];
 										}
-										break;
 									}
+									break;
 								}
 							});
 						};
 						_apply(newhref);
-						// strikinglycdn needs newhref1 to be applied, because it has two rules, the cloudinary one, then the {url: src, can_head: false} one
-						// the second one is only set in newhref1, not newhref
-						_apply(newhref1);
+						// strikinglycdn needs big_fullurld to be applied, because it has two rules, the cloudinary one, then the {url: src, can_head: false} one
+						// the second one is only set in big_fullurld, not newhref
+						_apply(big_fullurld);
 						// _apply is also needed for bigimage'd album_links
 						// thanks to fireattack on discord for reporting:
 						// https://repotama.com/wp-content/uploads/2023/11/am_gakusai2023_01.jpg without audio redirection enabled crashes because the object isn't filled
@@ -20742,15 +21473,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (false) {
 						if (!cond) {
 							array_foreach(copy_props, function(prop) {
-								// using newhref1 instead of objified because otherwise it'll always be true (objified is the filled object, all props are in it)
+								// using big_fullurld instead of objified because otherwise it'll always be true (objified is the filled object, all props are in it)
 								// the prop_in_objified check breaks facebook albums
 								// [photo.php, post] -> [url+extra, photo.php] (album_info is missing because url is just a url, doesn't have album_info)
 								//   but newhref = [url+extra, photo.php]
 								//   we don't want to disregard newhref, as it contains new information (extra)
-								//   newhref1 = [url]
+								//   big_fullurld = [url]
 								// but removing it breaks normal photos, e.g. mixdrop:
 								// mp4(+headers) -> return src (.mp4 without headers)
-								if (!(prop in newhref[0]) && (prop in important_properties) /*&& prop_in_objified(prop, newhref1)*/) {
+								if (!(prop in newhref[0]) && (prop in important_properties) /*&& prop_in_objified(prop, big_fullurld)*/) {
 									cond = true;
 									return false;
 								}
@@ -20773,8 +21504,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							var cond = false;
 							if (false && newhref && newhref.length) {
 								array_foreach(copy_props, function(prop) {
-									// using newhref1 instead of objified because otherwise it'll always be true? (objified is the filled object, all props are in it)
-									if (!(typeof newhref[0] === "object" && (prop in newhref[0])) && (prop in important_properties) && prop_in_objified(prop, newhref1)) {
+									// using big_fullurld instead of objified because otherwise it'll always be true? (objified is the filled object, all props are in it)
+									if (!(typeof newhref[0] === "object" && (prop in newhref[0])) && (prop in important_properties) && prop_in_objified(prop, big_fullurld)) {
 										cond = true;
 										return false;
 									}
@@ -20788,7 +21519,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 				if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage: setting currenthref and newhref");
 				currenthref = get_currenthref(objified);
-				newhref = newhref1;
+				newhref = big_fullurld;
 			}
 			pasthrefs.push(currenthref);
 			// Prepend objified to pastobjs
@@ -20848,9 +21579,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					endhref = fillobj(deepcopy(newhref), currentobj);
 				}
 				if (options.include_pastobjs) {
-					for (var i = 0; i < pastobjs.length; i++) {
-						if (obj_indexOf(endhref, pastobjs[i].url) < 0 && !pastobjs[i].fake)
-							endhref.push(deepcopy(pastobjs[i]));
+					for (var _i = 0, pastobjs_2 = pastobjs; _i < pastobjs_2.length; _i++) {
+						var pastobj = pastobjs_2[_i];
+						if (pastobj.fake)
+							continue;
+						var index = obj_indexOf(endhref, pastobj.url);
+						if (index < 0) {
+							endhref.push(deepcopy(pastobj));
+						}
 					}
 				}
 			} else {
@@ -20933,6 +21669,23 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		settings_meta: settings_meta,
 		strings: strings
 	};
+	var bigimage_recursive_promise = function(url, options) {
+		return new Promise(function(resolve, reject) {
+			var newoptions = {};
+			// shallowcopy
+			for (var option_1 in options) {
+				newoptions[option_1] = options[option_1];
+			}
+			var origcb = newoptions.cb;
+			newoptions.cb = function(result) {
+				if (origcb) {
+					origcb(result);
+				}
+				resolve(result);
+			};
+			bigimage_recursive(url, newoptions);
+		});
+	};
 	function is_internet_url(url) {
 		if (!url || typeof url !== "string")
 			return false;
@@ -20997,7 +21750,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		return newobj;
 	};
-	var bigimage_recursive_loop = function(url, options, query, state) {
+	var bigimage_recursive_loop_old = function(url, options, query, state) {
 		var newoptions = {};
 		if (!state) {
 			state = {
@@ -21046,6 +21799,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							image_urls.splice(i, 1);
 							i--;
 							for (var j = 0; j < tried_urls.length; j++) {
+								console.log(tried_urls.length, tried_urls[j], tried_urls[j].newurl, bad_url, tried_urls[j].newurl === bad_url);
 								if (tried_urls[j].newurl === bad_url) {
 									var orig_url = tried_urls[j].newobj.url;
 									var index = array_indexof(image_urls, orig_url);
@@ -21170,6 +21924,134 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			console_log("bigimage_recursive_loop", url, deepcopy(options), query, deepcopy(state));
 		}
 		return bigimage_recursive(url, newoptions);
+	};
+	var bigimage_recursive_loop = function(url, options, query) {
+		var _this_1 = this;
+		var query_promise = function(obj) {
+			return new Promise(function(resolve, reject) {
+				query(obj, function(newurl, newobj, data) {
+					resolve({
+						newurl: newurl,
+						newobj: newobj,
+						data: data
+					});
+				});
+			});
+		};
+		(function() { return __awaiter(_this_1, void 0, void 0, function() {
+			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_16, sobj, _a, queryobj_1, obj_17, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
+			return __generator(this, function(_c) {
+				switch (_c.label) {
+					case 0:
+						finalcb = options.cb;
+						oldobj = [];
+						redirect_map = {};
+						bad_urls = new Set();
+						skipped_urls = new Set();
+						tried_urls = new Set();
+						is_bad_url = function(url) { return bad_urls.has(url) || skipped_urls.has(url); };
+						last_data = null;
+						last_newurl = url;
+						_c.label = 1;
+					case 1:
+						if (!true) return [3 /*break*/, 4];
+						newoptions = {};
+						for (option_2 in options) {
+							if (option_2 === "cb")
+								continue;
+							newoptions[option_2] = options[option_2];
+						}
+						return [4 /*yield*/, bigimage_recursive_promise(last_newurl, newoptions)];
+					case 2:
+						obj = (_c.sent());
+						obj = obj_merge(obj, oldobj);
+						obj_urls = obj_to_simplelist(obj);
+						for (i = 0; i < obj.length; i++) {
+							// TODO: also remove bad_if
+							if (obj[i].bad) {
+								bad_urls.add(obj[i].url);
+								// also add all urls that redirect to bad
+								for (orig_url_1 in redirect_map) {
+									redirected = redirect_map[orig_url_1];
+									if (redirected === obj[i].url) {
+										bad_urls.add(orig_url_1);
+									}
+								}
+							}
+						}
+						queryobj = [];
+						for (_i = 0, obj_16 = obj; _i < obj_16.length; _i++) {
+							sobj = obj_16[_i];
+							if (is_bad_url(sobj.url)) {
+								continue;
+							}
+							queryobj.push(sobj);
+						}
+						// required to avoid querying an ok url twice
+						for (_a = 0, queryobj_1 = queryobj; _a < queryobj_1.length; _a++) {
+							obj_17 = queryobj_1[_a];
+							if (tried_urls.has(obj_17.url) && !is_bad_url(obj_17.url))
+								return [2 /*return*/, options.cb([obj_17], last_data)];
+						}
+						if (!queryobj.length) {
+							if (_nir_debug_) {
+								console_log("bigimage_recursive_loop: no valid results found", last_data);
+							}
+							return [2 /*return*/, options.cb(null, last_data)];
+						}
+						if (_nir_debug_) {
+							console_log("bigimage_recursive_loop: about to query", deepcopy(queryobj), Array.from(bad_urls));
+						}
+						return [4 /*yield*/, query_promise(queryobj)];
+					case 3:
+						_b = _c.sent(), newurl = _b.newurl, newobj = _b.newobj, data = _b.data;
+						last_data = data;
+						last_newurl = newurl;
+						if (_nir_debug_) {
+							console_log("bigimage_recursive_loop (query: newurl, newobj, data):", deepcopy(newurl), deepcopy(newobj), last_data);
+						}
+						if (!newurl) {
+							if (_nir_debug_) {
+								console_log("bigimage_recursive_loop (query): returning null", last_data);
+							}
+							return [2 /*return*/, options.cb(null, data)];
+						}
+						orig_url = null;
+						if (newobj) {
+							orig_url = newobj.url;
+							tried_index = obj_indexOf(obj, orig_url);
+							for (i = 0; i < tried_index; i++) {
+								skipped_urls.add(obj[i].url);
+							}
+						}
+						if (orig_url && newurl !== orig_url) {
+							redirect_map[orig_url] = newurl;
+						}
+						newurl_index = array_indexof(obj_urls, newurl);
+						if (tried_urls.has(newurl)) {
+							if (_nir_debug_) {
+								console_log("bigimage_recursive_loop (query): already tried url", newurl, obj_urls);
+							}
+							return [2 /*return*/, options.cb(null, data)];
+						}
+						if (orig_url)
+							tried_urls.add(orig_url);
+						tried_urls.add(newurl); // FIXME?
+						if (newurl_index < 0 || !obj[newurl_index].norecurse) {
+							oldobj = obj;
+							return [3 /*break*/, 1];
+						} else {
+							obj = [obj[newurl_index]];
+							if (true || _nir_debug_) {
+								console_log("bigimage_recursive_loop (query): returning", deepcopy(obj), data);
+							}
+							return [2 /*return*/, options.cb(obj, last_data)];
+						}
+						return [3 /*break*/, 1];
+					case 4: return [2 /*return*/];
+				}
+			});
+		}); })();
 	};
 	bigimage_recursive.loop = bigimage_recursive_loop;
 	var get_tagname = function(el) {
@@ -21447,6 +22329,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (!is_array(list[0])) {
 			list = [list];
 		}
+		list = list;
 		var result = [];
 		for (var i = 0; i < list.length; i++) {
 			result.push(get_single_trigger_key_text(list[i]));
@@ -21711,6 +22594,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						if (obj.forces_download || ((content_type.match(/(?:binary|application|multipart|text)\//) ||
 							content_type === "image/tiff" ||
 							content_type === "image/lsr" ||
+							content_type === "image/heic" ||
 							// such as [image/png] (server bug)
 							content_type.match(/^ *\[/)) && !obj.head_wrong_contenttype) ||
 							(headers["content-disposition"] &&
@@ -21722,7 +22606,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					}
 					if (headers["content-length"] && headers["content-length"] == "0" && !obj.head_wrong_contentlength) {
 						console_error("Zero-length image");
-						return;
+						return err_cb("zero content length");
 					}
 					if (check_bad_if(obj.bad_if, resp)) {
 						console_error("Bad image (bad_if)", obj.bad_if, resp);
@@ -21959,6 +22843,79 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		keys[str] = value;
 		return keys;
 	}
+	var IMUSingleChord = /** @class */ (function() {
+		function IMUSingleChord(chord) {
+			this.chord = [];
+			if (chord)
+				this.chord = chord;
+		}
+		IMUSingleChord.prototype.clear = function() {
+			this.chord = [];
+		};
+		IMUSingleChord.prototype.copy = function() {
+			return new IMUSingleChord(deepcopy(this.chord));
+		};
+		IMUSingleChord.prototype.hasKey = function(keystr) {
+			return array_indexof(this.chord, keystr) >= 0;
+		};
+		IMUSingleChord.prototype.setKey = function(keystr, value) {
+			if (value) {
+				if (!this.hasKey(keystr)) {
+					this.chord.push(keystr);
+				}
+			} else {
+				var index = array_indexof(this.chord, keystr);
+				if (index >= 0) {
+					this.chord.splice(index, 1);
+				}
+			}
+		};
+		IMUSingleChord.prototype.isEmpty = function() {
+			return this.chord.length === 0;
+		};
+		IMUSingleChord.prototype.isOnlyWheel = function() {
+			for (var _i = 0, _a = this.chord; _i < _a.length; _i++) {
+				var key = _a[_i];
+				if (!keystr_is_wheel(key) && !keystr_is_button12(key)) {
+					return false;
+				}
+			}
+			return true;
+		};
+		IMUSingleChord.prototype.isOnlyButton1 = function() {
+			if (this.chord.length !== 1)
+				return false;
+			return keystr_is_button12(this.chord[0]);
+		};
+		IMUSingleChord.prototype.isBad = function() {
+			if (this.isOnlyWheel())
+				return true;
+			if (this.isOnlyButton1())
+				return true;
+			return false;
+		};
+		IMUSingleChord.prototype.isValid = function() {
+			if (this.chord.length === 0)
+				return false;
+			if (this.isBad())
+				return false;
+			if (this.chord.length > 1)
+				return true;
+			return true;
+		};
+		IMUSingleChord.prototype.getTriggerKeyText = function() {
+			return get_single_trigger_key_text(this.chord);
+		};
+		IMUSingleChord.prototype.clearWheelKeys = function() {
+			for (var i = 0; i < this.chord.length; i++) {
+				if (keystr_is_wheel(this.chord[i])) {
+					this.chord.splice(i, 1);
+					i--;
+				}
+			}
+		};
+		return IMUSingleChord;
+	}());
 	var keystr_is_wheel = function(keystr) {
 		return /^wheel/.test(keystr);
 	};
@@ -21966,30 +22923,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		// allow rebinding right click
 		// todo: maybe add a warning if done globally (e.g. trigger key)?
 		return keystr === "button1"; // || keystr === "button2";
-	};
-	var chord_is_only_wheel = function(chord) {
-		for (var i = 0; i < chord.length; i++) {
-			if (!keystr_is_wheel(chord[i]) && !keystr_is_button12(chord[i])) {
-				return false;
-			}
-		}
-		return true;
-	};
-	var keysequence_bad = function(keyseq) {
-		if (chord_is_only_wheel(keyseq))
-			return true;
-		if (keyseq.length !== 1)
-			return false;
-		return keystr_is_button12(keyseq[0]);
-	};
-	var keysequence_valid = function(keyseq) {
-		if (keyseq.length === 0)
-			return false;
-		if (keysequence_bad(keyseq))
-			return false;
-		if (keyseq.length > 1)
-			return true;
-		return true;
 	};
 	var prefers_dark_mode = function() {
 		try {
@@ -22058,39 +22991,31 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	function do_options() {
 		update_dark_mode();
 		var recording_keys = false;
-		var options_chord = [];
-		var current_options_chord = [];
+		var options_chord = new IMUSingleChord();
+		var current_options_chord = new IMUSingleChord();
 		function update_options_chord(event, value) {
 			if (!recording_keys)
 				return;
 			var map = get_keystrs_map(event, value);
 			if ((keycode_to_str(event) || event.type === "mousedown") &&
-				current_options_chord.length === 0) {
+				current_options_chord.isEmpty()) {
 				// Don't clear the options chord for either left or right mouse buttons
 				if (event.button !== 0 && event.button !== 2)
-					options_chord = [];
+					options_chord.clear();
 			}
-			var old_options_chord = deepcopy(options_chord);
+			var old_options_chord = options_chord.copy();
 			for (var key in map) {
 				update_options_chord_sub(key, map[key]);
 			}
-			if (keysequence_bad(options_chord))
+			if (options_chord.isBad())
 				options_chord = old_options_chord;
 			recording_keys();
 		}
 		function update_options_chord_sub(str, value) {
 			if (value) {
-				if (array_indexof(options_chord, str) < 0) {
-					options_chord.push(str);
-				}
-				if (array_indexof(current_options_chord, str) < 0) {
-					current_options_chord.push(str);
-				}
-			} else {
-				if (array_indexof(current_options_chord, str) >= 0) {
-					current_options_chord.splice(array_indexof(current_options_chord, str), 1);
-				}
+				options_chord.setKey(str, value);
 			}
+			current_options_chord.setKey(str, value);
 		}
 		document.addEventListener('keydown', function(event) {
 			update_options_chord(event, true);
@@ -23243,22 +24168,22 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					sub_record_btn.innerText = _("Record");
 					var do_record = function() {
 						if (recording_keys) {
-							if (keysequence_valid(options_chord)) {
-								values[index] = options_chord;
+							if (options_chord.isValid()) {
+								values[index] = options_chord.chord;
 								update_keyseq_setting();
 								//do_update_setting(setting, options_chord, meta);
 								//settings[setting] = options_chord;
 								do_cancel();
 							}
 						} else {
-							options_chord = [];
-							current_options_chord = [];
+							options_chord.clear();
+							current_options_chord.clear();
 							recording_keys = function() {
 								var our_chord = options_chord;
-								if (our_chord.length === 0)
-									our_chord = values[index];
-								sub_key_td.innerText = get_trigger_key_texts(our_chord);
-								if (keysequence_valid(options_chord)) {
+								if (our_chord.isEmpty())
+									our_chord = new IMUSingleChord(values[index]);
+								sub_key_td.innerText = our_chord.getTriggerKeyText();
+								if (options_chord.isValid()) {
 									sub_record_btn.classList.remove("disabled");
 								} else {
 									sub_record_btn.classList.add("disabled");
@@ -24013,12 +24938,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return true;
 		}
 		if (media_info.type !== "image" && media_info.type !== "video" && media_info.type !== "audio") {
+			console_warn("Unhandled media_info.type:", media_info);
 			return false;
 		}
 		if (media_info.type === "video" && processing.deny_video) {
+			console_warn("Skipping video");
 			return false;
 		}
 		if (media_info.type === "audio" && processing.deny_audio) {
+			console_warn("Skipping audio");
 			return false;
 		}
 		if (media_info.codec === "hevc") {
@@ -24367,7 +25295,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var source_video = null;
 			if (processing.source && processing.source.el) {
 				var source_el = processing.source.el;
-				if (source_el.tagName === "SOURCE") {
+				if (source_el.tagName === "SOURCE" && source_el.parentElement) {
 					source_el = source_el.parentElement;
 				}
 				if (source_el.tagName === "VIDEO") {
@@ -24626,6 +25554,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (obj[0].bad) {
 			console_log("Bad image");
+			return err_cb();
+		}
+		if (obj[0].fake) {
+			console_log("Fake image");
 			return err_cb();
 		}
 		if (obj[0].is_pagelink) {
@@ -25226,7 +26158,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		var elwaitingstyleclass = null;
 		var elwaitingstyleel = null;
 		var waitingsize = 200;
-		var current_chord = [];
+		var current_chord = new IMUSingleChord();
 		var current_chord_timeout = {};
 		var release_ignore = [];
 		var editing_text = false;
@@ -25240,6 +26172,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				stop_waiting();
 				resetpopups();
 			}
+		}
+		if (!settings.website_request_enable_button && websiterequest_button) {
+			unregister_menucommand(websiterequest_button);
 		}
 		// runs on every focusout, not just window
 		/*document.addEventListener("focusout", resetifout);
@@ -26328,9 +27263,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						return;
 					if (finished >= single_urls.length) {
 						var out_urls = [];
-						array_foreach(single_urls, function(url) {
+						for (var _i = 0, single_urls_1 = single_urls; _i < single_urls_1.length; _i++) {
+							var url = single_urls_1[_i];
 							out_urls.push(urls_data[url]);
-						});
+						}
 						return cb(out_urls);
 					} else if (current_url_i >= single_urls.length) {
 						return;
@@ -26873,18 +27809,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 									console.error("Invalid regex stage:", { stage: stage, c: c, regexval: regexval_1 });
 								}
 							};
-							for (var i_22 = 0; i_22 < regexval_1.length; i_22++) {
-								var c = regexval_1[i_22];
+							for (var i_23 = 0; i_23 < regexval_1.length; i_23++) {
+								var c = regexval_1[i_23];
 								var nextc = null;
-								if (i_22 + 1 < regexval_1.length)
-									nextc = regexval_1[i_22 + 1];
+								if (i_23 + 1 < regexval_1.length)
+									nextc = regexval_1[i_23 + 1];
 								if (stage === 2) {
 									commit(c);
 									continue;
 								}
 								if (c === "\\" && nextc === "/") {
 									commit("/");
-									i_22++;
+									i_23++;
 									continue;
 								}
 								if (c === "/") {
@@ -27220,7 +28156,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					"minutes": "Minutes",
 					"seconds": "Seconds"
 				};
-				var values = [];
+				var values = {};
 				for (var x in map) {
 					var local_value = date["get" + map[x]]();
 					var utc_value = date["getUTC" + map[x]]();
@@ -27248,33 +28184,48 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				format_vars[name + "_unix_ms"] = date.getTime();
 				format_vars[name + "_unix"] = (date.getTime() / 1000) | 0;
 			};
-			var created_date = null;
-			var updated_date = null;
-			var download_date = new Date();
-			if (newobj.extra) {
-				var extra_copy = [
-					"caption",
-					"author_username",
-					"id"
-				];
-				array_foreach(extra_copy, function(prop) {
-					format_vars[prop] = newobj.extra[prop];
-				});
-				if (newobj.extra.created_date)
-					created_date = new Date(newobj.extra.created_date);
-				if (newobj.extra.updated_date)
-					updated_date = new Date(newobj.extra.updated_date);
+			var pageobj = common_functions["fill_ldjson"]([{ "url": window_location }], {
+				responseText: document.documentElement.outerHTML,
+				finalUrl: window_location
+			}, {
+				thumbnail: false
+			})[0];
+			var newobj_filled = deepcopy(newobj);
+			if (settings.format_fill_page) {
+				newobj_filled = fillobj_urls([newobj_filled], pageobj, "null")[0];
 			}
-			if (!updated_date && modified_date)
-				updated_date = modified_date;
-			if (created_date)
-				create_date("created", created_date);
-			if (updated_date || created_date)
-				create_date("updated", updated_date || created_date);
+			var fill_format_vars_from_obj = function(prefix, obj) {
+				var created_date = null;
+				var updated_date = null;
+				if (obj.extra) {
+					var extra_copy = [
+						"caption",
+						"author_username",
+						"id"
+					];
+					for (var _i = 0, extra_copy_1 = extra_copy; _i < extra_copy_1.length; _i++) {
+						var prop = extra_copy_1[_i];
+						format_vars[prefix + prop] = obj.extra[prop];
+					}
+					if (obj.extra.created_date)
+						created_date = new Date(obj.extra.created_date);
+					if (obj.extra.updated_date)
+						updated_date = new Date(obj.extra.updated_date);
+				}
+				if (!prefix && !updated_date && modified_date)
+					updated_date = modified_date;
+				if (created_date)
+					create_date(prefix + "created", created_date);
+				if (updated_date || created_date)
+					create_date(prefix + "updated", updated_date || created_date);
+				if (created_date || updated_date)
+					create_date(prefix + "date", created_date || updated_date);
+			};
+			fill_format_vars_from_obj("", newobj_filled);
+			fill_format_vars_from_obj("page_", pageobj);
+			var download_date = new Date();
 			if (download_date)
 				create_date("download", download_date);
-			if (created_date || updated_date)
-				create_date("date", created_date || updated_date);
 			if (format_vars.filename) {
 				var ext_split = url_basename(format_vars.filename, {
 					split_ext: true,
@@ -27286,7 +28237,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			// thanks to Dietz on discord for reporting:
 			if (!format_vars.caption && popup_el) {
-				format_vars.caption = get_caption(newobj, popup_el);
+				format_vars.caption = get_caption(newobj_filled, popup_el);
 			}
 			newobj.format_vars = shallowcopy(format_vars);
 			var new_filename = get_filename_from_format(settings.filename_format, format_vars);
@@ -30530,22 +31481,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		function can_add_to_chord(str) {
 			if (!keystr_is_wheel(str))
 				return true;
-			return !chord_is_only_wheel(current_chord);
-		}
-		function clear_chord_wheel() {
-			for (var i = 0; i < current_chord.length; i++) {
-				if (keystr_is_wheel(current_chord[i])) {
-					current_chord.splice(i, 1);
-					i--;
-				}
-			}
+			return !current_chord.isOnlyWheel();
 		}
 		function clear_chord() {
-			current_chord = [];
+			current_chord.clear();
 			current_chord_timeout = {};
 		}
 		function clear_chord_if_only_wheel() {
-			if (chord_is_only_wheel(current_chord))
+			if (current_chord.isOnlyWheel())
 				clear_chord();
 		}
 		function keystr_in_trigger(str, wanted_chord) {
@@ -30555,10 +31498,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (value) {
 				if (!can_add_to_chord(str))
 					return false;
-				if (array_indexof(current_chord, str) < 0)
+				if (!current_chord.hasKey(str))
 					return true;
 			} else {
-				if (array_indexof(current_chord, str) >= 0)
+				if (current_chord.hasKey(str))
 					return true;
 			}
 			return false;
@@ -30568,15 +31511,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (!can_add_to_chord(str))
 					return false;
 				current_chord_timeout[str] = Date.now();
-				if (array_indexof(current_chord, str) < 0) {
-					current_chord.push(str);
+				if (!current_chord.hasKey(str)) {
+					current_chord.setKey(str, value);
 					//console_log("+" + str);
 					return true;
 				}
 			} else {
 				delete current_chord_timeout[str];
-				if (array_indexof(current_chord, str) >= 0) {
-					current_chord.splice(array_indexof(current_chord, str), 1);
+				if (current_chord.hasKey(str)) {
+					current_chord.setKey(str, value);
 					clear_chord_if_only_wheel();
 					//console_log("-" + str);
 					return true;
@@ -30643,14 +31586,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		function trigger_complete_single(wanted_chord) {
 			for (var i = 0; i < wanted_chord.length; i++) {
 				var key = wanted_chord[i];
-				if (array_indexof(current_chord, key) < 0)
+				if (!current_chord.hasKey(key))
 					return false;
 			}
 			// e.g. if the user presses shift+r, but the chord is r, then it should fail
-			for (var i = 0; i < current_chord.length; i++) {
-				if (keystr_is_wheel(current_chord[i]))
+			for (var i = 0; i < current_chord.chord.length; i++) {
+				if (keystr_is_wheel(current_chord.chord[i]))
 					continue;
-				if (array_indexof(wanted_chord, current_chord[i]) < 0)
+				if (array_indexof(wanted_chord, current_chord.chord[i]) < 0)
 					return false;
 			}
 			return true;
@@ -30666,7 +31609,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		function trigger_partially_complete_single(e, wanted_chord) {
 			for (var i = 0; i < wanted_chord.length; i++) {
 				var key = wanted_chord[i];
-				if (array_indexof(current_chord, key) >= 0)
+				if (current_chord.hasKey(key))
 					return true;
 			}
 			return false;
@@ -31151,19 +32094,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				do_popup();
 			}
 		}
-		function do_get_helpers(options) {
-			var baseoptions = {
-				document: document,
-				window: get_window(),
-				host_url: window.location.href,
-				do_request: do_request,
-				rule_specific: {}
-			};
-			for (var option in options) {
-				baseoptions[option] = options[option];
-			}
-			return get_helpers(baseoptions);
-		}
 		function wrap_gallery_func(nextprev, origel, el, cb, new_options) {
 			if (!el)
 				el = real_popup_el;
@@ -31578,10 +32508,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		};
 		var copy_el = function(oldel, newel, override) {
-			array_foreach(oldel.attributes, function(attr) {
+			for (var i = 0; i < oldel.attributes.length; i++) {
+				var attr = oldel.attributes[i];
 				if (!newel.hasAttribute(attr.name) || override)
 					newel.setAttribute(attr.name, attr.value);
-			});
+			}
 		};
 		var duplicate_el = function(oldel) {
 			var newel = document_createElement(oldel.tagName);
@@ -31596,6 +32527,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			copy_el(oldel, newel);
 			oldel.parentElement.insertBefore(newel, oldel);
 			oldel.parentElement.removeChild(oldel);
+			return newel;
 		};
 		var replace_with_replacement = function(options, el, replacement, url) {
 			var newsrc;
@@ -31604,6 +32536,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			var do_replace = false;
 			if (el.tagName === "A") {
+				el = el;
 				if (options.plainlink_replace_link) {
 					el.href = newsrc;
 				}
@@ -31642,7 +32575,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				el.style.setProperty("width", "auto", "important");
 			} else if (options.size_constraints === "force" && el_dimensions && el_dimensions[0] && el_dimensions[1]) {
 				el.setAttribute("height", el_dimensions[1]);
-				el.removeAttribute("width", el_dimensions[0]);
+				el.removeAttribute("width"); //, el_dimensions[0]);
 				el.style.setProperty("height", el_dimensions[1] + "px", "important");
 				el.style.setProperty("width", el_dimensions[0] + "px", "important");
 			}
@@ -32028,8 +32961,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var sources = [];
 			var source_el_set = new_set();
 			var _find_source = function(source) {
-				for (var _i = 0, sources_1 = sources; _i < sources_1.length; _i++) {
-					var src = sources_1[_i];
+				for (var _i = 0, sources_2 = sources; _i < sources_2.length; _i++) {
+					var src = sources_2[_i];
 					if (src.el === source.el)
 						return src;
 				}
@@ -32054,8 +32987,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				set_remove(source_el_set, source.el);
 			};
 			var reposition_source_outlines = function() {
-				for (var _i = 0, sources_2 = sources; _i < sources_2.length; _i++) {
-					var source = sources_2[_i];
+				for (var _i = 0, sources_3 = sources; _i < sources_3.length; _i++) {
+					var source = sources_3[_i];
 					var rect = source._real_el.getBoundingClientRect();
 					var outline_el = source._outline_el;
 					if (!outline_el)
@@ -32069,13 +33002,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var resize_handler = function() {
 				reposition_source_outlines();
 			};
-			our_addEventListener(window, "resize", resize_handler);
+			our_addEventListener(get_window(), "resize", resize_handler);
 			exit_custom_gallery = function() {
 				if (alt_keydown_cb === our_keydown_cb)
 					alt_keydown_cb = null;
 				set_remove(exclude_find_els, maskel);
 				base_maskel.parentElement.removeChild(base_maskel);
-				our_removeEventListener(window, "resize", resize_handler);
+				our_removeEventListener(get_window(), "resize", resize_handler);
 				exit_custom_gallery = null;
 			};
 			var trigger_popup = function(options) {
@@ -32084,8 +33017,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (!sources.length)
 					return;
 				override_album = [];
-				for (var _i = 0, sources_3 = sources; _i < sources_3.length; _i++) {
-					var source = sources_3[_i];
+				for (var _i = 0, sources_4 = sources; _i < sources_4.length; _i++) {
+					var source = sources_4[_i];
 					override_album.push(source.el);
 				}
 				trigger_popup_with_source(sources[0], options);
@@ -33479,7 +34412,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (_nir_debug_) nir_debug("input", "keydown_cb", event);
 			if (!mouseover_base_enabled())
 				return;
-			if (event.type === "wheel" && chord_is_only_wheel(current_chord))
+			if (event.type === "wheel" && current_chord.isOnlyWheel())
 				return;
 			if (event.type === "keydown") {
 				// thanks to lnp5131 on github: https://github.com/qsniyg/maxurl/issues/415#issuecomment-684847125
@@ -33747,7 +34680,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				release_ignore = deepcopy(release_ignore);
 			}
 			if (actions && actions.length > 0) {
-				clear_chord_wheel();
+				current_chord.clearWheelKeys();
 				for (var i = 0; i < actions.length; i++) {
 					action_handler(actions[i]);
 				}
@@ -34083,7 +35016,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			our_addEventListener(document, 'mouseup', keyup_cb, eventlistener_opts);
 			our_addEventListener(document, 'contextmenu', update_contextmenu_pos);
 			our_addEventListener(document, 'focus', tabactive_cb);
-			our_addEventListener(window, 'focus', tabactive_cb);
+			our_addEventListener(get_window(), 'focus', tabactive_cb);
 			our_addEventListener(document, 'keydown', tabactive_cb);
 			our_addEventListener(document, 'wheel', tabactive_cb);
 			our_addEventListener(document, 'mousemove', tabactive_cb);
@@ -34302,6 +35235,213 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		})();
 	}
 	// end do_mouseover
+	function do_hotpatch() {
+		if (!is_userscript || !settings.allow_xhr_hotpatch)
+			return;
+		var helpers = do_get_helpers({});
+		var override_xhr = false;
+		if (helpers && (helpers.xhr_override_resp || helpers.xhr_override_req))
+			override_xhr = true;
+		if (!override_xhr)
+			return;
+		var hotpatch_prefix = "__" + get_random_text(16, false);
+		var get_hotprefixed = function(prop) {
+			return hotpatch_prefix + "_" + prop;
+		};
+		var get_req_info = function(self) {
+			return {
+				method: self[get_hotprefixed("method")],
+				data: self[get_hotprefixed("data")],
+				url: self[get_hotprefixed("url")],
+				headers: self[get_hotprefixed("headers")],
+				responseType: self[get_hotprefixed("responseType")]
+			};
+		};
+		var get_resp_info = function(self) {
+			return {
+				headers: parse_headers(self.getAllResponseHeaders()),
+				response: self.response
+			};
+		};
+		var real_xhr = unsafeWindow["XMLHttpRequest"];
+		var private_props = ["_actual", "method", "data", "url", "headers", "responseType", "response", "responseText"];
+		var passthrough_methods = ["addEventListener", "send", "open", "abort", "getAllResponseHeaders", "getResponseHeader", "overrideMimeType", "setRequestHeader"];
+		var hotxhr = unsafeWindow["XMLHttpRequest"] = function() {
+			var actual = new real_xhr();
+			var self = this;
+			this[get_hotprefixed("_actual")] = actual;
+			for (var _i = 0, private_props_1 = private_props; _i < private_props_1.length; _i++) {
+				var prop = private_props_1[_i];
+				continue;
+				Object.defineProperty(self, get_hotprefixed(prop), {
+					writable: true,
+					enumerable: false
+				});
+			}
+			// add all proxy getters
+			["status", "statusText", "response", "responseText",
+				"readyState", "responseXML", "upload"].forEach(function(item) {
+				Object.defineProperty(self, item, {
+					get: function() {
+						var proxyitem = get_hotprefixed(item);
+						if (proxyitem in self)
+							return self[proxyitem];
+						return actual[item];
+					}
+				});
+			});
+			// add all proxy getters/setters
+			["ontimeout, timeout", "withCredentials", "onload", "onloadend", "onerror", "onprogress", "onreadystatechange", "responseType"].forEach(function(item) {
+				Object.defineProperty(self, item, {
+					get: function() { return actual[item]; },
+					set: function(val) { actual[item] = val; }
+				});
+			});
+			// add all pure proxy pass-through methods
+			if (false)
+				passthrough_methods.forEach(function(item) {
+					Object.defineProperty(self, item, {
+						//value: function() {return actual[item].apply(actual, arguments);}
+						get: function() {
+							return real_xhr.prototype[item].bind(actual);
+						}
+					});
+				});
+		};
+		hotxhr.prototype.open = function() {
+			this[get_hotprefixed("method")] = arguments[0];
+			this[get_hotprefixed("url")] = arguments[1];
+		};
+		hotxhr.prototype.setRequestHeader = function(header, value) {
+			if (!this[get_hotprefixed("headers")]) {
+				this[get_hotprefixed("headers")] = {};
+			}
+			this[get_hotprefixed("headers")][header] = value;
+		};
+		hotxhr.prototype.send = function(data) {
+			var actual = this[get_hotprefixed("_actual")];
+			this[get_hotprefixed("data")] = data;
+			if (helpers.xhr_override_req) {
+				var newreq = null;
+				try {
+					newreq = helpers.xhr_override_req(get_req_info(this));
+				} catch (e) {
+					console_error(e);
+				}
+				if (newreq) {
+					if (newreq.url)
+						this[get_hotprefixed("url")] = newreq.url;
+					if (newreq.headers)
+						this[get_hotprefixed("headers")] = newreq.headers;
+					if (newreq.data)
+						this[get_hotprefixed("data")] = newreq.data;
+					if (newreq.responseType) {
+						this.responseType = newreq.responseType;
+					}
+					if (newreq.cancel === "hang") {
+						//console_log("[IMU] Cancelling request by hang:", get_req_info(this));
+						return;
+					}
+				}
+			}
+			actual.open(this[get_hotprefixed("method")], this[get_hotprefixed("url")]);
+			if (this[get_hotprefixed("headers")]) {
+				for (var header in this[get_hotprefixed("headers")]) {
+					actual.setRequestHeader(header, this[get_hotprefixed("headers")][header]);
+				}
+			}
+			var hotpatch_event = function(evt) {
+				var real_cb = this[evt];
+				if (!real_cb)
+					return;
+				this[evt] = function() {
+					if (helpers.xhr_override_resp && this.readyState >= 3) {
+						var newresp = null;
+						try {
+							newresp = helpers.xhr_override_resp(get_req_info(this), get_resp_info(this));
+						} catch (e) {
+							console_error(e);
+						}
+						if (newresp) {
+							if (newresp.response) {
+								this[get_hotprefixed("response")] = newresp.response;
+								try {
+									this[get_hotprefixed("responseText")] = newresp.response.toString();
+								} catch (e) {
+									console_error(e);
+								}
+							}
+						}
+					}
+					return real_cb.apply(this, arguments);
+				}.bind(this);
+			};
+			hotpatch_event.bind(this)("onload");
+			hotpatch_event.bind(this)("onloadend");
+			hotpatch_event.bind(this)("onreadystatechange");
+			return actual.send(this[get_hotprefixed("data")]);
+		};
+		var _loop_4 = function(method) {
+			if (!(method in real_xhr.prototype))
+				return "continue";
+			if (method in hotxhr.prototype)
+				return "continue";
+			hotxhr.prototype[method] = function() {
+				var real_xhr = this[get_hotprefixed("_actual")];
+				return real_xhr[method].apply(real_xhr, arguments);
+			};
+		};
+		for (var _i = 0, passthrough_methods_1 = passthrough_methods; _i < passthrough_methods_1.length; _i++) {
+			var method = passthrough_methods_1[_i];
+			_loop_4(method);
+		}
+		var real_fetch = unsafeWindow["fetch"];
+		// FIXME: copy/pasted from lib/fetch_shim.js. include it instead!
+		unsafeWindow["fetch"] = function(url, options) {
+			if (!options)
+				options = {};
+			var supported_options = ["method", "body", "headers", "credentials", "signal", "priority"];
+			for (var opt in options) {
+				if (array_indexof(supported_options, opt) < 0) {
+					console_warn("IMU: Unsupported fetch option:", opt, { url: url, options: options });
+					return real_fetch(url, options);
+				}
+			}
+			return new Promise(function(resolve, reject) {
+				//console.log("fetching", url, options);
+				var xhr = new unsafeWindow["XMLHttpRequest"]();
+				var get_response = function() {
+					var response = xhr.response;
+					if (typeof response === "string") // responseType might have been overridden
+						response = new native_blob([response]);
+					// Response is needed for wasm
+					// this shim is not trying to support fetch for browsers that don't support it, but rather to wrap XHR
+					return new Response(response, {
+						status: xhr.status,
+						statusText: xhr.statusText,
+						// todo: headers
+					});
+				};
+				xhr.open(options.method || "GET", url, true);
+				xhr.responseType = "blob";
+				xhr.onload = function() {
+					// todo: get headers
+					resolve(get_response());
+				};
+				xhr.onerror = reject;
+				xhr.withCredentials = options.credentials === "include";
+				for (var header in options.headers) {
+					xhr.setRequestHeader(header, options.headers[header]);
+				}
+				if (options.signal) {
+					options.signal.addEventListener("abort", function() {
+						xhr.abort();
+					});
+				}
+				xhr.send(options.body || null);
+			});
+		};
+	}
 	function do_websitehome() {
 		if (require_rules_failed)
 			return;
@@ -34813,6 +35953,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			}
 			do_mouseover();
+			do_hotpatch();
 			if (is_extension) {
 				extension_send_message({
 					type: "ready"
