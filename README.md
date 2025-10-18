@@ -12,7 +12,7 @@
 
 Image Max URL is a program that will try to find larger/original versions of images and videos, usually by replacing URL patterns.
 
-It currently contains support for \>9000 hardcoded websites (full list in [sites.txt](https://github.com/qsniyg/maxurl/blob/master/sites.txt)),
+It currently contains support for \>10,000 hardcoded websites (full list in [sites.txt](https://github.com/qsniyg/maxurl/blob/master/sites.txt)),
 but it also supports a number of generic engines (such as Wordpress and MediaWiki), which means it can work for many other websites as well.
 
 It is currently released as:
