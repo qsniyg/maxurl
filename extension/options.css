@@ -229,7 +229,7 @@ a:visited {
 }
 
 .dark pre, .dark code, .dark .crypto {
-  background: #000;
+  background: #1a1a1a;
   color: #fff;
 }
 
