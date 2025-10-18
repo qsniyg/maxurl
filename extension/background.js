@@ -1809,7 +1809,9 @@ chrome.runtime.onInstalled.addListener(function() {
 		if (value) hotload();
 	}, true);
 
-	if (amo_build) {
+	var welcome_message_needed = true;
+	/*AMO_REMOVE*/welcome_message_needed = false;
+	if (welcome_message_needed) {
 		get_option("extension_shown_welcome_message", function(value) {
 			if (value)
 				return;
