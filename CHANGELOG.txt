@@ -1,6 +1,6 @@
 2025.11.2 (in-dev)
 
-Special thanks to fyhtma, in-the-halfway, Liz, biziclop for their contributions and reports for this release
+Special thanks to fyhtma, in-the-halfway, Liz, biziclop, iotaOmicron for their contributions and reports for this release
 
 ---
 
