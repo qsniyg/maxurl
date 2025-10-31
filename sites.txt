@@ -142,6 +142,7 @@
 56c2f9b02a636feada6f-4205c8451ff5cb1aefe3704a140b3093.ssl.cf1.rackcdn.com
 575717b777ff8d928c6b-704c46a8034042e4fc898baf7b3e75d9.ssl.cf1.rackcdn.com
 588ku.qiao88.com
+58pics.top
 598d5fcf392acad97538-395e64798090ee0a3a571e8c148d44f2.ssl.cf1.rackcdn.com
 5b0988e595225.cdn.sohucs.com
 5ce.com
@@ -271,6 +272,7 @@ ajax.googleapis.com
 ajc.com
 ajo.prod.reuters.tv
 ak-br-pic.kwai.net
+ak-d.tripcdn.com
 ak.picdn.net
 akairan.com
 akamai.poxo.com
@@ -905,6 +907,7 @@ bigtitscelebrities.com
 bigtitslust.com
 bigwarp.cc
 bigwarp.io
+bigwarp.pro
 bikerpunks.com
 bikini.sbgefree.org
 bikinidream.net
@@ -1590,6 +1593,7 @@ cdn.pixabay.com
 cdn.planetradio.co.uk
 cdn.pling.com
 cdn.pocket-lint.com
+cdn.poipiku.com
 cdn.popbela.com
 cdn.poplook.com
 cdn.pornopicshub.com
@@ -1651,6 +1655,7 @@ cdn.sportshop.com
 cdn.sportsshoes.com
 cdn.static.lovehomeporn.com
 cdn.staticaly.com
+cdn.staticneo.com
 cdn.stereo.vn
 cdn.store-assets.com
 cdn.store-tsutaya.tsite.jp
@@ -1771,11 +1776,13 @@ cdnrockol-rockolcomsrl.netdna-ssl.com
 cdns.klimg.com
 cdnscreenshot.xyz
 cdnstatic.rg.ru
+cdnstream.top
 cdnsw.com
 cdnticket.melon.co.kr
 cdntrex.com
 cdnu.porndoe.com
 cdnvideo.ru
+cdnvids.top
 cdnx.natalie.mu
 cdp.pl
 cdprojekt.com
@@ -2345,6 +2352,7 @@ data.japanese.kpopstarz.com
 data.kontrakty.ua
 data.okinny.heypo.net
 data.pixiz.com
+data.richie.app
 data.sniffspot.com
 data.voz.vn
 data.whicdn.com
@@ -2447,6 +2455,7 @@ dientumaytinh.com
 dienvienvietnam.vn
 diercun.com
 dieta.pourfemme.it
+dif1tzfqclj9f.cloudfront.net
 digalakis.com
 digi-film.ro
 digital.denverlibrary.org
@@ -2506,8 +2515,10 @@ dizigol.net
 diziler.com
 djavan.com.br
 djx10.org
+dkemhji6i1k0x.cloudfront.net
 dl.backbook.me
 dl.kaskus.id
+dl5zpyw5k3jeb.cloudfront.net
 dlcdnwebimgs.asus.com
 dlcompare.com
 dlivecdn.com
@@ -2624,6 +2635,7 @@ dux7id0k7hacn.cloudfront.net
 dva-ch.net
 dvdprime.com
 dvfmubv4tjrqd.cloudfront.net
+dvqlxo2m2q99q.cloudfront.net
 dw.com
 dw6vrgax4fzym.cloudfront.net
 dw8stlw9qt0iz.cloudfront.net
@@ -2730,6 +2742,7 @@ elindependiente.com
 elintra.com.ar
 elintransigente.com
 eliteflirts.com
+elktube.com
 ellahoy.es
 elle.clarin.com
 elle.co.jp
@@ -3356,6 +3369,7 @@ games.renpy.org
 gamesbras.com
 gamesite.zoznam.sk
 gamespark.jp
+gamespot.com
 gameuidatabase.com
 gameworld.gr
 gaminglives.com
@@ -3588,6 +3602,7 @@ hamaraphotos.com
 hanamaru-photo.com
 hancinema.net
 handelsblatt.com
+hanime1.me
 hanimusic.com
 hankyung.com
 hao.news
@@ -4048,6 +4063,7 @@ im.indiatimes.in
 im.milliyet.com.tr
 im.mtv.fi
 im.mtvuutiset.fi
+im.tiscali.cz
 im.vsco.co
 imaeil.com
 image-api.nrj.fr
@@ -4357,6 +4373,7 @@ images.fanseven.com
 images.fashionmodeldirectory.com
 images.fastcompany.net
 images.findagrave.com
+images.finncdn.no
 images.firstpost.com
 images.foody.vn
 images.footballfanatics.com
@@ -4400,6 +4417,7 @@ images.impresa.pt
 images.in.com
 images.indianexpress.com
 images.indulgexpress.com
+images.inkl.com
 images.interactives.dk
 images.internetstores.de
 images.jamendo.com
@@ -5135,6 +5153,7 @@ imgcdn.thecover.cn
 imgcloud.pw
 imgcp.aacdn.jp
 imgcredit.xyz
+imgd.aeplcdn.com
 imgdew.com
 imgdino.com
 imgdist.net
@@ -6073,6 +6092,7 @@ media.aintitcool.com
 media.alienwarearena.com
 media.allure.com
 media.allyou.net
+media.altchar.com
 media.apnarm.net.au
 media.architecturaldigest.com
 media.arkansasonline.com
@@ -6439,6 +6459,7 @@ missero.ru
 mit24h.com
 mitazamagica.com
 mithaaprilia.com
+mitiendanube.com
 miumiu.com
 mix.tn.kz
 mix106radio.com
@@ -7380,6 +7401,7 @@ pictures.immobilienscout24.de
 pictures.ozy.com
 pictures.petitebabespics.com
 pictures.topspeed.com
+picturesheffield.com
 pictwn.com
 picua.org
 picyield.com
@@ -7465,6 +7487,7 @@ podbean.com
 podium.life
 podolatria.net
 pogd.es
+poipiku.com
 polecamfilm.pl
 polyvore.com
 polyvoreimg.com
@@ -8331,6 +8354,7 @@ simkl.in
 simkl.ru
 simpcity.tv
 simplemetart.com
+simpshub.com
 simpthots.com
 simsday.com
 simsettlements.com
@@ -8946,6 +8970,7 @@ supermodels-online.com
 supersoccershop.com
 superwall.us
 superwallpapers.in
+supla.fi
 supraphonline.cz
 suruga-ya.com
 suruga-ya.jp
@@ -9035,6 +9060,7 @@ tbi.sb-cd.com
 tbib.org
 tbn.bidorbuy.co.za
 tbnpsn.com
+tbporner.com
 tcdn.couchsurfing.com
 tchyn.io
 td.vern.cc
@@ -9241,6 +9267,7 @@ thub.lol
 thueringen24.de
 thugarmada.com
 thum.buzzni.com
+thumb.canalplus.pro
 thumb.connect360.vn
 thumb.egloos.net
 thumb.ex-cdn.com
@@ -9494,6 +9521,7 @@ txxx.com
 tyjam.com
 typepad.com
 u-static.fotor.com
+u-static.haozhaopian.net
 u.livechart.me
 u.livelib.ru
 ua.today
@@ -9634,6 +9662,7 @@ vcdn.polarismedia.no
 vcg.com
 vcimg.com
 vcmedia.vn
+vdownload.hembed.com
 veltra.com
 venpix.xyz
 veoh.com
@@ -9993,6 +10022,7 @@ worldcupgirls.net
 worldhistory.org
 worldsex.com
 worldsmostunique.com
+worthplaying.com
 woweiquan.com
 wowkeren.com
 wowkorea.jp
@@ -10230,6 +10260,7 @@ yx7088.com
 yxdown.com
 yytcdn.com
 z-celebs.com
+z6bha.com
 zadn.vn
 zarzarmodels.com
 zastavki.com

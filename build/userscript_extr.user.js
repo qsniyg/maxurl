@@ -75,7 +75,7 @@ var __assign = (this && this.__assign) || function() {
 // @description:zh-TW 為10,000多個網站查找更大或原始圖像
 // @description:zh-HK 為10,000多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2025.11.1
+// @version           2025.11.2
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -113,7 +113,7 @@ var __assign = (this && this.__assign) || function() {
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@5cf54561fd45aa60827e43d2806cb31a991bab32/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@edc4268a277c8378c216b10bd829e39bc969ea4a/build/rules.js
 // ==/UserScript==
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
 //   * Detecting whether or not the destination URL exists before redirecting
@@ -223,7 +223,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
 	var imu_icon = "https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png";
-	var current_version = "2025.11.1";
+	var current_version = "2025.11.2";
 	var imagetab_ok_override = false;
 	var has_ffmpeg_lib = true;
 	// -- Currently this is unused, it'll be used in a future release (to workaround the 1MB and 2MB limits for OUJS and Greasyfork respectively) --
@@ -11994,9 +11994,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (real_regex !== regex) {
 			if (!matched.groups)
 				matched.groups = {};
-			array_foreach(regex.groups, function(group, i) {
-				matched.groups[group] = matched[i + 1];
-			});
+			if (regex.groups) {
+				array_foreach(regex.groups, function(group, i) {
+					matched.groups[group] = matched[i + 1];
+				});
+			}
 		}
 		return matched;
 	};
@@ -12017,14 +12019,25 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (!options.do_request || !options.cb) {
 			return page_nullobj;
 		}
+		var get_id_from_match = function(match) {
+			var id = match[1];
+			if (match.groups && match.groups.id) {
+				id = match.groups.id;
+			}
+			return id;
+		};
 		var hostresp = null;
 		if (options.allow_hostresp_for_match && options.bigimage_options && options.bigimage_options.host_url && options.bigimage_options.document) {
 			var doc = options.bigimage_options.document;
 			var host_url = options.bigimage_options.host_url;
+			var website_match_id = get_id_from_match(website_match);
 			for (var _i = 0, _a = options.website_regex; _i < _a.length; _i++) {
 				var regex = _a[_i];
 				var website_match2 = compat_match(host_url, regex);
 				if (website_match2) {
+					var website_match2_id = get_id_from_match(website_match2);
+					if (website_match2_id !== website_match_id)
+						continue;
 					hostresp = {
 						finalUrl: host_url,
 						responseText: doc.documentElement.outerHTML
@@ -12057,10 +12070,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (!options.run) {
 			options.run = function(cb, website_match, options) {
-				var id = website_match[1];
+				/*var id = website_match[1];
 				if (website_match.groups && website_match.groups.id) {
 					id = website_match.groups.id;
-				}
+				}*/
+				var id = get_id_from_match(website_match);
 				var fill_string_vars = function(str) {
 					return str
 						.replace(/\${id}/g, id)
@@ -17929,12 +17943,38 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			console_error("Unable to parse <video> tag", videomatch[0]);
 			return null;
 		}
+		var add_new_source = function(sources_array, source) {
+			var found = null;
+			for (var _i = 0, sources_array_1 = sources_array; _i < sources_array_1.length; _i++) {
+				var org = sources_array_1[_i];
+				if (org.url === source.url) {
+					found = org;
+					break;
+				}
+			}
+			if (!found) {
+				sources_array.push(source);
+				return;
+			}
+			for (var key in source) {
+				if (!(key in found)) {
+					found[key] = source[key];
+				}
+			}
+			if (source.args && found.args) {
+				for (var key in source.args) {
+					if (!(key in found.args))
+						found.args[key] = source.args[key];
+				}
+			}
+		};
 		var add_source = function(parsed) {
-			parsed.name = parsed.args.res || parsed.args.title || parsed.args.label || null;
+			parsed.name = parsed.args.res || parsed.args.size || parsed.args.title || parsed.args.label || null;
 			parsed.url = parsed.args.src;
 			if (parsed.args.type)
 				parsed.type = parsed.args.type;
-			sources.video.push(parsed);
+			add_new_source(sources.video, parsed);
+			//sources.video.push(parsed);
 		};
 		var sources = {
 			video: [],
@@ -18058,6 +18098,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			options.thumbnail = true;
 		if (!("overwrite_mode" in options))
 			options.overwrite_mode = "none";
+		if (!("ldjson" in options))
+			options.ldjson = true;
 		var baseobj = deepcopy(options.baseobj);
 		if (!baseobj.extra)
 			baseobj.extra = {};
@@ -18066,7 +18108,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		urls = urls;
 		var ldjson = {};
 		var ldjsonmatch = resp.responseText.match(/<script[^>]* type="application\/ld\+json"[^>]*>\s*([\s\S]*?)\s*<\/script>/i);
-		if (ldjsonmatch) {
+		if (ldjsonmatch && options.ldjson) {
 			try {
 				ldjson = JSON_parse(ldjsonmatch[1]);
 			} catch (e) {
@@ -18220,6 +18262,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		};
 		// todo: should this be in get_videotag_sources instead?
 		sources.video.sort(function(a, b) {
+			// hanime1.me
+			if (a.args.size && b.args.size) {
+				return compare_qualities(a.args.size, b.args.size);
+			}
 			if (a.args.res && b.args.res) {
 				return compare_qualities(a.args.res, b.args.res);
 			}
@@ -19690,13 +19736,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "32n88o2b8kmhi1di") {
+	            } else if (bigimage_obj.nonce !== "810b4nmaffh423hm") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "32n88o2b8kmhi1di"
+	                    message: "Bad nonce, expected: " + "810b4nmaffh423hm"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
