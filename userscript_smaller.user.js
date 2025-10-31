@@ -26162,6 +26162,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					bad: "mask"
 				};
 			}
+			newsrc = src.replace(/(\.[a-z]+)\.webp(?:[?#].*)?$/, "$1");
+			if (newsrc !== src)
+				return newsrc;
 			newsrc = src.replace(/_(?:large|medium|small|grande|compact|[0-9]+x(?:[0-9]+)?|x[0-9]+)(?:@[0-9]+x)?(?:_crop_[a-z]+)?(?:\.progressive)?(\.[^/.]*)(?:[?#].*)?$/, "$1");
 			return remove_queries(newsrc, ["width", "height"]);
 		}
@@ -68820,6 +68823,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				head_wrong_contenttype: true
 			};
 		}
+		if (domain_nosub === "mitiendanube.com") return src.replace(/(\/stores\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+products\/+[^/]+)-[0-9]+-[0-9]+\./, "$1.");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
