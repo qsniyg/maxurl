@@ -1,3 +1,17 @@
+2025.11.3 (in-dev)
+
+New features:
+
+ * Comment support for black/whitelists with presets (#1498, thanks to Julian on discord for the idea)
+
+Bugfixes:
+
+ * Fix redirect infobox crashing on some websites
+
+Special thanks to Julian for their contributions and reports for this release
+
+---
+
 2025.11.2
 
 New features:
