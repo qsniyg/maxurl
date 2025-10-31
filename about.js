@@ -13,7 +13,7 @@ if (typeof module === "undefined") {
 }
 
 function commaify(num) {
-  return num.replace(/([0-9]{2,})([0-9]{3})$/, "$1,$2");
+  return (num+"").replace(/([0-9]{2,})([0-9]{3})$/, "$1,$2");
 }
 
 function fuzzify(num) {
