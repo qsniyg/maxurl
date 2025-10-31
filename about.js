@@ -12,6 +12,10 @@ if (typeof module === "undefined") {
   }
 }
 
+function commaify(num) {
+  return num.replace(/([0-9]{2,})([0-9]{3})$/, "$1,$2");
+}
+
 function fuzzify(num) {
   console.log(num);
   var baseh = parseInt(num/100);
@@ -48,8 +52,8 @@ module.exports.get_userscript_stats = get_userscript_stats;
 function reqListener() {
   var response = this.responseText;
   var stats = get_userscript_stats(response);
-  document.getElementById("rules").innerHTML = fuzzify(stats[0]);
-  document.getElementById("sites").innerHTML = fuzzify(stats[1]);
+  document.getElementById("rules").innerHTML = commaify(fuzzify(stats[0]));
+  document.getElementById("sites").innerHTML = commaify(fuzzify(stats[1]));
 }
 
 function get_sites() {
