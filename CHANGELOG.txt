@@ -7,6 +7,7 @@ New features:
 Bugfixes:
 
  * Fix redirect infobox crashing on some websites
+ * Fix invalid data URL on some websites
 
 Special thanks to Julian for their contributions and reports for this release
 
