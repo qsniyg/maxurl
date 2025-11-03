@@ -4,12 +4,16 @@ New features:
 
  * Comment support for black/whitelists with presets (#1498, thanks to Julian on discord for the idea)
 
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Google Images, Pinterest)
+
 Bugfixes:
 
  * Fix redirect infobox crashing on some websites
  * Fix invalid data URL on some websites
 
-Special thanks to Julian for their contributions and reports for this release
+Special thanks to Julian, fyhtma for their contributions and reports for this release
 
 ---
 
