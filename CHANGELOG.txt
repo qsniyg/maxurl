@@ -13,7 +13,7 @@ Bugfixes:
  * Fix redirect infobox crashing on some websites
  * Fix invalid data URL on some websites
 
-Special thanks to Julian, fyhtma for their contributions and reports for this release
+Special thanks to Julian, fyhtma, biziclop for their contributions and reports for this release
 
 ---
 
