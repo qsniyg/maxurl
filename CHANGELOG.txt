@@ -12,6 +12,7 @@ Bugfixes:
 
  * Fix redirect infobox crashing on some websites
  * Fix invalid data URL on some websites
+ * Fix crash on chunked download when response data exceeds Content-Length
 
 Special thanks to Julian, fyhtma, biziclop, in-the-halfway for their contributions and reports for this release
 
