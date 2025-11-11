@@ -7,7 +7,7 @@ New features:
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including Amazon, Google Images, Pinterest)
+ * Various improvements/fixes to existing rules (including Amazon, Ebay, Google Images, Pinterest)
 
 Bugfixes:
 
@@ -16,7 +16,7 @@ Bugfixes:
  * Fix crash on chunked download when response data exceeds Content-Length
  * Fix detected filename when / is in a query string
 
-Special thanks to Julian, fyhtma, biziclop, in-the-halfway, sn3akyb3ar for their contributions and reports for this release
+Special thanks to Julian, fyhtma, biziclop, in-the-halfway, sn3akyb3ar, karpuzikov for their contributions and reports for this release
 
 ---
 
