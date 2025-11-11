@@ -3,6 +3,7 @@
 New features:
 
  * Comment support for black/whitelists with presets (#1498, thanks to Julian on discord for the idea)
+ * Option to disable webp/avif auto-conversion (#1502, disabled by default, thanks to sn3akyb3ar for the idea)
 
 Improvements:
 
