@@ -6,15 +6,16 @@ New features:
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including Google Images, Pinterest)
+ * Various improvements/fixes to existing rules (including Amazon, Google Images, Pinterest)
 
 Bugfixes:
 
  * Fix redirect infobox crashing on some websites
  * Fix invalid data URL on some websites
  * Fix crash on chunked download when response data exceeds Content-Length
+ * Fix detected filename when / is in a query string
 
-Special thanks to Julian, fyhtma, biziclop, in-the-halfway for their contributions and reports for this release
+Special thanks to Julian, fyhtma, biziclop, in-the-halfway, sn3akyb3ar for their contributions and reports for this release
 
 ---
 
