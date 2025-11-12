@@ -46818,9 +46818,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc !== src)
 				return decodeURIComponent(newsrc);
 		}
-		if (domain_nosub === "c-ctrip.com" && domain.match(/^youimg[0-9]*\./)) {
+		if (domain_nosub === "c-ctrip.com" && domain.match(/^(?:(?:you|d)img|images)[0-9]*\./)) {
 			return {
-				url: src.replace(/(\/target\/+.*?)(?:_(?:[A-Z][0-9]*|[0-9]+)){1,}(\.[^/.?#]*)(?:[?#].*)?$/, "$1$2"),
+				url: src
+					.replace(/\.webp(?:[?#].*)?$/, ".jpg")
+					.replace(/(\/(?:target|images)\/+.*?)(?:_(?:[A-Z][0-9]*|[0-9]+)){1,}(\.[^/.?#]*)(?:[?#].*)?$/, "$1$2"),
 				can_head: false
 			};
 		}
@@ -69012,6 +69014,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc !== src)
 				return newsrc;
 		}
+		if (domain_nowww === "liter.kz") return src.replace(/\/cache\/+imagine\/+[0-9]+\/+uploads\//, "/uploads/");
+		if (domain_nowww === "recess.nl") return src.replace(/(\/Files\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+ProductPhotos\/+)[0-9]+x[0-9]+\/+/, "$12560x/");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
