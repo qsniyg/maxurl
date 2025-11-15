@@ -15,6 +15,9 @@ Bugfixes:
  * Fix invalid data URL on some websites
  * Fix crash on chunked download when response data exceeds Content-Length
  * Fix detected filename when / is in a query string
+ * Fix duplicated highlights in custom gallery caused by selecting child or parent element
+ * Fix custom gallery drag selection silently cancelling changes
+ * Fix gallery downloads not working for plain links
 
 Special thanks to Julian, fyhtma, biziclop, in-the-halfway, sn3akyb3ar, karpuzikov, iotaOmicron for their contributions and reports for this release
 
