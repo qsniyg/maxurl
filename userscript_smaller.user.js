@@ -40387,6 +40387,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if ((domain_nosub === "vcg.com" && /^goss[0-9]*\./.test(domain)) ||
 			(domain_nosub === "cfp.cn" && /^vcg[0-9]*\./.test(domain))) {
+			newsrc = src.replace(/\?x-oss-process.*/, "");
+			if (newsrc !== src)
+				return newsrc;
 			return src
 				.replace(/(\/(?:editorial|creative)\/vcg\/)nowarter([0-9]+\/)/, "$1nowater$2")
 				.replace(/(\/(?:editorial|creative)\/vcg\/)[0-9]+\/(?:version[0-9]+|new)\/+/, "$1nowarter800/new/");
@@ -45352,11 +45355,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "schwarzwaelder-bote.de") {
 			return src.replace(/(:\/\/[^/]*\/media\.media\.[-0-9a-f]+\.)(?:[^/]*\.)?([^/.]*)(?:[?#].*)?$/, "$1original.$2");
 		}
-		if (domain_nosub === "360buyimg.com" &&
-			domain.match(/^(?:img[0-9]*|m)\./)) {
+		if (domain_nosub === "360buyimg.com" && /^(?:img[0-9]*|m)\./.test(domain)) {
 			return src
 				.replace(/(\/imgzone\/+jfs\/+.*\.[a-z]+)\.avif(?:[?#].*)?$/, "$1")
-				.replace(/(:\/\/[^/]*\/)(?:[a-z0-9]+\/+s[0-9]+x[0-9]+_jfs|popWaterMark\/+jfs)\//, "$1imgzone/jfs/")
+				.replace(/(:\/\/[^/]*)\/+(?:[a-z0-9]+\/+s[0-9]+x[0-9]+_jfs|(?:popWaterMark|n[0-9]+|babel)\/+jfs)\//, "$1/imgzone/jfs/")
 				.replace(/![^/]*(?:[?#].*)?$/, "");
 		}
 		if (domain === "c.actve.net") return src.replace(/(:\/\/[^/]*\/)([0-9])([0-9])([0-9])([0-9]+)(?:\/[^/]*)?(?:[?#].*)?$/, "$1original/$2/$3/$4/$2$3$4$5.jpg");
