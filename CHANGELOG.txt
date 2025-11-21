@@ -7,7 +7,7 @@ New features:
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including Amazon, Ebay, Google Images, Pinterest, Shopify)
+ * Various improvements/fixes to existing rules (including Amazon, Ebay, Google Images, Pinterest, Shopify, Snapchat)
 
 Bugfixes:
 
