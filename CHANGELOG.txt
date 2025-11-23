@@ -19,7 +19,7 @@ Bugfixes:
  * Fix custom gallery drag selection silently cancelling changes
  * Fix gallery downloads not working for plain links
 
-Special thanks to Julian, fyhtma, biziclop, in-the-halfway, sn3akyb3ar, karpuzikov, iotaOmicron, Saine Grey, bruceschaff for their contributions and reports for this release
+Special thanks to Julian, fyhtma, biziclop, in-the-halfway, sn3akyb3ar, karpuzikov, iotaOmicron, Saine Grey, bruceschaff, JayCubby-enwiki for their contributions and reports for this release
 
 ---
 
