@@ -23733,6 +23733,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain_nowww === "palmaresadisq.ca" && string_indexof(src, "/uploads/") >= 0) ||
 			domain === "image.b2bmilestone.com" ||
 			(domain_nowww === "booksie.com" && /\/files\/+postings\//.test(src)) ||
+			(domain === "edit.gerda-henkel-stiftung.de" && /\/media\/+uploads\//.test(src)) ||
 			domain === "music-bandlink.s3.yandex.net") {
 			newsrc = src.replace(/_[0-9]+x[0-9]+(\.[^/.]*)$/, "$1");
 			if (newsrc !== src)
@@ -48614,6 +48615,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (amazon_container === "classconnection") {
 			return src.replace(/-thumb[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
+		if (domain_nowww === "monde-diplomatique.fr") return src.replace(/\/local\/+cache-vignettes\/+L[0-9]+xH[0-9]+\/+([^/]+)-[0-9a-f]{5}\.([a-z]+)(?:[?#].*)?$/, "/IMG/$2/$1.$2");
 		if (domain === "pictures.topspeed.com") return src.replace(/(\/IMG\/+)crop\/+([0-9]{6}\/+[^/]+)_[0-9]+x[0-9]+[wh](\.[^/.]+)(?:[?#].*)?$/, "$1jpg/$2$3");
 		if (domain === "monsite.woopic.com") return src.replace(/(:\/\/[^/]*\/+[0-9]+\/+)f\/+[0-9]*x[0-9]*\/+p\/+/, "$1p/");
 		if (domain_nosub === "erome.com" && /^s[0-9]*\./.test(domain)) {
@@ -63622,7 +63624,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain === "www.rfa.org") {
 			return src.replace(/\/@@images\/.*/, "");
 		}
-		if (domain_nowww === "lqj.ch") return src.replace(/(\/media\/+image\/+[0-9]+\/+)[^/]+\/+([-0-9a-f]{20,}\.[^/.]+)(?:\.webp)?(?:[?#].*)?$/, "$1$2");
+		if (domain_nowww === "lqj.ch" ||
+			domain === "media.lenouvelliste.ch") {
+			return src.replace(/(\/media\/+image\/+[0-9]+\/+)[^/]+\/+([^/.?#]+\.[^/.]+)(?:\.webp)?(?:[?#].*)?$/, "$1$2");
+		}
 		if (domain_nowww === "interfax-russia.ru") return src.replace(/\/images_cache\/+[0-9]+x[0-9]+\/+/, "/");
 		if (domain === "images.wunderweib.de") {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:[^/]+\/+)?([^/?#]+?)(?:\.[a-z]+)?(?:[?#].*)?$/);
@@ -69364,6 +69369,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				head_wrong_contenttype: true // no content-type if extension is missing
 			};
 		}
+		if (domain_nosub === "notrecinema.com" && host_domain_nowww === "notrecinema.com" && options.element) {
+			if (options.element.tagName === "IMG" && options.element.parentElement && options.element.parentElement.tagName === "A" && options.element.parentElement.href && /\/images\/+cache\//.test(options.element.parentElement.href)) {
+				return options.element.parentElement.href;
+			}
+		}
+		if (domain_nosub === "notrecinema.com") return src.replace(/(\/images\/+films\/+)vign\/+([0-9]+\/+)vign_/, "$1v2/$2v2_");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -69869,11 +69880,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "gallica.bnf.fr" ||
 			domain === "iiif.wellcomecollection.org" ||
 			domain === "framemark.vam.ac.uk" ||
+			domain === "media.artmuseum.princeton.edu" ||
 			/\/(?:iiif|loris)\/+(?:.*\/)?[^/]+\/+(?:full|square|(?:pct:)?[0-9.]+(?:,[0-9.]+){3})\/+(?:full|max|[0-9.]+,|,[0-9.]+|!?[0-9.]+,[0-9.]+|pct:[0-9.]+)\/+!?[0-9.]+\/+(?:color|gray|bitonal|default|native)\.(?:jpg|tif|png|gif|jp2|pdf|webp)(?:[?#].*)?$/.test(src)) {
 			obj = {
 				url: src
 			};
 			newsrc = src.replace(/(\/ark:\/+[0-9]+\/+[^/]+(?:\/+f[0-9])?)\.(?:thumbnail|lowres)(?:[?#].*)?$/, "$1.highres");
+			if (newsrc !== src)
+				return newsrc;
+			newsrc = src.replace(/\.webp(?:[?#].*)?$/, ".jpg");
 			if (newsrc !== src)
 				return newsrc;
 			var prefix = "(?:iiif|loris)";
@@ -69884,9 +69899,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				prefix = "image";
 			} else if (domain === "framemark.vam.ac.uk") {
 				prefix = "collections";
+			} else if (domain === "media.artmuseum.princeton.edu") {
+				obj.head_wrong_contentlength = true;
 			}
 			regex = new RegExp("(/" + prefix + "/.*?/)[^/]+/[^/]+/[^/]+/([^/]+\\.[^/.]*)$");
-			newsrc = src.replace(regex, "$1full/full/0/$2");
+			if (domain === "media.artmuseum.princeton.edu")
+				newsrc = src.replace(regex, "$1full/max/0/$2");
+			else
+				newsrc = src.replace(regex, "$1full/full/0/$2");
 			if (newsrc !== src)
 				return fillobj_urls([newsrc], obj);
 		}
