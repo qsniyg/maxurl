@@ -21131,6 +21131,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return newsrc;
 		}
 
+		if (domain === "media.modernluxury.com") return src.replace(/\/styles\/+[^/]+\/+(.*?\.[a-z]+)(?:\.webp)?(?:[?#].*)?$/, "/uploads/$1");
 		if (domain_nowww === "cinema.de") {
 			return src
 				.replace(/.*\/files\/+sync\/([^/]+\.cinema\.de\/)/, "http://$1")
