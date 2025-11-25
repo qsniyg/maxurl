@@ -48616,7 +48616,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (amazon_container === "classconnection") {
 			return src.replace(/-thumb[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
-		if (domain_nowww === "monde-diplomatique.fr") return src.replace(/\/local\/+cache-vignettes\/+L[0-9]+xH[0-9]+\/+([^/]+)-[0-9a-f]{5}\.([a-z]+)(?:[?#].*)?$/, "/IMG/$2/$1.$2");
+		if (domain_nowww === "monde-diplomatique.fr" ||
+			domain_nowww === "mondiplo.com") {
+			return src.replace(/\/local\/+cache-vignettes\/+L[0-9]+xH[0-9]+\/+([^/]+)-[0-9a-f]{5}\.([a-z]+)(?:[?#].*)?$/, "/IMG/$2/$1.$2");
+		}
 		if (domain === "pictures.topspeed.com") return src.replace(/(\/IMG\/+)crop\/+([0-9]{6}\/+[^/]+)_[0-9]+x[0-9]+[wh](\.[^/.]+)(?:[?#].*)?$/, "$1jpg/$2$3");
 		if (domain === "monsite.woopic.com") return src.replace(/(:\/\/[^/]*\/+[0-9]+\/+)f\/+[0-9]*x[0-9]*\/+p\/+/, "$1p/");
 		if (domain_nosub === "erome.com" && /^s[0-9]*\./.test(domain)) {
@@ -62876,7 +62879,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "img.kleinanzeigen.de") {
 			var queries = get_queries(src);
 			queries.rule = queries.rule.replace(/\d+/, "57");
-			return add_queries(src, queries);
+			newsrc = add_queries(src, queries);
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					problems: {
+						possibly_upscaled: true
+					}
+				};
 		}
 		if (domain_nosub === "bntnews.co.kr" ||
 			domain === "bnt.kod.es" ||
