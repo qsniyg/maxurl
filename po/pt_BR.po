@@ -170,6 +170,10 @@ msgstr "Girar para Direita"
 msgid "Buttons"
 msgstr "Botões"
 
+# Gallery Download button on popup
+msgid "Gallery Download"
+msgstr ""
+
 #. English: Replace Images
 msgid "subcategory_replaceimages"
 msgstr "substituir imagens"
@@ -2514,6 +2518,14 @@ msgstr "720p"
 #. max_video_quality.options.h480.name
 msgid "480p"
 msgstr "480p"
+
+#. disable_webp_autoconvert.name
+msgid "Disable WebP/AVIF conversion"
+msgstr ""
+
+#. disable_webp_autoconvert.description
+msgid "Tries to fetch original JPG images instead of auto-converted WebP or AVIF images served by websites"
+msgstr ""
 
 #. allow_watermark.name
 msgid "Larger watermarked images"
