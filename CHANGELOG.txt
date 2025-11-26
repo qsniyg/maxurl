@@ -19,6 +19,7 @@ Bugfixes:
  * Fix custom gallery drag selection silently cancelling changes
  * Fix gallery downloads not working for plain links
  * Fix gallery counter input text color (#1514, thanks to Korb for reporting)
+ * Fix translation for profiled settings not respecting user preference (#1515, thanks to Korb for reporting)
 
 Special thanks to Julian, fyhtma, biziclop, in-the-halfway, sn3akyb3ar, karpuzikov, iotaOmicron, Saine Grey, bruceschaff, JayCubby-enwiki, Korb for their contributions and reports for this release
 
