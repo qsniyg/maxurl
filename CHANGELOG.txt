@@ -20,8 +20,9 @@ Bugfixes:
  * Fix gallery downloads not working for plain links
  * Fix gallery counter input text color (#1514, thanks to Korb for reporting)
  * Fix translation for profiled settings not respecting user preference (#1515, thanks to Korb for reporting)
+ * Fix infinite loop when redirecting caused by protocol change (#1517, thanks to Froktime for reporting)
 
-Special thanks to Julian, fyhtma, biziclop, in-the-halfway, sn3akyb3ar, karpuzikov, iotaOmicron, Saine Grey, bruceschaff, JayCubby-enwiki, Korb for their contributions and reports for this release
+Special thanks to Julian, fyhtma, biziclop, in-the-halfway, sn3akyb3ar, karpuzikov, iotaOmicron, Saine Grey, bruceschaff, JayCubby-enwiki, Korb, Froktime for their contributions and reports for this release
 
 ---
 
