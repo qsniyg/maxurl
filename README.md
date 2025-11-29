@@ -60,7 +60,7 @@ but you can sideload this repository if you wish to use the extension version in
 
 In order to use the extension on Tor Browser, ensure that the "Run in Private Windows" option is enabled in the <about:addons> page.
 
-Due to various anti-fingerprinting measures, many of the default shortcuts (such as any that include `Alt`) will not work. You'll need to rebind these. Some users prefer rebinding `Shift+Alt+I` to `Ctrl+\``.
+Due to various anti-fingerprinting measures, many of the default shortcuts (such as any that include <kbd>Alt</kbd>) will not work. You'll need to rebind these. Some users prefer rebinding <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>I</kbd> to <kbd>Ctrl</kbd>+<kbd>\`</kbd>.
 
 # Contributing
 
