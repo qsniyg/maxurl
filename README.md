@@ -56,6 +56,12 @@ but you can sideload this repository if you wish to use the extension version in
   - Download the XPI build from <https://github.com/qsniyg/maxurl/blob/master/build/ImageMaxURL_signed.xpi>
   - Go to <about:addons>, click on the gear icon, then select \"Install Add-on from From File\...\", and navigate to the downloaded XPI file.
 
+## Tor Browser/Mullvad Browser
+
+In order to use the extension on Tor Browser, ensure that the "Run in Private Windows" option is enabled in the <about:addons> page.
+
+Due to various anti-fingerprinting measures, many of the default shortcuts (such as any that include <kbd>Alt</kbd>) will not work. You'll need to rebind these. Some users prefer rebinding <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>I</kbd> to <kbd>Ctrl</kbd>+<kbd>\`</kbd>.
+
 # Contributing
 
 Any contribution is greatly appreciated! If you have any bug reports, feature requests, or new websites you want supported, please file an issue here.
