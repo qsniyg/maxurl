@@ -27958,6 +27958,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain_nowww === "memberme.net" && string_indexof(src, "/media/") >= 0) ||
 			(domain_nowww === "funasia.net" && string_indexof(src, "/site_media/") >= 0) ||
 			domain === "image.photocnc.com" ||
+			(domain_nowww === "dorogi-onf.ru" && string_indexof(src, "/media/") >= 0) ||
 			domain === "d53l9d6fqlxs2.cloudfront.net") {
 			newsrc = src.replace(/(\/[^/.]*\.[^/.]*)\.[^/]*$/, "$1");
 			if (newsrc !== src)
@@ -41540,7 +41541,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain.match(/^s[0-9]*\./)) {
 			return src.replace(/(:\/\/[^/]*\/)img\/[0-9]+x[0-9]+\//, "$1original/");
 		}
-		if (domain === "g.denik.cz") return src.replace(/_sip-[0-9]+up(\.[^/.]*)$/, "$1");
+		if (domain === "g.denik.cz") return src.replace(/_(?:sip-[0-9]+up|denik-[0-9]+)(?:-[0-9]+x[0-9]+(?:@[0-9]+x)?)?(\.[^/.]*)$/, "$1");
 		if (domain_nowww === "imperiodefamosas.com") return src.replace(/(:\/\/[^/]*\/)image_cache\.php.*?[?&]file=([^&]*).*?$/, "$1$2");
 		if (domain_nowww === "lostfilm.info") return src.replace(/\/images\/+[0-9]+(photo|poster)/, "/images/$1");
 		if (domain_nowww === "hinhnenso1.com") return src.replace(/(\/images\/blogs\/[0-9]+\/[0-9]+\/)[a-z]+\//, "$1original/");
@@ -63668,7 +63669,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nowww === "leparisien.fr") {
 			return src
 				.replace(/^[a-z]+:\/\/[^/]+\/+resizer\/+[^/]+=\/+(?:.*?\/)?(cloudfront-[^/]+\.images\.arcpublishing\.com\/.*)/, "https://$1")
-				.replace(/^[a-z]+:\/\/[^/]+\/+resizer\/+[^/]+=\/+arc-anglerfish-([^/]+)-prod-([^/]+)\/+public\/+/, "https://cloudfront-$1.images.arcpublishing.com/$2/");
+				.replace(/^[a-z]+:\/\/[^/]+\/+resizer\/+[^/]+=\/+(?:.*?\/)?arc-anglerfish-([^/]+)-prod-([^/]+?)(?:\.s3\.amazonaws\.com)?\/+public\/+/, "https://cloudfront-$1.images.arcpublishing.com/$2/");
 		}
 		if (domain_nosub === "arcpublishing.com" && /\.cdn\./.test(domain) ||
 			domain_nosub === "arc-cdn.net") {
@@ -69833,6 +69834,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return add_extensions(src.replace(/(\/gallery\/+products\/+[a-z]+\/+)webp\/+([^/.?#]+)\.webp(?:[?#].*)?$/, "$1$2.png"));
 		}
 		if (domain_nowww === "qooza.jp") return src.replace(/\/media\/+cache\/+resize\/.*(\/html\/+upload\/)/, "$1");
+		if (domain_nowww === "nashchelyabinsk.ru") return src.replace(/(\/media\/+main_images\/+[0-9a-f]{10,})\.(?:low|normal)\./, "$1.");
+		if (domain === "static.ngs.ru") return src.replace(/(\/news\/+[0-9]+\/+preview\/+[0-9a-f]{10,})_[0-9]+\./, "$1_0.");
+		if (domain === "photos.wikimapia.org") {
+			return src
+				.replace(/(\/p\/+(?:[0-9]{2}\/+)+[0-9]+)_big\./, "$1_full.")
+				.replace(/(\/p\/+(?:[0-9]{2}\/+)+[0-9]+)_75\./, "$1_big.");
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -70108,6 +70116,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "media-1obl-ru.storage.yandexcloud.net" ||
 			domain_nowww === "icearenamsk.ru" ||
 			domain === "ru.viomi.com" ||
+			domain_nowww === "nsknews.info" ||
 			src.match(/:\/\/[^/]*\/upload\/+resize_cache\/+(?:[^/]*\/+)?iblock\/+[0-9a-f]{3}\/+[0-9]+_[0-9]+_/) ||
 			src.match(/:\/\/[^/]*\/(?:upload\/+)?resize_cache_imm\/+iblock\/+[0-9a-f]{3}\/+[0-9a-f]{4}\/+[0-9]+x[0-9]+_Quality[0-9]+_[0-9a-f]+\./)) {
 			/*newsrc = src.replace(/(\/upload\/+)webp\/+(iblock\/+[0-9a-f]{3}\/+[0-9a-z]{10,}\/+[^/]+\.)webp(?:[?#].*)?$/, "$1$2jpg");
