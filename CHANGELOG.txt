@@ -23,7 +23,7 @@ Bugfixes:
  * Fix infinite loop when redirecting caused by protocol change (#1517, thanks to Froktime for reporting)
  * Fix userscript failing to load on websites with setTimeout blocked due to adblockers
 
-Special thanks to Julian, fyhtma, biziclop, in-the-halfway, sn3akyb3ar, karpuzikov, iotaOmicron, Saine Grey, bruceschaff, JayCubby-enwiki, Korb, Froktime for their contributions and reports for this release
+Special thanks to Julian, fyhtma, biziclop, in-the-halfway, sn3akyb3ar, karpuzikov, iotaOmicron, Saine Grey, bruceschaff, JayCubby-enwiki, Korb, Froktime, fireattack for their contributions and reports for this release
 
 ---
 
