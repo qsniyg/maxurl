@@ -31400,6 +31400,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "image.nyheder.dk" ||
 			domain === "image.herognu.dk" ||
 			domain === "image.allas.se" ||
+			domain === "image.jamtlandstidning.se" ||
 			domain_nowww === "dbstatic.no") {
 			newsrc = src
 				.replace(/(:\/\/[^/]+\/+(?:images\/+)?[0-9]+\.[^/.?#]*)(?:[?#].*)?$/, "$1?width=-1&height=-1")
@@ -69883,6 +69884,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain_nowww === "lff.lv") return src.replace(/(\/files\/+images(?:_comet\/+[0-9a-f]+\/+[0-9a-f]+)?\/+)_resized\/+([^/.?#]+)_[0-9]+_[0-9]+(?:_cut)?\./, "$1$2.");
 		if (domain === "images.thefacecdn.com") return src.replace(/^[a-z]+:\/\/images(\.[^/]+\/+images\/+[^/?#]+)(?:[?#].*)?$/, "https://files$1");
+		if ((domain_nosub === "chiikawawallpaper.com" ||
+			domain_nosub === "chiikawa-wallpaper.com") && /^r[0-9]*\./.test(domain)) {
+			return src.replace(/(\/wallpaper\/+wallpaper\/+[^/]+\/+(?:[0-9]+_)?[0-9a-f]{10,})-[0-9]+\./, "$1.");
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
