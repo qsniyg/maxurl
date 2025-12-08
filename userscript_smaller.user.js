@@ -23270,6 +23270,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain === "cimg.kgl-systems.io" && /\/files\//.test(src)) ||
 			(domain === "cassette.sphdigital.com.sg" && /\/image\/+[^/]+\/+/.test(src)) ||
 			(domain === "dl5zpyw5k3jeb.cloudfront.net" && string_indexof(src, "/photos/") >= 0) ||
+			domain === "images-api.printify.com" ||
 			(domain_nosub === "ztat.net" && /^img[0-9]*\./.test(domain))) {
 			return {
 				url: src.replace(/\?.*$/, ""),
@@ -24101,6 +24102,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					bad: true
 				};
 			}
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+show\/+([0-9]+\/+[^/?#]+)(?:[?#].*)?$/,
+				query_for_id: "https://pixhost.to/show/${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<img id="image"[^>]*\ssrc="([^"]+)"/);
+					if (!match) {
+						console_error(cache_key, "Unable to find image match for", resp);
+						return done(null, false);
+					}
+					return done(decode_entities(match[1]), 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
 		}
 		if ((domain_nosub === "pixhost.org" ||
 			domain_nosub === "pixhost.to") &&
@@ -45002,7 +45017,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain === "d32dm0rphc51dk.cloudfront.net") {
 			return src
-				.replace(/\/larger(\.[^/.]*)(?:[?#].*)?$/, "/normalized$1")
+				.replace(/\/main(\.[^/.]*)(?:[?#].*)?$/, "/normalized$1")
+				.replace(/\/larger(\.[^/.]*)(?:[?#].*)?$/, "/main$1")
 				.replace(/\/(?:small|medium|large)(\.[^/.]*)(?:[?#].*)?$/, "/larger$1");
 		}
 		if (domain_nowww === "royalparks.org.uk") return src.replace(/(\/_gallery\/+[^/]*\.[^/.]*)\/+[^/]*\.[^/.]*(?:[?#].*)?$/, "$1");
@@ -45932,6 +45948,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc !== src)
 				return newsrc;
 		}
+		if (domain === "images.vestiairecollective.com") return src.replace(/\/images\/+resized\/+[^/]+\/+produit\/+/, "/produit/");
 		if (domain === "d3ls91xgksobn.cloudfront.net") return src.replace(/(:\/\/[^/]+\/+)[^/]+\/+([^/]+\/+images\/)/, "$1q100/$2");
 		if (domain === "storage.yandexcloud.net") {
 			newsrc = src.replace(/(\/imagesspletnikru\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[^/]+\/+)[^/]+(\.[a-z]+)(?:[?#].*)?$/, "$1original$2");
@@ -47972,7 +47989,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return base64_decode(match[1]);
 			}
 		}
-		if (domain === "acgn-cdn.sunteorum.com") return src.replace(/(\.[A-Za-z0-9]+)_[0-9]+[wh]\.[^/.]*(?:[?#].*)?$/, "$1");
+		if (domain === "acgn-cdn.sunteorum.com" ||
+			domain === "art-img.voiux.com") {
+			return src.replace(/(\.[A-Za-z0-9]+)_[0-9]+[wh]\.[^/.]*(?:[?#].*)?$/, "$1");
+		}
 		if (domain === "pratilipi.s.llnwi.net" && /\/pratilipi\/+(?:content\/+image|cover)\?/.test(src)) {
 			return keep_queries(src, ["pratilipiId", "name", "version"], { required: ["pratilipiId"] });
 		}
@@ -55159,6 +55179,17 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					return done(fillobj_urls(urls, {
 						extra: { page: resp.finalUrl }
 					}), 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (host_domain_nowww === "strmup.to" ||
+			host_domain_nowww === "streamup.ws") {
+			newsrc = common_functions["get_pagelink_host_el_matching"](options, {
+				url_match: /^[a-z]+:\/\/[^/]+\/+([0-9a-zA-Z]{5,})(?:[?#].*)?$/,
+				el_match: function(x) {
+					return x.tagName === "DIV" && x.id === "jwplayer";
 				}
 			});
 			if (newsrc)
@@ -64462,6 +64493,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				website_regex: /^https?:\/\/[^/]+\/+(?:t\/+|@[^/]+\/+post\/+)([-_A-Za-z0-9]+)\/*(?:[?#].*)?$/,
 				run: function(cb, match) {
 					threads_query_post_by_shortcode_1(match[1], function(result) {
+						if (!result)
+							return cb(null);
 						var baseobj = {
 							extra: {
 								page: "https://www.threads.net/t/" + result.code,
@@ -69888,6 +69921,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nosub === "chiikawa-wallpaper.com") && /^r[0-9]*\./.test(domain)) {
 			return src.replace(/(\/wallpaper\/+wallpaper\/+[^/]+\/+(?:[0-9]+_)?[0-9a-f]{10,})-[0-9]+\./, "$1.");
 		}
+		if (domain_nowww === "linuxmint.com") return src.replace(/(\/web\/+img\/+screenshots\/+)thumb_/, "$1");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -75134,7 +75168,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							sub_cancel_btn.style = "display:inline-block";
 						}
 					};
-					sub_record_btn.onmousedown = do_record;
 					var sub_cancel_btn = document_createElement("button");
 					sub_cancel_btn.innerText = _("Cancel");
 					sub_cancel_btn.style = "display:none";
@@ -75145,7 +75178,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						sub_cancel_btn.style = "display:none";
 						sub_key_td.innerText = get_trigger_key_texts(values)[index];
 					};
-					sub_cancel_btn.onmousedown = do_cancel;
+					if ("onpointerdown" in sub_record_btn) {
+						sub_record_btn.onpointerdown = do_record;
+						sub_cancel_btn.onpointerdown = do_cancel;
+					} else {
+						sub_record_btn.onmousedown = do_record;
+						sub_cancel_btn.onmousedown = do_cancel;
+					}
 					var sub_remove_btn = document_createElement("button");
 					//sub_remove_btn.innerText = "—";
 					sub_remove_btn.innerText = "\xD7";
@@ -77158,6 +77197,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		function get_tprofile_single_setting(setting) {
 			return get_single_setting_raw(get_tprofile_setting(setting));
 		}
+		var pointerevents_supported = function(el) {
+			return ("onpointerdown" in el) && ("onpointerup" in el) && ("onpointermove" in el);
+		};
 		function update_waiting() {
 			if (!waitingel)
 				return;
@@ -80776,6 +80818,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					dragstartY = e.clientY;
 					dragoffsetX = dragstartX - parseFloat(outerdiv.style.left);
 					dragoffsetY = dragstartY - parseFloat(outerdiv.style.top);
+					if (e.type === "pointerdown" && "pointerId" in e) {
+						try {
+							a.setPointerCapture(e.pointerId);
+						} catch (e) {
+							console.error(e);
+						}
+					}
 				}
 				// TODO: allow this to be live-reloaded
 				if (get_single_setting("mouseover_pan_behavior") === "drag") {
@@ -84110,7 +84159,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (current_mode === "unk")
 					current_mode = "add";
 			};
-			our_addEventListener(maskel, "mousedown", function(e) {
+			var mousedown_cb = function(e) {
 				e.preventDefault();
 				e.stopImmediatePropagation();
 				e.stopPropagation();
@@ -84126,16 +84175,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					is_mousemove: false,
 					add_gallery: add_gallery
 				});
-			}, { capture: true });
-			our_addEventListener(maskel, "mouseup", function(e) {
+			};
+			var mouseup_cb = function(e) {
 				if (current_mode === "none")
 					return;
 				e.preventDefault();
 				e.stopImmediatePropagation();
 				e.stopPropagation();
 				current_mode = "none";
-			}, { capture: true });
-			our_addEventListener(maskel, "mousemove", function(e) {
+			};
+			var mousemove_cb = function(e) {
 				if (current_mode === "none")
 					return;
 				e.preventDefault();
@@ -84150,7 +84199,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					mouseY: e.clientY,
 					is_mousemove: true
 				});
-			}, { capture: true });
+			};
+			if (pointerevents_supported(maskel)) {
+				our_addEventListener(maskel, "pointerdown", mousedown_cb, { capture: true });
+				our_addEventListener(maskel, "pointerup", mouseup_cb, { capture: true });
+				our_addEventListener(maskel, "pointermove", mousemove_cb, { capture: true });
+			} else {
+				our_addEventListener(maskel, "mousedown", mousedown_cb, { capture: true });
+				our_addEventListener(maskel, "mouseup", mouseup_cb, { capture: true });
+				our_addEventListener(maskel, "mousemove", mousemove_cb, { capture: true });
+			}
 			document.documentElement.appendChild(base_maskel);
 		};
 		(function() {
@@ -84337,6 +84395,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				our_vars.items_amt = Object.keys(got_objs).length.toString(); //Object.keys(files).length.toString();
 				//our_vars.filename = our_vars.filename_noext + our_vars.ext;
 				filename = get_filename_from_format(settings.gallery_zip_filename_format, our_vars);
+				filename = fixup_filename(filename);
 				if (!filename)
 					filename = "download";
 				if (!/\.zip$/i.test(filename))
@@ -84462,6 +84521,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var fill_filename = function(use_download) {
 					fill_obj_filename(obj, origurl, data.data.respdata, our_source.el);
 					filename = obj.filename;
+					filename = fixup_filename(filename);
 					// this should hopefully not happen
 					if (use_download && !filename)
 						filename = "download";
@@ -85997,6 +86057,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			our_addEventListener(document, 'keydown', tabactive_cb);
 			our_addEventListener(document, 'wheel', tabactive_cb);
 			our_addEventListener(document, 'mousemove', tabactive_cb);
+			our_addEventListener(document, 'pointermove', tabactive_cb);
 			var wheel_cb = function(event) {
 				if (settings.scroll_override_page && popups_active && popup_wheel_cb) {
 					return popup_wheel_cb(event, true);
@@ -86073,10 +86134,29 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			mouseAbsX = event.pageX;
 			mouseAbsY = event.pageY;
 		};
+		var fill_touchmove_event = function(event) {
+			if (event.touches && event.touches.length > 0) {
+				var touch = event.touches[0];
+				event.clientX = touch.clientX;
+				event.clientY = touch.clientY;
+				event.pageX = touch.pageX;
+				event.pageY = touch.pageY;
+				event.screenX = touch.screenX;
+				event.screenY = touch.screenY;
+			}
+		};
 		var mousemove_cb = function(event) {
 			mousepos_initialized = true;
 			// https://stackoverflow.com/a/7790764
 			event = event || window.event;
+			if (event.type === "touchmove") {
+				fill_touchmove_event(event);
+				if (dragstart) {
+					// preventDefault to prevent scolling while dragging, should find better way
+					// dragstart is checked to prevent scroll lockup on mobile
+					event.preventDefault();
+				}
+			}
 			update_mouse_from_event(event);
 			if (waiting) {
 				update_waiting();
@@ -86206,7 +86286,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			}
 		};
-		onload(function() { return our_addEventListener(document, 'mousemove', mousemove_cb); });
+		onload(function() {
+			our_addEventListener(document, 'mousemove', mousemove_cb);
+			our_addEventListener(document, 'touchmove', mousemove_cb, { passive: false });
+		});
 		(function() {
 			register_menucommand("Report issue", github_issues_page);
 		})();
