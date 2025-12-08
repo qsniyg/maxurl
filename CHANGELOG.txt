@@ -24,6 +24,7 @@ Bugfixes:
  * Fix infinite loop when redirecting caused by protocol change (#1517, thanks to Froktime for reporting)
  * Fix userscript failing to load on websites with setTimeout blocked due to adblockers
  * Fix dragging when cursor is outside of window
+ * Apply special character fixes to zip filenames as well
 
 Special thanks to Julian, fyhtma, biziclop, in-the-halfway, sn3akyb3ar, karpuzikov, iotaOmicron, Saine Grey, bruceschaff, JayCubby-enwiki, Korb, Froktime, fireattack, F640, cbadoud for their contributions and reports for this release
 
