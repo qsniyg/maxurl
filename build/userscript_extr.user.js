@@ -75,7 +75,7 @@ var __assign = (this && this.__assign) || function() {
 // @description:zh-TW 為10,000多個網站查找更大或原始圖像
 // @description:zh-HK 為10,000多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2025.11.2
+// @version           2025.12.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -109,11 +109,11 @@ var __assign = (this && this.__assign) || function() {
 // @downloadURL       https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript_smaller.user.js
 //
 //  Greasyfork and OpenUserJS have 2MB and 1MB limits for userscripts (respectively).
-//  Because of this, the rules (~1.9MB) have been split into a separate file, linked below.
+//  Because of this, the rules (~2MB) have been split into a separate file, linked below.
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@edc4268a277c8378c216b10bd829e39bc969ea4a/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@a876e6341e62268c89dac882aa829aef84296c0f/build/rules.js
 // ==/UserScript==
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
 //   * Detecting whether or not the destination URL exists before redirecting
@@ -223,7 +223,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
 	var imu_icon = "https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png";
-	var current_version = "2025.11.2";
+	var current_version = "2025.12.0";
 	var imagetab_ok_override = false;
 	var has_ffmpeg_lib = true;
 	// -- Currently this is unused, it'll be used in a future release (to workaround the 1MB and 2MB limits for OUJS and Greasyfork respectively) --
@@ -527,7 +527,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	var base64_decode, base64_encode, is_array, array_indexof, string_indexof, 
 	// https://www.bing.com/ overrides Blob
 	// https://www.dpreview.com/ overrides URL
-	native_blob, native_URL, new_blob, our_EventTarget, our_addEventListener, our_removeEventListener, string_fromcharcode, string_charat, array_reduce, array_reduce_prototype, document_createElement;
+	native_blob, native_URL, new_blob, our_EventTarget, our_addEventListener, our_removeEventListener, string_fromcharcode, string_charat, array_reduce, array_reduce_prototype, set_timeout, clear_timeout, document_createElement;
 	if (is_node) {
 		base64_decode = function(a) {
 			return Buffer.from(a, 'base64').toString('binary');
@@ -943,6 +943,31 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		};
 		get_compat_blob();
+		var get_compat_settimeout = function() {
+			// ublock on txxx.com blocks settimeout
+			// TODO: support setInterval blocked and requestAnimationFrame fallback
+			var good = {
+				timeout: false
+			};
+			try {
+				setTimeout(function() { }, 1);
+				good.timeout = true;
+			} catch (e) {
+			}
+			if (good.timeout) {
+				set_timeout = setTimeout;
+				clear_timeout = clearTimeout;
+			} else {
+				set_timeout = function(func, timeout) {
+					var interval = setInterval(function() {
+						clearInterval(interval);
+						func();
+					}, timeout);
+				};
+				clear_timeout = clearInterval;
+			}
+		};
+		get_compat_settimeout();
 		// this is rather slow (~25ms according to fireattack's profile)
 		var native_functions = {};
 		var get_native_functions = function(functions) {
@@ -1949,7 +1974,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					headers_to_set["Sec-Fetch-Site"] = "same-origin";
 					headers_to_set["origin"] = data.url.replace(/^([a-z]+:\/\/[^/]+)(?:\/+.*)?$/, "$1");
 				} else if (data.imu_mode === "image") {
-					headers_to_set["accept"] = "image/webp,image/apng,image/*,*/*;q=0.8";
+					if (!settings.disable_webp_autoconvert)
+						headers_to_set["accept"] = "image/webp,image/apng,image/*,*/*;q=0.8";
+					else
+						headers_to_set["accept"] = "*/*";
 					headers_to_set["Sec-Fetch-Dest"] = "image";
 					headers_to_set["Sec-Fetch-Mode"] = "no-cors";
 					headers_to_set["Sec-Fetch-Site"] = "same-site";
@@ -2010,7 +2038,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						if (resp.status === 503) {
 							console_warn("Received status 503, retrying request", resp, orig_data);
 							orig_data.retry_503 = data.retry_503 - 1;
-							setTimeout(function() {
+							set_timeout(function() {
 								do_request(orig_data);
 							}, parse_int(settings.retry_503_ms) || 1);
 						} else {
@@ -2159,6 +2187,23 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		var norm = function(url) { return url.replace(/^([a-z]+:\/\/[^/]+\/+).*/, "$1"); };
 		return norm(url1) === norm(url2);
 	};
+	var finalize_imu_headers = function(headers) {
+		headers = deepcopy(headers);
+		if (settings.disable_webp_autoconvert && headerobj_get(headers, "Accept") === void 0) {
+			// squarespace requires */*;q=0.8 instead of */*
+			// https://images.squarespace-cdn.com/content/v1/63beb1552f2a41471a264ee4/324d8a8c-510e-43e1-9646-d09969f9519b/Copy+of+92130_STA_Polyster_009_23.jpeg?format=original
+			headerobj_set(headers, "Accept", "*/*;q=0.8");
+		}
+		if (headerobj_get(headers, "Accept")) {
+			if (headerobj_get(headers, "Cache-Control") === void 0) {
+				headerobj_set(headers, "Cache-Control", "no-cache");
+			}
+			if (headerobj_get(headers, "Pragma") === void 0) {
+				headerobj_set(headers, "Pragma", "no-cache");
+			}
+		}
+		return headers;
+	};
 	var create_progress_el = null;
 	var update_progress_el = null;
 	var do_browser_download = function(imu, filename, cb) {
@@ -2185,7 +2230,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		};
 		document.body.appendChild(a);
 		a.click();
-		setTimeout(function() {
+		set_timeout(function() {
 			document.body.removeChild(a);
 		}, 500);
 		if (cb)
@@ -2210,6 +2255,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (is_data) {
 			return do_browser_download(imu, filename, cb);
 		}
+		imu = deepcopy(imu);
+		if (imu.headers)
+			imu.headers = finalize_imu_headers(imu.headers);
 		if (is_extension) {
 			extension_send_message({
 				type: "download",
@@ -2268,7 +2316,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					do_browser_download({
 						url: objurl,
 					}, filename, cb);
-					setTimeout(function() {
+					set_timeout(function() {
 						revoke_objecturl(objurl);
 					}, 500);
 				},
@@ -2288,7 +2336,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		do_browser_download({
 			url: objurl,
 		}, filename);
-		setTimeout(function() {
+		set_timeout(function() {
 			revoke_objecturl(objurl);
 			if (cb)
 				cb();
@@ -2512,7 +2560,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				console_error("Bad status", resp.status, resp);
 				return options.onload(null, resp);
 			}
-			data = new Uint8Array(content_length);
+			data = new Uint8Array(Math_max(content_length, resp.response.byteLength));
 			data.set(new Uint8Array(resp.response), 0);
 			if (resp.response.byteLength >= content_length) {
 				return final_cb(resp);
@@ -2546,7 +2594,22 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					download_chunk(item[0], item[1], function(resp) {
 						// todo: check errors
 						//console_log(item[0], item[1], resp.response.byteLength, content_length);
-						data.set(new Uint8Array(resp.response), item[0]);
+						if (resp.response) {
+							// extend the data if we get response > content-length
+							var end = item[0] + resp.response.byteLength;
+							if (end > data.byteLength) {
+								var newdata = new Uint8Array(end);
+								newdata.set(data);
+								data = newdata;
+							}
+							data.set(new Uint8Array(resp.response), item[0]);
+						} else {
+							console_warn("download_chunk returned null response:", {
+								resp: resp,
+								start: item[0],
+								end: item[1]
+							});
+						}
 						cb();
 					}, chunk_progress);
 				}
@@ -2578,7 +2641,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			input.innerText = data.text;
 			input.focus();
 			input.select();
-			setTimeout(function() {
+			set_timeout(function() {
 				document.body.removeChild(input);
 			}, 100);
 			cb(!!document.execCommand("copy"));
@@ -2805,7 +2868,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return blackwhitelist_filter_1(url, regexes, settings.host_blacklist_mode);
 		};
 		host_html_filter = function(url) {
-			console.log(host_html_blacklist_regexes);
+			//console.log(host_html_blacklist_regexes);
 			return blackwhitelist_filter_1(url, host_html_blacklist_regexes, settings.host_html_blacklist_mode);
 		};
 	}
@@ -7404,7 +7467,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		redirect_to_no_infobox: false,
 		// thanks to nijaz-lab on github for the idea: https://github.com/qsniyg/maxurl/issues/557
 		redirect_host_html: false,
-		host_html_blacklist: "",
+		host_html_blacklist: [
+			"# Examples (remove # to enable)",
+			"# Redirect media pages to raw media (requires whitelist):",
+			"# Glob (default):",
+			"#**/*.{jpg,jpeg,jpe,jif,jfif,jxl,png,apng,bmp,gif,webp,webm,avif,heic,svg,ico,cur,tif,tiff,xbm,mp3,mp4,m4a,m4v,mkv,ogg,oga,ogv}",
+			"# Regex:",
+			"#^.*\\.(?:jpe?g|jpe|jif|jfif|jxl|a?png|bmp|gif|web[pm]|avif|heic|svg|ico|cur|tiff?|xbm|mp[34]|m4[av]|mkv|og[gav])(?:[?&#].*)?$"
+		].join("\n"),
 		host_html_blacklist_mode: "blacklist",
 		mouseover: true,
 		// thanks to blue-lightning on github for the idea: https://github.com/qsniyg/maxurl/issues/16
@@ -7656,6 +7726,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		website_image: true,
 		extension_contextmenu: true,
 		extension_hotreload: true,
+		// thanks to sn3akyb3ar on github for the idea: https://github.com/qsniyg/maxurl/issues/1503
+		disable_webp_autoconvert: false,
 		allow_watermark: false,
 		allow_smaller: false,
 		allow_possibly_different: false,
@@ -10667,6 +10739,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			category: "popup",
 			subcategory: "video"
 		},
+		disable_webp_autoconvert: {
+			name: "Disable WebP/AVIF conversion",
+			description: "Tries to fetch original JPG images instead of auto-converted WebP or AVIF images served by websites",
+			category: "rules"
+		},
 		allow_watermark: {
 			name: "Larger watermarked images",
 			description: "Enables rules that return larger images that include watermarks",
@@ -11567,7 +11644,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var profiled_meta = deepcopy(orig_meta);
 				settings_meta[profiled_setting_name] = profiled_meta;
 				if (is_interactive) {
-					profiled_meta.name = _(profiled_meta.name) + " (#" + trigger_id + ")";
+					profiled_meta.name = profiled_meta.name + " (#" + trigger_id + ")";
 					profiled_meta.description = null;
 					profiled_meta.example_websites = null;
 				}
@@ -11866,7 +11943,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var added_time = Date.now();
 			if (typeof time === "number" && time > 0) {
 				var cache = this;
-				var timer = setTimeout(function() {
+				var timer = set_timeout(function() {
 					cache.remove(key);
 				}, time * 1000);
 				// Ensures the process can exit in node.js
@@ -11925,7 +12002,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (map_has(this.times, key)) {
 				var timeobj = map_get(this.times, key);
 				if ("timer" in timeobj)
-					clearTimeout(timeobj.timer);
+					clear_timeout(timeobj.timer);
 			}
 			if (this.options.destructor && map_has(this.data, key)) {
 				this.options.destructor(key, map_get(this.data, key));
@@ -11937,7 +12014,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (_nir_debug_) nir_debug("cache", "Cache.clear");
 			map_foreach(this.times, function(key, value) {
 				if ("timer" in value) {
-					clearTimeout(value.timer);
+					clear_timeout(value.timer);
 				}
 			});
 			if (this.options.destructor) {
@@ -12920,7 +12997,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		return true;
 	}
 	function run_soon(func) {
-		setTimeout(func, 1);
+		set_timeout(func, 1);
 	}
 	// bug in chrome, see
 	// https://github.com/qsniyg/maxurl/issues/7
@@ -13003,7 +13080,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		var regexes = [];
 		var lines = (blacklist || "").split("\n");
 		for (var i = 0; i < lines.length; i++) {
-			var current = lines[i].replace(/^\s+|\s+$/, "");
+			var current = lines[i]
+				.replace(/^\s+|\s+$/, "")
+				.replace(/^#.*/, "");
 			//console_log(current);
 			if (current.length === 0)
 				continue;
@@ -13708,7 +13787,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		var finalcb = function(e) {
 			image.onload = null;
 			image.onerror = null;
-			clearTimeout(timeout);
+			clear_timeout(timeout);
 			var x, y;
 			if (!image.naturalHeight || !image.naturalWidth) {
 				x = null;
@@ -13776,7 +13855,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		return array_to_sort;
 	};
 	var parse_tag_def = function(tag) {
-		var match = tag.match(/^<([-a-zA-Z0-9]+)((?:\s+[-a-z0-9A-Z]+(?:=(?:"[^"]*"|'[^']*'|[-_a-zA-Z0-9:/.]+))?)*)\s*(\/?)>/);
+		var match = tag.match(/^<([-_a-zA-Z0-9]+)((?:\s+[-_a-z0-9A-Z]+(?:=(?:"[^"]*"|'[^']*'|[-_a-zA-Z0-9:/.]+))?)*)\s*(\/?)>/);
 		if (!match) {
 			return null;
 		}
@@ -17324,7 +17403,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							//   the video url still doesn't work though, so let's not check for that?
 							if (resp.status === 503) {
 								if (times < 5) {
-									return setTimeout(function() {
+									return set_timeout(function() {
 										request_video(times + 1);
 									}, 500);
 								}
@@ -17337,7 +17416,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							// probably the application/json, content-length: 0 bug
 							if (finalurl === request_url) {
 								if (times < 5) {
-									return setTimeout(function() {
+									return set_timeout(function() {
 										request_video(times + 1);
 									}, 500);
 								}
@@ -17963,8 +18042,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			if (source.args && found.args) {
 				for (var key in source.args) {
-					if (!(key in found.args))
+					if (!(key in found.args)) {
 						found.args[key] = source.args[key];
+					} else {
+						var orig_val = found.args[key];
+						var new_val = source.args[key];
+						var better = false;
+						if (new_val && !orig_val)
+							better = true;
+						if (/^[0-9]+p?(?:\s.*)?$/.test(new_val)) // "720p" vs "Default"
+							better = true;
+						if (better) {
+							found.args[key] = source.args[key];
+						}
+					}
 				}
 			}
 		};
@@ -18260,6 +18351,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			return 0;
 		};
+		var get_quality_from_url = function(url) {
+			var match = url.match(/_([0-9]+p)\.[a-z0-9]+\/*(?:[?#].*)?$/);
+			if (match) {
+				return match[1];
+			}
+			return null;
+		};
 		// todo: should this be in get_videotag_sources instead?
 		sources.video.sort(function(a, b) {
 			// hanime1.me
@@ -18271,6 +18369,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			if (a.args.title && b.args.title) {
 				return compare_qualities(a.args.title, b.args.title);
+			}
+			var a_url_q = get_quality_from_url(a.url);
+			var b_url_q = get_quality_from_url(b.url);
+			if (a_url_q && b_url_q) {
+				return compare_qualities(a_url_q, b_url_q);
 			}
 			return 0;
 		});
@@ -18346,7 +18449,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		//var match = jwplayerstr.match(/\.setup\({[\s\S]*?file:\s*"([^"]+)"[,}]/);
-		var match = jwplayerstr.match(/\.setup\s*\(({[\s\S]*?file:\s*"[\s\S]*?})\);/);
+		var match = jwplayerstr.match(/\.setup\s*\(({[\s\S]*?\"?file\"?:\s*"[\s\S]*?})\);/);
 		if (!match) {
 			console_error("Unable to find jwplayer match for", { resp: resp, jwplayerstr: jwplayerstr });
 			return null;
@@ -18391,8 +18494,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		return urls;
 	};
 	common_functions["update_album_info_links"] = function(obj, cmp) {
+		var origobj = obj;
+		if (is_array(origobj)) {
+			origobj = origobj;
+			for (var _i = 0, origobj_1 = origobj; _i < origobj_1.length; _i++) {
+				var sobj = origobj_1[_i];
+				if (typeof sobj === "object" && sobj.album_info) {
+					obj = sobj;
+					break;
+				}
+			}
+		}
+		obj = obj;
 		if (!obj.album_info)
-			return obj;
+			return origobj;
 		var links = obj.album_info.links;
 		var found = false;
 		array_foreach(links, function(link, i) {
@@ -18407,7 +18522,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (!found && links.length > 0) {
 			links[0].is_current = true;
 		}
-		return obj;
+		return origobj;
 	};
 	common_functions["run_msml_op"] = function(state, process_data, cb) {
 		var matches = state.matches;
@@ -19568,8 +19683,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	};
 	common_functions["xor_str"] = function(str, key) {
 		var result = "";
+		var charcode_at = function(source, at) {
+			if (typeof source === "string")
+				return source.charCodeAt(at);
+			return source[at];
+		};
 		for (var i = 0; i < str.length; i++) {
-			result += string_fromcharcode(str.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+			result += string_fromcharcode(charcode_at(str, i) ^ charcode_at(key, i % key.length));
 		}
 		return result;
 	};
@@ -19736,13 +19856,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "810b4nmaffh423hm") {
+	            } else if (bigimage_obj.nonce !== "1e0199h155k5go11") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "810b4nmaffh423hm"
+	                    message: "Bad nonce, expected: " + "1e0199h155k5go11"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -20909,9 +21029,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				element_ok: function(el) {
 					if (el.tagName.toUpperCase() === "BUTTON" && (el.classList.contains("gallery-inline__next-overlay") ||
 						el.classList.contains("gallery-inline__prev-overlay"))) {
-						var parent_9 = el.parentElement;
-						if (parent_9.classList.contains("gallery-inline__container")) {
-							var slides = parent_9.querySelector(".gallery-inline__slides");
+						var parent_12 = el.parentElement;
+						if (parent_12.classList.contains("gallery-inline__container")) {
+							var slides = parent_12.querySelector(".gallery-inline__slides");
 							return {
 								el: slides,
 								search: true
@@ -21041,10 +21161,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (el.tagName === "SOURCE")
 						el = el.parentElement;
 					if (el.tagName === "VIDEO" && el.parentElement) {
-						var parent_10 = el.parentElement;
-						if (parent_10.tagName === "DIV" && parent_10.classList.contains("Player-Video"))
-							parent_10 = parent_10.parentElement;
-						var img = parent_10.querySelector("IMG");
+						var parent_13 = el.parentElement;
+						if (parent_13.tagName === "DIV" && parent_13.classList.contains("Player-Video"))
+							parent_13 = parent_13.parentElement;
+						var img = parent_13.querySelector("IMG");
 						if (img)
 							return get_next_in_gallery(img, nextprev);
 					}
@@ -22285,6 +22405,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	};
 	var infobox_timer = null;
 	var show_image_infobox = function(text) {
+		// happens on reddit image pages for some reason
+		if (!document.body)
+			return;
 		var div = document_createElement("div");
 		div.style.backgroundColor = "#fffabb";
 		// apparently this can be white in some cases: https://github.com/qsniyg/maxurl/issues/849#issuecomment-888695580 (thanks to ayunami2000 for reporting)
@@ -22300,7 +22423,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		div.onclick = function() {
 			document.body.removeChild(div);
 			if (infobox_timer) {
-				clearTimeout(infobox_timer);
+				clear_timeout(infobox_timer);
 				infobox_timer = null;
 			}
 		};
@@ -22308,7 +22431,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		var do_timeout = function() {
 			if (infobox_timer || settings.redirect_infobox_timeout <= 0)
 				return;
-			infobox_timer = setTimeout(function() {
+			infobox_timer = set_timeout(function() {
 				document.body.removeChild(div);
 			}, settings.redirect_infobox_timeout * 1000);
 		};
@@ -22722,9 +22845,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (false && newhref[0].extra && newhref[0].extra.page) {
 					console_log("Original page: " + newhref[0].extra.page);
 				}
-				if (newurl === page_url)
+				if (!newurl || typeof newurl !== "string")
 					return;
-				if (!newurl)
+				// don't redirect for protocol changes, can lead to infinite loop (thanks to Froktime for reporting: https://github.com/qsniyg/maxurl/issues/1517)
+				if (newurl.replace(/^[a-z]+:\/\//, "") === page_url.replace(/^[a-z]+:\/\//, ""))
 					return;
 				if (_nir_debug_)
 					console_log("redirect (recursive loop)", newhref);
@@ -23267,7 +23391,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					real_import_btn.classList.remove("disabled");
 					if (changed || new_changed) {
 						console_log("Settings imported");
-						setTimeout(function() {
+						set_timeout(function() {
 							do_options();
 						}, 1);
 					} else {
@@ -23517,6 +23641,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return "bad";
 			return null;
 		};
+		var get_option_transname = function(name) {
+			var match = name.match(/^(.*)( \(#[0-9]+\))$/);
+			if (!match)
+				return _(name);
+			return _(match[1]) + match[2];
+		};
 		var fill_requirements = function(reason, div) {
 			div.textContent = "";
 			if (!settings.settings_show_requirements)
@@ -23543,7 +23673,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					var option_cat = null;
 					if (single_reason.setting in settings_meta) {
 						option_meta = settings_meta[single_reason.setting];
-						option_name = _(option_meta.name);
+						option_name = get_option_transname(option_meta.name);
 						option_cat = option_meta.category || null;
 						if (option_cat) {
 							option_cat = _(categories[option_cat]);
@@ -23658,8 +23788,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			saved_el.setAttribute("style", "");
 			saved_el.classList.remove("fadeout");
 			if (saved_timeout)
-				clearTimeout(saved_timeout);
-			saved_timeout = setTimeout(function() {
+				clear_timeout(saved_timeout);
+			saved_timeout = set_timeout(function() {
 				saved_el.classList.add("fadeout");
 			}, 2000);
 		}
@@ -23810,7 +23940,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var tr = document_createElement("tr");
 			table.appendChild(tr);
 			var name = document_createElement("strong");
-			md_to_html(name, _(meta.name));
+			md_to_html(name, get_option_transname(meta.name));
 			var description = _(meta.description);
 			if (meta.description_userscript && is_userscript)
 				description = _(meta.description_userscript);
@@ -24239,7 +24369,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							sub_cancel_btn.style = "display:inline-block";
 						}
 					};
-					sub_record_btn.onmousedown = do_record;
 					var sub_cancel_btn = document_createElement("button");
 					sub_cancel_btn.innerText = _("Cancel");
 					sub_cancel_btn.style = "display:none";
@@ -24250,7 +24379,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						sub_cancel_btn.style = "display:none";
 						sub_key_td.innerText = get_trigger_key_texts(values)[index];
 					};
-					sub_cancel_btn.onmousedown = do_cancel;
+					if ("onpointerdown" in sub_record_btn) {
+						sub_record_btn.onpointerdown = do_record;
+						sub_cancel_btn.onpointerdown = do_cancel;
+					} else {
+						sub_record_btn.onmousedown = do_record;
+						sub_cancel_btn.onmousedown = do_cancel;
+					}
 					var sub_remove_btn = document_createElement("button");
 					//sub_remove_btn.innerText = "—";
 					sub_remove_btn.innerText = "\xD7";
@@ -24835,7 +24970,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 				// run in timeout to prevent this from further delaying initial page load times
 				// takes ~2-3ms. not huge, but still significant
-				setTimeout(function() {
+				set_timeout(function() {
 					for (var setting in settings) {
 						GM_addValueChangeListener(setting, function(name, oldValue, newValue, remote) {
 							if (remote === false)
@@ -25121,7 +25256,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		var a = new FileReader();
 		a.onload = function(e) {
 			try {
-				cb(e.target.result);
+				var result = e.target.result;
+				// https://gidstats.com/fighters/alex_pereira.html
+				// data:image/webp; charset="utf-8";base64,...
+				// due to: Content-Type: image/webp; charset="utf-8"
+				result = result.replace(/^(data:[^;]+;)\s*charset=[^;]+;/, "$1");
+				cb(result);
 			} catch (e) {
 				console_error(e);
 				console_error(e.stack);
@@ -25627,6 +25767,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		} else if (!headers.Origin && !headers.origin) {
 			//headers.Origin = url_domain;
 		}
+		headers = finalize_imu_headers(headers);
 		var handled = false;
 		var onload_cb = function(resp) {
 			if (handled) {
@@ -26114,7 +26255,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (i % count !== (count - 1)) {
 			func();
 		} else {
-			setTimeout(func, 0);
+			set_timeout(func, 0);
 		}
 	};
 	function do_mouseover() {
@@ -26257,6 +26398,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		function get_tprofile_single_setting(setting) {
 			return get_single_setting_raw(get_tprofile_setting(setting));
 		}
+		var pointerevents_supported = function(el) {
+			return ("onpointerdown" in el) && ("onpointerup" in el) && ("onpointermove" in el);
+		};
 		function update_waiting() {
 			if (!waitingel)
 				return;
@@ -26322,7 +26466,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (waitingel)
 				waitingel.style.display = "none";
 		};
-		// camhub.cc (ublock origin blocks any setTimeout'd function with 'stop' in the name)
+		// camhub.cc (ublock origin blocks any set_timeout'd function with 'stop' in the name)
 		function dont_wait_anymore() {
 			stop_waiting();
 		}
@@ -26333,9 +26477,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			start_waiting(void 0, "not-allowed");
 			if (not_allowed_timer) {
-				clearTimeout(not_allowed_timer);
+				clear_timeout(not_allowed_timer);
 			}
-			not_allowed_timer = setTimeout(function() {
+			not_allowed_timer = set_timeout(function() {
 				not_allowed_timer = null;
 				if (waitingel_cursor === "not-allowed")
 					dont_wait_anymore();
@@ -26365,7 +26509,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		var clear_resetpopup_timeout = function() {
 			if (resetpopup_timeout) {
-				clearTimeout(resetpopup_timeout);
+				clear_timeout(resetpopup_timeout);
 				resetpopup_timeout = null;
 			}
 		};
@@ -26373,7 +26517,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (!settings.mouseover_auto_close_popup || !settings.mouseover_auto_close_popup_time)
 				return;
 			clear_resetpopup_timeout();
-			resetpopup_timeout = setTimeout(resetpopups, settings.mouseover_auto_close_popup_time * 1000);
+			resetpopup_timeout = set_timeout(resetpopups, settings.mouseover_auto_close_popup_time * 1000);
 		};
 		var removepopups_timer = null;
 		function removepopups() {
@@ -26392,7 +26536,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			});
 			if (removepopups_timer) {
-				clearTimeout(removepopups_timer);
+				clear_timeout(removepopups_timer);
 				removepopups_timer = null;
 			}
 		}
@@ -26403,7 +26547,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				mask_el = null;
 			}
 			if (removemask_timer) {
-				clearTimeout(removemask_timer);
+				clear_timeout(removemask_timer);
 				removemask_timer = null;
 			}
 		};
@@ -26425,7 +26569,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						popup.style.transform = "scale(0)";
 					}
 					if (!removepopups_timer) {
-						removepopups_timer = setTimeout(removepopups, settings.mouseover_fade_time);
+						removepopups_timer = set_timeout(removepopups, settings.mouseover_fade_time);
 					}
 				} else {
 					// FIXME: this is called for each popup
@@ -26437,7 +26581,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (settings.mouseover_mask_fade_time > 0) {
 					set_important_style(mask_el, "opacity", 0);
 					if (!removemask_timer) {
-						removemask_timer = setTimeout(remove_mask, settings.mouseover_mask_fade_time);
+						removemask_timer = set_timeout(remove_mask, settings.mouseover_mask_fade_time);
 					}
 				} else {
 					remove_mask();
@@ -26488,7 +26632,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				stop_waiting();
 			}
 			if (!delay_mouseonly && delay_handle) {
-				clearTimeout(delay_handle);
+				clear_timeout(delay_handle);
 				delay_handle = null;
 			}
 		}
@@ -26710,7 +26854,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							cb(!!m.data);
 						};
 						worker.postMessage(sab);
-						setTimeout(function() {
+						set_timeout(function() {
 							revoke_objecturl(objurl);
 						}, 10);
 					});
@@ -27487,7 +27631,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							return success();
 						} else {
 							// in case the buffering event doesn't run
-							setTimeout(function() {
+							set_timeout(function() {
 								if (ran_success)
 									return;
 								ran_success = true;
@@ -27855,18 +27999,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 									console.error("Invalid regex stage:", { stage: stage, c: c, regexval: regexval_1 });
 								}
 							};
-							for (var i_23 = 0; i_23 < regexval_1.length; i_23++) {
-								var c = regexval_1[i_23];
+							for (var i_26 = 0; i_26 < regexval_1.length; i_26++) {
+								var c = regexval_1[i_26];
 								var nextc = null;
-								if (i_23 + 1 < regexval_1.length)
-									nextc = regexval_1[i_23 + 1];
+								if (i_26 + 1 < regexval_1.length)
+									nextc = regexval_1[i_26 + 1];
 								if (stage === 2) {
 									commit(c);
 									continue;
 								}
 								if (c === "\\" && nextc === "/") {
 									commit("/");
-									i_23++;
+									i_26++;
 									continue;
 								}
 								if (c === "/") {
@@ -28139,7 +28283,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					newobj.filename = "";
 				var found_filename_from_url = false;
 				if (newobj.filename.length === 0 && !is_data) {
-					newobj.filename = url.replace(/.*\/([^?#/]*)(?:[?#].*)?$/, "$1");
+					newobj.filename = url.replace(/^[^?#]*\/([^?#/]*)(?:[?#].*)?$/, "$1");
 					found_filename_from_url = true;
 					// Disable as there's no use for this
 					if (false && (newobj.filename.split(".").length - 1) === 1) {
@@ -28454,7 +28598,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							if (!popup_el_automatic) {
 								set_important_style(mask, "opacity", 0);
 								// this is needed in order to make the transition happen
-								setTimeout(function() {
+								set_timeout(function() {
 									set_important_style(mask, "opacity", old_mask_opacity);
 								}, 1);
 							} else {
@@ -28512,13 +28656,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						var temp_transition_string = transition_effects.join(", ");
 						set_important_style(outerdiv, "transition", temp_transition_string);
 						if (temp_transition_effects.length > 0) {
-							setTimeout(function() {
+							set_timeout(function() {
 								set_important_style(outerdiv, "transition", orig_transition_string);
 							}, settings.mouseover_fade_time);
 						}
 					}
-					// setTimeout is needed in order to make the transition happen
-					setTimeout(function() {
+					// set_timeout is needed in order to make the transition happen
+					set_timeout(function() {
 						set_important_style(outerdiv, "opacity", 1);
 						set_important_style(outerdiv, "transform", "scale(1)");
 					}, 1);
@@ -28665,7 +28809,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					}
 				};
 				var check_img_visibility = function() {
-					setTimeout(function() {
+					set_timeout(function() {
 						var computed = get_computed_style(img);
 						if (computed.display !== "none") {
 							return;
@@ -28989,7 +29133,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					set_lefttop(initialpos);
 				} else {
 					set_lefttop([x - imgw / 2, y - imgh / 2]);
-					setTimeout(function() {
+					set_timeout(function() {
 						set_lefttop(initialpos);
 					}, 1);
 				}
@@ -29472,7 +29616,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						images_total.setAttribute("data-btn-noaction", true);
 						images_total.appendChild(images_total_input);
 						// https://stackoverflow.com/a/19498477
-						setTimeout(function() {
+						set_timeout(function() {
 							images_total_input.select();
 							images_total_input.setSelectionRange(0, images_total_input.value.length);
 						}, 100);
@@ -29503,6 +29647,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						set_el_all_initial(images_total_input);
 						set_important_style(images_total_input, "display", "none");
 						set_important_style(images_total_input, "background-color", "white");
+						set_important_style(images_total_input, "color", "black");
 						set_important_style(images_total_input, "font-family", sans_serif_font);
 						set_important_style(images_total_input, "font-size", galleryinput_fontsize);
 						set_important_style(images_total_input, "padding", "1px");
@@ -29543,7 +29688,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						var downloadbtn = addbtn({
 							id: "downloadbtn",
 							text: download_glyph,
-							title: _("Download (" + get_trigger_key_text(settings.mouseover_download_key) + ")"),
+							title: _("Download") + " (" + get_trigger_key_text(settings.mouseover_download_key) + ")",
 							action: { type: "download" },
 							pos: "top-left",
 							containers: containers
@@ -29555,7 +29700,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						var downloadbtn = addbtn({
 							id: "gallerydlbtn",
 							text: "\u21CA",
-							title: _("Gallery Download (" + get_trigger_key_text(settings.mouseover_gallery_download_key) + ")"),
+							title: _("Gallery Download") + " (" + get_trigger_key_text(settings.mouseover_gallery_download_key) + ")",
 							action: { type: "download_gallery" },
 							pos: "top-left",
 							containers: containers
@@ -29721,7 +29866,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 									}
 									update_imagestotal();
 								});
-								setTimeout(update_imagestotal, 1);
+								set_timeout(update_imagestotal, 1);
 							}
 						}
 					};
@@ -29841,7 +29986,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						img.style.cursor = "none";
 					} else {
 						if (popup_hidecursor_timer) {
-							clearTimeout(popup_hidecursor_timer);
+							clear_timeout(popup_hidecursor_timer);
 							popup_hidecursor_timer = null;
 						}
 						a.style.cursor = orig_a_cursor;
@@ -29861,7 +30006,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (settings.mouseover_hide_cursor_after > 0 || !settings.mouseover_hide_cursor) {
 						popup_hidecursor_func(false);
 						if (settings.mouseover_hide_cursor) {
-							popup_hidecursor_timer = setTimeout(function() {
+							popup_hidecursor_timer = set_timeout(function() {
 								popup_hidecursor_func(true);
 							}, settings.mouseover_hide_cursor_after);
 						}
@@ -29874,6 +30019,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					dragstartY = e.clientY;
 					dragoffsetX = dragstartX - parseFloat(outerdiv.style.left);
 					dragoffsetY = dragstartY - parseFloat(outerdiv.style.top);
+					if (e.type === "pointerdown" && "pointerId" in e) {
+						try {
+							a.setPointerCapture(e.pointerId);
+						} catch (e) {
+							console.error(e);
+						}
+					}
 				}
 				// TODO: allow this to be live-reloaded
 				if (get_single_setting("mouseover_pan_behavior") === "drag") {
@@ -30316,7 +30468,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (false && popup_trigger_reason !== "mouse") {
 					can_close_popup[1] = true;
 				}
-				setTimeout(function() {
+				set_timeout(function() {
 					dont_wait_anymore();
 				}, 1);
 				popups_active = true;
@@ -31517,7 +31669,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				delay_mouseonly = false;
 			}
 			if (delay_handle) {
-				clearTimeout(delay_handle);
+				clear_timeout(delay_handle);
 				delay_handle = null;
 			}
 		}
@@ -32130,7 +32282,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 			if (delay && !delay_mouseonly && !options.automatic) {
 				start_progress(source.el);
-				delay_handle = setTimeout(function() {
+				delay_handle = set_timeout(function() {
 					if (delay_handle_triggering)
 						return;
 					delay_handle = null;
@@ -32841,7 +32993,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						if (domains_timeout[domain] === null) {
 							// wrap in closure to capture domain for the callback
 							(function(domain) {
-								domains_timeout[domain] = setTimeout(function() {
+								domains_timeout[domain] = set_timeout(function() {
 									domains_timeout[domain] = null;
 									next_img();
 								}, wait_delay + 1);
@@ -33006,31 +33158,56 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			set_add(exclude_find_els, maskel);
 			var sources = [];
 			var source_el_set = new_set();
-			var _find_source = function(source) {
+			var _find_source = function(source_el) {
 				for (var _i = 0, sources_2 = sources; _i < sources_2.length; _i++) {
 					var src = sources_2[_i];
-					if (src.el === source.el)
+					if (src.el === source_el)
 						return src;
 				}
 				return null;
 			};
-			var add_source = function(source) {
-				if (!source.el)
+			var get_source = function(source, el) {
+				if (!el)
+					el = source.el;
+				if (!el)
 					return false;
-				if (set_has(source_el_set, source.el))
-					return _find_source(source) || source;
+				if (set_has(source_el_set, el))
+					return _find_source(el) || source;
+				if (el.parentElement) {
+					return get_source(source, el.parentElement);
+				}
+				return false;
+			};
+			// removing child sources and checking for parents is needed for https://telugumopo.com/anu-emmanuel/
+			var add_source = function(source) {
+				var found_source = get_source(source);
+				if (found_source)
+					return found_source;
+				remove_child_sources(source.el);
 				sources.push(source);
 				set_add(source_el_set, source.el);
 				return source;
 			};
-			var remove_source = function(source) {
-				var found_source = _find_source(source);
+			var remove_child_sources = function(el) {
+				for (var i = 0; i < el.children.length; i++) {
+					remove_source_el(el.children[i]);
+				}
+			};
+			var remove_source_el = function(el) {
+				var found_source = _find_source(el);
 				if (found_source) {
 					var index = array_indexof(sources, found_source);
 					if (index >= 0)
 						sources.splice(index, 1);
+					if (found_source._outline_el && found_source._outline_el.parentElement) {
+						found_source._outline_el.parentElement.removeChild(found_source._outline_el);
+					}
 				}
-				set_remove(source_el_set, source.el);
+				set_remove(source_el_set, el);
+				remove_child_sources(el);
+			};
+			var remove_source = function(source) {
+				return remove_source_el(source.el);
 			};
 			var reposition_source_outlines = function() {
 				for (var _i = 0, sources_3 = sources; _i < sources_3.length; _i++) {
@@ -33126,8 +33303,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (options.mode) {
 					our_mode = options.mode;
 				}
+				if (options.is_mousemove) {
+					if (our_mode === "add" && current_mode === "remove")
+						our_mode = "remove";
+					if (our_mode === "remove" && current_mode === "add")
+						our_mode = "add";
+				}
 				if (options.add_gallery) {
-					setTimeout(function() {
+					set_timeout(function() {
 						get_gallery_elements(function(els) {
 							for (var _i = 0, els_1 = els; _i < els_1.length; _i++) {
 								var el = els_1[_i];
@@ -33150,9 +33333,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					}
 					// toggle
 					remove_source(source);
-					if (source._outline_el) {
-						source._outline_el.parentElement.removeChild(source._outline_el);
-					}
 					if (current_mode === "unk")
 						current_mode = "remove";
 					return;
@@ -33180,7 +33360,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (current_mode === "unk")
 					current_mode = "add";
 			};
-			our_addEventListener(maskel, "mousedown", function(e) {
+			var mousedown_cb = function(e) {
 				e.preventDefault();
 				e.stopImmediatePropagation();
 				e.stopPropagation();
@@ -33196,16 +33376,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					is_mousemove: false,
 					add_gallery: add_gallery
 				});
-			}, { capture: true });
-			our_addEventListener(maskel, "mouseup", function(e) {
+			};
+			var mouseup_cb = function(e) {
 				if (current_mode === "none")
 					return;
 				e.preventDefault();
 				e.stopImmediatePropagation();
 				e.stopPropagation();
 				current_mode = "none";
-			}, { capture: true });
-			our_addEventListener(maskel, "mousemove", function(e) {
+			};
+			var mousemove_cb = function(e) {
 				if (current_mode === "none")
 					return;
 				e.preventDefault();
@@ -33220,7 +33400,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					mouseY: e.clientY,
 					is_mousemove: true
 				});
-			}, { capture: true });
+			};
+			if (pointerevents_supported(maskel)) {
+				our_addEventListener(maskel, "pointerdown", mousedown_cb, { capture: true });
+				our_addEventListener(maskel, "pointerup", mouseup_cb, { capture: true });
+				our_addEventListener(maskel, "pointermove", mousemove_cb, { capture: true });
+			} else {
+				our_addEventListener(maskel, "mousedown", mousedown_cb, { capture: true });
+				our_addEventListener(maskel, "mouseup", mouseup_cb, { capture: true });
+				our_addEventListener(maskel, "mousemove", mousemove_cb, { capture: true });
+			}
 			document.documentElement.appendChild(base_maskel);
 		};
 		(function() {
@@ -33407,6 +33596,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				our_vars.items_amt = Object.keys(got_objs).length.toString(); //Object.keys(files).length.toString();
 				//our_vars.filename = our_vars.filename_noext + our_vars.ext;
 				filename = get_filename_from_format(settings.gallery_zip_filename_format, our_vars);
+				filename = fixup_filename(filename);
 				if (!filename)
 					filename = "download";
 				if (!/\.zip$/i.test(filename))
@@ -33532,6 +33722,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var fill_filename = function(use_download) {
 					fill_obj_filename(obj, origurl, data.data.respdata, our_source.el);
 					filename = obj.filename;
+					filename = fixup_filename(filename);
 					// this should hopefully not happen
 					if (use_download && !filename)
 						filename = "download";
@@ -33579,6 +33770,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					images: els,
 					all_els_ok: true,
 					browser_viewable: false,
+					support_plainlinks: true,
 					replace_image_func: function(options, our_source, cb, domain_processed_cb, progress_cb) {
 						//console_log(our_source);
 						var gffs_options = {
@@ -33813,10 +34005,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (mouseover_mouse_enabled() && settings.mouseover_trigger_mouseover && !delay_handle && !should_exclude_imagetab()) {
 				delay_el = e.target;
 				update_mouse_from_event(e);
-				delay_handle = setTimeout(function() {
+				delay_handle = set_timeout(function() {
 					delay_el = null;
 					if (delay_handle) {
-						clearTimeout(delay_handle);
+						clear_timeout(delay_handle);
 						delay_handle = null;
 					}
 					if (!popup_mouse_head())
@@ -33839,7 +34031,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			if (mouseover_mouse_enabled() && settings.mouseover_trigger_mouseover && delay_handle) {
 				if (delay_el === e.target) {
-					clearTimeout(delay_handle);
+					clear_timeout(delay_handle);
 					delay_handle = null;
 				}
 			}
@@ -35066,6 +35258,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			our_addEventListener(document, 'keydown', tabactive_cb);
 			our_addEventListener(document, 'wheel', tabactive_cb);
 			our_addEventListener(document, 'mousemove', tabactive_cb);
+			our_addEventListener(document, 'pointermove', tabactive_cb);
 			var wheel_cb = function(event) {
 				if (settings.scroll_override_page && popups_active && popup_wheel_cb) {
 					return popup_wheel_cb(event, true);
@@ -35122,7 +35315,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (timeout < 1)
 						timeout = 1;
 					if (!last_remote_mousemove_timer) {
-						last_remote_mousemove_timer = setTimeout(function() {
+						last_remote_mousemove_timer = set_timeout(function() {
 							if (!("remote_info" in last_remote_mousemove_event)) {
 								last_remote_mousemove_event.remote_info = get_frame_info();
 							}
@@ -35142,10 +35335,29 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			mouseAbsX = event.pageX;
 			mouseAbsY = event.pageY;
 		};
+		var fill_touchmove_event = function(event) {
+			if (event.touches && event.touches.length > 0) {
+				var touch = event.touches[0];
+				event.clientX = touch.clientX;
+				event.clientY = touch.clientY;
+				event.pageX = touch.pageX;
+				event.pageY = touch.pageY;
+				event.screenX = touch.screenX;
+				event.screenY = touch.screenY;
+			}
+		};
 		var mousemove_cb = function(event) {
 			mousepos_initialized = true;
 			// https://stackoverflow.com/a/7790764
 			event = event || window.event;
+			if (event.type === "touchmove") {
+				fill_touchmove_event(event);
+				if (dragstart) {
+					// preventDefault to prevent scolling while dragging, should find better way
+					// dragstart is checked to prevent scroll lockup on mobile
+					event.preventDefault();
+				}
+			}
 			update_mouse_from_event(event);
 			if (waiting) {
 				update_waiting();
@@ -35161,7 +35373,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					// FIXME: why was this not in if (popups_active)?
 					// The reason for putting it here is that if the mouse moves (even within jitter thresh) after a single popup is open, it will cancel the popup request
 					if (delay_handle) {
-						clearTimeout(delay_handle);
+						clear_timeout(delay_handle);
 						delay_handle = null;
 						if (false && waiting)
 							stop_waiting();
@@ -35253,7 +35465,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						if (Math_abs(mouseX - mouseDelayX) < trigger_mouse_jitter_thresh &&
 							Math_abs(mouseY - mouseDelayY) < trigger_mouse_jitter_thresh)
 							return;
-						clearTimeout(delay_handle);
+						clear_timeout(delay_handle);
 						delay_handle = null;
 					}
 					mouseDelayX = mouseX;
@@ -35266,7 +35478,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						}
 					}
 					if (!settings.mouseover_trigger_mouseover) {
-						delay_handle = setTimeout(function() {
+						delay_handle = set_timeout(function() {
 							if (!popup_mouse_head())
 								return;
 							trigger_popup();
@@ -35275,7 +35487,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			}
 		};
-		onload(function() { return our_addEventListener(document, 'mousemove', mousemove_cb); });
+		onload(function() {
+			our_addEventListener(document, 'mousemove', mousemove_cb);
+			our_addEventListener(document, 'touchmove', mousemove_cb, { passive: false });
+		});
 		(function() {
 			register_menucommand("Report issue", github_issues_page);
 		})();

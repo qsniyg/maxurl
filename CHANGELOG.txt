@@ -1,9 +1,10 @@
-2025.11.3 (in-dev)
+2025.12.0
 
 New features:
 
+ * Support for ~85 new websites (using ~45 new rules)
  * Comment support for black/whitelists with presets (#1498, thanks to Julian on discord for the idea)
- * Option to disable websites from converting images to webp/avif (#1502, disabled by default, thanks to sn3akyb3ar for the idea)
+ * Option to prevent websites from converting images to webp/avif (#1502, disabled by default, thanks to sn3akyb3ar for the idea)
 
 Improvements:
 
