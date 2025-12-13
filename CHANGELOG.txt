@@ -1,6 +1,10 @@
 2025.12.1 (in-dev)
 
-Special thanks to archingfigment for their contributions and reports for this release
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Google Images)
+
+Special thanks to archingfigment, Guimauve for their contributions and reports for this release
 
 ---
 
