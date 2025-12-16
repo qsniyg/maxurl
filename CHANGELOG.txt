@@ -5,7 +5,7 @@ Improvements:
  * Various improvements/fixes to existing rules (including Google Images)
  * Set rule-specific options that can cause rate limiting to be disabled by default (#1531, thanks to achingfigment for reporting)
 
-Special thanks to achingfigment, Guimauve, Arctic-Circle-System for their contributions and reports for this release
+Special thanks to achingfigment, Guimauve, Arctic-Circle-System, Rotes! for their contributions and reports for this release
 
 ---
 
