@@ -1,5 +1,9 @@
 2025.12.1 (in-dev)
 
+New features:
+
+ * Add `num_in_gallery` format variable (#645)
+
 Improvements:
 
  * Various improvements/fixes to existing rules (including DuckDuckGo, Google Images)
