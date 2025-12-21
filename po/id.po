@@ -2606,6 +2606,10 @@ msgstr ""
 msgid "Enables rules that require intercepting HTTP requests from websites."
 msgstr ""
 
+#. allow_xhr_hotpatch.example_websites[0]
+msgid "Google Images"
+msgstr ""
+
 #. hotpatch_unblock_nsfw.name
 msgid "Unblur NSFW media"
 msgstr ""
@@ -2947,6 +2951,7 @@ msgid ""
 "<li><code>domain</code> - Domain of the media</li>\n"
 "<li><code>domain_nosub</code> - Domain (without subdomains) of the media</li>\n"
 "<li><code>is_screenshot</code> - Blank, the line will only be processed when screenshotting a video</li>\n"
+"<li><code>num_in_gallery</code> - Item number in gallery (1 for first image, 2 for second, etc.)</li>\n"
 "<li><code>prefix</code>, <code>suffix</code> - Blank by default, these variables will be automatically prefixed/suffixed to the filename if set using <code>:=</code></li>\n"
 "<li><code>created_...</code> - Created date (see note on Date objects below, has <code>page_</code> variant)</li>\n"
 "<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below, has <code>page_</code> variant)</li>\n"
