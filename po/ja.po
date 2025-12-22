@@ -1483,6 +1483,14 @@ msgstr ""
 msgid "How many pixels the mouse should move to start a drag"
 msgstr ""
 
+#. mouseover_drag_capture_pointer.name
+msgid "Capture pointer on drag"
+msgstr ""
+
+#. mouseover_drag_capture_pointer.description
+msgid "Captures the mouse cursor when dragging. This allows you to keep dragging the popup outside of the browser window, but will break clicking to play/pause on videos."
+msgstr ""
+
 #. mouseover_scrolly_behavior.name
 msgid "Vertical scroll action"
 msgstr ""

@@ -1509,6 +1509,14 @@ msgstr "Quantidade mínima a ser arrastada"
 msgid "How many pixels the mouse should move to start a drag"
 msgstr "Quantos pixels o mouse deve se mover para iniciar um arrasto"
 
+#. mouseover_drag_capture_pointer.name
+msgid "Capture pointer on drag"
+msgstr ""
+
+#. mouseover_drag_capture_pointer.description
+msgid "Captures the mouse cursor when dragging. This allows you to keep dragging the popup outside of the browser window, but will break clicking to play/pause on videos."
+msgstr ""
+
 #. mouseover_scrolly_behavior.name
 msgid "Vertical scroll action"
 msgstr "Ação de rolagem vertical"
