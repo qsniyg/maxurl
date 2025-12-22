@@ -3,6 +3,7 @@
 New features:
 
  * Add `num_in_gallery` format variable (#645)
+ * Add option to toggle capturing pointer on drag (disabled by default)
 
 Improvements:
 
