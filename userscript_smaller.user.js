@@ -1433,6 +1433,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		return id_to_iframe[id];
 	};
 	var remote_send_message = null;
+	var remote_send_message_promise = null;
 	var remote_send_reply = null;
 	var remote_reply_ids = {};
 	var current_frame_id = null;
@@ -1512,6 +1513,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			//console_log("remote", to, data);
 			raw_remote_send_message(to, message);
+		};
+		remote_send_message_promise = function(to, data) {
+			return new Promise(function(resolve, reject) {
+				remote_send_message(to, data, resolve);
+			});
 		};
 		remote_send_reply = function(to, response_id, data) {
 			raw_remote_send_message(to, {
@@ -7611,6 +7617,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		mouseover_pan_behavior: "drag",
 		mouseover_movement_inverted: true,
 		mouseover_drag_min: 5,
+		mouseover_drag_capture_pointer: false,
 		mouseover_scrolly_behavior: "zoom",
 		// thanks to madman06 on greasyfork for the idea: https://greasyfork.org/en/scripts/36662-image-max-url/discussions/90341
 		mouseover_scrolly_hold_behavior: "default",
@@ -9531,6 +9538,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			category: "popup",
 			subcategory: "behavior"
 		},
+		mouseover_drag_capture_pointer: {
+			name: "Capture pointer on drag",
+			description: "Captures the mouse cursor when dragging. This allows you to keep dragging the popup outside of the browser window, but will break clicking to play/pause on videos.",
+			requires: {
+				mouseover_pan_behavior: "drag"
+			},
+			category: "popup",
+			subcategory: "behavior"
+		},
 		mouseover_scrolly_behavior: {
 			name: "Vertical scroll action",
 			description: "How the popup reacts to a vertical scroll/mouse wheel event",
@@ -11176,6 +11192,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					"<li><code>domain</code> - Domain of the media</li>",
 					"<li><code>domain_nosub</code> - Domain (without subdomains) of the media</li>",
 					"<li><code>is_screenshot</code> - Blank, the line will only be processed when screenshotting a video</li>",
+					"<li><code>num_in_gallery</code> - Item number in gallery (1 for first image, 2 for second, etc.)</li>",
 					"<li><code>prefix</code>, <code>suffix</code> - Blank by default, these variables will be automatically prefixed/suffixed to the filename if set using <code>:=</code></li>",
 					"<li><code>created_...</code> - Created date (see note on Date objects below, has <code>page_</code> variant)</li>",
 					"<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below, has <code>page_</code> variant)</li>",
@@ -18078,7 +18095,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (video_parsed.args["poster"]) {
 			sources.image.push(video_parsed.args["poster"]);
 		}
-		var sources_match = videomatch[0].match(/<source.*?\/?>\s*(?:<\/source>)?/g);
+		var sources_match = videomatch[0].match(/<source[\s\S]*?\/?>\s*(?:<\/source>)?/g);
 		if (!sources_match) {
 			return _sources_or_null(sources);
 		}
@@ -23291,6 +23308,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain === "cassette.sphdigital.com.sg" && /\/image\/+[^/]+\/+/.test(src)) ||
 			(domain === "dl5zpyw5k3jeb.cloudfront.net" && string_indexof(src, "/photos/") >= 0) ||
 			domain === "images-api.printify.com" ||
+			(domain_nowww === "landi.ch" && /:\/\/[^/]+\/+(?:media|(?:imageoriginal|content)\/+img)\//i.test(src)) ||
 			(domain_nosub === "ztat.net" && /^img[0-9]*\./.test(domain))) {
 			return {
 				url: src.replace(/\?.*$/, ""),
@@ -31416,6 +31434,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "honeydear.my" ||
 			domain_nowww === "dzduino.com" ||
 			domain_nowww === "americasuits.com" ||
+			domain_nowww === "occhialando.eu" ||
 			src.match(/^[a-z]+:\/\/[^/]+\/+image\/+cache\/+(?:data|catalog)\/.*-[0-9]+x[0-9]+\.[^/.]+(?:[?#].*)?$/)) {
 			return src
 				.replace(/\/image_cache\/+resize\/+[0-9]+x[0-9]+\/+image\/+/, "/image/")
@@ -31708,11 +31727,70 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc !== src)
 				return newsrc;
 		}
+		if (domain_nowww === "motherless.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+([0-9A-Z]{5,})(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/${id}",
+				allow_hostresp_for_match: true,
+				process: function(done, resp, cache_key) {
+					var urls = [];
+					var hasvideo = false;
+					var videotag_match = resp.responseText.match(/<div class="mediaspace-video-wrapper">\s*(<video[\s\S]*?<\/video>)/);
+					if (videotag_match) {
+						var videosources = common_functions["get_videotag_sources"](videotag_match[1]);
+						if (videosources && videosources.video.length) {
+							for (var _i = 0, _a = videosources.video; _i < _a.length; _i++) {
+								var video = _a[_i];
+								urls.push({
+									url: video.url,
+									headers: {
+										Referer: "https://" + domain + "/"
+									},
+									video: true
+								});
+								hasvideo = true;
+							}
+						}
+					}
+					var baseobj = {
+						extra: {
+							page: resp.finalUrl
+						}
+					};
+					var titlematch = resp.responseText.match(/<div class="media-meta-title">\s*<h1>\s*([^<]*?)\s*<\//);
+					if (titlematch)
+						baseobj.extra.caption = decode_entities(titlematch[1]);
+					var datematch = resp.responseText.match(/<span class="count">\s*([0-9]+\s+[A-Z][a-z]+\s+20[0-9]{2})\s*</);
+					if (datematch)
+						baseobj.extra.created_date = new Date(datematch[1].replace(/\s+/g, " ")).getTime();
+					var img = get_meta(resp.responseText, "og:image");
+					if (img)
+						urls.push(img);
+					return done(fillobj_urls(urls, baseobj), hasvideo ? 60 : 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
 		if (domain_nosub === "motherlessmedia.com") {
-			return src
-				.replace(/(:\/\/cdn[0-9]*\.)thumbs(\.motherlessmedia\.com\/)/, "$1images$2")
+			if (/\/images\/+no_image\./.test(src))
+				return {
+					url: src,
+					bad: true
+				};
+			newsrc = src
+				.replace(/(:\/\/cdn[0-9]*[-.])thumbs(\.motherlessmedia\.com\/)/, "$1images$2")
 				.replace(/\/thumbs\//, "/images/")
 				.replace(/-[a-z]*(\.[^/.?]*)(?:\?.*)?$/, "$1");
+			if (newsrc !== src)
+				return newsrc;
+			match = src.match(/\/(?:thumbs|images)\/+([0-9A-Z]{5,})(?:-[^/]+)?\.[a-z]+(?:[?#].*)?$/);
+			if (match) {
+				return {
+					url: "https://motherless.com/" + match[1],
+					is_pagelink: true
+				};
+			}
 		}
 		if (domain_nosub === "kiev.ua" &&
 			string_indexof(domain, "shram.kiev.ua") >= 0 &&
@@ -38074,6 +38152,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nosub === "pornstar.gallery" ||
 			domain_nowww === "hdxxx.photos" ||
 			domain_nosub === "yespornpics.com" ||
+			domain === "x.jjj.cam" ||
 			domain_nosub === "xxxporn.pics") {
 			var thumbdir = null;
 			var fulldir = null;
@@ -38107,6 +38186,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			} else if (domain_nosub === "pornstar.gallery") {
 				thumbdir = "pornpics";
 				fulldir = "pornpics";
+			} else if (domain_nosub === "jjj.cam") {
+				thumbdir = "pics";
+				fulldir = "pics";
 			}
 			if (thumbdir) {
 				if (fulldir)
@@ -38417,6 +38499,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "hentaigem.com" ||
 			domain_nowww === "watchporn.to" ||
 			domain_nowww === "epawg.com" ||
+			domain_nosub === "w1mp.com" ||
+			domain_nosub === "babehump.com" ||
 			domain_nosub === "mylust.com" ||
 			domain_nosub === "yourlust.com" ||
 			domain_nowww === "pornrewind.com") {
@@ -38445,6 +38529,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			if (!match) {
 				match = src.match(/\/[0-9]+\/+([0-9]+)\/+\1_[0-9]+s_trailer\./);
+			}
+			if (!match) {
+				match = src.match(/\/videos\/+[0-9]+\/+([0-9]+)\/+[0-9]+_preview\./);
 			}
 			if (match) {
 				id = match[1];
@@ -38939,6 +39026,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								caption: data.video_title || data.video_tags || data.video_categories || void 0
 							}
 						};
+						if (newobj.extra.caption)
+							newobj.extra.caption = decode_entities(newobj.extra.caption);
 						if (!can_add_referer_1)
 							newobj.headers.Referer = null;
 						if (string_indexof(maxurl, ".mp4") >= 0) {
@@ -70274,6 +70363,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return newsrc;
 		}
 		if (domain === "img.cocdn.co") return src.replace(/^[a-z]+:\/\/[^/]+\/+_image\/+optimize\/+(https?:\/\/.*?)(?:[?#].*)?$/, "$1");
+		if (domain_nowww === "gedistatic.it") {
+			if (/\/content\/+gnn\/+img\//.test(src)) {
+				return remove_queries(src, ["webp"]);
+			}
+		}
+		if (domain_nowww === "snowonly.com") return src.replace(/(\/storage\/+(?:front_)?uploads\/+.*\/+[0-9a-f]{10,})-(?:list-[a-z]+|detail(?:_[a-z]+)?|(?:home|body)_[a-z]+|featured|thumb)\./, "$1.");
+		if (domain_nowww === "picazor.com") return src.replace(/(\/uploads\/.*\/)[0-9]+px_([^/]+)(?:[?#].*)?$/, "$1$2");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -70831,6 +70927,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(amazon_container === "sfmoma-media-dev" && string_indexof(src, "/www-media/") >= 0) ||
 			(domain === "media.pri.org" && /\/s3fs-public\/+uploads\//.test(src)) ||
 			(domain === "fastly.restofworld.org" && string_indexof(src, "/uploads/") >= 0) ||
+			(domain === "static-cdn.toi-media.com" && /\/www\/+uploads\//.test(src)) ||
 			/(\/wp-content\/+uploads\/+(?:sites\/+[0-9]+\/+)?(?:[0-9]{4}\/+[0-9]{2}\/+)?.*)-(?:scaled|e[0-9]{10,})(\.[^/.]+)(?:[?#].*)?$/.test(src)) {
 			newsrc = src.replace(/((?:(?:\/wp-content)?\/+uploads(?:\/+sites\/+[0-9]+)?)?\/+[0-9]{4}\/+[0-9]{2}\/+[^?#]*?|\/wp-content\/+uploads(?:\/+sites\/+[0-9]+)?\/+[^?#]*?)(?:-(?:scaled|e[0-9]{10,}|[0-9]+x[0-9]+))*(\.[^/.?]+)(?:[?#].*)?$/, "$1$2");
 			if (newsrc !== src) {
@@ -76335,7 +76432,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		return error;
 	}
-	var trigger_gallery;
+	var trigger_gallery = void 0;
 	var override_request = function(data, obj) {
 		if (!data.method)
 			data.method = "GET";
@@ -78951,63 +79048,88 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return styles_array.join("; ");
 		}
 		function apply_styles(el, str, options) {
-			var style_blocks = parse_styles(str, true);
-			if (!style_blocks)
-				return;
-			// currently unused because revert_styles isn't used anywhere
-			if (options.allow_revert) {
-				var oldstyle = el.getAttribute("style"); // this can be expensive for `all: initial` styles
-				if (oldstyle) {
-					el.setAttribute("data-imu-oldstyle", oldstyle);
-				}
-			}
-			var styles = {};
-			if ("default" in style_blocks)
-				styles = style_blocks["default"];
-			if (options.id && ("#" + options.id) in style_blocks) {
-				var block = style_blocks["#" + options.id];
-				for (var property in block) {
-					if (!(property in styles))
-						styles[property] = [];
-					array_extend(styles[property], block[property]);
-				}
-			}
-			// avoid modifying the source object if format_string adds new variables
-			var format_vars = shallowcopy(options.format_vars);
-			var iter = function(property, obj) {
-				var value = obj.value;
-				// todo: maybe handle escape sequences with JSON_parse?
-				if (value.match(/^['"].*['"]$/)) {
-					value = value.replace(/^["'](.*)["']$/, "$1");
-				}
-				if (options.old_variables) {
-					for (var variable in options.old_variables) {
-						value = string_replaceall(value, variable, options.old_variables[variable]);
+			return __awaiter(this, void 0, void 0, function() {
+				var style_blocks, oldstyle, styles, block, property, format_vars, iter, promises, property, _i, _a, obj;
+				return __generator(this, function(_b) {
+					switch (_b.label) {
+						case 0:
+							style_blocks = parse_styles(str, true);
+							if (!style_blocks)
+								return [2 /*return*/];
+							// currently unused because revert_styles isn't used anywhere
+							if (options.allow_revert) {
+								oldstyle = el.getAttribute("style");
+								if (oldstyle) {
+									el.setAttribute("data-imu-oldstyle", oldstyle);
+								}
+							}
+							styles = {};
+							if ("default" in style_blocks)
+								styles = style_blocks["default"];
+							if (options.id && ("#" + options.id) in style_blocks) {
+								block = style_blocks["#" + options.id];
+								for (property in block) {
+									if (!(property in styles))
+										styles[property] = [];
+									array_extend(styles[property], block[property]);
+								}
+							}
+							format_vars = shallowcopy(options.format_vars);
+							iter = function(property, obj) {
+								return __awaiter(this, void 0, void 0, function() {
+									var value, variable, formatted;
+									return __generator(this, function(_a) {
+										switch (_a.label) {
+											case 0:
+												value = obj.value;
+												// todo: maybe handle escape sequences with JSON_parse?
+												if (value.match(/^['"].*['"]$/)) {
+													value = value.replace(/^["'](.*)["']$/, "$1");
+												}
+												if (options.old_variables) {
+													for (variable in options.old_variables) {
+														value = string_replaceall(value, variable, options.old_variables[variable]);
+													}
+												}
+												if (!options.format_vars) return [3 /*break*/, 2];
+												return [4 /*yield*/, format_string_single(value, format_vars)];
+											case 1:
+												formatted = _a.sent();
+												if (!formatted)
+													return [2 /*return*/];
+												value = formatted;
+												_a.label = 2;
+											case 2:
+												if (options.properties) {
+													if (property in options.properties) {
+														options.properties[property](value, property);
+													}
+												}
+												if (obj.important || options.force_important) {
+													el.style.setProperty(property, value, "important");
+												} else {
+													el.style.setProperty(property, value);
+												}
+												el.setAttribute("data-imu-newstyle", true);
+												return [2 /*return*/];
+										}
+									});
+								});
+							};
+							promises = [];
+							for (property in styles) {
+								for (_i = 0, _a = styles[property]; _i < _a.length; _i++) {
+									obj = _a[_i];
+									promises.push(iter(property, obj));
+								}
+							}
+							return [4 /*yield*/, Promise.all(promises)];
+						case 1:
+							_b.sent();
+							return [2 /*return*/];
 					}
-				}
-				if (options.format_vars) {
-					var formatted = format_string_single(value, format_vars);
-					if (!formatted)
-						return;
-					value = formatted;
-				}
-				if (options.properties) {
-					if (property in options.properties) {
-						options.properties[property](value, property);
-					}
-				}
-				if (obj.important || options.force_important) {
-					el.style.setProperty(property, value, "important");
-				} else {
-					el.style.setProperty(property, value);
-				}
-				el.setAttribute("data-imu-newstyle", true);
-			};
-			for (var property in styles) {
-				array_foreach(styles[property], function(obj) {
-					iter(property, obj);
 				});
-			}
+			});
 		}
 		function revert_styles(el) {
 			var oldstyle = el.getAttribute("data-imu-oldstyle");
@@ -79132,189 +79254,219 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return segments;
 		};
 		var format_string_single = function(formatstr, vars) {
-			// don't need to care about anything after // because / shouldn't be in the filename anyways
-			formatstr = formatstr.replace(/\/\/.*/, "");
-			formatstr = strip_whitespace(formatstr);
-			if (!formatstr)
-				return null;
-			var parsed = parse_format(formatstr);
-			var str = "";
-			var _loop_3 = function() {
-				if (typeof parsed[i] === "string") {
-					str += parsed[i];
-				} else {
-					varname = parsed[i].text;
-					default_value = null;
-					compare_value = null;
-					compare_not = false;
-					op = null;
-					compare_flags = [];
-					var process_varvalue = [];
-					// thanks to musicianjam888 on github for the idea: https://github.com/qsniyg/maxurl/issues/1398
-					var match = varname.match(/^([^!/:=]+?)\/(.*?\/.*?\/c?)(:[0-9]+\.?)?$/);
-					if (match) {
-						varname = match[1];
-						if (match[3]) // :[0-9]+\.?
-							varname += match[3];
-						var regexval_1 = match[2]; // don't pass match to closure because it gets overridden
-						process_varvalue.push(function(value) {
-							var regexmatch = "", regexreplace = "", regexflags = "";
-							var stage = 0;
-							var commit = function(c) {
-								if (stage === 0) {
-									regexmatch += c;
-								} else if (stage === 1) {
-									regexreplace += c;
-								} else if (stage === 2) {
-									regexflags += c;
-								} else {
-									console.error("Invalid regex stage:", { stage: stage, c: c, regexval: regexval_1 });
-								}
+			return __awaiter(this, void 0, void 0, function() {
+				var parsed, str, _loop_3, varname, default_value, compare_value, compare_not, op, compare_flags, flags, varvalue, usevar, varobj, i, state_2;
+				return __generator(this, function(_a) {
+					switch (_a.label) {
+						case 0:
+							// don't need to care about anything after // because / shouldn't be in the filename anyways
+							formatstr = formatstr.replace(/\/\/.*/, "");
+							formatstr = strip_whitespace(formatstr);
+							if (!formatstr)
+								return [2 /*return*/, null];
+							parsed = parse_format(formatstr);
+							str = "";
+							_loop_3 = function() {
+								var process_varvalue, match, regexval_1, trimamt_1, add_ellipsis_1, _i, process_varvalue_1, proc;
+								return __generator(this, function(_b) {
+									switch (_b.label) {
+										case 0:
+											if (!(typeof parsed[i] === "string")) return [3 /*break*/, 1];
+											str += parsed[i];
+											return [3 /*break*/, 4];
+										case 1:
+											varname = parsed[i].text;
+											default_value = null;
+											compare_value = null;
+											compare_not = false;
+											op = null;
+											compare_flags = [];
+											process_varvalue = [];
+											match = varname.match(/^([^!/:=]+?)\/(.*?\/.*?\/c?)(:[0-9]+\.?)?$/);
+											if (match) {
+												varname = match[1];
+												if (match[3]) // :[0-9]+\.?
+													varname += match[3];
+												regexval_1 = match[2];
+												process_varvalue.push(function(value) {
+													var regexmatch = "", regexreplace = "", regexflags = "";
+													var stage = 0;
+													var commit = function(c) {
+														if (stage === 0) {
+															regexmatch += c;
+														} else if (stage === 1) {
+															regexreplace += c;
+														} else if (stage === 2) {
+															regexflags += c;
+														} else {
+															console.error("Invalid regex stage:", { stage: stage, c: c, regexval: regexval_1 });
+														}
+													};
+													for (var i_26 = 0; i_26 < regexval_1.length; i_26++) {
+														var c = regexval_1[i_26];
+														var nextc = null;
+														if (i_26 + 1 < regexval_1.length)
+															nextc = regexval_1[i_26 + 1];
+														if (stage === 2) {
+															commit(c);
+															continue;
+														}
+														if (c === "\\" && nextc === "/") {
+															commit("/");
+															i_26++;
+															continue;
+														}
+														if (c === "/") {
+															stage++;
+															continue;
+														}
+														commit(c);
+													}
+													if (!regexmatch || !regexreplace) {
+														console_warn("Unable to parse regex:", { regexval: regexval_1, regexmatch: regexmatch, regexreplace: regexreplace, stage: stage });
+														return value;
+													}
+													var flags = "i";
+													if (regexflags === "c")
+														flags = "";
+													var regex = null;
+													try {
+														regex = new RegExp(regexmatch, flags);
+													} catch (e) {
+														console_error(e);
+														return value;
+													}
+													return value.replace(regex, regexreplace);
+												});
+											}
+											match = varname.match(/^([^?]+)[?](.*)$/);
+											if (match) {
+												varname = match[1];
+												default_value = match[2];
+											}
+											match = varname.match(/^([^!/:=]+)([!=]=)(.*)$/);
+											if (match) {
+												varname = match[1];
+												compare_value = match[3];
+												compare_not = match[2] === "!=";
+												op = "eq";
+											}
+											match = varname.match(/^([^!/:=]+)(!)?\/([rc]{0,2})=(.*)$/);
+											if (match) {
+												varname = match[1];
+												compare_value = match[4];
+												compare_not = match[2] === "!";
+												op = "contains";
+												flags = match[3];
+												if (string_indexof(flags, "r") >= 0)
+													compare_flags.push("regex");
+												if (string_indexof(flags, "c") >= 0)
+													compare_flags.push("nicase");
+											}
+											match = varname.match(/^([^!/:=]+):=(.*)$/);
+											if (match) {
+												varname = match[1];
+												compare_value = match[2];
+												op = "set";
+											}
+											match = varname.match(/^(.*?):([0-9]+)(\.)?$/);
+											if (match) {
+												varname = match[1];
+												trimamt_1 = parse_int(match[2]);
+												add_ellipsis_1 = match[3];
+												process_varvalue.push(function(varvalue) {
+													var newvalue = varvalue.substr(0, trimamt_1);
+													if (add_ellipsis_1) {
+														if (newvalue !== varvalue) {
+															// …
+															newvalue += "\u2026";
+														}
+													}
+													return newvalue;
+												});
+											}
+											varvalue = vars[varname];
+											if (!(typeof varvalue === "function")) return [3 /*break*/, 3];
+											return [4 /*yield*/, varvalue()];
+										case 2:
+											varvalue = _b.sent();
+											vars[varname] = varvalue;
+											_b.label = 3;
+										case 3:
+											for (_i = 0, process_varvalue_1 = process_varvalue; _i < process_varvalue_1.length; _i++) {
+												proc = process_varvalue_1[_i];
+												if (!varvalue)
+													break;
+												varvalue = proc(varvalue);
+											}
+											usevar = !!varvalue;
+											if (varvalue && typeof varvalue === "object") {
+												varobj = varvalue;
+												varvalue = "";
+												if ("usable" in varobj) {
+													usevar = varobj.usable;
+												}
+												if ("value" in varobj) {
+													varvalue = varobj.value;
+												}
+											}
+											if (op) {
+												if (usevar) {
+													if (op === "eq") {
+														usevar = varvalue === compare_value;
+													} else if (op === "contains") {
+														if (array_indexof(compare_flags, "nicase") < 0) {
+															varvalue = varvalue.toLowerCase();
+															compare_value = compare_value.toLowerCase(); // fixme: this might not be good for regex
+														}
+														if (array_indexof(compare_flags, "regex") >= 0) {
+															usevar = (new RegExp(compare_value)).test(varvalue);
+														} else {
+															usevar = string_indexof(varvalue, compare_value) >= 0;
+														}
+													}
+												}
+												// not in the usevar block because it may not exist
+												if (op === "set") {
+													vars[varname] = compare_value;
+													usevar = true;
+												}
+												if (compare_not)
+													usevar = !usevar;
+												varvalue = "";
+											}
+											if (!usevar) {
+												if (typeof default_value === "string") {
+													varvalue = default_value;
+												} else {
+													return [2 /*return*/, { value: null }];
+												}
+											}
+											str += varvalue;
+											_b.label = 4;
+										case 4: return [2 /*return*/];
+									}
+								});
 							};
-							for (var i_26 = 0; i_26 < regexval_1.length; i_26++) {
-								var c = regexval_1[i_26];
-								var nextc = null;
-								if (i_26 + 1 < regexval_1.length)
-									nextc = regexval_1[i_26 + 1];
-								if (stage === 2) {
-									commit(c);
-									continue;
-								}
-								if (c === "\\" && nextc === "/") {
-									commit("/");
-									i_26++;
-									continue;
-								}
-								if (c === "/") {
-									stage++;
-									continue;
-								}
-								commit(c);
-							}
-							if (!regexmatch || !regexreplace) {
-								console_warn("Unable to parse regex:", { regexval: regexval_1, regexmatch: regexmatch, regexreplace: regexreplace, stage: stage });
-								return value;
-							}
-							var flags = "i";
-							if (regexflags === "c")
-								flags = "";
-							var regex = null;
-							try {
-								regex = new RegExp(regexmatch, flags);
-							} catch (e) {
-								console_error(e);
-								return value;
-							}
-							return value.replace(regex, regexreplace);
-						});
+							i = 0;
+							_a.label = 1;
+						case 1:
+							if (!(i < parsed.length)) return [3 /*break*/, 4];
+							return [5 /*yield**/, _loop_3()];
+						case 2:
+							state_2 = _a.sent();
+							if (typeof state_2 === "object")
+								return [2 /*return*/, state_2.value];
+							_a.label = 3;
+						case 3:
+							i++;
+							return [3 /*break*/, 1];
+						case 4: 
+						// if it's a {x==y}{var:=value} rule, this should return a falsey value
+						return [2 /*return*/, strip_whitespace(str)];
 					}
-					match = varname.match(/^([^?]+)[?](.*)$/);
-					if (match) {
-						varname = match[1];
-						default_value = match[2];
-					}
-					match = varname.match(/^([^!/:=]+)([!=]=)(.*)$/);
-					if (match) {
-						varname = match[1];
-						compare_value = match[3];
-						compare_not = match[2] === "!=";
-						op = "eq";
-					}
-					match = varname.match(/^([^!/:=]+)(!)?\/([rc]{0,2})=(.*)$/);
-					if (match) {
-						varname = match[1];
-						compare_value = match[4];
-						compare_not = match[2] === "!";
-						op = "contains";
-						flags = match[3];
-						if (string_indexof(flags, "r") >= 0)
-							compare_flags.push("regex");
-						if (string_indexof(flags, "c") >= 0)
-							compare_flags.push("nicase");
-					}
-					match = varname.match(/^([^!/:=]+):=(.*)$/);
-					if (match) {
-						varname = match[1];
-						compare_value = match[2];
-						op = "set";
-					}
-					match = varname.match(/^(.*?):([0-9]+)(\.)?$/);
-					if (match) {
-						varname = match[1];
-						var trimamt_1 = parse_int(match[2]);
-						var add_ellipsis_1 = match[3];
-						process_varvalue.push(function(varvalue) {
-							var newvalue = varvalue.substr(0, trimamt_1);
-							if (add_ellipsis_1) {
-								if (newvalue !== varvalue) {
-									// …
-									newvalue += "\u2026";
-								}
-							}
-							return newvalue;
-						});
-					}
-					varvalue = vars[varname];
-					for (var _i = 0, process_varvalue_1 = process_varvalue; _i < process_varvalue_1.length; _i++) {
-						var proc = process_varvalue_1[_i];
-						if (!varvalue)
-							break;
-						varvalue = proc(varvalue);
-					}
-					usevar = !!varvalue;
-					if (varvalue && typeof varvalue === "object") {
-						varobj = varvalue;
-						varvalue = "";
-						if ("usable" in varobj) {
-							usevar = varobj.usable;
-						}
-						if ("value" in varobj) {
-							varvalue = varobj.value;
-						}
-					}
-					if (op) {
-						if (usevar) {
-							if (op === "eq") {
-								usevar = varvalue === compare_value;
-							} else if (op === "contains") {
-								if (array_indexof(compare_flags, "nicase") < 0) {
-									varvalue = varvalue.toLowerCase();
-									compare_value = compare_value.toLowerCase(); // fixme: this might not be good for regex
-								}
-								if (array_indexof(compare_flags, "regex") >= 0) {
-									usevar = (new RegExp(compare_value)).test(varvalue);
-								} else {
-									usevar = string_indexof(varvalue, compare_value) >= 0;
-								}
-							}
-						}
-						// not in the usevar block because it may not exist
-						if (op === "set") {
-							vars[varname] = compare_value;
-							usevar = true;
-						}
-						if (compare_not)
-							usevar = !usevar;
-						varvalue = "";
-					}
-					if (!usevar) {
-						if (typeof default_value === "string") {
-							varvalue = default_value;
-						} else {
-							return { value: null };
-						}
-					}
-					str += varvalue;
-				}
-			};
-			var varname, default_value, compare_value, compare_not, op, compare_flags, flags, varvalue, usevar, varobj;
-			for (var i = 0; i < parsed.length; i++) {
-				var state_2 = _loop_3();
-				if (typeof state_2 === "object")
-					return state_2.value;
-			}
-			// if it's a {x==y}{var:=value} rule, this should return a falsey value
-			return strip_whitespace(str);
+				});
+			});
 		};
 		var pluralify = function(number, forms) {
 			if (number === 1) {
@@ -79389,225 +79541,260 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return formatted_units.join(" and ") + " ago";
 		};
 		var format_string = function(formatstrs, vars) {
-			if (!is_array(formatstrs))
-				formatstrs = formatstrs.split("\n");
-			for (var i = 0; i < formatstrs.length; i++) {
-				var formatted = format_string_single(formatstrs[i], vars);
-				if (formatted)
-					return formatted;
-			}
-			return null;
+			return __awaiter(this, void 0, void 0, function() {
+				var i, formatted;
+				return __generator(this, function(_a) {
+					switch (_a.label) {
+						case 0:
+							if (!is_array(formatstrs))
+								formatstrs = formatstrs.split("\n");
+							i = 0;
+							_a.label = 1;
+						case 1:
+							if (!(i < formatstrs.length)) return [3 /*break*/, 4];
+							return [4 /*yield*/, format_string_single(formatstrs[i], vars)];
+						case 2:
+							formatted = _a.sent();
+							if (formatted)
+								return [2 /*return*/, formatted];
+							_a.label = 3;
+						case 3:
+							i++;
+							return [3 /*break*/, 1];
+						case 4: return [2 /*return*/, null];
+					}
+				});
+			});
 		};
 		var fill_obj_filename = function(newobj, url, respdata, popup_el) {
-			if (typeof newobj.filename !== "string")
-				newobj.filename = "";
-			var modified_date = null;
-			var contenttype_ext = null;
-			var orig_filename = null;
-			var wanted_ext = null;
-			if (respdata) {
-				try {
-					var headers = parse_headers(respdata.responseHeaders);
-					for (var h_i = 0; h_i < headers.length; h_i++) {
-						var header_name = headers[h_i].name.toLowerCase();
-						var header_value = headers[h_i].value;
-						if (header_name === "content-disposition") {
-							// http://cfile7.uf.tistory.com/original/227CF24E57ABEC701869E7
-							// Content-Disposition: inline; filename="160731 LA Kcon stage - 15 copy.jpg"; filename*=UTF-8''160731%20LA%20Kcon%20stage%20-%2015%20copy.jpg
-							var loops = 0;
-							while (loops < 100 && typeof header_value === "string" && header_value.length > 0) {
-								var current_value = header_value.replace(/^\s*([^;]*?)\s*(?:;.*)?$/, "$1");
-								//header_value = header_value.replace(/^[^;]*(?:;\s*(.*))?$/, "$1");
-								var attr = current_value.replace(/^\s*([^=;]*?)\s*(?:[=;].*)?$/, "$1").toLowerCase();
-								var a_match = header_value.match(/^[^=;]*(?:(?:=\s*(?:(?:["']([^'"]*?)["'])|([^;]*?))\s*(;.*)?\s*)|;\s*(.*))?$/);
-								if (!a_match) {
-									console_error("Header value does not match pattern:", header_value);
-									break;
+			return __awaiter(this, void 0, void 0, function() {
+				var modified_date, contenttype_ext, orig_filename, wanted_ext, headers, h_i, header_name, header_value, loops, current_value, attr, a_match, a_value, is_data, found_filename_from_url, filename_split, format_vars, create_date, pageobj, newobj_filled, fill_format_vars_from_obj, download_date, ext_split, new_filename;
+				var _this_1 = this;
+				return __generator(this, function(_a) {
+					switch (_a.label) {
+						case 0:
+							if (typeof newobj.filename !== "string")
+								newobj.filename = "";
+							modified_date = null;
+							contenttype_ext = null;
+							orig_filename = null;
+							wanted_ext = null;
+							if (respdata) {
+								try {
+									headers = parse_headers(respdata.responseHeaders);
+									for (h_i = 0; h_i < headers.length; h_i++) {
+										header_name = headers[h_i].name.toLowerCase();
+										header_value = headers[h_i].value;
+										if (header_name === "content-disposition") {
+											loops = 0;
+											while (loops < 100 && typeof header_value === "string" && header_value.length > 0) {
+												current_value = header_value.replace(/^\s*([^;]*?)\s*(?:;.*)?$/, "$1");
+												attr = current_value.replace(/^\s*([^=;]*?)\s*(?:[=;].*)?$/, "$1").toLowerCase();
+												a_match = header_value.match(/^[^=;]*(?:(?:=\s*(?:(?:["']([^'"]*?)["'])|([^;]*?))\s*(;.*)?\s*)|;\s*(.*))?$/);
+												if (!a_match) {
+													console_error("Header value does not match pattern:", header_value);
+													break;
+												}
+												a_value = a_match[1] || a_match[2];
+												// TODO: implement properly
+												/*if (attr === "filename*") {
+													newobj.filename = a_value;
+												}*/
+												if (newobj.filename.length === 0 && attr === "filename" && typeof a_value === "string" && a_value.length > 0) {
+													newobj.filename = a_value;
+												}
+												header_value = a_match[3] || a_match[4];
+												loops++;
+											}
+										} else if (header_name === "content-type") {
+											contenttype_ext = get_ext_from_contenttype(header_value);
+										} else if (header_name === "last-modified") {
+											modified_date = new Date(header_value);
+											if (isNaN(modified_date.getTime()))
+												modified_date = null;
+										}
+										if (newobj.filename.length > 0 && contenttype_ext && modified_date) {
+											// we found everything we're looking for
+											break;
+										}
+									}
+								} catch (e) {
+									console_error(e);
 								}
-								var a_value = a_match[1] || a_match[2];
-								// TODO: implement properly
-								/*if (attr === "filename*") {
-									newobj.filename = a_value;
-								}*/
-								if (newobj.filename.length === 0 && attr === "filename" && typeof a_value === "string" && a_value.length > 0) {
-									newobj.filename = a_value;
+								is_data = /^data:/.test(url);
+								if (is_data)
+									newobj.filename = "";
+								found_filename_from_url = false;
+								if (newobj.filename.length === 0 && !is_data) {
+									newobj.filename = url.replace(/^[^?#]*\/([^?#/]*)(?:[?#].*)?$/, "$1");
+									found_filename_from_url = true;
+									// Disable as there's no use for this
+									if (false && (newobj.filename.split(".").length - 1) === 1) {
+										newobj.filename = newobj.filename.replace(/(.*)\.[^.]*?$/, "$1");
+									}
 								}
-								header_value = a_match[3] || a_match[4];
-								loops++;
+								// thanks to fireattack on discord for reporting.
+								// test: https://hiyoko-bunko.com/specials/h0xmtix1pv/
+								// https://images.microcms-assets.io/protected/ap-northeast-1:92243b3c-cb7c-44e8-9c84-28ba954120c5/service/hiyoko-bunko/media/hb_sns_%E3%82%A4%E3%83%98%E3%82%99%E3%83%B3%E3%83%88%E5%BD%93%E6%97%A5_200831.jpg
+								if (found_filename_from_url) {
+									newobj.filename = decodeURIComponent(newobj.filename);
+								}
+								orig_filename = newobj.filename;
+								// e.g. for /?...
+								if (newobj.filename.length === 0) {
+									newobj.filename = "download";
+								}
+								filename_split = url_basename(newobj.filename, {
+									split_ext: true,
+									known_ext: true
+								});
+								if (contenttype_ext && !filename_split[1]) {
+									if (orig_filename.length)
+										orig_filename += "." + contenttype_ext;
+									newobj.filename += "." + contenttype_ext;
+								}
+								filename_split = url_basename(newobj.filename, {
+									split_ext: true,
+									known_ext: true
+								});
+								if (filename_split[1])
+									wanted_ext = filename_split[1];
 							}
-						} else if (header_name === "content-type") {
-							contenttype_ext = get_ext_from_contenttype(header_value);
-						} else if (header_name === "last-modified") {
-							modified_date = new Date(header_value);
-							if (isNaN(modified_date.getTime()))
-								modified_date = null;
-						}
-						if (newobj.filename.length > 0 && contenttype_ext && modified_date) {
-							// we found everything we're looking for
-							break;
-						}
+							// to avoid formatting the filename multiple times
+							if (!("_orig_filename" in newobj))
+								newobj._orig_filename = orig_filename;
+							format_vars = {
+								filename: newobj._orig_filename
+							};
+							format_vars.host_url = window_location;
+							format_vars.host_domain = get_domain_from_url(window_location);
+							format_vars.host_domain_nosub = get_domain_nosub(format_vars.host_domain);
+							try {
+								format_vars.host_title = document.title;
+							} catch (e) {
+								// only available for browser versions
+							}
+							if (newobj.url && /^https?:\/\//i.test(newobj.url)) {
+								format_vars.url = newobj.url;
+								format_vars.domain = get_domain_from_url(newobj.url);
+								format_vars.domain_nosub = get_domain_nosub(format_vars.domain);
+							}
+							create_date = function(name, date) {
+								var map = {
+									"year": "FullYear",
+									"month": "Month",
+									"day": "Date",
+									"hours": "Hours",
+									"minutes": "Minutes",
+									"seconds": "Seconds"
+								};
+								var values = {};
+								for (var x in map) {
+									var local_value = date["get" + map[x]]();
+									var utc_value = date["getUTC" + map[x]]();
+									if (x === "month") {
+										local_value++;
+										utc_value++;
+									}
+									local_value = zpadnum(local_value, 2);
+									utc_value = zpadnum(utc_value, 2);
+									values[x] = local_value;
+									values[x + "_utc"] = utc_value;
+									format_vars[name + "_" + x] = local_value;
+									format_vars[name + "_" + x + "_utc"] = utc_value;
+								}
+								format_vars[name + "_iso"] = values.year + "-" + values.month + "-" + values.day + "T" + values.hours + "-" + values.minutes + "-" + values.seconds;
+								format_vars[name + "_iso_utc"] = values.year_utc + "-" + values.month_utc + "-" + values.day_utc + "T" + values.hours_utc + "-" + values.minutes_utc + "-" + values.seconds_utc;
+								format_vars[name + "_yyyymmdd"] = values.year + values.month + values.day;
+								format_vars[name + "_yyyymmdd_utc"] = values.year_utc + values.month_utc + values.day_utc;
+								format_vars[name + "_hhmmss"] = values.hours + values.minutes + values.seconds;
+								format_vars[name + "_hhmmss_utc"] = values.hours_utc + values.minutes_utc + values.seconds_utc;
+								var ago;
+								if (name !== "download" && (ago = format_ago(Date.now() - date.getTime()))) {
+									format_vars[name + "_ago"] = ago;
+								}
+								format_vars[name + "_unix_ms"] = date.getTime();
+								format_vars[name + "_unix"] = (date.getTime() / 1000) | 0;
+							};
+							pageobj = common_functions["fill_ldjson"]([{ "url": window_location }], {
+								responseText: document.documentElement.outerHTML,
+								finalUrl: window_location
+							}, {
+								thumbnail: false
+							})[0];
+							newobj_filled = deepcopy(newobj);
+							if (settings.format_fill_page) {
+								newobj_filled = fillobj_urls([newobj_filled], pageobj, "null")[0];
+							}
+							fill_format_vars_from_obj = function(prefix, obj) {
+								var created_date = null;
+								var updated_date = null;
+								if (obj.extra) {
+									var extra_copy = [
+										"caption",
+										"author_username",
+										"id"
+									];
+									for (var _i = 0, extra_copy_1 = extra_copy; _i < extra_copy_1.length; _i++) {
+										var prop = extra_copy_1[_i];
+										format_vars[prefix + prop] = obj.extra[prop];
+									}
+									if (obj.extra.created_date)
+										created_date = new Date(obj.extra.created_date);
+									if (obj.extra.updated_date)
+										updated_date = new Date(obj.extra.updated_date);
+								}
+								if (!prefix && !updated_date && modified_date)
+									updated_date = modified_date;
+								if (created_date)
+									create_date(prefix + "created", created_date);
+								if (updated_date || created_date)
+									create_date(prefix + "updated", updated_date || created_date);
+								if (created_date || updated_date)
+									create_date(prefix + "date", created_date || updated_date);
+							};
+							fill_format_vars_from_obj("", newobj_filled);
+							fill_format_vars_from_obj("page_", pageobj);
+							download_date = new Date();
+							if (download_date)
+								create_date("download", download_date);
+							if (format_vars.filename) {
+								ext_split = url_basename(format_vars.filename, {
+									split_ext: true,
+									known_ext: true
+								});
+								format_vars.filename_noext = ext_split[0];
+								if (wanted_ext)
+									format_vars.ext = "." + wanted_ext;
+							}
+							// thanks to Dietz on discord for reporting:
+							if (!format_vars.caption && popup_el) {
+								format_vars.caption = get_caption(newobj_filled, popup_el);
+							}
+							format_vars.num_in_gallery = function() { return __awaiter(_this_1, void 0, void 0, function() {
+								var result;
+								return __generator(this, function(_a) {
+									switch (_a.label) {
+										case 0: return [4 /*yield*/, count_gallery_promise(false, void 0, true, popup_el, void 0)];
+										case 1:
+											result = _a.sent();
+											return [2 /*return*/, result.count + 1];
+									}
+								});
+							}); };
+							newobj.format_vars = shallowcopy(format_vars);
+							return [4 /*yield*/, get_filename_from_format(settings.filename_format, format_vars)];
+						case 1:
+							new_filename = _a.sent();
+							if (new_filename) {
+								newobj.filename = new_filename;
+							} else {
+								newobj.filename = add_filename_ext(newobj.filename, format_vars);
+							}
+							return [2 /*return*/];
 					}
-				} catch (e) {
-					console_error(e);
-				}
-				var is_data = /^data:/.test(url);
-				if (is_data)
-					newobj.filename = "";
-				var found_filename_from_url = false;
-				if (newobj.filename.length === 0 && !is_data) {
-					newobj.filename = url.replace(/^[^?#]*\/([^?#/]*)(?:[?#].*)?$/, "$1");
-					found_filename_from_url = true;
-					// Disable as there's no use for this
-					if (false && (newobj.filename.split(".").length - 1) === 1) {
-						newobj.filename = newobj.filename.replace(/(.*)\.[^.]*?$/, "$1");
-					}
-				}
-				// thanks to fireattack on discord for reporting.
-				// test: https://hiyoko-bunko.com/specials/h0xmtix1pv/
-				// https://images.microcms-assets.io/protected/ap-northeast-1:92243b3c-cb7c-44e8-9c84-28ba954120c5/service/hiyoko-bunko/media/hb_sns_%E3%82%A4%E3%83%98%E3%82%99%E3%83%B3%E3%83%88%E5%BD%93%E6%97%A5_200831.jpg
-				if (found_filename_from_url) {
-					newobj.filename = decodeURIComponent(newobj.filename);
-				}
-				orig_filename = newobj.filename;
-				// e.g. for /?...
-				if (newobj.filename.length === 0) {
-					newobj.filename = "download";
-				}
-				var filename_split = url_basename(newobj.filename, {
-					split_ext: true,
-					known_ext: true
 				});
-				if (contenttype_ext && !filename_split[1]) {
-					if (orig_filename.length)
-						orig_filename += "." + contenttype_ext;
-					newobj.filename += "." + contenttype_ext;
-				}
-				filename_split = url_basename(newobj.filename, {
-					split_ext: true,
-					known_ext: true
-				});
-				if (filename_split[1])
-					wanted_ext = filename_split[1];
-			}
-			// to avoid formatting the filename multiple times
-			if (!("_orig_filename" in newobj))
-				newobj._orig_filename = orig_filename;
-			var format_vars = {
-				filename: newobj._orig_filename
-			};
-			format_vars.host_url = window_location;
-			format_vars.host_domain = get_domain_from_url(window_location);
-			format_vars.host_domain_nosub = get_domain_nosub(format_vars.host_domain);
-			try {
-				format_vars.host_title = document.title;
-			} catch (e) {
-				// only available for browser versions
-			}
-			if (newobj.url && /^https?:\/\//i.test(newobj.url)) {
-				format_vars.url = newobj.url;
-				format_vars.domain = get_domain_from_url(newobj.url);
-				format_vars.domain_nosub = get_domain_nosub(format_vars.domain);
-			}
-			// todo: only create when needed
-			var create_date = function(name, date) {
-				var map = {
-					"year": "FullYear",
-					"month": "Month",
-					"day": "Date",
-					"hours": "Hours",
-					"minutes": "Minutes",
-					"seconds": "Seconds"
-				};
-				var values = {};
-				for (var x in map) {
-					var local_value = date["get" + map[x]]();
-					var utc_value = date["getUTC" + map[x]]();
-					if (x === "month") {
-						local_value++;
-						utc_value++;
-					}
-					local_value = zpadnum(local_value, 2);
-					utc_value = zpadnum(utc_value, 2);
-					values[x] = local_value;
-					values[x + "_utc"] = utc_value;
-					format_vars[name + "_" + x] = local_value;
-					format_vars[name + "_" + x + "_utc"] = utc_value;
-				}
-				format_vars[name + "_iso"] = values.year + "-" + values.month + "-" + values.day + "T" + values.hours + "-" + values.minutes + "-" + values.seconds;
-				format_vars[name + "_iso_utc"] = values.year_utc + "-" + values.month_utc + "-" + values.day_utc + "T" + values.hours_utc + "-" + values.minutes_utc + "-" + values.seconds_utc;
-				format_vars[name + "_yyyymmdd"] = values.year + values.month + values.day;
-				format_vars[name + "_yyyymmdd_utc"] = values.year_utc + values.month_utc + values.day_utc;
-				format_vars[name + "_hhmmss"] = values.hours + values.minutes + values.seconds;
-				format_vars[name + "_hhmmss_utc"] = values.hours_utc + values.minutes_utc + values.seconds_utc;
-				var ago;
-				if (name !== "download" && (ago = format_ago(Date.now() - date.getTime()))) {
-					format_vars[name + "_ago"] = ago;
-				}
-				format_vars[name + "_unix_ms"] = date.getTime();
-				format_vars[name + "_unix"] = (date.getTime() / 1000) | 0;
-			};
-			var pageobj = common_functions["fill_ldjson"]([{ "url": window_location }], {
-				responseText: document.documentElement.outerHTML,
-				finalUrl: window_location
-			}, {
-				thumbnail: false
-			})[0];
-			var newobj_filled = deepcopy(newobj);
-			if (settings.format_fill_page) {
-				newobj_filled = fillobj_urls([newobj_filled], pageobj, "null")[0];
-			}
-			var fill_format_vars_from_obj = function(prefix, obj) {
-				var created_date = null;
-				var updated_date = null;
-				if (obj.extra) {
-					var extra_copy = [
-						"caption",
-						"author_username",
-						"id"
-					];
-					for (var _i = 0, extra_copy_1 = extra_copy; _i < extra_copy_1.length; _i++) {
-						var prop = extra_copy_1[_i];
-						format_vars[prefix + prop] = obj.extra[prop];
-					}
-					if (obj.extra.created_date)
-						created_date = new Date(obj.extra.created_date);
-					if (obj.extra.updated_date)
-						updated_date = new Date(obj.extra.updated_date);
-				}
-				if (!prefix && !updated_date && modified_date)
-					updated_date = modified_date;
-				if (created_date)
-					create_date(prefix + "created", created_date);
-				if (updated_date || created_date)
-					create_date(prefix + "updated", updated_date || created_date);
-				if (created_date || updated_date)
-					create_date(prefix + "date", created_date || updated_date);
-			};
-			fill_format_vars_from_obj("", newobj_filled);
-			fill_format_vars_from_obj("page_", pageobj);
-			var download_date = new Date();
-			if (download_date)
-				create_date("download", download_date);
-			if (format_vars.filename) {
-				var ext_split = url_basename(format_vars.filename, {
-					split_ext: true,
-					known_ext: true
-				});
-				format_vars.filename_noext = ext_split[0];
-				if (wanted_ext)
-					format_vars.ext = "." + wanted_ext;
-			}
-			// thanks to Dietz on discord for reporting:
-			if (!format_vars.caption && popup_el) {
-				format_vars.caption = get_caption(newobj_filled, popup_el);
-			}
-			newobj.format_vars = shallowcopy(format_vars);
-			var new_filename = get_filename_from_format(settings.filename_format, format_vars);
-			if (new_filename) {
-				newobj.filename = new_filename;
-			} else {
-				newobj.filename = add_filename_ext(newobj.filename, format_vars);
-			}
+			});
 		};
 		var format_string_post = function(str, vars) {
 			if (str) {
@@ -79630,10 +79817,19 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return filename;
 		};
 		var get_filename_from_format = function(format, format_vars) {
-			var formatted = format_string(format, format_vars);
-			if (!formatted)
-				return null;
-			return add_filename_ext(formatted, format_vars);
+			return __awaiter(this, void 0, void 0, function() {
+				var formatted;
+				return __generator(this, function(_a) {
+					switch (_a.label) {
+						case 0: return [4 /*yield*/, format_string(format, format_vars)];
+						case 1:
+							formatted = _a.sent();
+							if (!formatted)
+								return [2 /*return*/, null];
+							return [2 /*return*/, add_filename_ext(formatted, format_vars)];
+					}
+				});
+			});
 		};
 		function makePopup(obj, orig_url, processing, data) {
 			if (_nir_debug_) {
@@ -79663,21 +79859,22 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var resp = data.data.resp || data.data.respdata;
 				if (resp.finalUrl)
 					theobj.url = resp.finalUrl;
-				fill_obj_filename(theobj, theobj.url, resp, popup_el);
-				popup_obj = theobj;
-				if (openb === "newtab" || openb === "newtab_bg") {
-					open_in_tab_imu(theobj, openb === "newtab_bg");
-				} else if (openb === "download") {
-					download_popup_media();
-				} else if (openb === "download_album") {
-					download_album();
-				} else if (openb === "copylink") {
-					clipboard_write_link(theobj.url);
-				} else if (openb === "replace") {
-					// todo: use popup options instead of replace images options
-					var replace_options = get_replace_images_options();
-					replace_single_media(replace_options, { el: popup_el }, data, common_functions["nullfunc"]);
-				}
+				fill_obj_filename(theobj, theobj.url, resp, popup_el).then(function() {
+					popup_obj = theobj;
+					if (openb === "newtab" || openb === "newtab_bg") {
+						open_in_tab_imu(theobj, openb === "newtab_bg");
+					} else if (openb === "download") {
+						download_popup_media();
+					} else if (openb === "download_album") {
+						download_album();
+					} else if (openb === "copylink") {
+						clipboard_write_link(theobj.url);
+					} else if (openb === "replace") {
+						// todo: use popup options instead of replace images options
+						var replace_options = get_replace_images_options();
+						replace_single_media(replace_options, { el: popup_el }, data, common_functions["nullfunc"]);
+					}
+				});
 				return;
 			}
 			//var x = mouseX;//mouseAbsX;
@@ -79694,1958 +79891,2034 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			dragstart = false;
 			var seekstart = false;
 			function cb(img, url) {
-				if (!img) {
-					delay_handle_triggering = false;
-					if (processing.running) {
-						stop_waiting_cant_load();
+				return __awaiter(this, void 0, void 0, function() {
+					// https://stackoverflow.com/a/23270007
+					function get_lefttopouter() {
+						var style = outerdiv.currentStyle || window.getComputedStyle(outerdiv);
+						return [style.marginLeft + style.borderLeftWidth,
+							style.marginTop + style.borderTopWidth];
 					}
-					return;
-				}
-				var is_video = img.tagName === "VIDEO";
-				var is_audio = img.tagName === "AUDIO";
-				var is_stream = is_video || is_audio;
-				var newobj = data.data.obj;
-				if (!newobj)
-					newobj = {};
-				popup_obj = newobj;
-				var estop = function(e) {
-					e.stopPropagation();
-					e.stopImmediatePropagation();
-					return true;
-				};
-				var estop_pd = function(e) {
-					e.preventDefault();
-					estop(e);
-					return true;
-				};
-				lastX = x;
-				lastY = y;
-				popupOpenX = x;
-				popupOpenY = y;
-				popupOpenLastX = x;
-				popupOpenLastY = y;
-				var initial_zoom_behavior = get_single_setting("mouseover_zoom_behavior");
-				var last_zoom_behavior = get_single_setting("mouseover_zoom_use_last");
-				var use_last_zoom = false;
-				if (popup_last_zoom && (last_zoom_behavior === "always" ||
-					(last_zoom_behavior === "gallery" && popup_el_automatic))) {
-					use_last_zoom = true;
-				}
-				//img.onclick = estop;
-				//img.onmousedown = estop;
-				//img.addEventListener("click", estop, true);
-				//img.addEventListener("mousedown", estop, true);
-				var bgcolor = "#333";
-				var fgcolor = "#fff";
-				var textcolor = "#fff";
-				var shadowcolor = "rgba(0,0,0,.5)";
-				var enable_mask_styles = get_single_setting("mouseover_enable_mask_styles2");
-				var old_mask_opacity = 1;
-				var setup_mask_el = function(mask) {
-					set_el_all_initial(mask);
-					set_important_style(mask, "opacity", 1);
-					if (enable_mask_styles !== "never") {
-						apply_styles(mask, settings.mouseover_mask_styles2, {
-							force_important: true
-						});
+					function calc_imghw_for_fit(width, height) {
+						var new_imghw = get_imghw_for_fit(width, height);
+						imgw = new_imghw[0];
+						imgh = new_imghw[1];
 					}
-					// this allows us to respect a custom opacity for mouseover_mask_styles
-					old_mask_opacity = mask.style.opacity;
-					if (enable_mask_styles === "hold") {
-						set_important_style(mask, "opacity", 0);
+					/*console_log(x - (imgw / 2));
+					  console_log(vw);
+					  console_log(imgw);
+					  console_log(vw - imgw);*/
+					function get_defaultopacity() {
+						var defaultopacity = (settings.mouseover_ui_opacity / 100);
+						if (isNaN(defaultopacity))
+							defaultopacity = 1;
+						if (defaultopacity > 1)
+							defaultopacity = 1;
+						if (defaultopacity < 0)
+							defaultopacity = 0;
+						return defaultopacity;
 					}
-					if (!settings.mouseover_close_click_outside &&
-						!settings.mouseover_mask_ignore_clicks) {
-						set_important_style(mask, "pointer-events", "none");
-					}
-					set_important_style(mask, "position", "fixed");
-					set_important_style(mask, "z-index", maxzindex - 3);
-					set_important_style(mask, "width", "100%");
-					set_important_style(mask, "height", "100%");
-					set_important_style(mask, "left", "0px");
-					set_important_style(mask, "top", "0px");
-					if (settings.mouseover_mask_fade_time > 0) {
-						set_important_style(mask, "transition", "opacity " + (settings.mouseover_mask_fade_time / 1000.) + "s");
-						if (enable_mask_styles !== "hold") {
-							if (!popup_el_automatic) {
-								set_important_style(mask, "opacity", 0);
-								// this is needed in order to make the transition happen
-								set_timeout(function() {
-									set_important_style(mask, "opacity", old_mask_opacity);
-								}, 1);
-							} else {
-								set_important_style(mask, "opacity", old_mask_opacity);
-							}
-						}
-					}
-					// same as the addbtn mousedown stop
-					our_addEventListener(mask, "mousedown", function(e) {
-						if (!settings.mouseover_close_click_outside)
-							return;
-						estop(e);
-					});
-					our_addEventListener(mask, "click", function(e) {
-						if (!settings.mouseover_close_click_outside)
-							return;
-						estop(e);
-						set_important_style(mask, "pointer-events", "none");
-						resetpopups();
-					}, true);
-					return mask;
-				};
-				remove_mask();
-				if (settings.mouseover_close_click_outside ||
-					settings.mouseover_mask_ignore_clicks ||
-					enable_mask_styles !== "never") {
-					mask_el = document_createElement("div");
-					setup_mask_el(mask_el);
-				}
-				var outerdiv = document_createElement("div");
-				set_el_all_initial(outerdiv);
-				set_important_style(outerdiv, "position", "fixed");
-				set_important_style(outerdiv, "z-index", maxzindex - 2);
-				var zoom_move_effect_enabled = false;
-				if (settings.mouseover_fade_time > 0 && !popup_el_automatic) {
-					var transition_effects = [];
-					var temp_transition_effects = [];
-					var fade_s = (settings.mouseover_fade_time / 1000.) + "s";
-					if (settings.mouseover_enable_fade) {
-						transition_effects.push("opacity " + fade_s);
-						set_important_style(outerdiv, "opacity", 0);
-					}
-					if (settings.mouseover_enable_zoom_effect) {
-						transition_effects.push("transform " + fade_s);
-						set_important_style(outerdiv, "transform", "scale(0)");
-						if (settings.mouseover_zoom_effect_move) {
-							temp_transition_effects.push("top " + fade_s);
-							temp_transition_effects.push("left " + fade_s);
-							zoom_move_effect_enabled = true;
-						}
-					}
-					if (transition_effects.length > 0) {
-						var orig_transition_string = transition_effects.join(", ");
-						array_extend(transition_effects, temp_transition_effects);
-						var temp_transition_string = transition_effects.join(", ");
-						set_important_style(outerdiv, "transition", temp_transition_string);
-						if (temp_transition_effects.length > 0) {
-							set_timeout(function() {
-								set_important_style(outerdiv, "transition", orig_transition_string);
-							}, settings.mouseover_fade_time);
-						}
-					}
-					// set_timeout is needed in order to make the transition happen
-					set_timeout(function() {
-						set_important_style(outerdiv, "opacity", 1);
-						set_important_style(outerdiv, "transform", "scale(1)");
-					}, 1);
-				}
-				var div = document_createElement("div");
-				var popupshown = false;
-				set_el_all_initial(div);
-				set_important_style(div, "box-shadow", "0 0 15px " + shadowcolor);
-				set_important_style(div, "border", "3px solid " + fgcolor);
-				set_important_style(div, "position", "relative");
-				set_important_style(div, "top", "0px");
-				set_important_style(div, "left", "0px");
-				set_important_style(div, "display", "block");
-				set_important_style(div, "background-color", "rgba(255,255,255,.5)");
-				// http://png-pixel.com/
-				var transparent_gif = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
-				var styles_variables = {};
-				if (popup_orig_url && !popup_el_is_stream) {
-					styles_variables["%thumburl%"] = encodeuri_ifneeded(popup_orig_url);
-				} else {
-					styles_variables["%thumburl%"] = transparent_gif;
-				}
-				if (!is_stream) {
-					styles_variables["%fullurl%"] = encodeuri_ifneeded(get_img_src(img));
-				} else {
-					styles_variables["%fullurl%"] = transparent_gif;
-				}
-				apply_styles(div, settings.mouseover_styles, {
-					force_important: true,
-					old_variables: styles_variables
-				});
-				outerdiv.appendChild(div);
-				//div.style.position = "fixed"; // instagram has top: -...px
-				//div.style.zIndex = maxzindex - 2;
-				//div.onclick = estop;
-				//div.onmousedown = estop;
-				//div.addEventListener("click", estop, true);
-				//div.addEventListener("mousedown", estop, true);
-				// useful for instagram
-				//disable_click = true;
-				var outer_thresh = 16;
-				var border_thresh = 20;
-				var top_thresh = 30;
-				var top_mb = top_thresh - border_thresh;
-				var viewport;
-				var vw;
-				var vh;
-				var v_mx = Math_max(x - border_thresh, 0);
-				var v_my = Math_max(y - top_thresh, 0);
-				var update_vwh = function(x, y) {
-					viewport = get_viewport();
-					vw = viewport[0];
-					vh = viewport[1];
-					vw -= border_thresh * 2;
-					vh -= border_thresh + top_thresh;
-					if (typeof x !== "undefined") {
-						v_mx = Math_min(vw, Math_max(x - border_thresh, 0));
-						v_my = Math_min(vh, Math_max(y - top_thresh, 0));
-					}
-				};
-				var set_top = function(x) {
-					outerdiv.style.top = x + "px";
-				};
-				var set_left = function(x) {
-					outerdiv.style.left = x + "px";
-				};
-				var set_lefttop = function(xy) {
-					set_top(xy[1]);
-					set_left(xy[0]);
-				};
-				// https://stackoverflow.com/a/23270007
-				function get_lefttopouter() {
-					var style = outerdiv.currentStyle || window.getComputedStyle(outerdiv);
-					return [style.marginLeft + style.borderLeftWidth,
-						style.marginTop + style.borderTopWidth];
-				}
-				update_vwh(x, y);
-				// TODO: improve
-				var set_audio_size = function() {
-					if (!is_audio)
-						return;
-					img.style.width = "500px";
-					img.style.minWidth = "500px";
-					img.style.height = "50px";
-					img.style.minHeight = "50px";
-				};
-				set_audio_size();
-				var el_dimensions = get_el_dimensions(img);
-				// FIXME: when this is set, for some reason, some settings like min-width and min-height can't be set under chrome
-				if (!is_audio)
-					set_el_all_initial(img);
-				//set_audio_size();
-				var add_link = false;
-				if (!is_stream && settings.mouseover_add_link) {
-					add_link = true;
-				} else if (is_video && settings.mouseover_add_video_link) {
-					add_link = true;
-				}
-				if (add_link) {
-					// don't !important because it'll override the waiting cursor for automatic (gallery) popups
-					img.style.cursor = "pointer";
-				}
-				// https://stackoverflow.com/questions/7774814/remove-white-space-below-image
-				img.style.verticalAlign = "bottom";
-				set_important_style(img, "display", "block");
-				var update_img_display = function(style) {
-					img.style.setProperty("display", style[0], style[1]);
-				};
-				var visibility_workarounds = [
-					// uBlock Origin on pornhub blocks: video[style*="display: block !important;"]
-					{
-						domain_nosub: /^pornhub(?:premium)?\./,
-						img_display: ["block"]
-					},
-					{
-						domain_nosub: /^pornhub(?:premium)?\./,
-						img_display: ["initial", "important"]
-					},
-					// uBlock Origin on gelbooru blocks:
-					//   a[target="_blank"] > img
-					//   a[target="_blank"] > div
-					// https://github.com/qsniyg/maxurl/issues/430#issuecomment-686768694
-					{
-						domain_nosub: /^gelbooru\./,
-						func: function() {
-							var span_el = document_createElement("span");
-							span_el.appendChild(img);
-							a.appendChild(span_el);
-						}
-					}
-				];
-				var check_visibility_workaround = function(workaround) {
-					if (workaround.domain_nosub) {
-						if (!workaround.domain_nosub.test(host_domain_nosub))
-							return false;
-					}
-					return true;
-				};
-				var apply_visibility_workaround = function(workaround) {
-					if (workaround.img_display) {
-						update_img_display(workaround.img_display);
-					} else if (workaround.func) {
-						workaround.func();
-					}
-				};
-				var check_img_visibility = function() {
-					set_timeout(function() {
-						var computed = get_computed_style(img);
-						if (computed.display !== "none") {
-							return;
-						}
-						while (visibility_workarounds.length > 0) {
-							var current_workaround = visibility_workarounds.shift();
-							if (!check_visibility_workaround(current_workaround))
-								continue;
-							apply_visibility_workaround(current_workaround);
-							if (visibility_workarounds.length > 0)
-								check_img_visibility();
-							break;
-						}
-					}, 50);
-				};
-				check_img_visibility();
-				// https://github.com/qsniyg/maxurl/issues/330
-				set_important_style(img, "object-fit", "contain");
-				var img_naturalHeight, img_naturalWidth;
-				img_naturalWidth = el_dimensions[0];
-				img_naturalHeight = el_dimensions[1];
-				var imgh = img_naturalHeight;
-				var imgw = img_naturalWidth;
-				var setup_initial_zoom = function(initial_zoom_behavior, use_last_zoom) {
-					var update_sizes = false;
-					if (initial_zoom_behavior === "custom" || use_last_zoom) {
-						var zoom_percent = settings.mouseover_zoom_custom_percent / 100;
-						if (use_last_zoom)
-							zoom_percent = popup_last_zoom;
-						imgw = Math_max(img_naturalWidth * zoom_percent, 20);
-						imgh = Math_max(img_naturalHeight * zoom_percent, 20);
-						update_sizes = true;
-					} else if (initial_zoom_behavior === "fit" || initial_zoom_behavior === "fill") {
-						img.style.maxWidth = vw + "px";
-						img.style.maxHeight = vh + "px";
-						if (initial_zoom_behavior === "fill" && (img_naturalWidth < vw && img_naturalHeight < vh)) {
-							var zoom_percent = 1;
-							if (img_naturalHeight > img_naturalWidth) {
-								zoom_percent = vh / img_naturalHeight;
-							} else {
-								zoom_percent = vw / img_naturalWidth;
-							}
-							imgw *= zoom_percent;
-							imgh *= zoom_percent;
-							update_sizes = true;
-						}
-					} else if (initial_zoom_behavior === "full") {
-						imgw = img_naturalWidth;
-						imgh = img_naturalHeight;
-						update_sizes = true;
-					}
-					if (update_sizes) {
-						img.style.maxWidth = imgw + "px";
-						img.style.width = img.style.maxWidth;
-						img.style.maxHeight = imgh + "px";
-						img.style.height = img.style.maxHeight;
-					}
-				};
-				setup_initial_zoom(initial_zoom_behavior, use_last_zoom);
-				if (imgh < 20 || imgw < 20) {
-					// FIXME: This will stop "custom" percentages with low percentages for small images
-					stop_waiting_cant_load();
-					console_error("Image too small to popup (" + imgw + "x" + imgh + ")");
-					return;
-				}
-				var get_imghw_for_fit = function(width, height) {
-					if (width === void 0)
-						width = vw;
-					if (height === void 0)
-						height = vh;
-					//height -= border_thresh * 2;
-					//width  -= border_thresh * 2;
-					var our_imgh = imgh;
-					var our_imgw = imgw;
-					if (imgh > height || imgw > width) {
-						var ratio;
-						if (imgh / height >
-							imgw / width) {
-							ratio = imgh / height;
-						} else {
-							ratio = imgw / width;
-						}
-						our_imgh /= ratio;
-						our_imgw /= ratio;
-					}
-					return [our_imgw, our_imgh];
-				};
-				function calc_imghw_for_fit(width, height) {
-					var new_imghw = get_imghw_for_fit(width, height);
-					imgw = new_imghw[0];
-					imgh = new_imghw[1];
-				}
-				if ((initial_zoom_behavior === "fit" || initial_zoom_behavior === "fill") && !use_last_zoom) {
-					calc_imghw_for_fit();
-				}
-				var max_width = settings.mouseover_zoom_max_width || void 0;
-				var max_height = settings.mouseover_zoom_max_height || void 0;
-				if (max_width || max_height) {
-					calc_imghw_for_fit(max_width, max_height);
-				}
-				popup_update_zoom_func = function(mode) {
-					var use_last_zoom = false;
-					if (mode === "last") {
-						mode = get_single_setting("mouseover_zoom_behavior");
-						if (popup_last_zoom)
-							use_last_zoom = true;
-					}
-					setup_initial_zoom(mode, use_last_zoom);
-					if (mode === "fit" || mode === "fill")
-						calc_imghw_for_fit();
-					set_popup_width(imgw, "initial");
-					set_popup_height(imgh, "initial");
-				};
-				popup_update_pos_func = function(x, y, resize) {
-					var popup_left, popup_top;
-					update_vwh(x, y);
-					var sct = scrollTop();
-					var scl = scrollLeft();
-					sct = scl = 0;
-					var overflow_x = imgw > vw;
-					var overflow_y = imgh > vh;
-					var mouseover_position = get_single_setting("mouseover_position");
-					if ((popup_hold && settings.mouseover_hold_position_center) ||
-						(settings.mouseover_overflow_position_center && (overflow_x || overflow_y)))
-						mouseover_position = "center";
-					if (mouseover_position === "cursor") {
-						popup_top = sct + Math_min(Math_max(v_my - (imgh / 2), 0), Math_max(vh - imgh, 0));
-						popup_left = scl + Math_min(Math_max(v_mx - (imgw / 2), 0), Math_max(vw - imgw, 0));
-					} else if (mouseover_position === "center") {
-						var origin = get_single_setting("mouseover_overflow_origin");
-						var ox = origin[1];
-						var oy = origin[2];
-						var top_x = 0;
-						var top_y = 0;
-						var bottom_x = vw - imgw;
-						var bottom_y = vh - imgh;
-						var middle_x = (vw - imgw) / 2;
-						var middle_y = (vh - imgh) / 2;
-						var our_x = middle_x;
-						var our_y = middle_y;
-						if (overflow_x) {
-							if (ox === "0") {
-								our_x = top_x;
-							} else if (ox === "1") {
-								our_x = middle_x;
-							} else if (ox === "2") {
-								our_x = bottom_x;
-							}
-						}
-						if (overflow_y) {
-							if (oy === "0") {
-								our_y = top_y;
-							} else if (oy === "1") {
-								our_y = middle_y;
-							} else if (oy === "2") {
-								our_y = bottom_y;
-							}
-						}
-						popup_top = sct + our_y;
-						popup_left = scl + our_x;
-					} else if (mouseover_position === "beside_cursor") {
-						var update_imghw;
-						if (resize) {
-							update_imghw = function(w, h) {
-								calc_imghw_for_fit(w, h);
-							};
-						} else {
-							update_imghw = common_functions.nullfunc;
-						}
-						var calc_imgrect = function(w, h) {
-							var new_imghw = [imgw, imgh];
-							if (resize) {
-								new_imghw = get_imghw_for_fit(w, h);
-							}
-							if (new_imghw[0] > w || new_imghw[1] > h)
-								return null;
-							return new_imghw;
-						};
-						var cursor_thresh = border_thresh;
-						var ovw = vw - cursor_thresh;
-						var ovh = vh - cursor_thresh;
-						var calc_imgposd = function(lefttop, info, popupd) {
-							var moused = lefttop ? v_mx : v_my;
-							var vd = lefttop ? ovw : ovh;
-							switch (info) {
-								case -1:
-									return Math_min(vd - popupd, Math_max(0, moused - (popupd / 2)));
-								case 0:
-									return Math_max(0, moused - popupd - cursor_thresh);
-								case 1:
-									return Math_min(vd - popupd, moused + cursor_thresh);
-							}
-						};
-						var all_rects = [
-							// top
-							[-1, 0, ovw, v_my - cursor_thresh],
-							// right
-							[1, -1, ovw - v_mx - cursor_thresh, ovh],
-							// bottom
-							[-1, 1, ovw, ovh - v_my - cursor_thresh],
-							// left
-							[0, -1, v_mx - cursor_thresh, ovh]
-						];
-						var rects = [];
-						// TODO: move the current popup position to the top
-						if (x > viewport[0] / 2) {
-							rects.push(all_rects[3]);
-						} else {
-							rects.push(all_rects[1]);
-						}
-						if (y > viewport[1] / 2) {
-							rects.push(all_rects[0]);
-						} else {
-							rects.push(all_rects[2]);
-						}
-						for (var i = 0; i < all_rects.length; i++) {
-							if (array_indexof(rects, all_rects[i]) < 0) {
-								rects.push(all_rects[i]);
-							}
-						}
-						var largest_rectsize = -1;
-						var largest_rect = null;
-						var largest_origrect = null;
-						for (var i = 0; i < rects.length; i++) {
-							var our_rect = calc_imgrect(rects[i][2], rects[i][3]);
-							if (!our_rect)
-								continue;
-							var our_rectsize = our_rect[0] * our_rect[1];
-							if (our_rectsize > largest_rectsize) {
-								largest_rectsize = our_rectsize;
-								largest_rect = our_rect;
-								largest_origrect = rects[i];
-							}
-						}
-						if (!largest_origrect) {
-							largest_rectsize = -1;
-							for (var i = 0; i < rects.length; i++) {
-								var rectsize = rects[i][2] * rects[i][3];
-								if (rectsize > largest_rectsize) {
-									largest_origrect = rects[i];
-									largest_rectsize = rectsize;
-								}
-							}
-						}
-						if (largest_origrect) {
-							update_imghw(largest_origrect[2], largest_origrect[3]);
-							popup_top = calc_imgposd(false, largest_origrect[1], imgh);
-							popup_left = calc_imgposd(true, largest_origrect[0], imgw);
-						} else {
-							// ???
-						}
-					} else if (mouseover_position === "beside_cursor_old") {
-						// TODO: maybe improve this to be more interpolated?
-						var popupx;
-						var popupy;
-						var cursor_thresh = border_thresh;
-						var ovw = vw - cursor_thresh;
-						var ovh = vh - cursor_thresh;
-						var update_imghw;
-						if (resize) {
-							update_imghw = function(w, h) {
-								calc_imghw_for_fit(w, h);
-							};
-						} else {
-							update_imghw = common_functions.nullfunc;
-						}
-						update_imghw(ovw, ovh);
-						for (var loop_i = 0; loop_i < (resize ? 16 : 1); loop_i++) {
-							if (y > viewport[1] / 2) {
-								popupy = v_my - imgh - cursor_thresh;
-							} else if (popupy === void 0) {
-								popupy = v_my + cursor_thresh;
-							}
-							if (x > viewport[0] / 2) {
-								popupx = v_mx - imgw - cursor_thresh;
-							} else if (popupx === void 0) {
-								popupx = v_mx + cursor_thresh;
-							}
-							if (popupy < 0) {
-								popupy = 0;
-								if (settings.mouseover_prevent_cursor_overlap) {
-									update_imghw(ovw, v_my);
-									//continue;
-								}
-							}
-							if (popupx < 0) {
-								popupx = 0;
-								if (settings.mouseover_prevent_cursor_overlap) {
-									update_imghw(v_mx, ovh);
-									//continue;
-								}
-							}
-							if ((popupy + imgh) > vh) {
-								if (settings.mouseover_prevent_cursor_overlap) {
-									update_imghw(ovw, ovh - v_my);
-									//continue;
-								} else {
-									popupy = Math_max(vh - imgh - cursor_thresh, 0);
-								}
-							}
-							if ((popupx + imgw) > vw) {
-								if (settings.mouseover_prevent_cursor_overlap) {
-									update_imghw(ovw - v_mx, ovh);
-									//continue;
-								} else {
-									popupx = Math_max(vw - imgw - cursor_thresh, 0);
-								}
-							}
-							//break;
-						}
-						popup_top = popupy;
-						popup_left = popupx;
-					}
-					return [
-						popup_left + border_thresh,
-						popup_top + top_thresh
-					];
-				};
-				var initialpos = popup_update_pos_func(x, y, true);
-				if (!zoom_move_effect_enabled) {
-					set_lefttop(initialpos);
-				} else {
-					set_lefttop([x - imgw / 2, y - imgh / 2]);
-					set_timeout(function() {
-						set_lefttop(initialpos);
-					}, 1);
-				}
-				var set_popup_size_helper = function(size, maxsize, widthheight) {
-					if (maxsize === void 0)
-						maxsize = size;
-					if (typeof size === "number")
-						size = size + "px";
-					if (typeof maxsize === "number")
-						maxsize = maxsize + "px";
-					if (widthheight) {
-						img.style.width = size;
-						img.style.maxWidth = maxsize;
-					} else {
-						img.style.height = size;
-						img.style.maxHeight = maxsize;
-					}
-				};
-				var set_popup_width = function(width, maxwidth) {
-					set_popup_size_helper(width, maxwidth, true);
-				};
-				var set_popup_height = function(height, maxheight) {
-					set_popup_size_helper(height, maxheight, false);
-				};
-				set_popup_width(imgw, "initial");
-				set_popup_height(imgh, "initial");
-				/*console_log(x - (imgw / 2));
-				  console_log(vw);
-				  console_log(imgw);
-				  console_log(vw - imgw);*/
-				function get_defaultopacity() {
-					var defaultopacity = (settings.mouseover_ui_opacity / 100);
-					if (isNaN(defaultopacity))
-						defaultopacity = 1;
-					if (defaultopacity > 1)
-						defaultopacity = 1;
-					if (defaultopacity < 0)
-						defaultopacity = 0;
-					return defaultopacity;
-				}
-				var defaultopacity = get_defaultopacity();
-				function opacity_hover(el, targetel, action) {
-					if (!targetel)
-						targetel = el;
-					our_addEventListener(el, "mouseover", function(e) {
-						targetel.style.opacity = "1.0";
-						if (action)
-							targetel.style.boxShadow = "0px 0px 5px 1px white";
-					}, true);
-					our_addEventListener(el, "mouseout", function(e) {
-						targetel.style.opacity = get_defaultopacity();
-						if (action)
-							targetel.style.boxShadow = "none";
-					}, true);
-				}
-				var get_popup_dimensions = function() {
-					return [
-						(popupshown && outerdiv.clientWidth) || imgw,
-						(popupshown && outerdiv.clientHeight) || imgh
-					];
-				};
-				var btndown = false;
-				function addbtn(options) {
-					var tagname = "span";
-					if (typeof options.action === "string")
-						tagname = "a";
-					// todo: preparse user styles, then set tagname to img if image
-					var btn = document_createElement(tagname);
-					if (options.action) {
-						var do_action = function() {
-							return !btn.hasAttribute("data-btn-noaction");
-						};
-						if (typeof options.action === "object") {
-							var old_action = options.action;
-							options.action = function() {
-								action_handler(old_action);
-							};
-						}
-						// thanks to Noodlers on discord for reporting
-						// test: discord emoji picker, mousedown will close it
-						our_addEventListener(btn, "mousedown", function(e) {
-							e.stopPropagation();
-							e.stopImmediatePropagation();
-						});
-						if (typeof options.action === "function") {
-							our_addEventListener(btn, "click", function(e) {
-								if (!do_action())
-									return;
-								//console_log(e);
-								e.stopPropagation();
-								e.stopImmediatePropagation();
-								e.preventDefault();
-								options.action();
-								return false;
-							}, true);
-						} else if (typeof options.action === "string") {
-							btn.href = options.action;
-							btn.target = "_blank";
-							btn.setAttribute("rel", "noreferrer");
-							our_addEventListener(btn, "click", function(e) {
-								e.stopPropagation();
-								e.stopImmediatePropagation();
-							}, true);
-						}
-						our_addEventListener(btn, "mouseover", function(e) {
-							set_important_style(btn, "box-shadow", "0px 0px 5px 1px white");
+					function opacity_hover(el, targetel, action) {
+						if (!targetel)
+							targetel = el;
+						our_addEventListener(el, "mouseover", function(e) {
+							targetel.style.opacity = "1.0";
+							if (action)
+								targetel.style.boxShadow = "0px 0px 5px 1px white";
 						}, true);
-						our_addEventListener(btn, "mouseout", function(e) {
-							set_important_style(btn, "box-shadow", "none");
+						our_addEventListener(el, "mouseout", function(e) {
+							targetel.style.opacity = get_defaultopacity();
+							if (action)
+								targetel.style.boxShadow = "none";
 						}, true);
 					}
-					our_addEventListener(btn, "mousedown", function(e) {
-						btndown = true;
-					}, true);
-					our_addEventListener(btn, "mouseup", function(e) {
-						btndown = false;
-					}, true);
-					if (false && !options.istop) {
-						opacity_hover(btn, void 0, true);
-					} else if (typeof options.text === "object" && options.text.truncated !== options.text.full) {
-						our_addEventListener(btn, "mouseover", function(e) {
-							var computed_style = get_computed_style(btn);
-							set_important_style(btn, "width", computed_style.width || (btn.clientWidth + "px"));
-							set_important_style(btn, "height", "initial");
-							btn.innerText = options.text.full;
-						}, true);
-						our_addEventListener(btn, "mouseout", function(e) {
-							btn.innerText = options.text.truncated;
-							btn.style.width = "initial";
-						}, true);
-					}
-					set_el_all_initial(btn);
-					if (options.action) {
-						set_important_style(btn, "cursor", "pointer");
-					}
-					set_important_style(btn, "background", bgcolor);
-					set_important_style(btn, "border", "3px solid " + fgcolor);
-					set_important_style(btn, "border-radius", "10px");
-					// test: https://www.yeshiva.org.il/ (topbarel sets this to ltr, so it must be set to the initial value in order to respect the direction)
-					set_important_style(btn, "direction", text_direction);
-					// workaround for emojis: https://stackoverflow.com/a/39776303
-					if (typeof options.text === "string" && options.text.length === 1 && options.text.charCodeAt(0) > 256) {
-						set_important_style(btn, "color", "transparent");
-						set_important_style(btn, "text-shadow", "0 0 0 " + textcolor);
-					} else {
-						set_important_style(btn, "color", textcolor);
-					}
-					set_important_style(btn, "padding", "4px");
-					set_important_style(btn, "line-height", "1em");
-					//btn.style.whiteSpace = "nowrap";
-					set_important_style(btn, "font-size", "14px");
-					set_important_style(btn, "font-family", sans_serif_font);
-					//set_important_style(btn, "height", "1em");
-					// TODO: cache the styles
-					apply_styles(btn, settings.mouseover_ui_styles, {
-						id: options.id,
-						force_important: true,
-						format_vars: newobj.format_vars,
-						properties: {
-							"-imu-text": function(value) {
-								// TODO: support emojis properly
-								if (typeof options.text === "object")
-									options.text.truncated = value;
-								else
-									options.text = value;
-							},
-							"-imu-title": function(value) {
-								options.title = value;
-							},
-							"-imu-image": function(value) {
-								options.image = value;
-							},
-							"-imu-pos": function(value) {
-								options.pos = value;
-								if (array_indexof(["top-left", "top-middle", "top-right",
-									"left", "middle", "right",
-									"bottom-left", "bottom-middle", "bottom-right"], value) < 0) {
-									console_warn("Invalid pos", value);
-									options.pos = "top-left";
+					function addbtn(options) {
+						return __awaiter(this, void 0, void 0, function() {
+							var tagname, btn, do_action, old_action, img, container, dimensions;
+							return __generator(this, function(_a) {
+								switch (_a.label) {
+									case 0:
+										tagname = "span";
+										if (typeof options.action === "string")
+											tagname = "a";
+										btn = document_createElement(tagname);
+										if (options.action) {
+											do_action = function() {
+												return !btn.hasAttribute("data-btn-noaction");
+											};
+											if (typeof options.action === "object") {
+												old_action = options.action;
+												options.action = function() {
+													action_handler(old_action);
+												};
+											}
+											// thanks to Noodlers on discord for reporting
+											// test: discord emoji picker, mousedown will close it
+											our_addEventListener(btn, "mousedown", function(e) {
+												e.stopPropagation();
+												e.stopImmediatePropagation();
+											});
+											if (typeof options.action === "function") {
+												our_addEventListener(btn, "click", function(e) {
+													if (!do_action())
+														return;
+													//console_log(e);
+													e.stopPropagation();
+													e.stopImmediatePropagation();
+													e.preventDefault();
+													options.action();
+													return false;
+												}, true);
+											} else if (typeof options.action === "string") {
+												btn.href = options.action;
+												btn.target = "_blank";
+												btn.setAttribute("rel", "noreferrer");
+												our_addEventListener(btn, "click", function(e) {
+													e.stopPropagation();
+													e.stopImmediatePropagation();
+												}, true);
+											}
+											our_addEventListener(btn, "mouseover", function(e) {
+												set_important_style(btn, "box-shadow", "0px 0px 5px 1px white");
+											}, true);
+											our_addEventListener(btn, "mouseout", function(e) {
+												set_important_style(btn, "box-shadow", "none");
+											}, true);
+										}
+										our_addEventListener(btn, "mousedown", function(e) {
+											btndown = true;
+										}, true);
+										our_addEventListener(btn, "mouseup", function(e) {
+											btndown = false;
+										}, true);
+										if (false && !options.istop) {
+											opacity_hover(btn, void 0, true);
+										} else if (typeof options.text === "object" && options.text.truncated !== options.text.full) {
+											our_addEventListener(btn, "mouseover", function(e) {
+												var computed_style = get_computed_style(btn);
+												set_important_style(btn, "width", computed_style.width || (btn.clientWidth + "px"));
+												set_important_style(btn, "height", "initial");
+												btn.innerText = options.text.full;
+											}, true);
+											our_addEventListener(btn, "mouseout", function(e) {
+												btn.innerText = options.text.truncated;
+												btn.style.width = "initial";
+											}, true);
+										}
+										set_el_all_initial(btn);
+										if (options.action) {
+											set_important_style(btn, "cursor", "pointer");
+										}
+										set_important_style(btn, "background", bgcolor);
+										set_important_style(btn, "border", "3px solid " + fgcolor);
+										set_important_style(btn, "border-radius", "10px");
+										// test: https://www.yeshiva.org.il/ (topbarel sets this to ltr, so it must be set to the initial value in order to respect the direction)
+										set_important_style(btn, "direction", text_direction);
+										// workaround for emojis: https://stackoverflow.com/a/39776303
+										if (typeof options.text === "string" && options.text.length === 1 && options.text.charCodeAt(0) > 256) {
+											set_important_style(btn, "color", "transparent");
+											set_important_style(btn, "text-shadow", "0 0 0 " + textcolor);
+										} else {
+											set_important_style(btn, "color", textcolor);
+										}
+										set_important_style(btn, "padding", "4px");
+										set_important_style(btn, "line-height", "1em");
+										//btn.style.whiteSpace = "nowrap";
+										set_important_style(btn, "font-size", "14px");
+										set_important_style(btn, "font-family", sans_serif_font);
+										//set_important_style(btn, "height", "1em");
+										// TODO: cache the styles
+										return [4 /*yield*/, apply_styles(btn, settings.mouseover_ui_styles, {
+												id: options.id,
+												force_important: true,
+												format_vars: newobj.format_vars,
+												properties: {
+													"-imu-text": function(value) {
+														// TODO: support emojis properly
+														if (typeof options.text === "object")
+															options.text.truncated = value;
+														else
+															options.text = value;
+													},
+													"-imu-title": function(value) {
+														options.title = value;
+													},
+													"-imu-image": function(value) {
+														options.image = value;
+													},
+													"-imu-pos": function(value) {
+														options.pos = value;
+														if (array_indexof(["top-left", "top-middle", "top-right",
+															"left", "middle", "right",
+															"bottom-left", "bottom-middle", "bottom-right"], value) < 0) {
+															console_warn("Invalid pos", value);
+															options.pos = "top-left";
+														}
+													}
+												}
+											})];
+									case 1:
+										//set_important_style(btn, "height", "1em");
+										// TODO: cache the styles
+										_a.sent();
+										if (options.image) {
+											options.text = null;
+										}
+										set_important_style(btn, "z-index", maxzindex - 1);
+										if (false && !options.istop) {
+											set_important_style(btn, "position", "absolute");
+											set_important_style(btn, "opacity", defaultopacity);
+										} else {
+											set_important_style(btn, "position", "relative");
+											set_important_style(btn, "margin-right", "4px");
+										}
+										set_important_style(btn, "vertical-align", "top");
+										//btn.style.maxWidth = "50%";
+										set_important_style(btn, "white-space", "pre-wrap");
+										set_important_style(btn, "display", "inline-block");
+										if (options.action) {
+											set_important_style(btn, "user-select", "none");
+										}
+										if (typeof options.image === "string") {
+											img = document_createElement("img");
+											set_el_all_initial(img);
+											set_important_style(img, "padding", "0px");
+											set_important_style(img, "margin", "0px");
+											set_important_style(img, "display", "inline");
+											set_important_style(img, "height", "1em");
+											set_important_style(img, "cursor", "inherit");
+											img.src = options.image;
+											btn.appendChild(img);
+										}
+										if (options.text) {
+											if (typeof options.text === "object" && options.text.link_underline && settings.mouseover_ui_link_underline) {
+												set_important_style(btn, "text-decoration", "underline");
+											}
+											if (typeof options.text === "string") {
+												btn.innerText = options.text;
+											} else if (typeof options.text === "object") {
+												btn.innerText = options.text.truncated;
+											}
+										}
+										if (options.title)
+											btn.title = options.title;
+										if (options.containers && options.pos) {
+											container = options.containers[options.pos];
+											container.appendChild(btn);
+											dimensions = get_popup_dimensions();
+											if (container.hasAttribute("data-imu-middle_x")) {
+												set_important_style(container, "left", ((dimensions[0] - container.clientWidth) / 2) + "px");
+											}
+											if (container.hasAttribute("data-imu-middle_y")) {
+												set_important_style(container, "top", ((dimensions[1] - container.clientHeight) / 2) + "px");
+											}
+										}
+										return [2 /*return*/, btn];
 								}
-							}
-						}
-					});
-					if (options.image) {
-						options.text = null;
-					}
-					set_important_style(btn, "z-index", maxzindex - 1);
-					if (false && !options.istop) {
-						set_important_style(btn, "position", "absolute");
-						set_important_style(btn, "opacity", defaultopacity);
-					} else {
-						set_important_style(btn, "position", "relative");
-						set_important_style(btn, "margin-right", "4px");
-					}
-					set_important_style(btn, "vertical-align", "top");
-					//btn.style.maxWidth = "50%";
-					set_important_style(btn, "white-space", "pre-wrap");
-					set_important_style(btn, "display", "inline-block");
-					if (options.action) {
-						set_important_style(btn, "user-select", "none");
-					}
-					if (typeof options.image === "string") {
-						var img = document_createElement("img");
-						set_el_all_initial(img);
-						set_important_style(img, "padding", "0px");
-						set_important_style(img, "margin", "0px");
-						set_important_style(img, "display", "inline");
-						set_important_style(img, "height", "1em");
-						set_important_style(img, "cursor", "inherit");
-						img.src = options.image;
-						btn.appendChild(img);
-					}
-					if (options.text) {
-						if (typeof options.text === "object" && options.text.link_underline && settings.mouseover_ui_link_underline) {
-							set_important_style(btn, "text-decoration", "underline");
-						}
-						if (typeof options.text === "string") {
-							btn.innerText = options.text;
-						} else if (typeof options.text === "object") {
-							btn.innerText = options.text.truncated;
-						}
-					}
-					if (options.title)
-						btn.title = options.title;
-					if (options.containers && options.pos) {
-						var container = options.containers[options.pos];
-						container.appendChild(btn);
-						// FIXME: container.clientWidth is 0 until it's visible
-						var dimensions = get_popup_dimensions();
-						if (container.hasAttribute("data-imu-middle_x")) {
-							set_important_style(container, "left", ((dimensions[0] - container.clientWidth) / 2) + "px");
-						}
-						if (container.hasAttribute("data-imu-middle_y")) {
-							set_important_style(container, "top", ((dimensions[1] - container.clientHeight) / 2) + "px");
-						}
-					}
-					return btn;
-				}
-				var ui_els = [];
-				var text_direction = "initial";
-				var popup_el_style;
-				if (popup_el) {
-					popup_el_style = get_computed_style(popup_el);
-				} else {
-					popup_el_style = get_computed_style(document.body);
-				}
-				if (popup_el_style && popup_el_style.direction === "rtl") {
-					text_direction = "rtl";
-				}
-				var cached_previmages = 0;
-				var cached_nextimages = 0;
-				function lraction(isright, is_scroll) {
-					trigger_gallery(isright ? 1 : -1, function(changed) {
-						if (!changed) {
-							if (is_scroll) {
-								if (isright && settings.scroll_past_gallery_end_to_close) {
-									resetpopups();
-									return;
-								}
-							}
-							create_ui();
-						}
-					});
-				}
-				var create_containerel = function(x, y, margin, boundingclientrect) {
-					var topbarel = document_createElement("div");
-					set_el_all_initial(topbarel);
-					set_important_style(topbarel, "position", "absolute");
-					set_important_style(topbarel, "opacity", defaultopacity);
-					if (can_use_subzindex)
-						set_important_style(topbarel, "z-index", maxzindex - 1);
-					set_important_style(topbarel, "white-space", "nowrap");
-					// test: https://www.yeshiva.org.il/
-					// otherwise, the buttons are in the wrong order
-					set_important_style(topbarel, "direction", "ltr");
-					var left = null;
-					var top = null;
-					var bottom = null;
-					var right = null;
-					var original_width = imgw || img_naturalWidth;
-					var bounding_width = boundingclientrect.width || original_width;
-					var bounding_wadd = (bounding_width - original_width) / 2;
-					var original_height = imgh || img_naturalHeight;
-					var bounding_height = boundingclientrect.height || original_height;
-					var bounding_hadd = (bounding_height - original_height) / 2;
-					if (x === "left") {
-						left = -(margin + bounding_wadd) + "px";
-					} else if (x === "middle") {
-						left = "calc(50%)";
-						topbarel.setAttribute("data-imu-middle_x", "true");
-					} else if (x === "right") {
-						right = -(margin + bounding_wadd) + "px";
-					}
-					if (y === "top") {
-						top = -(margin + bounding_hadd) + "px";
-					} else if (y === "middle") {
-						// TODO: add buttons vertically, not horizontally
-						top = "calc(50%)";
-						topbarel.setAttribute("data-imu-middle_y", "true");
-					} else if (y === "bottom") {
-						bottom = -(margin + bounding_hadd) + "px";
-					}
-					//console_log(left, right, top, bottom);
-					if (left)
-						set_important_style(topbarel, "left", left);
-					if (right)
-						set_important_style(topbarel, "right", right);
-					if (top)
-						set_important_style(topbarel, "top", top);
-					if (bottom)
-						set_important_style(topbarel, "bottom", bottom);
-					return topbarel;
-				};
-				var ui_visible = !!settings.mouseover_ui;
-				function create_ui(use_cached_gallery, hide_ui) {
-					for (var el_i = 0; el_i < ui_els.length; el_i++) {
-						var ui_el = ui_els[el_i];
-						ui_el.parentNode.removeChild(ui_el);
-					}
-					ui_els = [];
-					var emi = 14;
-					var em1 = emi + "px";
-					var emhalf = (emi / 2) + "px";
-					var gallerycount_fontsize = "13px";
-					var galleryinput_fontsize = "12px";
-					var img_boundingClientRect = img.getBoundingClientRect();
-					var css_fontcheck = "14px " + sans_serif_font;
-					var containers = {};
-					var container_metas = {
-						"top-left": ["left", "top"],
-						"top-middle": ["middle", "top"],
-						"top-right": ["right", "top"],
-						"left": ["left", "middle"],
-						"middle": ["middle", "middle"],
-						"right": ["right", "middle"],
-						"bottom-left": ["left", "bottom"],
-						"bottom-middle": ["middle", "bottom"],
-						"bottom-right": ["right", "bottom"]
-					};
-					obj_foreach(container_metas, function(key, data) {
-						containers[key] = create_containerel(data[0], data[1], emi, img_boundingClientRect);
-					});
-					var do_hide = !settings.mouseover_ui;
-					if (hide_ui) {
-						if (hide_ui === "toggle") {
-							do_hide = ui_visible;
-						} else if (hide_ui === true) {
-							do_hide = true;
-						}
-					}
-					if (do_hide) {
-						// Not sure why this is needed, but without it, clicking and dragging images doesn't work under Firefox (#78)
-						outerdiv.appendChild(containers["top-left"]);
-						ui_visible = false;
-						return;
-					} else {
-						ui_visible = true;
-					}
-					for (var pos in containers) {
-						opacity_hover(containers[pos]);
-						outerdiv.appendChild(containers[pos]);
-						ui_els.push(containers[pos]);
-					}
-					if (settings.mouseover_ui_closebtn) {
-						var closebtn = addbtn({
-							id: "closebtn",
-							// \xD7 = ×
-							text: "\xD7",
-							title: _("Close") + " (" + _("ESC") + ")",
-							action: function() {
-								resetpopups();
-							},
-							pos: "top-left",
-							containers: containers
-						});
-					}
-					;
-					var get_img_orientation = function() {
-						var rotation = get_popup_rotation();
-						if (Math_abs(rotation) % 180 == 90) {
-							return true;
-						} else {
-							return false;
-						}
-					};
-					var get_img_width = function() {
-						// This is needed if img isn't displayed yet
-						return img_boundingClientRect.width || imgw || img_naturalWidth;
-					};
-					var get_img_height = function() {
-						return img_boundingClientRect.height || imgh || img_naturalHeight;
-					};
-					// TODO: improve
-					var get_img_disp_height = function() {
-						if (get_img_orientation()) {
-							return get_img_width();
-						} else {
-							return get_img_height();
-						}
-					};
-					var prev_images = 0;
-					var next_images = 0;
-					var gallery_calcing = false;
-					function get_imagesizezoom_text() {
-						var text = "";
-						var rect_height = get_img_disp_height();
-						var zoom_percent = rect_height / img_naturalHeight;
-						var currentzoom = parse_int(zoom_percent * 100);
-						var filesize = 0;
-						if (newobj && newobj.filesize)
-							filesize = newobj.filesize;
-						var format = "";
-						var formatorder = [
-							{
-								value: img_naturalWidth + "x" + img_naturalHeight,
-								valid: settings.mouseover_ui_imagesize,
-							},
-							{
-								value: currentzoom + "%",
-								valid_paren: currentzoom !== 100 ? true : false,
-								valid: settings.mouseover_ui_zoomlevel
-							},
-							{
-								value: size_to_text(filesize),
-								valid: settings.mouseover_ui_filesize && filesize
-							}
-						];
-						var entries = [];
-						for (var i = 0; i < formatorder.length; i++) {
-							var our_format = formatorder[i];
-							if (!our_format.valid)
-								continue;
-							if (entries.length > 0 && our_format.valid_paren === false)
-								continue;
-							entries.push(our_format.value);
-						}
-						if (entries.length === 0)
-							return "";
-						text = entries[0];
-						if (entries.length > 1) {
-							text += " (" + entries.slice(1).join(", ") + ")";
-						}
-						return text;
-					}
-					if (settings.mouseover_ui_imagesize || settings.mouseover_ui_zoomlevel || settings.mouseover_ui_filesize) {
-						var imagesize = addbtn({
-							id: "sizeinfo",
-							text: get_imagesizezoom_text( /*100*/),
-							pos: "top-left",
-							containers: containers
-						});
-						set_important_style(imagesize, "font-size", gallerycount_fontsize);
-					}
-					var get_imagestotal_text = function() {
-						if (gallery_calcing) {
-							return _("Loading...");
-						}
-						if (prev_images + next_images > settings.mouseover_ui_gallerymax) {
-							return settings.mouseover_ui_gallerymax + "+";
-						} else {
-							return (prev_images + 1) + " / " + (prev_images + next_images + 1);
-						}
-					};
-					var update_imagestotal = function() {
-						if (images_total_input_active)
-							return;
-						if (prev_images + next_images > 0 || gallery_calcing) {
-							set_important_style(images_total, "display", "inline-block");
-							images_total.innerText = get_imagestotal_text();
-						} else {
-							set_important_style(images_total, "display", "none");
-						}
-					};
-					var imagestotal_input_enable = function() {
-						images_total_input_active = true;
-						editing_text = true;
-						images_total.innerText = "";
-						set_important_style(images_total_input, "display", "initial");
-						images_total_input.value = prev_images + 1;
-						images_total.setAttribute("data-btn-noaction", true);
-						images_total.appendChild(images_total_input);
-						// https://stackoverflow.com/a/19498477
-						set_timeout(function() {
-							images_total_input.select();
-							images_total_input.setSelectionRange(0, images_total_input.value.length);
-						}, 100);
-					};
-					var imagestotal_input_disable = function() {
-						editing_text = false;
-						if (!images_total_input_active)
-							return;
-						set_important_style(images_total_input, "display", "none");
-						images_total.removeChild(images_total_input);
-						images_total.removeAttribute("data-btn-noaction");
-						images_total_input_active = false;
-						update_imagestotal();
-					};
-					var popup_width = (popupshown && outerdiv.clientWidth) || imgw;
-					if (settings.mouseover_enable_gallery && settings.mouseover_ui_gallerycounter) {
-						var images_total = addbtn({
-							id: "gallerycounter",
-							text: get_imagestotal_text(),
-							action: imagestotal_input_enable,
-							pos: "top-left",
-							containers: containers
-						});
-						set_important_style(images_total, "font-size", gallerycount_fontsize);
-						set_important_style(images_total, "display", "none");
-						var images_total_input = document_createElement("input");
-						var images_total_input_active = false;
-						set_el_all_initial(images_total_input);
-						set_important_style(images_total_input, "display", "none");
-						set_important_style(images_total_input, "background-color", "white");
-						set_important_style(images_total_input, "color", "black");
-						set_important_style(images_total_input, "font-family", sans_serif_font);
-						set_important_style(images_total_input, "font-size", galleryinput_fontsize);
-						set_important_style(images_total_input, "padding", "1px");
-						set_important_style(images_total_input, "padding-left", "2px");
-						set_important_style(images_total_input, "width", "5em");
-						our_addEventListener(images_total_input, "mouseout", imagestotal_input_disable);
-						our_addEventListener(images_total_input, "keydown", function(e) {
-							if (e.which === 13) { // enter
-								var parsednum = images_total_input.value.replace(/\s+/g, "");
-								if (/^[0-9]+$/.test(parsednum)) {
-									parsednum = parseInt(parsednum);
-									trigger_gallery(parsednum - (prev_images + 1));
-								}
-								imagestotal_input_disable();
-								e.stopPropagation();
-								e.preventDefault();
-								return false;
-							}
-						}, true);
-					}
-					if (settings.mouseover_ui_optionsbtn) {
-						// \u2699 = ⚙
-						var optionsbtn = addbtn({
-							id: "optionsbtn",
-							text: "\u2699",
-							title: _("Options"),
-							action: get_options_page(),
-							pos: "top-left",
-							containers: containers
-						});
-					}
-					if (settings.mouseover_ui_downloadbtn) {
-						// \u2193 = ↓
-						// \ud83e\udc6b = 🡫
-						// \uD83E\uDC47 = 🡇
-						var download_glyphs = ["\uD83E\uDC47", "\ud83e\udc6b", "\u2193"];
-						var download_glyph = get_safe_glyph(css_fontcheck, download_glyphs);
-						var downloadbtn = addbtn({
-							id: "downloadbtn",
-							text: download_glyph,
-							title: _("Download") + " (" + get_trigger_key_text(settings.mouseover_download_key) + ")",
-							action: { type: "download" },
-							pos: "top-left",
-							containers: containers
-						});
-					}
-					if (settings.mouseover_ui_download_gallery_btn) {
-						// \u21CA = ⇊
-						// \u2b87 = ⮇
-						var downloadbtn = addbtn({
-							id: "gallerydlbtn",
-							text: "\u21CA",
-							title: _("Gallery Download") + " (" + get_trigger_key_text(settings.mouseover_gallery_download_key) + ")",
-							action: { type: "download_gallery" },
-							pos: "top-left",
-							containers: containers
-						});
-					}
-					if (settings.mouseover_ui_rotationbtns) {
-						var get_rotate_title = function(leftright) {
-							var btn_name = leftright === "left" ? "Rotate Left" : "Rotate Right";
-							return _(btn_name) + " (" + get_trigger_key_text(settings["mouseover_rotate_" + leftright + "_key"]) + ")";
-						};
-						// \u21B6 = ↶
-						var rotateleftbtn = addbtn({
-							id: "rotleftbtn",
-							text: "\u21B6",
-							title: get_rotate_title("left"),
-							action: { type: "rotate_left" },
-							pos: "top-left",
-							containers: containers
-						});
-						// \u21B7 = ↷
-						var rotaterightbtn = addbtn({
-							id: "rotrightbtn",
-							text: "\u21B7",
-							title: get_rotate_title("right"),
-							action: { type: "rotate_right" },
-							pos: "top-left",
-							containers: containers
-						});
-					}
-					if (settings.mouseover_ui_caption) {
-						var caption = get_caption(newobj, popup_el);
-						var caption_link_page = settings.mouseover_ui_caption_link_page && newobj.extra && newobj.extra.page;
-						if (!caption && caption_link_page) {
-							caption = "(original page)";
-						}
-						if (caption) {
-							var btntext = caption;
-							if (settings.mouseover_ui_wrap_caption) {
-								// /10 is arbitrary, but seems to work well
-								// TODO: make top-left dynamic
-								var chars = parseInt(Math_max(10, Math_min(60, (popup_width - containers["top-left"].clientWidth) / 10)));
-								btntext = {
-									truncated: truncate_with_ellipsis(caption, chars),
-									full: caption,
-									link_underline: caption_link_page
-								};
-							}
-							var caption_link = null;
-							if (caption_link_page) {
-								caption_link = newobj.extra.page;
-							}
-							var caption_btn = addbtn({
-								id: "caption",
-								text: btntext,
-								title: caption,
-								action: caption_link,
-								pos: "top-left",
-								containers: containers
 							});
-						}
-					}
-					var add_lrhover = function(isleft, btnel, action, title) {
-						if (!settings.mouseover_enable_gallery || popup_width < 200)
-							return;
-						var img_height = get_img_disp_height();
-						var bottom_heights = 0;
-						var top_heights = 20;
-						if (is_stream) {
-							bottom_heights = 60;
-						}
-						if (img_height < 100) {
-							top_heights = 0;
-						}
-						var lrheight = img_height - top_heights - bottom_heights;
-						if (lrheight < 10)
-							return;
-						var lrhover = document_createElement("div");
-						set_el_all_initial(lrhover);
-						lrhover.title = title;
-						if (isleft) {
-							lrhover.style.left = "0em";
-						} else {
-							lrhover.style.right = "0em";
-						}
-						lrhover.style.top = top_heights + "px";
-						lrhover.style.height = lrheight + "px";
-						lrhover.style.position = "absolute";
-						lrhover.style.width = "15%";
-						lrhover.style.maxWidth = "200px";
-						//lrhover.style.height = "100%";
-						lrhover.style.zIndex = maxzindex - 2;
-						lrhover.style.cursor = "pointer";
-						opacity_hover(lrhover, btnel, true);
-						our_addEventListener(lrhover, "click", function(e) {
-							if (dragged) {
-								return false;
-							}
-							estop(e);
-							action(e);
-							return false;
-						}, true);
-						outerdiv.appendChild(lrhover);
-						ui_els.push(lrhover);
-						return lrhover;
-					};
-					var add_leftright_gallery_button = function(leftright) {
-						if (!settings.mouseover_enable_gallery || !settings.mouseover_ui_gallerybtns)
-							return;
-						var action = function() {
-							return lraction(leftright);
-						};
-						var name = leftright ? "Next" : "Previous";
-						// \u2190 = ←
-						// \ud83e\udc50 = 🡐
-						var left_glyphs = ["\ud83e\udc50", "\u2190"];
-						// \u2192 = →
-						// \ud83e\udc52 = 🡒
-						var right_glyphs = ["\ud83e\udc52", "\u2192"];
-						var lr_glyphs = leftright ? right_glyphs : left_glyphs;
-						var icon = get_safe_glyph(css_fontcheck, lr_glyphs);
-						var keybinding = leftright ? settings.mouseover_gallery_next_key : settings.mouseover_gallery_prev_key;
-						var keybinding_text = get_trigger_key_text(keybinding);
-						var title = _(name) + " (" + _(keybinding_text) + ")";
-						var id = "gallery";
-						id += leftright ? "next" : "prev";
-						id += "btn";
-						var btn = addbtn({
-							id: id,
-							text: icon,
-							title: title,
-							action: action,
-							containers: containers,
-							pos: leftright ? "right" : "left"
 						});
-						/*btn.style.top = "calc(50% - 7px - " + emhalf + ")";
-						if (!leftright) {
-							btn.style.left = "-" + em1;
-						} else {
-							btn.style.left = "initial";
-							btn.style.right = "-" + em1;
-						}*/
-						//outerdiv.appendChild(btn);
-						//ui_els.push(btn);
-						add_lrhover(!leftright, btn, action, title);
-						if (settings.mouseover_enable_gallery && settings.mouseover_ui_gallerycounter) {
-							if (use_cached_gallery) {
-								if (!leftright) {
-									prev_images = cached_previmages;
-								} else {
-									next_images = cached_nextimages;
+					}
+					function lraction(isright, is_scroll) {
+						return __awaiter(this, void 0, void 0, function() {
+							var changed;
+							return __generator(this, function(_a) {
+								switch (_a.label) {
+									case 0: return [4 /*yield*/, trigger_gallery(isright ? 1 : -1)];
+									case 1:
+										changed = _a.sent();
+										if (!!changed) return [3 /*break*/, 3];
+										if (is_scroll) {
+											if (isright && settings.scroll_past_gallery_end_to_close) {
+												resetpopups();
+												return [2 /*return*/];
+											}
+										}
+										return [4 /*yield*/, create_ui()];
+									case 2:
+										_a.sent();
+										_a.label = 3;
+									case 3: return [2 /*return*/];
 								}
-								update_imagestotal();
-							} else {
-								gallery_calcing = true;
-								count_gallery(leftright, void 0, true, void 0, void 0, function(total) {
-									gallery_calcing = false;
-									if (!leftright) {
-										prev_images = total;
-										cached_previmages = prev_images;
-									} else {
-										next_images = total;
-										cached_nextimages = next_images;
+							});
+						});
+					}
+					function create_ui(use_cached_gallery, hide_ui) {
+						return __awaiter(this, void 0, void 0, function() {
+							function get_imagesizezoom_text() {
+								var text = "";
+								var rect_height = get_img_disp_height();
+								var zoom_percent = rect_height / img_naturalHeight;
+								var currentzoom = parse_int(zoom_percent * 100);
+								var filesize = 0;
+								if (newobj && newobj.filesize)
+									filesize = newobj.filesize;
+								var format = "";
+								var formatorder = [
+									{
+										value: img_naturalWidth + "x" + img_naturalHeight,
+										valid: settings.mouseover_ui_imagesize,
+									},
+									{
+										value: currentzoom + "%",
+										valid_paren: currentzoom !== 100 ? true : false,
+										valid: settings.mouseover_ui_zoomlevel
+									},
+									{
+										value: size_to_text(filesize),
+										valid: settings.mouseover_ui_filesize && filesize
 									}
-									update_imagestotal();
-								});
-								set_timeout(update_imagestotal, 1);
-							}
-						}
-					};
-					var add_leftright_gallery_button_if_valid = function(leftright) {
-						if (!settings.mouseover_enable_gallery)
-							return;
-						is_nextprev_valid(leftright, function(valid) {
-							if (valid) {
-								add_leftright_gallery_button(leftright);
-							}
-						});
-					};
-					add_leftright_gallery_button_if_valid(false);
-					add_leftright_gallery_button_if_valid(true);
-				}
-				popup_createui_func = create_ui;
-				fill_obj_filename(newobj, url, data.data.respdata, popup_el);
-				create_ui();
-				var a = document_createElement("a");
-				set_el_all_initial(a);
-				if (add_link) {
-					a.style.cursor = "pointer";
-					//a.addEventListener("click", function(e) {
-					a.onclick = function(e) {
-						e.stopPropagation();
-						e.stopImmediatePropagation();
-						return true;
-					};
-				}
-				a.style.setProperty("vertical-align", "bottom", "important");
-				a.style.setProperty("display", "block", "important");
-				var update_popup_clickthrough = function(clickthrough) {
-					var value = "none";
-					if (!clickthrough)
-						value = "initial";
-					set_important_style(a, "pointer-events", value);
-					set_important_style(img, "pointer-events", value);
-					set_important_style(div, "pointer-events", value);
-					set_important_style(outerdiv, "pointer-events", value);
-				};
-				if (settings.mouseover_clickthrough)
-					update_popup_clickthrough(true);
-				popup_hold_func = function() {
-					var enable_mask_styles = get_single_setting("mouseover_enable_mask_styles2");
-					if (popup_hold) {
-						if (settings.mouseover_hold_unclickthrough) {
-							update_popup_clickthrough(false);
-						}
-						if (mask_el && (enable_mask_styles === "always" || enable_mask_styles === "hold")) {
-							mask_el.style.opacity = old_mask_opacity;
-						}
-					} else {
-						if (settings.mouseover_clickthrough) {
-							update_popup_clickthrough(true);
-						} else {
-							update_popup_clickthrough(false);
-						}
-						if (mask_el && (enable_mask_styles === "hold" || enable_mask_styles === "never")) {
-							mask_el.style.opacity = 0;
-						}
-					}
-				};
-				if (add_link) {
-					a.href = url;
-					// set this here instead of outside this block for gelbooru: https://github.com/qsniyg/maxurl/issues/430
-					a.target = "_blank";
-					if (settings.mouseover_download) {
-						if (false) {
-							a.href = img.src;
-							if (newobj.filename.length > 0) {
-								a.setAttribute("download", newobj.filename);
-							} else {
-								var attr = document.createAttribute("download");
-								a.setAttributeNode(attr);
-							}
-						} else {
-							a.href = "#"; // fixme: is this really required? this prevents it from right click->copy link location, etc.
-							our_addEventListener(a, "click", function(e) {
-								if (dragged)
-									return;
-								download_popup_media();
-								e.preventDefault();
-								e.stopPropagation();
-								return false;
-							}, true);
-						}
-					}
-				} else {
-					var click_close = false;
-					if (!is_stream && settings.mouseover_click_image_close) {
-						click_close = true;
-					} else if (is_video && settings.mouseover_click_video_close) {
-						click_close = true;
-					}
-					// TODO: what about audio?
-					if (click_close) {
-						our_addEventListener(a, "click", function(e) {
-							if (dragged)
-								return;
-							resetpopups();
-							e.preventDefault();
-							e.stopPropagation();
-							return false;
-						});
-					}
-				}
-				a.appendChild(img);
-				div.appendChild(a);
-				popup_hidecursor_timer = null;
-				var orig_a_cursor = a.style.cursor;
-				var orig_img_cursor = img.style.cursor;
-				popup_hidecursor_func = function(hide) {
-					popup_cursorjitterX = mouseX;
-					popup_cursorjitterY = mouseY;
-					if (settings.mouseover_hide_cursor && hide) {
-						a.style.cursor = "none";
-						img.style.cursor = "none";
-					} else {
-						if (popup_hidecursor_timer) {
-							clear_timeout(popup_hidecursor_timer);
-							popup_hidecursor_timer = null;
-						}
-						a.style.cursor = orig_a_cursor;
-						img.style.cursor = orig_img_cursor;
-					}
-				};
-				popup_cursorjitterX = Infinity;
-				popup_cursorjitterY = Infinity;
-				if (settings.mouseover_hide_cursor && settings.mouseover_hide_cursor_after <= 0) {
-					popup_hidecursor_func(true);
-				}
-				div.onmouseover = div.onmousemove = function(e) {
-					if ((Math_abs(mouseX - popup_cursorjitterX) < settings.mouseover_mouse_inactivity_jitter) &&
-						(Math_abs(mouseY - popup_cursorjitterY) < settings.mouseover_mouse_inactivity_jitter)) {
-						return;
-					}
-					if (settings.mouseover_hide_cursor_after > 0 || !settings.mouseover_hide_cursor) {
-						popup_hidecursor_func(false);
-						if (settings.mouseover_hide_cursor) {
-							popup_hidecursor_timer = set_timeout(function() {
-								popup_hidecursor_func(true);
-							}, settings.mouseover_hide_cursor_after);
-						}
-					}
-				};
-				function startdrag(e) {
-					dragstart = true;
-					dragged = false;
-					dragstartX = e.clientX;
-					dragstartY = e.clientY;
-					dragoffsetX = dragstartX - parseFloat(outerdiv.style.left);
-					dragoffsetY = dragstartY - parseFloat(outerdiv.style.top);
-					if (e.type === "pointerdown" && "pointerId" in e) {
-						try {
-							a.setPointerCapture(e.pointerId);
-						} catch (e) {
-							console.error(e);
-						}
-					}
-				}
-				// TODO: allow this to be live-reloaded
-				if (get_single_setting("mouseover_pan_behavior") === "drag") {
-					if (is_stream) {
-						img.onseeking = function(e) {
-							seekstart = true;
-						};
-						img.onseeked = function(e) {
-							seekstart = false;
-						};
-					}
-					div.ondragstart = a.ondragstart = img.ondragstart = function(e) {
-						if (seekstart)
-							return;
-						//dragstart = true;
-						//dragged = false;
-						startdrag(e);
-						//e.stopPropagation();
-						estop(e);
-						return false;
-					};
-					//div.ondrop = estop;
-					div.onmousedown = div.onpointerdown = a.onmousedown = a.onpointerdown = function(e) {
-						//console_log("(div,a).mousedown", e);
-						if (btndown || e.button !== 0 || seekstart)
-							return;
-						//dragstart = true;
-						//dragged = false;
-						startdrag(e);
-						e.preventDefault();
-						estop(e);
-						return false;
-					};
-					img.onmousedown = img.onpointerdown = function(e) {
-						//console_log("img.onmousedown", e);
-						if (btndown || e.button !== 0 || seekstart)
-							return;
-						//dragstart = true;
-						//dragged = false;
-						startdrag(e);
-						estop(e);
-						return true;
-					};
-					a.onclick = function(e) {
-						//console_log("a.onclick", e);
-						dragstart = false;
-						if (dragged) {
-							estop(e);
-							dragged = false;
-							return false;
-						}
-						e.stopPropagation();
-						e.stopImmediatePropagation();
-						return true;
-					};
-					div.onmouseup = div.onpointerup = div.onclick = a.onmouseup = a.onpointerup = /*a.onclick =*/ function(e) {
-						//console_log("(div,a).mouseup", e);
-						dragstart = false;
-						if (dragged) {
-							//estop(e);
-							return false;
-						}
-						e.stopPropagation();
-						e.stopImmediatePropagation();
-						return true;
-					};
-					// Enabling this makes buttons not work after clicking the link
-					//div.addEventListener("click", div.onclick, true);
-					//a.addEventListener("click", a.onclick, true);
-					img.onmouseup = img.onpointerup = img.onclick = function(e) {
-						//console_log("img.mouseup", e);
-						dragstart = false;
-						//estop(e);
-						return true;
-					};
-					if (is_video) {
-						img.onclick = function(e) {
-							if (img.controls)
-								return;
-							if (!dragged) {
-								if (!img.paused) {
-									img.pause();
-								} else {
-									play_video(img);
+								];
+								var entries = [];
+								for (var i = 0; i < formatorder.length; i++) {
+									var our_format = formatorder[i];
+									if (!our_format.valid)
+										continue;
+									if (entries.length > 0 && our_format.valid_paren === false)
+										continue;
+									entries.push(our_format.value);
 								}
-							}
-							//console_log("img.mouseup", e);
-							dragstart = false;
-							//estop(e);
-							return true;
-						};
-					}
-				}
-				var currentmode = initial_zoom_behavior;
-				if (currentmode === "fill")
-					currentmode = "fit";
-				popup_zoom_func = function(zoom_mode, zoomdir, x, y, zoom_out_to_close) {
-					var changed = false;
-					var popup_left = parseFloat(outerdiv.style.left);
-					var popup_top = parseFloat(outerdiv.style.top);
-					var popup_width = outerdiv.clientWidth;
-					var popup_height = outerdiv.clientHeight;
-					update_vwh();
-					if (x === void 0)
-						x = "center";
-					if (y === void 0)
-						y = "center";
-					// used by pagemiddle, determines the final desired global position
-					var x_moveto = null;
-					var y_moveto = null;
-					if (zoomdir > 0) {
-						var zoomout_mode = get_single_setting("scroll_zoomout_pagemiddle");
-						if (zoomout_mode === "always") {
-							x = "pagemiddle";
-							y = "pagemiddle";
-						} else if (zoomout_mode === "viewport") {
-							if (popup_width < vw)
-								x = "pagemiddle";
-							if (popup_height < vh)
-								y = "pagemiddle";
-						}
-					}
-					// TODO: if mouse is within the popup, use the mouse's coordinates instead
-					//   This will have to check the zoom_origin setting.
-					if (x === "center" || x === "pagemiddle") {
-						if (x === "pagemiddle")
-							x_moveto = vw / 2;
-						var visible_left = Math_max(popup_left, 0);
-						var visible_right = Math_min(visible_left + popup_width, vw);
-						// get the middle of the visible portion of the popup
-						x = visible_left + (visible_right - visible_left) / 2;
-					} else {
-						// ensure it's clamped, e.g. when scrolling on the document instead of the popup
-						if (x < popup_left)
-							x = popup_left;
-						else if (x > popup_left + popup_width)
-							x = popup_left + popup_width;
-					}
-					if (y === "center" || y === "pagemiddle") {
-						if (y === "pagemiddle")
-							y_moveto = vh / 2;
-						var visible_top = Math_max(popup_top, 0);
-						var visible_bottom = Math_min(visible_top + popup_height, vh);
-						y = visible_top + (visible_bottom - visible_top) / 2;
-					} else {
-						if (y < popup_top)
-							y = popup_top;
-						else if (y > popup_top + popup_height)
-							y = popup_top + popup_height;
-					}
-					var offsetX = x - popup_left;
-					var offsetY = y - popup_top;
-					var percentX = offsetX / popup_width;
-					var percentY = offsetY / popup_height;
-					if (zoom_mode === "fitfull") {
-						if (zoom_out_to_close && currentmode === "fit" && zoomdir > 0) {
-							resetpopups();
-							return false;
-						}
-						if (zoomdir > 0 && currentmode !== "fit") {
-							imgh = img_naturalHeight;
-							imgw = img_naturalWidth;
-							calc_imghw_for_fit();
-							var oldwidth = parseFloat(img.style.width);
-							var oldheight = parseFloat(img.style.height);
-							set_popup_width(imgw, vw);
-							set_popup_height(imgh, vh);
-							if (zoom_out_to_close && parseFloat(img.style.width) === oldwidth && parseFloat(img.style.height) === oldheight) {
-								resetpopups();
-								return false;
-							}
-							currentmode = "fit";
-							changed = true;
-						} else if (zoomdir < 0 && currentmode !== "full") {
-							set_popup_width(img_naturalWidth, "initial");
-							set_popup_height(img_naturalHeight, "initial");
-							imgw = img_naturalWidth;
-							imgh = img_naturalHeight;
-							currentmode = "full";
-							changed = true;
-						}
-					} else if (zoom_mode === "incremental") {
-						var imgwidth = img.clientWidth;
-						var imgheight = img.clientHeight;
-						var mult = 1;
-						if (imgwidth < img_naturalWidth) {
-							mult = img_naturalWidth / imgwidth;
-						} else {
-							mult = imgwidth / img_naturalWidth;
-						}
-						var increment = settings.scroll_incremental_mult - 1;
-						mult = Math_round(mult / increment);
-						mult *= increment;
-						if (imgwidth < img_naturalWidth) {
-							if (mult !== 0)
-								mult = 1 / mult;
-						}
-						if (zoomdir > 0) {
-							mult /= 1 + increment;
-						} else {
-							mult *= 1 + increment;
-						}
-						imgwidth = img_naturalWidth * mult;
-						imgheight = img_naturalHeight * mult;
-						var too_small = zoomdir > 0 && (imgwidth < 64 || imgheight < 64);
-						var too_big = zoomdir < 0 && (imgwidth > img_naturalWidth * 512 || imgheight > img_naturalHeight * 512);
-						if (too_small || too_big) {
-							if (zoom_out_to_close && too_small)
-								resetpopups();
-							return false;
-						}
-						imgw = imgwidth;
-						imgh = imgheight;
-						set_popup_width(imgwidth);
-						set_popup_height(imgheight);
-						changed = true;
-					}
-					if (!changed)
-						return false;
-					var imgwidth = outerdiv.clientWidth;
-					var imgheight = outerdiv.clientHeight;
-					var current_zoom = ((imgwidth / img_naturalWidth) + (imgheight / img_naturalHeight)) / 2;
-					if (current_zoom) {
-						popup_last_zoom = current_zoom;
-					}
-					var newx, newy;
-					var zoom_lerp = function(wantedpos, origpos, viewport) {
-						var change = wantedpos - origpos;
-						var maxchange = Math_max(100, viewport / 10); // arbitrary numbers
-						if (change < 0) {
-							change = -Math_min(maxchange, -change);
-						} else {
-							change = Math_min(maxchange, change);
-						}
-						return origpos + change;
-					};
-					if (true || (imgwidth <= vw && imgheight <= vh) || zoom_mode === "incremental") {
-						// centers wanted region to pointer
-						newx = (x - percentX * imgwidth);
-						if (x_moveto !== null) {
-							newx = zoom_lerp(x_moveto - imgwidth / 2, newx, vw);
-						}
-						newy = (y - percentY * imgheight);
-						if (y_moveto !== null) {
-							newy = zoom_lerp(y_moveto - imgheight / 2, newy, vh);
-						}
-					} else if (imgwidth > vw || imgheight > vh) {
-						// centers wanted region to center of screen
-						newx = (vw / 2) - percentX * imgwidth;
-						var endx = newx + imgwidth;
-						if (newx > border_thresh && endx > (vw - border_thresh))
-							newx = Math_max(border_thresh, (vw + border_thresh) - imgwidth);
-						if (newx < border_thresh && endx < (vw - border_thresh))
-							newx = Math_min(border_thresh, (vw + border_thresh) - imgwidth);
-						newy = (vh / 2) - percentY * imgheight;
-						var endy = newy + imgheight;
-						if (newy > border_thresh && endy > (vh - border_thresh))
-							newy = Math_max(border_thresh, (vh + border_thresh) - imgheight);
-						if (newy < border_thresh && endy < (vh - border_thresh))
-							newy = Math_min(border_thresh, (vh + border_thresh) - imgheight);
-					}
-					// fitfull only because incremental is under user control
-					if (zoom_mode === "fitfull" && imgwidth <= vw && imgheight <= vh) {
-						newx = Math_max(newx, border_thresh);
-						if (newx + imgwidth > (vw - border_thresh)) {
-							newx = (vw + border_thresh) - imgwidth;
-						}
-						newy = Math_max(newy, border_thresh);
-						if (newy + imgheight > (vh - border_thresh)) {
-							newy = (vh + border_thresh) - imgheight;
-						}
-					}
-					//var lefttop = get_lefttopouter();
-					outerdiv.style.left = (newx /* - lefttop[0]*/) + "px";
-					outerdiv.style.top = (newy /* - lefttop[1]*/) + "px";
-					create_ui(true);
-					// The mouse could accidentally land outside the image in theory
-					mouse_in_image_yet = false;
-					return false;
-				};
-				outerdiv.onwheel = popup_wheel_cb = function(e, is_document) {
-					var handledx = false;
-					var handledy = false;
-					var handle_seek = function(xy) {
-						var isright = false;
-						if (xy) {
-							if (e.deltaX < 0)
-								isright = false;
-							else if (e.deltaX > 0)
-								isright = true;
-							else
-								return;
-						} else {
-							if (e.deltaY < 0)
-								isright = false;
-							else if (e.deltaY > 0)
-								isright = true;
-							else
-								return;
-							if (settings.mouseover_scrolly_video_invert)
-								isright = !isright;
-						}
-						seek_popup_video(!isright);
-						estop_pd(e);
-						return true;
-					};
-					var actionx = true;
-					var actiony = true;
-					if (is_stream) {
-						var video_scrollx = get_single_setting("mouseover_scrollx_video_behavior");
-						var video_scrolly = get_single_setting("mouseover_scrolly_video_behavior");
-						if (!handledx && video_scrollx !== "default") {
-							if (video_scrollx === "seek") {
-								if (handle_seek(true)) {
-									handledx = true;
+								if (entries.length === 0)
+									return "";
+								text = entries[0];
+								if (entries.length > 1) {
+									text += " (" + entries.slice(1).join(", ") + ")";
 								}
-							} else if (video_scrollx === "nothing") {
-								actionx = false;
+								return text;
 							}
-						}
-						if (!handledy && video_scrolly !== "default") {
-							if (video_scrolly === "seek") {
-								if (handle_seek(false)) {
-									handledy = true;
+							var el_i, ui_el, emi, em1, emhalf, gallerycount_fontsize, galleryinput_fontsize, img_boundingClientRect, css_fontcheck, containers, container_metas, do_hide, pos, closebtn, get_img_orientation, get_img_width, get_img_height, get_img_disp_height, prev_images, next_images, gallery_calcing, imagesize, get_imagestotal_text, update_imagestotal, imagestotal_input_enable, imagestotal_input_disable, popup_width, images_total, images_total_input, images_total_input_active, optionsbtn, download_glyphs, download_glyph, downloadbtn, downloadbtn, get_rotate_title, rotateleftbtn, rotaterightbtn, caption, caption_link_page, btntext, chars, caption_link, caption_btn, add_lrhover, add_leftright_gallery_button, add_leftright_gallery_button_if_valid;
+							return __generator(this, function(_a) {
+								switch (_a.label) {
+									case 0:
+										for (el_i = 0; el_i < ui_els.length; el_i++) {
+											ui_el = ui_els[el_i];
+											ui_el.parentNode.removeChild(ui_el);
+										}
+										ui_els = [];
+										emi = 14;
+										em1 = emi + "px";
+										emhalf = (emi / 2) + "px";
+										gallerycount_fontsize = "13px";
+										galleryinput_fontsize = "12px";
+										img_boundingClientRect = img.getBoundingClientRect();
+										css_fontcheck = "14px " + sans_serif_font;
+										containers = {};
+										container_metas = {
+											"top-left": ["left", "top"],
+											"top-middle": ["middle", "top"],
+											"top-right": ["right", "top"],
+											"left": ["left", "middle"],
+											"middle": ["middle", "middle"],
+											"right": ["right", "middle"],
+											"bottom-left": ["left", "bottom"],
+											"bottom-middle": ["middle", "bottom"],
+											"bottom-right": ["right", "bottom"]
+										};
+										obj_foreach(container_metas, function(key, data) {
+											containers[key] = create_containerel(data[0], data[1], emi, img_boundingClientRect);
+										});
+										do_hide = !settings.mouseover_ui;
+										if (hide_ui) {
+											if (hide_ui === "toggle") {
+												do_hide = ui_visible;
+											} else if (hide_ui === true) {
+												do_hide = true;
+											}
+										}
+										if (do_hide) {
+											// Not sure why this is needed, but without it, clicking and dragging images doesn't work under Firefox (#78)
+											outerdiv.appendChild(containers["top-left"]);
+											ui_visible = false;
+											return [2 /*return*/];
+										} else {
+											ui_visible = true;
+										}
+										for (pos in containers) {
+											opacity_hover(containers[pos]);
+											outerdiv.appendChild(containers[pos]);
+											ui_els.push(containers[pos]);
+										}
+										if (!settings.mouseover_ui_closebtn) return [3 /*break*/, 2];
+										return [4 /*yield*/, addbtn({
+												id: "closebtn",
+												// \xD7 = ×
+												text: "\xD7",
+												title: _("Close") + " (" + _("ESC") + ")",
+												action: function() {
+													resetpopups();
+												},
+												pos: "top-left",
+												containers: containers
+											})];
+									case 1:
+										closebtn = _a.sent();
+										_a.label = 2;
+									case 2:
+										;
+										get_img_orientation = function() {
+											var rotation = get_popup_rotation();
+											if (Math_abs(rotation) % 180 == 90) {
+												return true;
+											} else {
+												return false;
+											}
+										};
+										get_img_width = function() {
+											// This is needed if img isn't displayed yet
+											return img_boundingClientRect.width || imgw || img_naturalWidth;
+										};
+										get_img_height = function() {
+											return img_boundingClientRect.height || imgh || img_naturalHeight;
+										};
+										get_img_disp_height = function() {
+											if (get_img_orientation()) {
+												return get_img_width();
+											} else {
+												return get_img_height();
+											}
+										};
+										prev_images = 0;
+										next_images = 0;
+										gallery_calcing = false;
+										if (!(settings.mouseover_ui_imagesize || settings.mouseover_ui_zoomlevel || settings.mouseover_ui_filesize)) return [3 /*break*/, 4];
+										return [4 /*yield*/, addbtn({
+												id: "sizeinfo",
+												text: get_imagesizezoom_text( /*100*/),
+												pos: "top-left",
+												containers: containers
+											})];
+									case 3:
+										imagesize = _a.sent();
+										set_important_style(imagesize, "font-size", gallerycount_fontsize);
+										_a.label = 4;
+									case 4:
+										get_imagestotal_text = function() {
+											if (gallery_calcing) {
+												return _("Loading...");
+											}
+											if (prev_images + next_images > settings.mouseover_ui_gallerymax) {
+												return settings.mouseover_ui_gallerymax + "+";
+											} else {
+												return (prev_images + 1) + " / " + (prev_images + next_images + 1);
+											}
+										};
+										update_imagestotal = function() {
+											if (images_total_input_active)
+												return;
+											if (prev_images + next_images > 0 || gallery_calcing) {
+												set_important_style(images_total, "display", "inline-block");
+												images_total.innerText = get_imagestotal_text();
+											} else {
+												set_important_style(images_total, "display", "none");
+											}
+										};
+										imagestotal_input_enable = function() {
+											images_total_input_active = true;
+											editing_text = true;
+											images_total.innerText = "";
+											set_important_style(images_total_input, "display", "initial");
+											images_total_input.value = prev_images + 1;
+											images_total.setAttribute("data-btn-noaction", true);
+											images_total.appendChild(images_total_input);
+											// https://stackoverflow.com/a/19498477
+											set_timeout(function() {
+												images_total_input.select();
+												images_total_input.setSelectionRange(0, images_total_input.value.length);
+											}, 100);
+										};
+										imagestotal_input_disable = function() {
+											editing_text = false;
+											if (!images_total_input_active)
+												return;
+											set_important_style(images_total_input, "display", "none");
+											images_total.removeChild(images_total_input);
+											images_total.removeAttribute("data-btn-noaction");
+											images_total_input_active = false;
+											update_imagestotal();
+										};
+										popup_width = (popupshown && outerdiv.clientWidth) || imgw;
+										if (!(settings.mouseover_enable_gallery && settings.mouseover_ui_gallerycounter)) return [3 /*break*/, 6];
+										return [4 /*yield*/, addbtn({
+												id: "gallerycounter",
+												text: get_imagestotal_text(),
+												action: imagestotal_input_enable,
+												pos: "top-left",
+												containers: containers
+											})];
+									case 5:
+										images_total = _a.sent();
+										set_important_style(images_total, "font-size", gallerycount_fontsize);
+										set_important_style(images_total, "display", "none");
+										images_total_input = document_createElement("input");
+										images_total_input_active = false;
+										set_el_all_initial(images_total_input);
+										set_important_style(images_total_input, "display", "none");
+										set_important_style(images_total_input, "background-color", "white");
+										set_important_style(images_total_input, "color", "black");
+										set_important_style(images_total_input, "font-family", sans_serif_font);
+										set_important_style(images_total_input, "font-size", galleryinput_fontsize);
+										set_important_style(images_total_input, "padding", "1px");
+										set_important_style(images_total_input, "padding-left", "2px");
+										set_important_style(images_total_input, "width", "5em");
+										our_addEventListener(images_total_input, "mouseout", imagestotal_input_disable);
+										our_addEventListener(images_total_input, "keydown", function(e) {
+											if (e.which === 13) { // enter
+												var parsednum = images_total_input.value.replace(/\s+/g, "");
+												if (/^[0-9]+$/.test(parsednum)) {
+													parsednum = parseInt(parsednum);
+													trigger_gallery(parsednum - (prev_images + 1));
+												}
+												imagestotal_input_disable();
+												e.stopPropagation();
+												e.preventDefault();
+												return false;
+											}
+										}, true);
+										_a.label = 6;
+									case 6:
+										if (!settings.mouseover_ui_optionsbtn) return [3 /*break*/, 8];
+										return [4 /*yield*/, addbtn({
+												id: "optionsbtn",
+												text: "\u2699",
+												title: _("Options"),
+												action: get_options_page(),
+												pos: "top-left",
+												containers: containers
+											})];
+									case 7:
+										optionsbtn = _a.sent();
+										_a.label = 8;
+									case 8:
+										if (!settings.mouseover_ui_downloadbtn) return [3 /*break*/, 10];
+										download_glyphs = ["\uD83E\uDC47", "\ud83e\udc6b", "\u2193"];
+										download_glyph = get_safe_glyph(css_fontcheck, download_glyphs);
+										return [4 /*yield*/, addbtn({
+												id: "downloadbtn",
+												text: download_glyph,
+												title: _("Download") + " (" + get_trigger_key_text(settings.mouseover_download_key) + ")",
+												action: { type: "download" },
+												pos: "top-left",
+												containers: containers
+											})];
+									case 9:
+										downloadbtn = _a.sent();
+										_a.label = 10;
+									case 10:
+										if (!settings.mouseover_ui_download_gallery_btn) return [3 /*break*/, 12];
+										return [4 /*yield*/, addbtn({
+												id: "gallerydlbtn",
+												text: "\u21CA",
+												title: _("Gallery Download") + " (" + get_trigger_key_text(settings.mouseover_gallery_download_key) + ")",
+												action: { type: "download_gallery" },
+												pos: "top-left",
+												containers: containers
+											})];
+									case 11:
+										downloadbtn = _a.sent();
+										_a.label = 12;
+									case 12:
+										if (!settings.mouseover_ui_rotationbtns) return [3 /*break*/, 15];
+										get_rotate_title = function(leftright) {
+											var btn_name = leftright === "left" ? "Rotate Left" : "Rotate Right";
+											return _(btn_name) + " (" + get_trigger_key_text(settings["mouseover_rotate_" + leftright + "_key"]) + ")";
+										};
+										return [4 /*yield*/, addbtn({
+												id: "rotleftbtn",
+												text: "\u21B6",
+												title: get_rotate_title("left"),
+												action: { type: "rotate_left" },
+												pos: "top-left",
+												containers: containers
+											})];
+									case 13:
+										rotateleftbtn = _a.sent();
+										return [4 /*yield*/, addbtn({
+												id: "rotrightbtn",
+												text: "\u21B7",
+												title: get_rotate_title("right"),
+												action: { type: "rotate_right" },
+												pos: "top-left",
+												containers: containers
+											})];
+									case 14:
+										rotaterightbtn = _a.sent();
+										_a.label = 15;
+									case 15:
+										if (!settings.mouseover_ui_caption) return [3 /*break*/, 17];
+										caption = get_caption(newobj, popup_el);
+										caption_link_page = settings.mouseover_ui_caption_link_page && newobj.extra && newobj.extra.page;
+										if (!caption && caption_link_page) {
+											caption = "(original page)";
+										}
+										if (!caption) return [3 /*break*/, 17];
+										btntext = caption;
+										if (settings.mouseover_ui_wrap_caption) {
+											chars = parseInt(Math_max(10, Math_min(60, (popup_width - containers["top-left"].clientWidth) / 10)));
+											btntext = {
+												truncated: truncate_with_ellipsis(caption, chars),
+												full: caption,
+												link_underline: caption_link_page
+											};
+										}
+										caption_link = null;
+										if (caption_link_page) {
+											caption_link = newobj.extra.page;
+										}
+										return [4 /*yield*/, addbtn({
+												id: "caption",
+												text: btntext,
+												title: caption,
+												action: caption_link,
+												pos: "top-left",
+												containers: containers
+											})];
+									case 16:
+										caption_btn = _a.sent();
+										_a.label = 17;
+									case 17:
+										add_lrhover = function(isleft, btnel, action, title) {
+											if (!settings.mouseover_enable_gallery || popup_width < 200)
+												return;
+											var img_height = get_img_disp_height();
+											var bottom_heights = 0;
+											var top_heights = 20;
+											if (is_stream) {
+												bottom_heights = 60;
+											}
+											if (img_height < 100) {
+												top_heights = 0;
+											}
+											var lrheight = img_height - top_heights - bottom_heights;
+											if (lrheight < 10)
+												return;
+											var lrhover = document_createElement("div");
+											set_el_all_initial(lrhover);
+											lrhover.title = title;
+											if (isleft) {
+												lrhover.style.left = "0em";
+											} else {
+												lrhover.style.right = "0em";
+											}
+											lrhover.style.top = top_heights + "px";
+											lrhover.style.height = lrheight + "px";
+											lrhover.style.position = "absolute";
+											lrhover.style.width = "15%";
+											lrhover.style.maxWidth = "200px";
+											//lrhover.style.height = "100%";
+											lrhover.style.zIndex = maxzindex - 2;
+											lrhover.style.cursor = "pointer";
+											opacity_hover(lrhover, btnel, true);
+											our_addEventListener(lrhover, "click", function(e) {
+												if (dragged) {
+													return false;
+												}
+												estop(e);
+												action(e);
+												return false;
+											}, true);
+											outerdiv.appendChild(lrhover);
+											ui_els.push(lrhover);
+											return lrhover;
+										};
+										add_leftright_gallery_button = function(leftright) {
+											return __awaiter(this, void 0, void 0, function() {
+												var action, name, left_glyphs, right_glyphs, lr_glyphs, icon, keybinding, keybinding_text, title, id, btn;
+												return __generator(this, function(_a) {
+													switch (_a.label) {
+														case 0:
+															if (!settings.mouseover_enable_gallery || !settings.mouseover_ui_gallerybtns)
+																return [2 /*return*/];
+															action = function() {
+																return lraction(leftright);
+															};
+															name = leftright ? "Next" : "Previous";
+															left_glyphs = ["\ud83e\udc50", "\u2190"];
+															right_glyphs = ["\ud83e\udc52", "\u2192"];
+															lr_glyphs = leftright ? right_glyphs : left_glyphs;
+															icon = get_safe_glyph(css_fontcheck, lr_glyphs);
+															keybinding = leftright ? settings.mouseover_gallery_next_key : settings.mouseover_gallery_prev_key;
+															keybinding_text = get_trigger_key_text(keybinding);
+															title = _(name) + " (" + _(keybinding_text) + ")";
+															id = "gallery";
+															id += leftright ? "next" : "prev";
+															id += "btn";
+															return [4 /*yield*/, addbtn({
+																	id: id,
+																	text: icon,
+																	title: title,
+																	action: action,
+																	containers: containers,
+																	pos: leftright ? "right" : "left"
+																})];
+														case 1:
+															btn = _a.sent();
+															/*btn.style.top = "calc(50% - 7px - " + emhalf + ")";
+															if (!leftright) {
+																btn.style.left = "-" + em1;
+															} else {
+																btn.style.left = "initial";
+																btn.style.right = "-" + em1;
+															}*/
+															//outerdiv.appendChild(btn);
+															//ui_els.push(btn);
+															add_lrhover(!leftright, btn, action, title);
+															if (settings.mouseover_enable_gallery && settings.mouseover_ui_gallerycounter) {
+																if (use_cached_gallery) {
+																	if (!leftright) {
+																		prev_images = cached_previmages;
+																	} else {
+																		next_images = cached_nextimages;
+																	}
+																	update_imagestotal();
+																} else {
+																	gallery_calcing = true;
+																	count_gallery_promise(leftright, void 0, true, void 0, void 0).then(function(result) {
+																		var total = result.count;
+																		gallery_calcing = false;
+																		if (!leftright) {
+																			prev_images = total;
+																			cached_previmages = prev_images;
+																		} else {
+																			next_images = total;
+																			cached_nextimages = next_images;
+																		}
+																		update_imagestotal();
+																	});
+																	set_timeout(update_imagestotal, 1);
+																}
+															}
+															return [2 /*return*/];
+													}
+												});
+											});
+										};
+										add_leftright_gallery_button_if_valid = function(leftright) {
+											return __awaiter(this, void 0, void 0, function() {
+												var valid;
+												return __generator(this, function(_a) {
+													switch (_a.label) {
+														case 0:
+															if (!settings.mouseover_enable_gallery)
+																return [2 /*return*/];
+															return [4 /*yield*/, is_nextprev_valid(leftright)];
+														case 1:
+															valid = _a.sent();
+															if (!valid) return [3 /*break*/, 3];
+															return [4 /*yield*/, add_leftright_gallery_button(leftright)];
+														case 2:
+															_a.sent();
+															_a.label = 3;
+														case 3: return [2 /*return*/];
+													}
+												});
+											});
+										};
+										return [4 /*yield*/, add_leftright_gallery_button_if_valid(false)];
+									case 18:
+										_a.sent();
+										return [4 /*yield*/, add_leftright_gallery_button_if_valid(true)];
+									case 19:
+										_a.sent();
+										return [2 /*return*/];
 								}
-							} else if (video_scrollx === "nothing") {
-								actiony = false;
-							}
-						}
-					}
-					var scrollx_behavior = get_single_setting("mouseover_scrollx_behavior");
-					var scrolly_behavior = get_single_setting("mouseover_scrolly_behavior");
-					if (popup_hold) {
-						var hold_scrollx_behavior = get_single_setting("mouseover_scrollx_hold_behavior");
-						var hold_scrolly_behavior = get_single_setting("mouseover_scrolly_hold_behavior");
-						if (hold_scrollx_behavior !== "default")
-							scrollx_behavior = hold_scrollx_behavior;
-						if (hold_scrolly_behavior !== "default")
-							scrolly_behavior = hold_scrolly_behavior;
-					}
-					var handle_gallery = function(xy) {
-						if (!settings.mouseover_enable_gallery)
-							return;
-						var isright = false;
-						if (xy) {
-							if (e.deltaX < 0)
-								isright = false;
-							else if (e.deltaX > 0)
-								isright = true;
-							else
-								return;
-						} else {
-							if (e.deltaY < 0)
-								isright = false;
-							else if (e.deltaY > 0)
-								isright = true;
-							else
-								return;
-						}
-						lraction(isright, true);
-						estop_pd(e);
-						return true;
-					};
-					if (actionx && !handledx) {
-						if (scrollx_behavior === "pan") {
-							outerdiv.style.left = (parseInt(outerdiv.style.left) + e.deltaX) + "px";
-							handledx = true;
-						} else if (scrollx_behavior === "gallery") {
-							if (handle_gallery(true)) {
-								return;
-							}
-							handledx = true;
-						}
-					}
-					if (actiony && !handledy) {
-						if (scrolly_behavior === "pan") {
-							outerdiv.style.top = (parseInt(outerdiv.style.top) + e.deltaY) + "px";
-							handledy = true;
-						} else if (scrolly_behavior === "gallery") {
-							if (handle_gallery(false)) {
-								return;
-							}
-							handledy = true;
-						}
-					}
-					if (handledy) {
-						estop_pd(e);
-						return false;
-					}
-					if (!actiony || scrolly_behavior !== "zoom" || e.deltaY === 0) {
-						return;
-					}
-					estop_pd(e);
-					var cursor_x = e.clientX;
-					var cursor_y = e.clientY;
-					if (get_single_setting("scroll_zoom_origin") === "center") {
-						cursor_x = "center";
-						cursor_y = "center";
-					}
-					var zoom_mode = get_single_setting("scroll_zoom_behavior");
-					if (popup_zoom_func(zoom_mode, e.deltaY, cursor_x, cursor_y, settings.zoom_out_to_close) === false)
-						return false;
-				};
-				if (mask_el) {
-					document.documentElement.appendChild(mask_el);
-				}
-				document.documentElement.appendChild(outerdiv);
-				removepopups();
-				check_image_ref(img);
-				// even if autoplay is enabled, if the element is cached, it won't play automatically
-				if (is_stream) {
-					if (autoplay_enabled()) {
-						play_video(img);
-					} else {
-						img.pause();
-						if (settings.mouseover_video_autoplay === "onactive") {
-							on_tabactive(function() {
-								img.play();
 							});
+						});
+					}
+					function startdrag(e) {
+						dragstart = true;
+						dragged = false;
+						dragstartX = e.clientX;
+						dragstartY = e.clientY;
+						dragoffsetX = dragstartX - parseFloat(outerdiv.style.left);
+						dragoffsetY = dragstartY - parseFloat(outerdiv.style.top);
+						if (settings.mouseover_drag_capture_pointer && e.type === "pointerdown" && "pointerId" in e) {
+							try {
+								a.setPointerCapture(e.pointerId);
+							} catch (e) {
+								console.error(e);
+							}
 						}
 					}
-				}
-				popups.push(outerdiv);
-				popupshown = true;
-				if (data.data.respdata && data.data.respdata.responseHeaders) {
-					var parsed_headers = headers_list_to_dict(parse_headers(data.data.respdata.responseHeaders));
-					if ("content-length" in parsed_headers) {
-						popup_contentlength = parseInt(parsed_headers["content-length"]) || 0;
-					}
-				}
-				//can_close_popup = [false, false];
-				// don't set [0] to false, in case "Keep popup open until" == Any/All and keys are released before popup opens
-				can_close_popup[1] = false;
-				// don't unhold if in gallery
-				if (!popup_el_automatic)
-					popup_hold = false;
-				mouse_in_image_yet = false;
-				delay_handle_triggering = false;
-				// causes issues with "Don't close until mouse leaves" if the mouse doesn't move
-				if (false && popup_trigger_reason !== "mouse") {
-					can_close_popup[1] = true;
-				}
-				set_timeout(function() {
-					dont_wait_anymore();
-				}, 1);
-				popups_active = true;
-				//console_log(div);
-				add_resetpopup_timeout();
+					var is_video, is_audio, is_stream, newobj, estop, estop_pd, initial_zoom_behavior, last_zoom_behavior, use_last_zoom, bgcolor, fgcolor, textcolor, shadowcolor, enable_mask_styles, old_mask_opacity, setup_mask_el, outerdiv, zoom_move_effect_enabled, transition_effects, temp_transition_effects, fade_s, orig_transition_string, temp_transition_string, div, popupshown, transparent_gif, styles_variables, outer_thresh, border_thresh, top_thresh, top_mb, viewport, vw, vh, v_mx, v_my, update_vwh, set_top, set_left, set_lefttop, set_audio_size, el_dimensions, add_link, update_img_display, visibility_workarounds, check_visibility_workaround, apply_visibility_workaround, check_img_visibility, img_naturalHeight, img_naturalWidth, imgh, imgw, setup_initial_zoom, get_imghw_for_fit, max_width, max_height, initialpos, set_popup_size_helper, set_popup_width, set_popup_height, defaultopacity, get_popup_dimensions, btndown, ui_els, text_direction, popup_el_style, cached_previmages, cached_nextimages, create_containerel, ui_visible, a, update_popup_clickthrough, attr, click_close, orig_a_cursor, orig_img_cursor, currentmode, parsed_headers;
+					return __generator(this, function(_a) {
+						switch (_a.label) {
+							case 0:
+								if (!img) {
+									delay_handle_triggering = false;
+									if (processing.running) {
+										stop_waiting_cant_load();
+									}
+									return [2 /*return*/];
+								}
+								is_video = img.tagName === "VIDEO";
+								is_audio = img.tagName === "AUDIO";
+								is_stream = is_video || is_audio;
+								newobj = data.data.obj;
+								if (!newobj)
+									newobj = {};
+								popup_obj = newobj;
+								estop = function(e) {
+									e.stopPropagation();
+									e.stopImmediatePropagation();
+									return true;
+								};
+								estop_pd = function(e) {
+									e.preventDefault();
+									estop(e);
+									return true;
+								};
+								lastX = x;
+								lastY = y;
+								popupOpenX = x;
+								popupOpenY = y;
+								popupOpenLastX = x;
+								popupOpenLastY = y;
+								initial_zoom_behavior = get_single_setting("mouseover_zoom_behavior");
+								last_zoom_behavior = get_single_setting("mouseover_zoom_use_last");
+								use_last_zoom = false;
+								if (popup_last_zoom && (last_zoom_behavior === "always" ||
+									(last_zoom_behavior === "gallery" && popup_el_automatic))) {
+									use_last_zoom = true;
+								}
+								bgcolor = "#333";
+								fgcolor = "#fff";
+								textcolor = "#fff";
+								shadowcolor = "rgba(0,0,0,.5)";
+								enable_mask_styles = get_single_setting("mouseover_enable_mask_styles2");
+								old_mask_opacity = 1;
+								setup_mask_el = function(mask) {
+									return __awaiter(this, void 0, void 0, function() {
+										return __generator(this, function(_a) {
+											switch (_a.label) {
+												case 0:
+													set_el_all_initial(mask);
+													set_important_style(mask, "opacity", 1);
+													if (!(enable_mask_styles !== "never")) return [3 /*break*/, 2];
+													return [4 /*yield*/, apply_styles(mask, settings.mouseover_mask_styles2, {
+															force_important: true
+														})];
+												case 1:
+													_a.sent();
+													_a.label = 2;
+												case 2:
+													// this allows us to respect a custom opacity for mouseover_mask_styles
+													old_mask_opacity = mask.style.opacity;
+													if (enable_mask_styles === "hold") {
+														set_important_style(mask, "opacity", 0);
+													}
+													if (!settings.mouseover_close_click_outside &&
+														!settings.mouseover_mask_ignore_clicks) {
+														set_important_style(mask, "pointer-events", "none");
+													}
+													set_important_style(mask, "position", "fixed");
+													set_important_style(mask, "z-index", maxzindex - 3);
+													set_important_style(mask, "width", "100%");
+													set_important_style(mask, "height", "100%");
+													set_important_style(mask, "left", "0px");
+													set_important_style(mask, "top", "0px");
+													if (settings.mouseover_mask_fade_time > 0) {
+														set_important_style(mask, "transition", "opacity " + (settings.mouseover_mask_fade_time / 1000.) + "s");
+														if (enable_mask_styles !== "hold") {
+															if (!popup_el_automatic) {
+																set_important_style(mask, "opacity", 0);
+																// this is needed in order to make the transition happen
+																set_timeout(function() {
+																	set_important_style(mask, "opacity", old_mask_opacity);
+																}, 1);
+															} else {
+																set_important_style(mask, "opacity", old_mask_opacity);
+															}
+														}
+													}
+													// same as the addbtn mousedown stop
+													our_addEventListener(mask, "mousedown", function(e) {
+														if (!settings.mouseover_close_click_outside)
+															return;
+														estop(e);
+													});
+													our_addEventListener(mask, "click", function(e) {
+														if (!settings.mouseover_close_click_outside)
+															return;
+														estop(e);
+														set_important_style(mask, "pointer-events", "none");
+														resetpopups();
+													}, true);
+													return [2 /*return*/, mask];
+											}
+										});
+									});
+								};
+								remove_mask();
+								if (!(settings.mouseover_close_click_outside ||
+									settings.mouseover_mask_ignore_clicks ||
+									enable_mask_styles !== "never")) return [3 /*break*/, 2];
+								mask_el = document_createElement("div");
+								return [4 /*yield*/, setup_mask_el(mask_el)];
+							case 1:
+								_a.sent();
+								_a.label = 2;
+							case 2:
+								outerdiv = document_createElement("div");
+								set_el_all_initial(outerdiv);
+								set_important_style(outerdiv, "position", "fixed");
+								set_important_style(outerdiv, "z-index", maxzindex - 2);
+								zoom_move_effect_enabled = false;
+								if (settings.mouseover_fade_time > 0 && !popup_el_automatic) {
+									transition_effects = [];
+									temp_transition_effects = [];
+									fade_s = (settings.mouseover_fade_time / 1000.) + "s";
+									if (settings.mouseover_enable_fade) {
+										transition_effects.push("opacity " + fade_s);
+										set_important_style(outerdiv, "opacity", 0);
+									}
+									if (settings.mouseover_enable_zoom_effect) {
+										transition_effects.push("transform " + fade_s);
+										set_important_style(outerdiv, "transform", "scale(0)");
+										if (settings.mouseover_zoom_effect_move) {
+											temp_transition_effects.push("top " + fade_s);
+											temp_transition_effects.push("left " + fade_s);
+											zoom_move_effect_enabled = true;
+										}
+									}
+									if (transition_effects.length > 0) {
+										orig_transition_string = transition_effects.join(", ");
+										array_extend(transition_effects, temp_transition_effects);
+										temp_transition_string = transition_effects.join(", ");
+										set_important_style(outerdiv, "transition", temp_transition_string);
+										if (temp_transition_effects.length > 0) {
+											set_timeout(function() {
+												set_important_style(outerdiv, "transition", orig_transition_string);
+											}, settings.mouseover_fade_time);
+										}
+									}
+									// set_timeout is needed in order to make the transition happen
+									set_timeout(function() {
+										set_important_style(outerdiv, "opacity", 1);
+										set_important_style(outerdiv, "transform", "scale(1)");
+									}, 1);
+								}
+								div = document_createElement("div");
+								popupshown = false;
+								set_el_all_initial(div);
+								set_important_style(div, "box-shadow", "0 0 15px " + shadowcolor);
+								set_important_style(div, "border", "3px solid " + fgcolor);
+								set_important_style(div, "position", "relative");
+								set_important_style(div, "top", "0px");
+								set_important_style(div, "left", "0px");
+								set_important_style(div, "display", "block");
+								set_important_style(div, "background-color", "rgba(255,255,255,.5)");
+								transparent_gif = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+								styles_variables = {};
+								if (popup_orig_url && !popup_el_is_stream) {
+									styles_variables["%thumburl%"] = encodeuri_ifneeded(popup_orig_url);
+								} else {
+									styles_variables["%thumburl%"] = transparent_gif;
+								}
+								if (!is_stream) {
+									styles_variables["%fullurl%"] = encodeuri_ifneeded(get_img_src(img));
+								} else {
+									styles_variables["%fullurl%"] = transparent_gif;
+								}
+								return [4 /*yield*/, apply_styles(div, settings.mouseover_styles, {
+										force_important: true,
+										old_variables: styles_variables
+									})];
+							case 3:
+								_a.sent();
+								outerdiv.appendChild(div);
+								outer_thresh = 16;
+								border_thresh = 20;
+								top_thresh = 30;
+								top_mb = top_thresh - border_thresh;
+								v_mx = Math_max(x - border_thresh, 0);
+								v_my = Math_max(y - top_thresh, 0);
+								update_vwh = function(x, y) {
+									viewport = get_viewport();
+									vw = viewport[0];
+									vh = viewport[1];
+									vw -= border_thresh * 2;
+									vh -= border_thresh + top_thresh;
+									if (typeof x !== "undefined") {
+										v_mx = Math_min(vw, Math_max(x - border_thresh, 0));
+										v_my = Math_min(vh, Math_max(y - top_thresh, 0));
+									}
+								};
+								set_top = function(x) {
+									outerdiv.style.top = x + "px";
+								};
+								set_left = function(x) {
+									outerdiv.style.left = x + "px";
+								};
+								set_lefttop = function(xy) {
+									set_top(xy[1]);
+									set_left(xy[0]);
+								};
+								update_vwh(x, y);
+								set_audio_size = function() {
+									if (!is_audio)
+										return;
+									img.style.width = "500px";
+									img.style.minWidth = "500px";
+									img.style.height = "50px";
+									img.style.minHeight = "50px";
+								};
+								set_audio_size();
+								el_dimensions = get_el_dimensions(img);
+								// FIXME: when this is set, for some reason, some settings like min-width and min-height can't be set under chrome
+								if (!is_audio)
+									set_el_all_initial(img);
+								add_link = false;
+								if (!is_stream && settings.mouseover_add_link) {
+									add_link = true;
+								} else if (is_video && settings.mouseover_add_video_link) {
+									add_link = true;
+								}
+								if (add_link) {
+									// don't !important because it'll override the waiting cursor for automatic (gallery) popups
+									img.style.cursor = "pointer";
+								}
+								// https://stackoverflow.com/questions/7774814/remove-white-space-below-image
+								img.style.verticalAlign = "bottom";
+								set_important_style(img, "display", "block");
+								update_img_display = function(style) {
+									img.style.setProperty("display", style[0], style[1]);
+								};
+								visibility_workarounds = [
+									// uBlock Origin on pornhub blocks: video[style*="display: block !important;"]
+									{
+										domain_nosub: /^pornhub(?:premium)?\./,
+										img_display: ["block"]
+									},
+									{
+										domain_nosub: /^pornhub(?:premium)?\./,
+										img_display: ["initial", "important"]
+									},
+									// uBlock Origin on gelbooru blocks:
+									//   a[target="_blank"] > img
+									//   a[target="_blank"] > div
+									// https://github.com/qsniyg/maxurl/issues/430#issuecomment-686768694
+									{
+										domain_nosub: /^gelbooru\./,
+										func: function() {
+											var span_el = document_createElement("span");
+											span_el.appendChild(img);
+											a.appendChild(span_el);
+										}
+									}
+								];
+								check_visibility_workaround = function(workaround) {
+									if (workaround.domain_nosub) {
+										if (!workaround.domain_nosub.test(host_domain_nosub))
+											return false;
+									}
+									return true;
+								};
+								apply_visibility_workaround = function(workaround) {
+									if (workaround.img_display) {
+										update_img_display(workaround.img_display);
+									} else if (workaround.func) {
+										workaround.func();
+									}
+								};
+								check_img_visibility = function() {
+									set_timeout(function() {
+										var computed = get_computed_style(img);
+										if (computed.display !== "none") {
+											return;
+										}
+										while (visibility_workarounds.length > 0) {
+											var current_workaround = visibility_workarounds.shift();
+											if (!check_visibility_workaround(current_workaround))
+												continue;
+											apply_visibility_workaround(current_workaround);
+											if (visibility_workarounds.length > 0)
+												check_img_visibility();
+											break;
+										}
+									}, 50);
+								};
+								check_img_visibility();
+								// https://github.com/qsniyg/maxurl/issues/330
+								set_important_style(img, "object-fit", "contain");
+								img_naturalWidth = el_dimensions[0];
+								img_naturalHeight = el_dimensions[1];
+								imgh = img_naturalHeight;
+								imgw = img_naturalWidth;
+								setup_initial_zoom = function(initial_zoom_behavior, use_last_zoom) {
+									var update_sizes = false;
+									if (initial_zoom_behavior === "custom" || use_last_zoom) {
+										var zoom_percent = settings.mouseover_zoom_custom_percent / 100;
+										if (use_last_zoom)
+											zoom_percent = popup_last_zoom;
+										imgw = Math_max(img_naturalWidth * zoom_percent, 20);
+										imgh = Math_max(img_naturalHeight * zoom_percent, 20);
+										update_sizes = true;
+									} else if (initial_zoom_behavior === "fit" || initial_zoom_behavior === "fill") {
+										img.style.maxWidth = vw + "px";
+										img.style.maxHeight = vh + "px";
+										if (initial_zoom_behavior === "fill" && (img_naturalWidth < vw && img_naturalHeight < vh)) {
+											var zoom_percent = 1;
+											if (img_naturalHeight > img_naturalWidth) {
+												zoom_percent = vh / img_naturalHeight;
+											} else {
+												zoom_percent = vw / img_naturalWidth;
+											}
+											imgw *= zoom_percent;
+											imgh *= zoom_percent;
+											update_sizes = true;
+										}
+									} else if (initial_zoom_behavior === "full") {
+										imgw = img_naturalWidth;
+										imgh = img_naturalHeight;
+										update_sizes = true;
+									}
+									if (update_sizes) {
+										img.style.maxWidth = imgw + "px";
+										img.style.width = img.style.maxWidth;
+										img.style.maxHeight = imgh + "px";
+										img.style.height = img.style.maxHeight;
+									}
+								};
+								setup_initial_zoom(initial_zoom_behavior, use_last_zoom);
+								if (imgh < 20 || imgw < 20) {
+									// FIXME: This will stop "custom" percentages with low percentages for small images
+									stop_waiting_cant_load();
+									console_error("Image too small to popup (" + imgw + "x" + imgh + ")");
+									return [2 /*return*/];
+								}
+								get_imghw_for_fit = function(width, height) {
+									if (width === void 0)
+										width = vw;
+									if (height === void 0)
+										height = vh;
+									//height -= border_thresh * 2;
+									//width  -= border_thresh * 2;
+									var our_imgh = imgh;
+									var our_imgw = imgw;
+									if (imgh > height || imgw > width) {
+										var ratio;
+										if (imgh / height >
+											imgw / width) {
+											ratio = imgh / height;
+										} else {
+											ratio = imgw / width;
+										}
+										our_imgh /= ratio;
+										our_imgw /= ratio;
+									}
+									return [our_imgw, our_imgh];
+								};
+								if ((initial_zoom_behavior === "fit" || initial_zoom_behavior === "fill") && !use_last_zoom) {
+									calc_imghw_for_fit();
+								}
+								max_width = settings.mouseover_zoom_max_width || void 0;
+								max_height = settings.mouseover_zoom_max_height || void 0;
+								if (max_width || max_height) {
+									calc_imghw_for_fit(max_width, max_height);
+								}
+								popup_update_zoom_func = function(mode) {
+									var use_last_zoom = false;
+									if (mode === "last") {
+										mode = get_single_setting("mouseover_zoom_behavior");
+										if (popup_last_zoom)
+											use_last_zoom = true;
+									}
+									setup_initial_zoom(mode, use_last_zoom);
+									if (mode === "fit" || mode === "fill")
+										calc_imghw_for_fit();
+									set_popup_width(imgw, "initial");
+									set_popup_height(imgh, "initial");
+								};
+								popup_update_pos_func = function(x, y, resize) {
+									var popup_left, popup_top;
+									update_vwh(x, y);
+									var sct = scrollTop();
+									var scl = scrollLeft();
+									sct = scl = 0;
+									var overflow_x = imgw > vw;
+									var overflow_y = imgh > vh;
+									var mouseover_position = get_single_setting("mouseover_position");
+									if ((popup_hold && settings.mouseover_hold_position_center) ||
+										(settings.mouseover_overflow_position_center && (overflow_x || overflow_y)))
+										mouseover_position = "center";
+									if (mouseover_position === "cursor") {
+										popup_top = sct + Math_min(Math_max(v_my - (imgh / 2), 0), Math_max(vh - imgh, 0));
+										popup_left = scl + Math_min(Math_max(v_mx - (imgw / 2), 0), Math_max(vw - imgw, 0));
+									} else if (mouseover_position === "center") {
+										var origin = get_single_setting("mouseover_overflow_origin");
+										var ox = origin[1];
+										var oy = origin[2];
+										var top_x = 0;
+										var top_y = 0;
+										var bottom_x = vw - imgw;
+										var bottom_y = vh - imgh;
+										var middle_x = (vw - imgw) / 2;
+										var middle_y = (vh - imgh) / 2;
+										var our_x = middle_x;
+										var our_y = middle_y;
+										if (overflow_x) {
+											if (ox === "0") {
+												our_x = top_x;
+											} else if (ox === "1") {
+												our_x = middle_x;
+											} else if (ox === "2") {
+												our_x = bottom_x;
+											}
+										}
+										if (overflow_y) {
+											if (oy === "0") {
+												our_y = top_y;
+											} else if (oy === "1") {
+												our_y = middle_y;
+											} else if (oy === "2") {
+												our_y = bottom_y;
+											}
+										}
+										popup_top = sct + our_y;
+										popup_left = scl + our_x;
+									} else if (mouseover_position === "beside_cursor") {
+										var update_imghw;
+										if (resize) {
+											update_imghw = function(w, h) {
+												calc_imghw_for_fit(w, h);
+											};
+										} else {
+											update_imghw = common_functions.nullfunc;
+										}
+										var calc_imgrect = function(w, h) {
+											var new_imghw = [imgw, imgh];
+											if (resize) {
+												new_imghw = get_imghw_for_fit(w, h);
+											}
+											if (new_imghw[0] > w || new_imghw[1] > h)
+												return null;
+											return new_imghw;
+										};
+										var cursor_thresh = border_thresh;
+										var ovw = vw - cursor_thresh;
+										var ovh = vh - cursor_thresh;
+										var calc_imgposd = function(lefttop, info, popupd) {
+											var moused = lefttop ? v_mx : v_my;
+											var vd = lefttop ? ovw : ovh;
+											switch (info) {
+												case -1:
+													return Math_min(vd - popupd, Math_max(0, moused - (popupd / 2)));
+												case 0:
+													return Math_max(0, moused - popupd - cursor_thresh);
+												case 1:
+													return Math_min(vd - popupd, moused + cursor_thresh);
+											}
+										};
+										var all_rects = [
+											// top
+											[-1, 0, ovw, v_my - cursor_thresh],
+											// right
+											[1, -1, ovw - v_mx - cursor_thresh, ovh],
+											// bottom
+											[-1, 1, ovw, ovh - v_my - cursor_thresh],
+											// left
+											[0, -1, v_mx - cursor_thresh, ovh]
+										];
+										var rects = [];
+										// TODO: move the current popup position to the top
+										if (x > viewport[0] / 2) {
+											rects.push(all_rects[3]);
+										} else {
+											rects.push(all_rects[1]);
+										}
+										if (y > viewport[1] / 2) {
+											rects.push(all_rects[0]);
+										} else {
+											rects.push(all_rects[2]);
+										}
+										for (var i = 0; i < all_rects.length; i++) {
+											if (array_indexof(rects, all_rects[i]) < 0) {
+												rects.push(all_rects[i]);
+											}
+										}
+										var largest_rectsize = -1;
+										var largest_rect = null;
+										var largest_origrect = null;
+										for (var i = 0; i < rects.length; i++) {
+											var our_rect = calc_imgrect(rects[i][2], rects[i][3]);
+											if (!our_rect)
+												continue;
+											var our_rectsize = our_rect[0] * our_rect[1];
+											if (our_rectsize > largest_rectsize) {
+												largest_rectsize = our_rectsize;
+												largest_rect = our_rect;
+												largest_origrect = rects[i];
+											}
+										}
+										if (!largest_origrect) {
+											largest_rectsize = -1;
+											for (var i = 0; i < rects.length; i++) {
+												var rectsize = rects[i][2] * rects[i][3];
+												if (rectsize > largest_rectsize) {
+													largest_origrect = rects[i];
+													largest_rectsize = rectsize;
+												}
+											}
+										}
+										if (largest_origrect) {
+											update_imghw(largest_origrect[2], largest_origrect[3]);
+											popup_top = calc_imgposd(false, largest_origrect[1], imgh);
+											popup_left = calc_imgposd(true, largest_origrect[0], imgw);
+										} else {
+											// ???
+										}
+									} else if (mouseover_position === "beside_cursor_old") {
+										// TODO: maybe improve this to be more interpolated?
+										var popupx;
+										var popupy;
+										var cursor_thresh = border_thresh;
+										var ovw = vw - cursor_thresh;
+										var ovh = vh - cursor_thresh;
+										var update_imghw;
+										if (resize) {
+											update_imghw = function(w, h) {
+												calc_imghw_for_fit(w, h);
+											};
+										} else {
+											update_imghw = common_functions.nullfunc;
+										}
+										update_imghw(ovw, ovh);
+										for (var loop_i = 0; loop_i < (resize ? 16 : 1); loop_i++) {
+											if (y > viewport[1] / 2) {
+												popupy = v_my - imgh - cursor_thresh;
+											} else if (popupy === void 0) {
+												popupy = v_my + cursor_thresh;
+											}
+											if (x > viewport[0] / 2) {
+												popupx = v_mx - imgw - cursor_thresh;
+											} else if (popupx === void 0) {
+												popupx = v_mx + cursor_thresh;
+											}
+											if (popupy < 0) {
+												popupy = 0;
+												if (settings.mouseover_prevent_cursor_overlap) {
+													update_imghw(ovw, v_my);
+													//continue;
+												}
+											}
+											if (popupx < 0) {
+												popupx = 0;
+												if (settings.mouseover_prevent_cursor_overlap) {
+													update_imghw(v_mx, ovh);
+													//continue;
+												}
+											}
+											if ((popupy + imgh) > vh) {
+												if (settings.mouseover_prevent_cursor_overlap) {
+													update_imghw(ovw, ovh - v_my);
+													//continue;
+												} else {
+													popupy = Math_max(vh - imgh - cursor_thresh, 0);
+												}
+											}
+											if ((popupx + imgw) > vw) {
+												if (settings.mouseover_prevent_cursor_overlap) {
+													update_imghw(ovw - v_mx, ovh);
+													//continue;
+												} else {
+													popupx = Math_max(vw - imgw - cursor_thresh, 0);
+												}
+											}
+											//break;
+										}
+										popup_top = popupy;
+										popup_left = popupx;
+									}
+									return [
+										popup_left + border_thresh,
+										popup_top + top_thresh
+									];
+								};
+								initialpos = popup_update_pos_func(x, y, true);
+								if (!zoom_move_effect_enabled) {
+									set_lefttop(initialpos);
+								} else {
+									set_lefttop([x - imgw / 2, y - imgh / 2]);
+									set_timeout(function() {
+										set_lefttop(initialpos);
+									}, 1);
+								}
+								set_popup_size_helper = function(size, maxsize, widthheight) {
+									if (maxsize === void 0)
+										maxsize = size;
+									if (typeof size === "number")
+										size = size + "px";
+									if (typeof maxsize === "number")
+										maxsize = maxsize + "px";
+									if (widthheight) {
+										img.style.width = size;
+										img.style.maxWidth = maxsize;
+									} else {
+										img.style.height = size;
+										img.style.maxHeight = maxsize;
+									}
+								};
+								set_popup_width = function(width, maxwidth) {
+									set_popup_size_helper(width, maxwidth, true);
+								};
+								set_popup_height = function(height, maxheight) {
+									set_popup_size_helper(height, maxheight, false);
+								};
+								set_popup_width(imgw, "initial");
+								set_popup_height(imgh, "initial");
+								defaultopacity = get_defaultopacity();
+								get_popup_dimensions = function() {
+									return [
+										(popupshown && outerdiv.clientWidth) || imgw,
+										(popupshown && outerdiv.clientHeight) || imgh
+									];
+								};
+								btndown = false;
+								ui_els = [];
+								text_direction = "initial";
+								if (popup_el) {
+									popup_el_style = get_computed_style(popup_el);
+								} else {
+									popup_el_style = get_computed_style(document.body);
+								}
+								if (popup_el_style && popup_el_style.direction === "rtl") {
+									text_direction = "rtl";
+								}
+								cached_previmages = 0;
+								cached_nextimages = 0;
+								create_containerel = function(x, y, margin, boundingclientrect) {
+									var topbarel = document_createElement("div");
+									set_el_all_initial(topbarel);
+									set_important_style(topbarel, "position", "absolute");
+									set_important_style(topbarel, "opacity", defaultopacity);
+									if (can_use_subzindex)
+										set_important_style(topbarel, "z-index", maxzindex - 1);
+									set_important_style(topbarel, "white-space", "nowrap");
+									// test: https://www.yeshiva.org.il/
+									// otherwise, the buttons are in the wrong order
+									set_important_style(topbarel, "direction", "ltr");
+									var left = null;
+									var top = null;
+									var bottom = null;
+									var right = null;
+									var original_width = imgw || img_naturalWidth;
+									var bounding_width = boundingclientrect.width || original_width;
+									var bounding_wadd = (bounding_width - original_width) / 2;
+									var original_height = imgh || img_naturalHeight;
+									var bounding_height = boundingclientrect.height || original_height;
+									var bounding_hadd = (bounding_height - original_height) / 2;
+									if (x === "left") {
+										left = -(margin + bounding_wadd) + "px";
+									} else if (x === "middle") {
+										left = "calc(50%)";
+										topbarel.setAttribute("data-imu-middle_x", "true");
+									} else if (x === "right") {
+										right = -(margin + bounding_wadd) + "px";
+									}
+									if (y === "top") {
+										top = -(margin + bounding_hadd) + "px";
+									} else if (y === "middle") {
+										// TODO: add buttons vertically, not horizontally
+										top = "calc(50%)";
+										topbarel.setAttribute("data-imu-middle_y", "true");
+									} else if (y === "bottom") {
+										bottom = -(margin + bounding_hadd) + "px";
+									}
+									//console_log(left, right, top, bottom);
+									if (left)
+										set_important_style(topbarel, "left", left);
+									if (right)
+										set_important_style(topbarel, "right", right);
+									if (top)
+										set_important_style(topbarel, "top", top);
+									if (bottom)
+										set_important_style(topbarel, "bottom", bottom);
+									return topbarel;
+								};
+								ui_visible = !!settings.mouseover_ui;
+								popup_createui_func = create_ui;
+								return [4 /*yield*/, fill_obj_filename(newobj, url, data.data.respdata, popup_el)];
+							case 4:
+								_a.sent();
+								return [4 /*yield*/, create_ui()];
+							case 5:
+								_a.sent();
+								a = document_createElement("a");
+								set_el_all_initial(a);
+								if (add_link) {
+									a.style.cursor = "pointer";
+									//a.addEventListener("click", function(e) {
+									a.onclick = function(e) {
+										e.stopPropagation();
+										e.stopImmediatePropagation();
+										return true;
+									};
+								}
+								a.style.setProperty("vertical-align", "bottom", "important");
+								a.style.setProperty("display", "block", "important");
+								update_popup_clickthrough = function(clickthrough) {
+									var value = "none";
+									if (!clickthrough)
+										value = "initial";
+									set_important_style(a, "pointer-events", value);
+									set_important_style(img, "pointer-events", value);
+									set_important_style(div, "pointer-events", value);
+									set_important_style(outerdiv, "pointer-events", value);
+								};
+								if (settings.mouseover_clickthrough)
+									update_popup_clickthrough(true);
+								popup_hold_func = function() {
+									var enable_mask_styles = get_single_setting("mouseover_enable_mask_styles2");
+									if (popup_hold) {
+										if (settings.mouseover_hold_unclickthrough) {
+											update_popup_clickthrough(false);
+										}
+										if (mask_el && (enable_mask_styles === "always" || enable_mask_styles === "hold")) {
+											mask_el.style.opacity = old_mask_opacity;
+										}
+									} else {
+										if (settings.mouseover_clickthrough) {
+											update_popup_clickthrough(true);
+										} else {
+											update_popup_clickthrough(false);
+										}
+										if (mask_el && (enable_mask_styles === "hold" || enable_mask_styles === "never")) {
+											mask_el.style.opacity = 0;
+										}
+									}
+								};
+								if (add_link) {
+									a.href = url;
+									// set this here instead of outside this block for gelbooru: https://github.com/qsniyg/maxurl/issues/430
+									a.target = "_blank";
+									if (settings.mouseover_download) {
+										if (false) {
+											a.href = img.src;
+											if (newobj.filename.length > 0) {
+												a.setAttribute("download", newobj.filename);
+											} else {
+												attr = document.createAttribute("download");
+												a.setAttributeNode(attr);
+											}
+										} else {
+											a.href = "#"; // fixme: is this really required? this prevents it from right click->copy link location, etc.
+											our_addEventListener(a, "click", function(e) {
+												if (dragged)
+													return;
+												download_popup_media();
+												e.preventDefault();
+												e.stopPropagation();
+												return false;
+											}, true);
+										}
+									}
+								} else {
+									click_close = false;
+									if (!is_stream && settings.mouseover_click_image_close) {
+										click_close = true;
+									} else if (is_video && settings.mouseover_click_video_close) {
+										click_close = true;
+									}
+									// TODO: what about audio?
+									if (click_close) {
+										our_addEventListener(a, "click", function(e) {
+											if (dragged)
+												return;
+											resetpopups();
+											e.preventDefault();
+											e.stopPropagation();
+											return false;
+										});
+									}
+								}
+								a.appendChild(img);
+								div.appendChild(a);
+								popup_hidecursor_timer = null;
+								orig_a_cursor = a.style.cursor;
+								orig_img_cursor = img.style.cursor;
+								popup_hidecursor_func = function(hide) {
+									popup_cursorjitterX = mouseX;
+									popup_cursorjitterY = mouseY;
+									if (settings.mouseover_hide_cursor && hide) {
+										a.style.cursor = "none";
+										img.style.cursor = "none";
+									} else {
+										if (popup_hidecursor_timer) {
+											clear_timeout(popup_hidecursor_timer);
+											popup_hidecursor_timer = null;
+										}
+										a.style.cursor = orig_a_cursor;
+										img.style.cursor = orig_img_cursor;
+									}
+								};
+								popup_cursorjitterX = Infinity;
+								popup_cursorjitterY = Infinity;
+								if (settings.mouseover_hide_cursor && settings.mouseover_hide_cursor_after <= 0) {
+									popup_hidecursor_func(true);
+								}
+								div.onmouseover = div.onmousemove = function(e) {
+									if ((Math_abs(mouseX - popup_cursorjitterX) < settings.mouseover_mouse_inactivity_jitter) &&
+										(Math_abs(mouseY - popup_cursorjitterY) < settings.mouseover_mouse_inactivity_jitter)) {
+										return;
+									}
+									if (settings.mouseover_hide_cursor_after > 0 || !settings.mouseover_hide_cursor) {
+										popup_hidecursor_func(false);
+										if (settings.mouseover_hide_cursor) {
+											popup_hidecursor_timer = set_timeout(function() {
+												popup_hidecursor_func(true);
+											}, settings.mouseover_hide_cursor_after);
+										}
+									}
+								};
+								// TODO: allow this to be live-reloaded
+								if (get_single_setting("mouseover_pan_behavior") === "drag") {
+									if (is_stream) {
+										img.onseeking = function(e) {
+											seekstart = true;
+										};
+										img.onseeked = function(e) {
+											seekstart = false;
+										};
+									}
+									div.ondragstart = a.ondragstart = img.ondragstart = function(e) {
+										if (seekstart)
+											return;
+										//dragstart = true;
+										//dragged = false;
+										startdrag(e);
+										//e.stopPropagation();
+										estop(e);
+										return false;
+									};
+									//div.ondrop = estop;
+									div.onmousedown = div.onpointerdown = a.onmousedown = a.onpointerdown = function(e) {
+										//console_log("(div,a).mousedown", e);
+										if (btndown || e.button !== 0 || seekstart)
+											return;
+										//dragstart = true;
+										//dragged = false;
+										startdrag(e);
+										e.preventDefault();
+										estop(e);
+										return false;
+									};
+									img.onmousedown = img.onpointerdown = function(e) {
+										//console_log("img.onmousedown", e);
+										if (btndown || e.button !== 0 || seekstart)
+											return;
+										//dragstart = true;
+										//dragged = false;
+										startdrag(e);
+										estop(e);
+										return true;
+									};
+									a.onclick = function(e) {
+										//console_log("a.onclick", e);
+										dragstart = false;
+										if (dragged) {
+											estop(e);
+											dragged = false;
+											return false;
+										}
+										e.stopPropagation();
+										e.stopImmediatePropagation();
+										return true;
+									};
+									div.onmouseup = div.onpointerup = div.onclick = a.onmouseup = a.onpointerup = /*a.onclick =*/ function(e) {
+										//console_log("(div,a).mouseup", e);
+										dragstart = false;
+										if (dragged) {
+											//estop(e);
+											return false;
+										}
+										e.stopPropagation();
+										e.stopImmediatePropagation();
+										return true;
+									};
+									// Enabling this makes buttons not work after clicking the link
+									//div.addEventListener("click", div.onclick, true);
+									//a.addEventListener("click", a.onclick, true);
+									img.onmouseup = img.onpointerup = img.onclick = function(e) {
+										//console_log("img.mouseup", e);
+										dragstart = false;
+										//estop(e);
+										return true;
+									};
+									if (is_video) {
+										img.onclick = function(e) {
+											if (img.controls)
+												return;
+											if (!dragged) {
+												if (!img.paused) {
+													img.pause();
+												} else {
+													play_video(img);
+												}
+											}
+											//console_log("img.mouseup", e);
+											dragstart = false;
+											//estop(e);
+											return true;
+										};
+									}
+								}
+								currentmode = initial_zoom_behavior;
+								if (currentmode === "fill")
+									currentmode = "fit";
+								popup_zoom_func = function(zoom_mode, zoomdir, x, y, zoom_out_to_close) {
+									var changed = false;
+									var popup_left = parseFloat(outerdiv.style.left);
+									var popup_top = parseFloat(outerdiv.style.top);
+									var popup_width = outerdiv.clientWidth;
+									var popup_height = outerdiv.clientHeight;
+									update_vwh();
+									if (x === void 0)
+										x = "center";
+									if (y === void 0)
+										y = "center";
+									// used by pagemiddle, determines the final desired global position
+									var x_moveto = null;
+									var y_moveto = null;
+									if (zoomdir > 0) {
+										var zoomout_mode = get_single_setting("scroll_zoomout_pagemiddle");
+										if (zoomout_mode === "always") {
+											x = "pagemiddle";
+											y = "pagemiddle";
+										} else if (zoomout_mode === "viewport") {
+											if (popup_width < vw)
+												x = "pagemiddle";
+											if (popup_height < vh)
+												y = "pagemiddle";
+										}
+									}
+									// TODO: if mouse is within the popup, use the mouse's coordinates instead
+									//   This will have to check the zoom_origin setting.
+									if (x === "center" || x === "pagemiddle") {
+										if (x === "pagemiddle")
+											x_moveto = vw / 2;
+										var visible_left = Math_max(popup_left, 0);
+										var visible_right = Math_min(visible_left + popup_width, vw);
+										// get the middle of the visible portion of the popup
+										x = visible_left + (visible_right - visible_left) / 2;
+									} else {
+										// ensure it's clamped, e.g. when scrolling on the document instead of the popup
+										if (x < popup_left)
+											x = popup_left;
+										else if (x > popup_left + popup_width)
+											x = popup_left + popup_width;
+									}
+									if (y === "center" || y === "pagemiddle") {
+										if (y === "pagemiddle")
+											y_moveto = vh / 2;
+										var visible_top = Math_max(popup_top, 0);
+										var visible_bottom = Math_min(visible_top + popup_height, vh);
+										y = visible_top + (visible_bottom - visible_top) / 2;
+									} else {
+										if (y < popup_top)
+											y = popup_top;
+										else if (y > popup_top + popup_height)
+											y = popup_top + popup_height;
+									}
+									var offsetX = x - popup_left;
+									var offsetY = y - popup_top;
+									var percentX = offsetX / popup_width;
+									var percentY = offsetY / popup_height;
+									if (zoom_mode === "fitfull") {
+										if (zoom_out_to_close && currentmode === "fit" && zoomdir > 0) {
+											resetpopups();
+											return false;
+										}
+										if (zoomdir > 0 && currentmode !== "fit") {
+											imgh = img_naturalHeight;
+											imgw = img_naturalWidth;
+											calc_imghw_for_fit();
+											var oldwidth = parseFloat(img.style.width);
+											var oldheight = parseFloat(img.style.height);
+											set_popup_width(imgw, vw);
+											set_popup_height(imgh, vh);
+											if (zoom_out_to_close && parseFloat(img.style.width) === oldwidth && parseFloat(img.style.height) === oldheight) {
+												resetpopups();
+												return false;
+											}
+											currentmode = "fit";
+											changed = true;
+										} else if (zoomdir < 0 && currentmode !== "full") {
+											set_popup_width(img_naturalWidth, "initial");
+											set_popup_height(img_naturalHeight, "initial");
+											imgw = img_naturalWidth;
+											imgh = img_naturalHeight;
+											currentmode = "full";
+											changed = true;
+										}
+									} else if (zoom_mode === "incremental") {
+										var imgwidth = img.clientWidth;
+										var imgheight = img.clientHeight;
+										var mult = 1;
+										if (imgwidth < img_naturalWidth) {
+											mult = img_naturalWidth / imgwidth;
+										} else {
+											mult = imgwidth / img_naturalWidth;
+										}
+										var increment = settings.scroll_incremental_mult - 1;
+										mult = Math_round(mult / increment);
+										mult *= increment;
+										if (imgwidth < img_naturalWidth) {
+											if (mult !== 0)
+												mult = 1 / mult;
+										}
+										if (zoomdir > 0) {
+											mult /= 1 + increment;
+										} else {
+											mult *= 1 + increment;
+										}
+										imgwidth = img_naturalWidth * mult;
+										imgheight = img_naturalHeight * mult;
+										var too_small = zoomdir > 0 && (imgwidth < 64 || imgheight < 64);
+										var too_big = zoomdir < 0 && (imgwidth > img_naturalWidth * 512 || imgheight > img_naturalHeight * 512);
+										if (too_small || too_big) {
+											if (zoom_out_to_close && too_small)
+												resetpopups();
+											return false;
+										}
+										imgw = imgwidth;
+										imgh = imgheight;
+										set_popup_width(imgwidth);
+										set_popup_height(imgheight);
+										changed = true;
+									}
+									if (!changed)
+										return false;
+									var imgwidth = outerdiv.clientWidth;
+									var imgheight = outerdiv.clientHeight;
+									var current_zoom = ((imgwidth / img_naturalWidth) + (imgheight / img_naturalHeight)) / 2;
+									if (current_zoom) {
+										popup_last_zoom = current_zoom;
+									}
+									var newx, newy;
+									var zoom_lerp = function(wantedpos, origpos, viewport) {
+										var change = wantedpos - origpos;
+										var maxchange = Math_max(100, viewport / 10); // arbitrary numbers
+										if (change < 0) {
+											change = -Math_min(maxchange, -change);
+										} else {
+											change = Math_min(maxchange, change);
+										}
+										return origpos + change;
+									};
+									if (true || (imgwidth <= vw && imgheight <= vh) || zoom_mode === "incremental") {
+										// centers wanted region to pointer
+										newx = (x - percentX * imgwidth);
+										if (x_moveto !== null) {
+											newx = zoom_lerp(x_moveto - imgwidth / 2, newx, vw);
+										}
+										newy = (y - percentY * imgheight);
+										if (y_moveto !== null) {
+											newy = zoom_lerp(y_moveto - imgheight / 2, newy, vh);
+										}
+									} else if (imgwidth > vw || imgheight > vh) {
+										// centers wanted region to center of screen
+										newx = (vw / 2) - percentX * imgwidth;
+										var endx = newx + imgwidth;
+										if (newx > border_thresh && endx > (vw - border_thresh))
+											newx = Math_max(border_thresh, (vw + border_thresh) - imgwidth);
+										if (newx < border_thresh && endx < (vw - border_thresh))
+											newx = Math_min(border_thresh, (vw + border_thresh) - imgwidth);
+										newy = (vh / 2) - percentY * imgheight;
+										var endy = newy + imgheight;
+										if (newy > border_thresh && endy > (vh - border_thresh))
+											newy = Math_max(border_thresh, (vh + border_thresh) - imgheight);
+										if (newy < border_thresh && endy < (vh - border_thresh))
+											newy = Math_min(border_thresh, (vh + border_thresh) - imgheight);
+									}
+									// fitfull only because incremental is under user control
+									if (zoom_mode === "fitfull" && imgwidth <= vw && imgheight <= vh) {
+										newx = Math_max(newx, border_thresh);
+										if (newx + imgwidth > (vw - border_thresh)) {
+											newx = (vw + border_thresh) - imgwidth;
+										}
+										newy = Math_max(newy, border_thresh);
+										if (newy + imgheight > (vh - border_thresh)) {
+											newy = (vh + border_thresh) - imgheight;
+										}
+									}
+									//var lefttop = get_lefttopouter();
+									outerdiv.style.left = (newx /* - lefttop[0]*/) + "px";
+									outerdiv.style.top = (newy /* - lefttop[1]*/) + "px";
+									create_ui(true);
+									// The mouse could accidentally land outside the image in theory
+									mouse_in_image_yet = false;
+									return false;
+								};
+								outerdiv.onwheel = popup_wheel_cb = function(e, is_document) {
+									var handledx = false;
+									var handledy = false;
+									var handle_seek = function(xy) {
+										var isright = false;
+										if (xy) {
+											if (e.deltaX < 0)
+												isright = false;
+											else if (e.deltaX > 0)
+												isright = true;
+											else
+												return;
+										} else {
+											if (e.deltaY < 0)
+												isright = false;
+											else if (e.deltaY > 0)
+												isright = true;
+											else
+												return;
+											if (settings.mouseover_scrolly_video_invert)
+												isright = !isright;
+										}
+										seek_popup_video(!isright);
+										estop_pd(e);
+										return true;
+									};
+									var actionx = true;
+									var actiony = true;
+									if (is_stream) {
+										var video_scrollx = get_single_setting("mouseover_scrollx_video_behavior");
+										var video_scrolly = get_single_setting("mouseover_scrolly_video_behavior");
+										if (!handledx && video_scrollx !== "default") {
+											if (video_scrollx === "seek") {
+												if (handle_seek(true)) {
+													handledx = true;
+												}
+											} else if (video_scrollx === "nothing") {
+												actionx = false;
+											}
+										}
+										if (!handledy && video_scrolly !== "default") {
+											if (video_scrolly === "seek") {
+												if (handle_seek(false)) {
+													handledy = true;
+												}
+											} else if (video_scrollx === "nothing") {
+												actiony = false;
+											}
+										}
+									}
+									var scrollx_behavior = get_single_setting("mouseover_scrollx_behavior");
+									var scrolly_behavior = get_single_setting("mouseover_scrolly_behavior");
+									if (popup_hold) {
+										var hold_scrollx_behavior = get_single_setting("mouseover_scrollx_hold_behavior");
+										var hold_scrolly_behavior = get_single_setting("mouseover_scrolly_hold_behavior");
+										if (hold_scrollx_behavior !== "default")
+											scrollx_behavior = hold_scrollx_behavior;
+										if (hold_scrolly_behavior !== "default")
+											scrolly_behavior = hold_scrolly_behavior;
+									}
+									var handle_gallery = function(xy) {
+										if (!settings.mouseover_enable_gallery)
+											return;
+										var isright = false;
+										if (xy) {
+											if (e.deltaX < 0)
+												isright = false;
+											else if (e.deltaX > 0)
+												isright = true;
+											else
+												return;
+										} else {
+											if (e.deltaY < 0)
+												isright = false;
+											else if (e.deltaY > 0)
+												isright = true;
+											else
+												return;
+										}
+										lraction(isright, true);
+										estop_pd(e);
+										return true;
+									};
+									if (actionx && !handledx) {
+										if (scrollx_behavior === "pan") {
+											outerdiv.style.left = (parseInt(outerdiv.style.left) + e.deltaX) + "px";
+											handledx = true;
+										} else if (scrollx_behavior === "gallery") {
+											if (handle_gallery(true)) {
+												return;
+											}
+											handledx = true;
+										}
+									}
+									if (actiony && !handledy) {
+										if (scrolly_behavior === "pan") {
+											outerdiv.style.top = (parseInt(outerdiv.style.top) + e.deltaY) + "px";
+											handledy = true;
+										} else if (scrolly_behavior === "gallery") {
+											if (handle_gallery(false)) {
+												return;
+											}
+											handledy = true;
+										}
+									}
+									if (handledy) {
+										estop_pd(e);
+										return false;
+									}
+									if (!actiony || scrolly_behavior !== "zoom" || e.deltaY === 0) {
+										return;
+									}
+									estop_pd(e);
+									var cursor_x = e.clientX;
+									var cursor_y = e.clientY;
+									if (get_single_setting("scroll_zoom_origin") === "center") {
+										cursor_x = "center";
+										cursor_y = "center";
+									}
+									var zoom_mode = get_single_setting("scroll_zoom_behavior");
+									if (popup_zoom_func(zoom_mode, e.deltaY, cursor_x, cursor_y, settings.zoom_out_to_close) === false)
+										return false;
+								};
+								if (mask_el) {
+									document.documentElement.appendChild(mask_el);
+								}
+								document.documentElement.appendChild(outerdiv);
+								removepopups();
+								check_image_ref(img);
+								// even if autoplay is enabled, if the element is cached, it won't play automatically
+								if (is_stream) {
+									if (autoplay_enabled()) {
+										play_video(img);
+									} else {
+										img.pause();
+										if (settings.mouseover_video_autoplay === "onactive") {
+											on_tabactive(function() {
+												img.play();
+											});
+										}
+									}
+								}
+								popups.push(outerdiv);
+								popupshown = true;
+								if (data.data.respdata && data.data.respdata.responseHeaders) {
+									parsed_headers = headers_list_to_dict(parse_headers(data.data.respdata.responseHeaders));
+									if ("content-length" in parsed_headers) {
+										popup_contentlength = parseInt(parsed_headers["content-length"]) || 0;
+									}
+								}
+								//can_close_popup = [false, false];
+								// don't set [0] to false, in case "Keep popup open until" == Any/All and keys are released before popup opens
+								can_close_popup[1] = false;
+								// don't unhold if in gallery
+								if (!popup_el_automatic)
+									popup_hold = false;
+								mouse_in_image_yet = false;
+								delay_handle_triggering = false;
+								// causes issues with "Don't close until mouse leaves" if the mouse doesn't move
+								if (false && popup_trigger_reason !== "mouse") {
+									can_close_popup[1] = true;
+								}
+								set_timeout(function() {
+									dont_wait_anymore();
+								}, 1);
+								popups_active = true;
+								//console_log(div);
+								add_resetpopup_timeout();
+								return [2 /*return*/];
+						}
+					});
+				});
 			}
 			cb(data.data.img, data.data.newurl /*, obj*/);
 		}
@@ -83509,6 +83782,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			return cb(value);
 		}
+		function wrap_gallery_func_promise(nextprev, origel, el, new_options) {
+			return new Promise(function(resolve, reject) {
+				wrap_gallery_func(nextprev, origel, el, resolve, new_options);
+			});
+		}
 		// https://developer.chrome.com/en/blog/tablesng/
 		// keeps re-requesting the same element, which causes massive performance issues
 		// <img alt="correct and incorrect table rendering" height="333" loading="lazy" sizes="(min-width: 800px) 800px, calc(100vw - 48px)" src="https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?auto=format" srcset="https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=200 200w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=228 228w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=260 260w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=296 296w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=338 338w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=385 385w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=439 439w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=500 500w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=571 571w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=650 650w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=741 741w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=845 845w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=964 964w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=1098 1098w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=1252 1252w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=1428 1428w, https://developer-chrome-com.imgix.net/image/HodOHWjMnbNw56hvNASHWSgZyAf2/Ms8AqAJn1oKmM1thWYut.png?w=1600 1600w" width="800">
@@ -83542,17 +83820,36 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				});
 			}
 			var loop = function() {
-				wrap_gallery_func(nextprev, origel, el, function(newel) {
-					if (!newel || !is_valid_el(newel))
-						return cb(count, el);
-					count++;
-					if (count >= max)
-						return cb(count, newel);
-					el = newel;
-					stackoverflow_guard(loop, count, 100);
-				}, { is_counting: is_counting, counting_firstel: firstel });
+				return __awaiter(this, void 0, void 0, function() {
+					var newel;
+					return __generator(this, function(_a) {
+						switch (_a.label) {
+							case 0: return [4 /*yield*/, wrap_gallery_func_promise(nextprev, origel, el, { is_counting: is_counting, counting_firstel: firstel })];
+							case 1:
+								newel = _a.sent();
+								if (!newel || !is_valid_el(newel))
+									return [2 /*return*/, cb(count, el)];
+								count++;
+								if (count >= max)
+									return [2 /*return*/, cb(count, newel)];
+								el = newel;
+								stackoverflow_guard(loop, count, 100);
+								return [2 /*return*/];
+						}
+					});
+				});
 			};
 			loop();
+		}
+		function count_gallery_promise(nextprev, max, is_counting, origel, el) {
+			return new Promise(function(resolve, reject) {
+				count_gallery(nextprev, max, is_counting, origel, el, function(count, el) {
+					resolve({
+						count: count,
+						el: el
+					});
+				});
+			});
 		}
 		var get_gallery_elements = function(cb, origel, el) {
 			var count = 0;
@@ -83566,24 +83863,33 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				els.push(firstel);
 			}
 			var loop = function(nextprev, cb) {
-				wrap_gallery_func(nextprev, origel, el, function(newel) {
-					if (!newel || !is_valid_el(newel))
-						return cb();
-					count++;
-					//if (count >= max) return cb();
-					el = newel;
-					if (!set_has(els_set, el)) {
-						set_add(els_set, el);
-						if (nextprev) {
-							els.push(el);
-						} else {
-							els.unshift(el);
+				return __awaiter(this, void 0, void 0, function() {
+					var newel;
+					return __generator(this, function(_a) {
+						switch (_a.label) {
+							case 0: return [4 /*yield*/, wrap_gallery_func_promise(nextprev, origel, el)];
+							case 1:
+								newel = _a.sent();
+								if (!newel || !is_valid_el(newel))
+									return [2 /*return*/, cb()];
+								count++;
+								//if (count >= max) return cb();
+								el = newel;
+								if (!set_has(els_set, el)) {
+									set_add(els_set, el);
+									if (nextprev) {
+										els.push(el);
+									} else {
+										els.unshift(el);
+									}
+								}
+								// large galleries can cause stack overflows, as well as hanging the page
+								stackoverflow_guard(function() {
+									loop(nextprev, cb);
+								}, count, 100);
+								return [2 /*return*/];
 						}
-					}
-					// large galleries can cause stack overflows, as well as hanging the page
-					stackoverflow_guard(function() {
-						loop(nextprev, cb);
-					}, count, 100);
+					});
 				});
 			};
 			loop(false, function() {
@@ -83592,75 +83898,99 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				});
 			});
 		};
-		function wrap_gallery_cycle(dir, origel, el, cb) {
-			if (!el)
-				el = real_popup_el;
-			if (dir === 0)
-				return cb();
-			var nextprev = true;
-			var max = dir;
-			if (dir < 0) {
-				nextprev = false;
-				max = -dir;
-			}
-			count_gallery(nextprev, max, false, origel, el, function(count, newel) {
-				if (count < max) {
-					if (settings.mouseover_gallery_cycle) {
-						count_gallery(!nextprev, void 0, true, origel, el, function(count, newel) {
-							cb(newel);
-						});
-					} else {
-						cb(null);
-					}
-				} else {
-					cb(newel);
-				}
-			});
-		}
-		function is_nextprev_valid(nextprev, cb) {
-			if (popup_el_remote && can_iframe_popout() && !is_in_iframe) {
-				return remote_send_message(popup_el_remote, {
-					type: "is_nextprev_valid",
-					data: {
-						nextprev: nextprev
-					}
-				}, function(valid) {
-					cb(valid);
-				});
-			}
-			wrap_gallery_cycle(nextprev ? 1 : -1, void 0, void 0, function(el) {
-				cb(is_valid_el(el));
-			});
-		}
-		trigger_gallery = function(dir, cb) {
-			if (!cb) {
-				cb = common_functions.nullfunc;
-			}
-			if (popup_el_remote && can_iframe_popout() && !is_in_iframe) {
-				return remote_send_message(popup_el_remote, {
-					type: "trigger_gallery",
-					data: {
-						dir: dir
-					}
-				}, function(triggered) {
-					cb(triggered);
-				});
-			}
-			wrap_gallery_cycle(dir, void 0, void 0, function(newel) {
-				if (newel) {
-					var source = find_source([newel]);
-					if (source) {
-						trigger_popup_with_source(source, {
-							automatic: true,
-							use_last_pos: true,
-							cb: function(changed) {
-								cb(changed);
+		function wrap_gallery_cycle(dir, origel, el) {
+			return __awaiter(this, void 0, void 0, function() {
+				var nextprev, max, result, result_1;
+				return __generator(this, function(_a) {
+					switch (_a.label) {
+						case 0:
+							if (!el)
+								el = real_popup_el;
+							if (dir === 0)
+								return [2 /*return*/];
+							nextprev = true;
+							max = dir;
+							if (dir < 0) {
+								nextprev = false;
+								max = -dir;
 							}
-						});
-						return;
+							return [4 /*yield*/, count_gallery_promise(nextprev, max, false, origel, el)];
+						case 1:
+							result = _a.sent();
+							if (!(result.count < max)) return [3 /*break*/, 5];
+							if (!settings.mouseover_gallery_cycle) return [3 /*break*/, 3];
+							return [4 /*yield*/, count_gallery_promise(!nextprev, void 0, true, origel, el)];
+						case 2:
+							result_1 = _a.sent();
+							return [2 /*return*/, result_1.el];
+						case 3: return [2 /*return*/, null];
+						case 4: return [3 /*break*/, 6];
+						case 5: return [2 /*return*/, result.el];
+						case 6: return [2 /*return*/];
 					}
-				}
-				return cb(false);
+				});
+			});
+		}
+		function is_nextprev_valid(nextprev) {
+			return __awaiter(this, void 0, void 0, function() {
+				var valid, el;
+				return __generator(this, function(_a) {
+					switch (_a.label) {
+						case 0:
+							if (!(popup_el_remote && can_iframe_popout() && !is_in_iframe)) return [3 /*break*/, 2];
+							return [4 /*yield*/, remote_send_message_promise(popup_el_remote, {
+									type: "is_nextprev_valid",
+									data: {
+										nextprev: nextprev
+									}
+								})];
+						case 1:
+							valid = _a.sent();
+							return [2 /*return*/, valid];
+						case 2: return [4 /*yield*/, wrap_gallery_cycle(nextprev ? 1 : -1, void 0, void 0)];
+						case 3:
+							el = _a.sent();
+							return [2 /*return*/, is_valid_el(el)];
+					}
+				});
+			});
+		}
+		trigger_gallery = function(dir) {
+			return __awaiter(this, void 0, void 0, function() {
+				var triggered, newel, source;
+				return __generator(this, function(_a) {
+					switch (_a.label) {
+						case 0:
+							if (!(popup_el_remote && can_iframe_popout() && !is_in_iframe)) return [3 /*break*/, 2];
+							return [4 /*yield*/, remote_send_message_promise(popup_el_remote, {
+									type: "trigger_gallery",
+									data: {
+										dir: dir
+									}
+								})];
+						case 1:
+							triggered = _a.sent();
+							return [2 /*return*/, triggered];
+						case 2: return [4 /*yield*/, wrap_gallery_cycle(dir, void 0, void 0)];
+						case 3:
+							newel = _a.sent();
+							if (!newel)
+								return [2 /*return*/, false];
+							source = find_source([newel]);
+							if (source) {
+								return [2 /*return*/, new Promise(function(resolve) {
+										trigger_popup_with_source(source, {
+											automatic: true,
+											use_last_pos: true,
+											cb: function(changed) {
+												resolve(changed);
+											}
+										});
+									})];
+							}
+							return [2 /*return*/];
+					}
+				});
 			});
 		};
 		var parse_transforms = function(transform) {
@@ -84292,297 +84622,334 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		register_menucommand("Replace images", replace_images_full);
 		var exit_custom_gallery = null;
 		var setup_custom_gallery = function() {
-			if (exit_custom_gallery)
-				exit_custom_gallery();
-			var base_maskel = document_createElement("div");
-			set_important_style(base_maskel, "position", "absolute");
-			set_important_style(base_maskel, "left", "0px");
-			set_important_style(base_maskel, "top", "0px");
-			set_el_all_initial(base_maskel);
-			var mask_bgel = document_createElement("div");
-			set_el_all_initial(mask_bgel);
-			apply_styles(mask_bgel, settings.customgallery_bg_css, { force_important: true });
-			set_important_style(mask_bgel, "pointer-events", "none");
-			set_important_style(mask_bgel, "position", "fixed");
-			set_important_style(mask_bgel, "left", "0px");
-			set_important_style(mask_bgel, "top", "0px");
-			set_important_style(mask_bgel, "height", "100%");
-			set_important_style(mask_bgel, "width", "100%");
-			set_important_style(mask_bgel, "z-index", maxzindex - 3);
-			base_maskel.appendChild(mask_bgel);
-			var mask_outlines_el = document_createElement("div");
-			set_el_all_initial(mask_outlines_el);
-			set_important_style(mask_outlines_el, "position", "absolute");
-			set_important_style(mask_outlines_el, "pointer-events", "none");
-			set_important_style(mask_outlines_el, "left", "0px");
-			set_important_style(mask_outlines_el, "top", "0px");
-			set_important_style(mask_outlines_el, "z-index", maxzindex - 2);
-			base_maskel.appendChild(mask_outlines_el);
-			var maskel = document_createElement("div");
-			set_el_all_initial(maskel);
-			set_important_style(maskel, "position", "fixed");
-			set_important_style(maskel, "left", "0px");
-			set_important_style(maskel, "top", "0px");
-			set_important_style(maskel, "height", "100%");
-			set_important_style(maskel, "width", "100%");
-			set_important_style(maskel, "z-index", maxzindex);
-			base_maskel.appendChild(maskel);
-			set_add(exclude_find_els, maskel);
-			var sources = [];
-			var source_el_set = new_set();
-			var _find_source = function(source_el) {
-				for (var _i = 0, sources_2 = sources; _i < sources_2.length; _i++) {
-					var src = sources_2[_i];
-					if (src.el === source_el)
-						return src;
-				}
-				return null;
-			};
-			var get_source = function(source, el) {
-				if (!el)
-					el = source.el;
-				if (!el)
-					return false;
-				if (set_has(source_el_set, el))
-					return _find_source(el) || source;
-				if (el.parentElement) {
-					return get_source(source, el.parentElement);
-				}
-				return false;
-			};
-			// removing child sources and checking for parents is needed for https://telugumopo.com/anu-emmanuel/
-			var add_source = function(source) {
-				var found_source = get_source(source);
-				if (found_source)
-					return found_source;
-				remove_child_sources(source.el);
-				sources.push(source);
-				set_add(source_el_set, source.el);
-				return source;
-			};
-			var remove_child_sources = function(el) {
-				for (var i = 0; i < el.children.length; i++) {
-					remove_source_el(el.children[i]);
-				}
-			};
-			var remove_source_el = function(el) {
-				var found_source = _find_source(el);
-				if (found_source) {
-					var index = array_indexof(sources, found_source);
-					if (index >= 0)
-						sources.splice(index, 1);
-					if (found_source._outline_el && found_source._outline_el.parentElement) {
-						found_source._outline_el.parentElement.removeChild(found_source._outline_el);
-					}
-				}
-				set_remove(source_el_set, el);
-				remove_child_sources(el);
-			};
-			var remove_source = function(source) {
-				return remove_source_el(source.el);
-			};
-			var reposition_source_outlines = function() {
-				for (var _i = 0, sources_3 = sources; _i < sources_3.length; _i++) {
-					var source = sources_3[_i];
-					var rect = source._real_el.getBoundingClientRect();
-					var outline_el = source._outline_el;
-					if (!outline_el)
-						continue;
-					set_important_style(outline_el, "left", (rect.left + window.scrollX) + "px");
-					set_important_style(outline_el, "top", (rect.top + window.scrollY) + "px");
-					set_important_style(outline_el, "width", rect.width + "px");
-					set_important_style(outline_el, "height", rect.height + "px");
-				}
-			};
-			var resize_handler = function() {
-				reposition_source_outlines();
-			};
-			our_addEventListener(get_window(), "resize", resize_handler);
-			exit_custom_gallery = function() {
-				if (alt_keydown_cb === our_keydown_cb)
-					alt_keydown_cb = null;
-				set_remove(exclude_find_els, maskel);
-				base_maskel.parentElement.removeChild(base_maskel);
-				our_removeEventListener(get_window(), "resize", resize_handler);
-				exit_custom_gallery = null;
-			};
-			var trigger_popup = function(options) {
-				options.automatic = true;
-				exit_custom_gallery();
-				if (!sources.length)
-					return;
-				override_album = [];
-				for (var _i = 0, sources_4 = sources; _i < sources_4.length; _i++) {
-					var source = sources_4[_i];
-					override_album.push(source.el);
-				}
-				trigger_popup_with_source(sources[0], options);
-			};
-			var our_keydown_cb = alt_keydown_cb = function(e) {
-				var actions = [
-					{
-						key: settings.mouseover_close_key,
-						action: exit_custom_gallery
-					},
-					{
-						key: settings.customgallery_apply_key,
-						action: function() {
-							trigger_popup({});
-						}
-					},
-					{
-						key: settings.mouseover_gallery_download_key,
-						action: function() {
-							trigger_popup({ force_open_behavior: "download_album" });
-						}
-					}
-				];
-				for (var _i = 0, actions_1 = actions; _i < actions_1.length; _i++) {
-					var action = actions_1[_i];
-					if (!trigger_complete(action.key))
-						continue;
-					action.action();
-					return false;
-				}
-			};
-			var current_mode = "none";
-			var last_mousemove = 0;
-			var add_cb = function(options) {
-				var source = null;
-				var point = null;
-				var els = [];
-				if ("mouseX" in options) {
-					point = [options.mouseX, options.mouseY];
-				}
-				if (options.el) {
-					els = [options.el];
-				} else {
-					els = find_els_at_point(point);
-				}
-				if (point) {
-					source = find_source(els, { point: point });
-				} else {
-					source = find_source(els);
-				}
-				if (!source || !source.el)
-					return;
-				source = add_source(source);
-				source._real_el = source.el;
-				if (source.picture)
-					source._real_el = source.picture;
-				// if _outline_el exists, then the source was already added previously
-				var our_mode = source._outline_el ? "remove" : "add";
-				if (options.mode) {
-					our_mode = options.mode;
-				}
-				if (options.is_mousemove) {
-					if (our_mode === "add" && current_mode === "remove")
-						our_mode = "remove";
-					if (our_mode === "remove" && current_mode === "add")
-						our_mode = "add";
-				}
-				if (options.add_gallery) {
-					set_timeout(function() {
-						get_gallery_elements(function(els) {
-							for (var _i = 0, els_1 = els; _i < els_1.length; _i++) {
-								var el = els_1[_i];
-								if (el === source._real_el)
-									continue;
-								add_cb({
-									el: el,
-									is_mousemove: false,
-									add_gallery: false,
-									mode: our_mode
+			return __awaiter(this, void 0, void 0, function() {
+				var base_maskel, mask_bgel, mask_outlines_el, maskel, sources, source_el_set, _find_source, get_source, add_source, remove_child_sources, remove_source_el, remove_source, reposition_source_outlines, resize_handler, trigger_popup, our_keydown_cb, current_mode, last_mousemove, add_cb, mousedown_cb, mouseup_cb, mousemove_cb;
+				return __generator(this, function(_a) {
+					switch (_a.label) {
+						case 0:
+							if (exit_custom_gallery)
+								exit_custom_gallery();
+							base_maskel = document_createElement("div");
+							set_important_style(base_maskel, "position", "absolute");
+							set_important_style(base_maskel, "left", "0px");
+							set_important_style(base_maskel, "top", "0px");
+							set_el_all_initial(base_maskel);
+							mask_bgel = document_createElement("div");
+							set_el_all_initial(mask_bgel);
+							return [4 /*yield*/, apply_styles(mask_bgel, settings.customgallery_bg_css, { force_important: true })];
+						case 1:
+							_a.sent();
+							set_important_style(mask_bgel, "pointer-events", "none");
+							set_important_style(mask_bgel, "position", "fixed");
+							set_important_style(mask_bgel, "left", "0px");
+							set_important_style(mask_bgel, "top", "0px");
+							set_important_style(mask_bgel, "height", "100%");
+							set_important_style(mask_bgel, "width", "100%");
+							set_important_style(mask_bgel, "z-index", maxzindex - 3);
+							base_maskel.appendChild(mask_bgel);
+							mask_outlines_el = document_createElement("div");
+							set_el_all_initial(mask_outlines_el);
+							set_important_style(mask_outlines_el, "position", "absolute");
+							set_important_style(mask_outlines_el, "pointer-events", "none");
+							set_important_style(mask_outlines_el, "left", "0px");
+							set_important_style(mask_outlines_el, "top", "0px");
+							set_important_style(mask_outlines_el, "z-index", maxzindex - 2);
+							base_maskel.appendChild(mask_outlines_el);
+							maskel = document_createElement("div");
+							set_el_all_initial(maskel);
+							set_important_style(maskel, "position", "fixed");
+							set_important_style(maskel, "left", "0px");
+							set_important_style(maskel, "top", "0px");
+							set_important_style(maskel, "height", "100%");
+							set_important_style(maskel, "width", "100%");
+							set_important_style(maskel, "z-index", maxzindex);
+							base_maskel.appendChild(maskel);
+							set_add(exclude_find_els, maskel);
+							sources = [];
+							source_el_set = new_set();
+							_find_source = function(source_el) {
+								for (var _i = 0, sources_2 = sources; _i < sources_2.length; _i++) {
+									var src = sources_2[_i];
+									if (src.el === source_el)
+										return src;
+								}
+								return null;
+							};
+							get_source = function(source, el) {
+								if (!el)
+									el = source.el;
+								if (!el)
+									return false;
+								if (set_has(source_el_set, el))
+									return _find_source(el) || source;
+								if (el.parentElement) {
+									return get_source(source, el.parentElement);
+								}
+								return false;
+							};
+							add_source = function(source) {
+								var found_source = get_source(source);
+								if (found_source)
+									return found_source;
+								remove_child_sources(source.el);
+								sources.push(source);
+								set_add(source_el_set, source.el);
+								return source;
+							};
+							remove_child_sources = function(el) {
+								for (var i = 0; i < el.children.length; i++) {
+									remove_source_el(el.children[i]);
+								}
+							};
+							remove_source_el = function(el) {
+								var found_source = _find_source(el);
+								if (found_source) {
+									var index = array_indexof(sources, found_source);
+									if (index >= 0)
+										sources.splice(index, 1);
+									if (found_source._outline_el && found_source._outline_el.parentElement) {
+										found_source._outline_el.parentElement.removeChild(found_source._outline_el);
+									}
+								}
+								set_remove(source_el_set, el);
+								remove_child_sources(el);
+							};
+							remove_source = function(source) {
+								return remove_source_el(source.el);
+							};
+							reposition_source_outlines = function() {
+								for (var _i = 0, sources_3 = sources; _i < sources_3.length; _i++) {
+									var source = sources_3[_i];
+									var rect = source._real_el.getBoundingClientRect();
+									var outline_el = source._outline_el;
+									if (!outline_el)
+										continue;
+									set_important_style(outline_el, "left", (rect.left + window.scrollX) + "px");
+									set_important_style(outline_el, "top", (rect.top + window.scrollY) + "px");
+									set_important_style(outline_el, "width", rect.width + "px");
+									set_important_style(outline_el, "height", rect.height + "px");
+								}
+							};
+							resize_handler = function() {
+								reposition_source_outlines();
+							};
+							our_addEventListener(get_window(), "resize", resize_handler);
+							exit_custom_gallery = function() {
+								if (alt_keydown_cb === our_keydown_cb)
+									alt_keydown_cb = null;
+								set_remove(exclude_find_els, maskel);
+								base_maskel.parentElement.removeChild(base_maskel);
+								our_removeEventListener(get_window(), "resize", resize_handler);
+								exit_custom_gallery = null;
+							};
+							trigger_popup = function(options) {
+								options.automatic = true;
+								exit_custom_gallery();
+								if (!sources.length)
+									return;
+								override_album = [];
+								for (var _i = 0, sources_4 = sources; _i < sources_4.length; _i++) {
+									var source = sources_4[_i];
+									override_album.push(source.el);
+								}
+								trigger_popup_with_source(sources[0], options);
+							};
+							our_keydown_cb = alt_keydown_cb = function(e) {
+								var actions = [
+									{
+										key: settings.mouseover_close_key,
+										action: exit_custom_gallery
+									},
+									{
+										key: settings.customgallery_apply_key,
+										action: function() {
+											trigger_popup({});
+										}
+									},
+									{
+										key: settings.mouseover_gallery_download_key,
+										action: function() {
+											trigger_popup({ force_open_behavior: "download_album" });
+										}
+									}
+								];
+								for (var _i = 0, actions_1 = actions; _i < actions_1.length; _i++) {
+									var action = actions_1[_i];
+									if (!trigger_complete(action.key))
+										continue;
+									action.action();
+									return false;
+								}
+							};
+							current_mode = "none";
+							last_mousemove = 0;
+							add_cb = function(options) {
+								return __awaiter(this, void 0, void 0, function() {
+									var source, point, els, our_mode, rect, outline_el;
+									return __generator(this, function(_a) {
+										switch (_a.label) {
+											case 0:
+												source = null;
+												point = null;
+												els = [];
+												if ("mouseX" in options) {
+													point = [options.mouseX, options.mouseY];
+												}
+												if (options.el) {
+													els = [options.el];
+												} else {
+													els = find_els_at_point(point);
+												}
+												if (point) {
+													source = find_source(els, { point: point });
+												} else {
+													source = find_source(els);
+												}
+												if (!source || !source.el)
+													return [2 /*return*/];
+												source = add_source(source);
+												source._real_el = source.el;
+												if (source.picture)
+													source._real_el = source.picture;
+												our_mode = source._outline_el ? "remove" : "add";
+												if (options.mode) {
+													our_mode = options.mode;
+												}
+												if (options.is_mousemove) {
+													if (our_mode === "add" && current_mode === "remove")
+														our_mode = "remove";
+													if (our_mode === "remove" && current_mode === "add")
+														our_mode = "add";
+												}
+												if (options.add_gallery) {
+													set_timeout(function() {
+														get_gallery_elements(function(els) {
+															return __awaiter(this, void 0, void 0, function() {
+																var _i, els_1, el;
+																return __generator(this, function(_a) {
+																	switch (_a.label) {
+																		case 0:
+																			_i = 0, els_1 = els;
+																			_a.label = 1;
+																		case 1:
+																			if (!(_i < els_1.length)) return [3 /*break*/, 4];
+																			el = els_1[_i];
+																			if (el === source._real_el)
+																				return [3 /*break*/, 3];
+																			return [4 /*yield*/, add_cb({
+																					el: el,
+																					is_mousemove: false,
+																					add_gallery: false,
+																					mode: our_mode
+																				})];
+																		case 2:
+																			_a.sent();
+																			_a.label = 3;
+																		case 3:
+																			_i++;
+																			return [3 /*break*/, 1];
+																		case 4: return [2 /*return*/];
+																	}
+																});
+															});
+														}, null, source._real_el);
+													}, 1);
+												}
+												if (our_mode === "remove") {
+													if (options.is_mousemove) {
+														if (current_mode === "add")
+															return [2 /*return*/];
+													}
+													// toggle
+													remove_source(source);
+													if (current_mode === "unk")
+														current_mode = "remove";
+													return [2 /*return*/];
+												} else {
+													// our_mode == "remove" if options.mode overrides it
+													if (source._outline_el)
+														return [2 /*return*/];
+													if (options.is_mousemove) {
+														if (current_mode === "remove")
+															return [2 /*return*/];
+													}
+												}
+												rect = source._real_el.getBoundingClientRect();
+												outline_el = document_createElement("div");
+												return [4 /*yield*/, apply_styles(outline_el, settings.customgallery_outline_css, { force_important: true })];
+											case 1:
+												_a.sent();
+												set_important_style(outline_el, "position", "absolute");
+												set_important_style(outline_el, "pointer-events", "none");
+												set_important_style(outline_el, "z-index", maxzindex - 1);
+												set_important_style(outline_el, "left", (rect.left + window.scrollX) + "px");
+												set_important_style(outline_el, "top", (rect.top + window.scrollY) + "px");
+												set_important_style(outline_el, "width", rect.width + "px");
+												set_important_style(outline_el, "height", rect.height + "px");
+												mask_outlines_el.appendChild(outline_el);
+												source._outline_el = outline_el;
+												if (current_mode === "unk")
+													current_mode = "add";
+												return [2 /*return*/];
+										}
+									});
 								});
+							};
+							mousedown_cb = function(e) {
+								e.preventDefault();
+								e.stopImmediatePropagation();
+								e.stopPropagation();
+								last_mousemove = Date.now();
+								current_mode = "unk";
+								var add_gallery = false;
+								if (e.shiftKey) {
+									add_gallery = true;
+								}
+								add_cb({
+									mouseX: e.clientX,
+									mouseY: e.clientY,
+									is_mousemove: false,
+									add_gallery: add_gallery
+								});
+							};
+							mouseup_cb = function(e) {
+								if (current_mode === "none")
+									return;
+								e.preventDefault();
+								e.stopImmediatePropagation();
+								e.stopPropagation();
+								current_mode = "none";
+							};
+							mousemove_cb = function(e) {
+								if (current_mode === "none")
+									return;
+								e.preventDefault();
+								e.stopImmediatePropagation();
+								e.stopPropagation();
+								var now = Date.now();
+								if (now - last_mousemove < 16)
+									return;
+								last_mousemove = Date.now();
+								add_cb({
+									mouseX: e.clientX,
+									mouseY: e.clientY,
+									is_mousemove: true
+								});
+							};
+							if (pointerevents_supported(maskel)) {
+								our_addEventListener(maskel, "pointerdown", mousedown_cb, { capture: true });
+								our_addEventListener(maskel, "pointerup", mouseup_cb, { capture: true });
+								our_addEventListener(maskel, "pointermove", mousemove_cb, { capture: true });
+							} else {
+								our_addEventListener(maskel, "mousedown", mousedown_cb, { capture: true });
+								our_addEventListener(maskel, "mouseup", mouseup_cb, { capture: true });
+								our_addEventListener(maskel, "mousemove", mousemove_cb, { capture: true });
 							}
-						}, null, source._real_el);
-					}, 1);
-				}
-				if (our_mode === "remove") {
-					if (options.is_mousemove) {
-						if (current_mode === "add")
-							return;
+							document.documentElement.appendChild(base_maskel);
+							return [2 /*return*/];
 					}
-					// toggle
-					remove_source(source);
-					if (current_mode === "unk")
-						current_mode = "remove";
-					return;
-				} else {
-					// our_mode == "remove" if options.mode overrides it
-					if (source._outline_el)
-						return;
-					if (options.is_mousemove) {
-						if (current_mode === "remove")
-							return;
-					}
-				}
-				var rect = source._real_el.getBoundingClientRect();
-				var outline_el = document_createElement("div");
-				apply_styles(outline_el, settings.customgallery_outline_css, { force_important: true });
-				set_important_style(outline_el, "position", "absolute");
-				set_important_style(outline_el, "pointer-events", "none");
-				set_important_style(outline_el, "z-index", maxzindex - 1);
-				set_important_style(outline_el, "left", (rect.left + window.scrollX) + "px");
-				set_important_style(outline_el, "top", (rect.top + window.scrollY) + "px");
-				set_important_style(outline_el, "width", rect.width + "px");
-				set_important_style(outline_el, "height", rect.height + "px");
-				mask_outlines_el.appendChild(outline_el);
-				source._outline_el = outline_el;
-				if (current_mode === "unk")
-					current_mode = "add";
-			};
-			var mousedown_cb = function(e) {
-				e.preventDefault();
-				e.stopImmediatePropagation();
-				e.stopPropagation();
-				last_mousemove = Date.now();
-				current_mode = "unk";
-				var add_gallery = false;
-				if (e.shiftKey) {
-					add_gallery = true;
-				}
-				add_cb({
-					mouseX: e.clientX,
-					mouseY: e.clientY,
-					is_mousemove: false,
-					add_gallery: add_gallery
 				});
-			};
-			var mouseup_cb = function(e) {
-				if (current_mode === "none")
-					return;
-				e.preventDefault();
-				e.stopImmediatePropagation();
-				e.stopPropagation();
-				current_mode = "none";
-			};
-			var mousemove_cb = function(e) {
-				if (current_mode === "none")
-					return;
-				e.preventDefault();
-				e.stopImmediatePropagation();
-				e.stopPropagation();
-				var now = Date.now();
-				if (now - last_mousemove < 16)
-					return;
-				last_mousemove = Date.now();
-				add_cb({
-					mouseX: e.clientX,
-					mouseY: e.clientY,
-					is_mousemove: true
-				});
-			};
-			if (pointerevents_supported(maskel)) {
-				our_addEventListener(maskel, "pointerdown", mousedown_cb, { capture: true });
-				our_addEventListener(maskel, "pointerup", mouseup_cb, { capture: true });
-				our_addEventListener(maskel, "pointermove", mousemove_cb, { capture: true });
-			} else {
-				our_addEventListener(maskel, "mousedown", mousedown_cb, { capture: true });
-				our_addEventListener(maskel, "mouseup", mouseup_cb, { capture: true });
-				our_addEventListener(maskel, "mousemove", mousemove_cb, { capture: true });
-			}
-			document.documentElement.appendChild(base_maskel);
+			});
 		};
 		(function() {
 			var added = false;
@@ -84760,19 +85127,30 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var filename = null;
 			var download_method = get_single_setting("gallery_download_method");
 			var set_zip_filename = function(obj) {
-				if (filename || !obj)
-					return;
-				var our_vars = deepcopy(obj.format_vars);
-				our_vars.ext = ".zip";
-				// got_objs is used because files is not populated for jdownloader
-				our_vars.items_amt = Object.keys(got_objs).length.toString(); //Object.keys(files).length.toString();
-				//our_vars.filename = our_vars.filename_noext + our_vars.ext;
-				filename = get_filename_from_format(settings.gallery_zip_filename_format, our_vars);
-				filename = fixup_filename(filename);
-				if (!filename)
-					filename = "download";
-				if (!/\.zip$/i.test(filename))
-					filename += ".zip";
+				return __awaiter(this, void 0, void 0, function() {
+					var our_vars;
+					return __generator(this, function(_a) {
+						switch (_a.label) {
+							case 0:
+								if (filename || !obj)
+									return [2 /*return*/];
+								our_vars = deepcopy(obj.format_vars);
+								our_vars.ext = ".zip";
+								// got_objs is used because files is not populated for jdownloader
+								our_vars.items_amt = Object.keys(got_objs).length.toString(); //Object.keys(files).length.toString();
+								return [4 /*yield*/, get_filename_from_format(settings.gallery_zip_filename_format, our_vars)];
+							case 1:
+								//our_vars.filename = our_vars.filename_noext + our_vars.ext;
+								filename = _a.sent();
+								filename = fixup_filename(filename);
+								if (!filename)
+									filename = "download";
+								if (!/\.zip$/i.test(filename))
+									filename += ".zip";
+								return [2 /*return*/];
+						}
+					});
+				});
 			};
 			var get_trunc_url = function(url) {
 				if (/^https?:\/\//i.test(url))
@@ -84892,25 +85270,33 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					set_add(urls, origurl);
 				}
 				var fill_filename = function(use_download) {
-					fill_obj_filename(obj, origurl, data.data.respdata, our_source.el);
-					filename = obj.filename;
-					filename = fixup_filename(filename);
-					// this should hopefully not happen
-					if (use_download && !filename)
-						filename = "download";
-					if (filename && filename in files) {
-						var i = 1;
-						var new_filename;
-						var splitted = url_basename(filename, { split_ext: true });
-						do {
-							new_filename = splitted[0] + " (" + (i++) + ")";
-							if (splitted[1]) {
-								new_filename += "." + splitted[1];
+					return __awaiter(this, void 0, void 0, function() {
+						var i, new_filename, splitted;
+						return __generator(this, function(_a) {
+							switch (_a.label) {
+								case 0: return [4 /*yield*/, fill_obj_filename(obj, origurl, data.data.respdata, our_source.el)];
+								case 1:
+									_a.sent();
+									filename = obj.filename;
+									filename = fixup_filename(filename);
+									// this should hopefully not happen
+									if (use_download && !filename)
+										filename = "download";
+									if (filename && filename in files) {
+										i = 1;
+										splitted = url_basename(filename, { split_ext: true });
+										do {
+											new_filename = splitted[0] + " (" + (i++) + ")";
+											if (splitted[1]) {
+												new_filename += "." + splitted[1];
+											}
+										} while (new_filename in files);
+										filename = new_filename;
+									}
+									return [2 /*return*/, filename];
 							}
-						} while (new_filename in files);
-						filename = new_filename;
-					}
-					return filename;
+						});
+					});
 				};
 				var final_cb = function() {
 					if (settings.gallery_zip_add_info_file) {
@@ -84920,8 +85306,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					cb();
 				};
 				if (download_method === "jdownloader") {
-					fill_filename(false);
-					final_cb();
+					fill_filename(false).then(final_cb);
 					return;
 				}
 				// todo: some kind of infoobj_to_requestobj function
@@ -84930,9 +85315,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					headers: obj.headers
 				}, {
 					onload: function(resp) {
-						fill_filename(true);
-						files[filename] = resp.data;
-						final_cb();
+						return __awaiter(this, void 0, void 0, function() {
+							return __generator(this, function(_a) {
+								switch (_a.label) {
+									case 0: return [4 /*yield*/, fill_filename(true)];
+									case 1:
+										_a.sent();
+										files[filename] = resp.data;
+										final_cb();
+										return [2 /*return*/];
+								}
+							});
+						});
 					},
 					onprogress: progresscb
 				});
@@ -84982,45 +85376,56 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						});
 					},
 					finalcb: function(onprogress) {
-						if ((download_method === "zip" && !Object.keys(files).length) ||
-							!got_objs.length) {
-							console_error("No files!");
-							onprogress(1);
-							return;
-						}
-						set_zip_filename(get_first_obj());
-						filename = filename || "download.zip";
-						var foldername = filename.replace(/\.zip$/i, "");
-						var zip_foldername = null;
-						if (settings.gallery_zip_add_tld) {
-							zip_foldername = foldername;
-						}
-						if (settings.gallery_zip_add_info_file) {
-							files["info.txt"] = get_info_file();
-						}
-						start_waiting();
-						if (download_method === "jdownloader") {
-							send_to_jdownloader(got_objs, foldername, function(ok) {
-								onprogress(1);
-								if (!ok) {
-									cursor_not_allowed();
-								} else {
-									stop_waiting();
+						return __awaiter(this, void 0, void 0, function() {
+							var foldername, zip_foldername;
+							return __generator(this, function(_a) {
+								switch (_a.label) {
+									case 0:
+										if ((download_method === "zip" && !Object.keys(files).length) ||
+											!got_objs.length) {
+											console_error("No files!");
+											onprogress(1);
+											return [2 /*return*/];
+										}
+										return [4 /*yield*/, set_zip_filename(get_first_obj())];
+									case 1:
+										_a.sent();
+										filename = filename || "download.zip";
+										foldername = filename.replace(/\.zip$/i, "");
+										zip_foldername = null;
+										if (settings.gallery_zip_add_tld) {
+											zip_foldername = foldername;
+										}
+										if (settings.gallery_zip_add_info_file) {
+											files["info.txt"] = get_info_file();
+										}
+										start_waiting();
+										if (download_method === "jdownloader") {
+											send_to_jdownloader(got_objs, foldername, function(ok) {
+												onprogress(1);
+												if (!ok) {
+													cursor_not_allowed();
+												} else {
+													stop_waiting();
+												}
+											});
+										} else {
+											create_zip(files, zip_foldername, function(data) {
+												onprogress(1);
+												if (!data) {
+													console_error("download_album: No data (failed to zip?)", files);
+													cursor_not_allowed();
+													return;
+												} else {
+													stop_waiting();
+												}
+												do_blob_download(data, filename);
+											}, onprogress);
+										}
+										return [2 /*return*/];
 								}
 							});
-						} else {
-							create_zip(files, zip_foldername, function(data) {
-								onprogress(1);
-								if (!data) {
-									console_error("download_album: No data (failed to zip?)", files);
-									cursor_not_allowed();
-									return;
-								} else {
-									stop_waiting();
-								}
-								do_blob_download(data, filename);
-							}, onprogress);
-						}
+						});
 					},
 					finalcb_progress: 0.1
 				});
@@ -85581,22 +85986,33 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (!videoel)
 				return;
 			get_video_screenshot(videoel, function(data) {
-				if (!data) {
-					console_error("Unable to screenshot video");
-					cursor_not_allowed();
-					return;
-				}
-				var our_vars = deepcopy(popup_obj.format_vars);
-				our_vars.is_screenshot = { usable: true };
-				our_vars.ext = ".png";
-				if (get_single_setting("popup_video_screenshot_format") === "jpg") {
-					our_vars.ext = ".jpg";
-				}
-				our_vars.filename = our_vars.filename_noext + our_vars.ext;
-				var screenshot_filename = get_filename_from_format(settings.filename_format, our_vars);
-				do_download({
-					url: data
-				}, screenshot_filename);
+				return __awaiter(this, void 0, void 0, function() {
+					var our_vars, screenshot_filename;
+					return __generator(this, function(_a) {
+						switch (_a.label) {
+							case 0:
+								if (!data) {
+									console_error("Unable to screenshot video");
+									cursor_not_allowed();
+									return [2 /*return*/];
+								}
+								our_vars = deepcopy(popup_obj.format_vars);
+								our_vars.is_screenshot = { usable: true };
+								our_vars.ext = ".png";
+								if (get_single_setting("popup_video_screenshot_format") === "jpg") {
+									our_vars.ext = ".jpg";
+								}
+								our_vars.filename = our_vars.filename_noext + our_vars.ext;
+								return [4 /*yield*/, get_filename_from_format(settings.filename_format, our_vars)];
+							case 1:
+								screenshot_filename = _a.sent();
+								do_download({
+									url: data
+								}, screenshot_filename);
+								return [2 /*return*/];
+						}
+					});
+				});
 			});
 		};
 		var action_handler = function(action) {
@@ -86293,49 +86709,70 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		var remote_handle_message = function(message, sender, respond) {
-			if (_nir_debug_) {
-				console_log("ON_REMOTE_MESSAGE", message, sender, respond);
-			}
-			if (message.type === "make_popup") {
-				if (!is_in_iframe) {
-					resetpopups();
-					deserialize_img(message.data.data.data.img, function(el) {
-						message.data.data.data.img = el;
-						popup_el_remote = sender;
-						popup_el = null;
-						real_popup_el = null;
-						//console_log("Making popup", message);
-						makePopup(message.data.source_imu, message.data.src, message.data.processing, message.data.data);
-					});
-				}
-			} else if (message.type === "count_gallery") {
-				count_gallery(message.data.nextprev, message.data.max, message.data.is_counting, void 0, void 0, function(count) {
-					respond(count);
+			return __awaiter(this, void 0, void 0, function() {
+				var result, valid, triggered, i;
+				return __generator(this, function(_a) {
+					switch (_a.label) {
+						case 0:
+							if (_nir_debug_) {
+								console_log("ON_REMOTE_MESSAGE", message, sender, respond);
+							}
+							if (!(message.type === "make_popup")) return [3 /*break*/, 1];
+							if (!is_in_iframe) {
+								resetpopups();
+								deserialize_img(message.data.data.data.img, function(el) {
+									message.data.data.data.img = el;
+									popup_el_remote = sender;
+									popup_el = null;
+									real_popup_el = null;
+									//console_log("Making popup", message);
+									makePopup(message.data.source_imu, message.data.src, message.data.processing, message.data.data);
+								});
+							}
+							return [3 /*break*/, 8];
+						case 1:
+							if (!(message.type === "count_gallery")) return [3 /*break*/, 3];
+							return [4 /*yield*/, count_gallery_promise(message.data.nextprev, message.data.max, message.data.is_counting, void 0, void 0)];
+						case 2:
+							result = _a.sent();
+							respond(result.count);
+							return [3 /*break*/, 8];
+						case 3:
+							if (!(message.type === "is_nextprev_valid")) return [3 /*break*/, 5];
+							return [4 /*yield*/, is_nextprev_valid(message.data.nextprev)];
+						case 4:
+							valid = _a.sent();
+							respond(valid);
+							return [3 /*break*/, 8];
+						case 5:
+							if (!(message.type === "trigger_gallery")) return [3 /*break*/, 7];
+							return [4 /*yield*/, trigger_gallery(message.data.dir)];
+						case 6:
+							triggered = _a.sent();
+							respond(triggered);
+							return [3 /*break*/, 8];
+						case 7:
+							if (message.type === "resetpopups") {
+								resetpopups({
+									from_remote: true
+								});
+							} else if (message.type === "mousemove") {
+								// todo: offset iframe location
+								mousemove_cb(message.data);
+							} else if (message.type === "action") {
+								for (i = 0; i < message.data.length; i++) {
+									message.data[i].remote_origin = sender;
+									action_handler(message.data[i]);
+								}
+							} else if (message.type === "popup_open") {
+								popup_el_remote = sender;
+								last_popup_el = null;
+							}
+							_a.label = 8;
+						case 8: return [2 /*return*/];
+					}
 				});
-			} else if (message.type === "is_nextprev_valid") {
-				is_nextprev_valid(message.data.nextprev, function(valid) {
-					respond(valid);
-				});
-			} else if (message.type === "trigger_gallery") {
-				trigger_gallery(message.data.dir, function(triggered) {
-					respond(triggered);
-				});
-			} else if (message.type === "resetpopups") {
-				resetpopups({
-					from_remote: true
-				});
-			} else if (message.type === "mousemove") {
-				// todo: offset iframe location
-				mousemove_cb(message.data);
-			} else if (message.type === "action") {
-				for (var i = 0; i < message.data.length; i++) {
-					message.data[i].remote_origin = sender;
-					action_handler(message.data[i]);
-				}
-			} else if (message.type === "popup_open") {
-				popup_el_remote = sender;
-				last_popup_el = null;
-			}
+			});
 		};
 		var handle_remote_event = function(message) {
 			if (message.type === "remote") {
