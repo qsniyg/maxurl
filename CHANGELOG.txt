@@ -1,7 +1,8 @@
-2025.12.1 (in-dev)
+2025.12.1
 
 New features:
 
+ * Support for ~60 new websites (using ~25 new rules)
  * Add `num_in_gallery` format variable (#645)
  * Add option to toggle capturing pointer on drag (disabled by default)
 
