@@ -1,6 +1,6 @@
 2025.12.2 (in-dev)
 
-Special thanks to achingfigment, fireattack for their contributions and reports for this release
+Special thanks to achingfigment, fireattack, KyuJuEX099 for their contributions and reports for this release
 
 ---
 
