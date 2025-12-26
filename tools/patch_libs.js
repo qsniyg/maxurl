@@ -77,6 +77,8 @@ var patch_lib = null;
 		var text = data["shaka-player.compiled.debug.js"];
 
 		text = [
+			"var define = void 0;\nvar module = void 0;\n",
+
 			data["muxjs"],
 
 			// move exportTo outside the anonymous function scope
@@ -89,7 +91,8 @@ var patch_lib = null;
 			.replace(/window\.(XMLHttpRequest|decodeURIComponent|parseInt|muxjs)/g, "$1")
 			.replace(/innerGlobal\.shaka/g, "_fakeGlobal.shaka")
 			.replace(/goog\.global\.XMLHttpRequest/g, "XMLHttpRequest") // more XHR
-			.replace(/(HttpFetchPlugin\.isSupported=function..{)/g, "$1return false;") // disable fetch to force XHR
+			//.replace(/(HttpFetchPlugin\.isSupported=function..{)/g, "$1return false;") // disable fetch to force XHR
+			.replace(/([^a-zA-Z0-9_])window\.(?:fetch|Response)([^a-zA-Z0-9_])/g, "$1(void 0)$2") // disable fetch to force XHR
 			.replace(/\r*\n\/\/# sourceMappingURL=.*/, "") // remove sourcemapping to avoid warnings under devtools
 		;
 
