@@ -19261,6 +19261,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "nitter.koyu.space" ||
 			domain === "nitter.dark.fail" ||
 			domain === "nitter.poast.org" ||
+			domain === "cdn.xcancel.com" ||
 			//domain === "t.maisputain.ovh" ||
 			//domain === "nitter.weaponizedhumiliation.com" ||
 			domain === "nitter.snopyta.org";
@@ -21913,6 +21914,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "nitter.koyu.space" ||
 			domain === "nitter.dark.fail" ||
 			domain === "nitter.poast.org" ||
+			domain === "cdn.xcancel.com" ||
 			//domain === "t.maisputain.ovh" ||
 			//domain === "nitter.weaponizedhumiliation.com" ||
 			domain === "nitter.snopyta.org")
@@ -21926,6 +21928,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					console_error(e);
 				}
 			}
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+pic\/+[0-9A-F]{5,}\/+(https?%[^/]+)(?:[?#].*)?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+pic\/+(.*)$/, "$1");
 			if (newsrc !== src) {
 				newsrc = decodeURIComponent(newsrc);
@@ -22059,6 +22064,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			host_domain === "nitter.koyu.space" ||
 			host_domain === "nitter.dark.fail" ||
 			host_domain === "nitter.poast.org" ||
+			host_domain === "cdn.xcancel.com" ||
 			//host_domain === "t.maisputain.ovh" ||
 			//host_domain === "nitter.weaponizedhumiliation.com" ||
 			host_domain === "nitter.snopyta.org")) {
@@ -28786,6 +28792,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					};
 				}
 			}
+		}
+		if (domain === "media.plus.rtl.de") {
+			newsrc = src.replace(/\?.*/, "");
+			if (newsrc !== src)
+				return newsrc;
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+music-deezer\/+(.*\/[0-9]+x[0-9]+-[^/?#]+)(?:[?#].*)?$/, "https://e-cdns-images.dzcdn.net/images/$1");
 		}
 		if (domain === "cdn.wallpaper.com") {
 			regex = /\/main\/styles\/[^/]*\/[^/]*\/(.*\/)?(?:l-)?([^/]*)/;
@@ -64036,6 +64048,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "img.asmedia.epimg.net" ||
 			domain_nowww === "publimetro.com.mx" ||
 			domain_nowww === "thenationalnews.com" ||
+			domain_nowww === "silive.com" ||
+			domain_nowww === "pennlive.com" ||
+			domain_nowww === "lehighvalleylive.com" ||
+			domain_nowww === "mlive.com" ||
+			domain_nowww === "al.com" ||
+			domain_nowww === "syracuse.com" ||
+			domain_nowww === "cleveland.com" ||
 			domain_nowww === "theglobeandmail.com") {
 			var info_2 = { folder: "", loc: "" };
 			if (domain_nowww === "nzherald.co.nz")
@@ -64044,6 +64063,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				info_2 = { folder: "reuters", loc: "us-east-2" };
 			else if (domain_nowww === "masslive.com" ||
 				domain_nowww === "nj.com" ||
+				domain_nowww === "silive.com" ||
+				domain_nowww === "pennlive.com" ||
+				domain_nowww === "lehighvalleylive.com" ||
+				domain_nowww === "mlive.com" ||
+				domain_nowww === "al.com" ||
+				domain_nowww === "syracuse.com" ||
+				domain_nowww === "cleveland.com" ||
 				domain_nowww === "oregonlive.com")
 				info_2 = { folder: "advancelocal", loc: "us-east-1" };
 			else if (domain_nowww === "theglobeandmail.com")
@@ -70537,6 +70563,69 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc)
 				return newsrc;
 		}
+		if (domain_nowww === "jable.tv") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+videos\/+([^/]+)\/+(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/videos/${id}/",
+				allow_hostresp_for_match: true,
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/var hlsUrl\s*=\s*'([^']+)';/);
+					if (!match) {
+						console_error(cache_key, "Unable to find hls match for", resp);
+						return done(null, false);
+					}
+					return done(common_functions["fill_ldjson"]({
+						url: match[1],
+						video: "hls",
+						headers: {
+							Referer: resp.finalUrl
+						}
+					}, resp), 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain === "image.onstove.com") return src.replace(/^[a-z]+:\/\/[^/]+\/+[0-9]+x[0-9]+\/+([^/]+\.[a-z]+\/+.*)\/[a-z]+(?:[?#].*)?$/, "http://$1");
+		if (domain_nowww === "rthk.hk") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+(radio\/+radio[0-9]*\/+programme\/+[^/]+\/+episode\/+[0-9]+)(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/${id}",
+				allow_hostresp_for_match: true,
+				process: function(done, resp, cache_key) {
+					var filematch = resp.responseText.match(/file:\s*"(https?:\/\/[^"]+\.m3u8(?:[?#][^"]+)?)"/);
+					if (!filematch) {
+						console_error(cache_key, "Unable to find file match for", resp);
+						return done(null, false);
+					}
+					return done({
+						url: filematch[1],
+						headers: {
+							Accept: "*/*",
+							Origin: "https://www.rthk.hk",
+							Referer: filematch[1].replace(/^([a-z]+:\/\/[^/]+\/+).*/, "$1")
+						},
+						media_info: {
+							type: "audio",
+							delivery: "hls"
+						}
+					}, 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (host_domain_nowww === "rthk.hk" && options.element) {
+			newsrc = common_functions["get_pagelink_host_el_matching"](options, {
+				url_match: /\/radio\/+radio[0-9]*\/+programme\/+[^/]+\/+episode\/+[0-9]+/,
+				el_match: function(x) {
+					if (x.tagName === "DIV" && x.classList.contains("radioPlayWrap"))
+						return true;
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -71927,6 +72016,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (el.tagName === "DIV" && el.classList.contains("photo-well-media-scrappy-view")) {
 						return true;
 					}
+					if (el.tagName === "DIV" && el.classList.contains("photo-well-media-view")) {
+						// thanks to anonymous for reporting:
+						// lightbox: https://www.flickr.com/photos/89028438@N05/8136511296/in/photostream/lightbox/
+						return {
+							el: el,
+							search: true
+						};
+					}
 					var current = el;
 					while ((current = current.parentElement)) {
 						if (current.tagName === "DIV" && current.classList.contains("restricted-interstitial")) {
@@ -72189,6 +72286,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			host_domain === "nitter.koyu.space" ||
 			host_domain === "nitter.dark.fail" ||
 			host_domain === "nitter.poast.org" ||
+			host_domain === "cdn.xcancel.com" ||
 			//host_domain === "t.maisputain.ovh" ||
 			//host_domain === "nitter.weaponizedhumiliation.com" ||
 			host_domain === "nitter.snopyta.org") ||
