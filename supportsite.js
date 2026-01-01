@@ -1,7 +1,7 @@
 function reqsite_get_domain(url) {
     if (typeof url !== "string")
         return null;
-    return url.replace(/^(?:[a-z]+:\/\/)?([^/]+)\/.*?$/, "$1");
+    return url.replace(/^(?:[a-z]+:\/\/)?([^/:]+?)(?::[0-9]+)?\/.*?$/, "$1");
 }
 
 function reqsite_cipher(text) {
@@ -25,6 +25,14 @@ function reqsite_simplehash(str) {
 }
 
 var reqsite_invalid_domains = [
+    /qsniyg\.github\.io$/,
+
+    // Local networks can't be supported
+    /^(?:127|10)\.[0-9]+\.[0-9]+\.[0-9]+$/,
+    /^192\.168\.[0-9]+\.[0-9]+$/,
+    /^localhost$/,
+    /\.local$/,
+
     // Commonly requested domains that currently cannot be supported.
     // Please message me if you find a method to support these!
     /\.fbcdn\.net$/,
@@ -33,6 +41,7 @@ var reqsite_invalid_domains = [
     /www\.discogs\.com$/,
     /encrypted-tbn[0-9]*\.gstatic\.com$/,
     /sun[-0-9]*\.userapi\.com$/,
+    /pimeyes\.com$/,
 
     // onion links aren't currently supported
     /\.onion(?:\.ly)?$/,
@@ -47,13 +56,12 @@ var reqsite_invalid_domains = [
     /onlyfans\.com$/,
     /\.xhcdn\.com$/,
     /imagefap\.com$/,
+    /xvideos\.[a-z]+$/,
+    /xnxx\.[a-z]+$/,
 
     // Frequently requested domains that are already supported.
     // If you encounter an issue with these, please open an issue on Github or message me.
-    /pimeyes\.com$/,
-    /i\.pinimg\.com$/,
-
-    /qsniyg\.github\.io$/
+    /i\.pinimg\.com$/
 ];
 
 var reqsite_invalid_urls = [
@@ -61,7 +69,8 @@ var reqsite_invalid_urls = [
     // /^https?:\/\/i\.scdn\.co\/+image\/+[0-9a-f]{40}$/,
     /^https?:\/\/images\.genius\.com\/+[0-9a-f]{32}\.[0-9]+x[0-9]+x[0-9]+\.[a-z]+$/,
     /^https?:\/\/media\.licdn\.com\/+dms\/+image\/+.*?\?[et]=/,
-    /^https?:\/\/(?:www\.)?(?:people|instyle|ew)\.com\/+thmb\/+[^/]+=\//
+    /^https?:\/\/(?:www\.)?(?:people|instyle|ew)\.com\/+thmb\/+[^/]+=\//,
+    /^https?:\/\/(?:www\.)?github\.com\/+qsniyg\/+maxurl/
 ];
 
 function reqsite_valid_url(url) {
@@ -144,7 +153,7 @@ function reqsite_discord(siteurl, extrainfo, cb) {
 
     var contents = [];
     contents.push("User: `" + userid + "`");
-    contents.push("Domain: `" + domain + "`");
+    //contents.push("Domain: `" + domain + "`");
     contents.push("Link: `" + encodedurl + "`");
     if (extrainfo)
         contents.push("Extra: ```\n" + extrainfo + "\n```");
