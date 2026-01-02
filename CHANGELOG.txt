@@ -8,7 +8,7 @@ Bugfixes:
 
  * Don't pop up for # sources
 
-Special thanks to achingfigment, fireattack, KyuJuEX099, Froktime for their contributions and reports for this release
+Special thanks to achingfigment, fireattack, KyuJuEX099, Froktime, Tenome for their contributions and reports for this release
 
 ---
 
