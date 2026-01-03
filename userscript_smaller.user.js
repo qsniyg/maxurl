@@ -23258,6 +23258,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "img-eshop.cdn.nintendo.net" ||
 			domain === "awsimgsrc.dmm.com" ||
 			(domain === "media.cos.com" && string_indexof(src, "/assets/") >= 0) ||
+			domain === "img.republicworld.com" ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -23315,6 +23316,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain_nowww === "hexbear.net" && /\/pictrs\/+image\//.test(src)) ||
 			domain === "steamusercontent-a.akamaihd.net" ||
 			domain === "images.steamusercontent.com" ||
+			domain === "images.akamai.steamusercontent.com" ||
 			(domain_nosub === "asus.com" && /store\./.test(domain) && /\/media\/+catalog\//.test(src)) ||
 			(domain === "cimg.kgl-systems.io" && /\/files\//.test(src)) ||
 			(domain === "cassette.sphdigital.com.sg" && /\/image\/+[^/]+\/+/.test(src)) ||
@@ -25017,8 +25019,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nosub === "lst.fm") {
 			return src.replace(/\/i\/+u\/+(?:avatar)?(?:[0-9]+x[0-9]+|[0-9]+s|ar(?:X?L|[0-9]))\//, "/i/u/");
 		}
-		if (domain_nosub === "myspacecdn.com" &&
-			domain.match(/a[0-9](?:\...)?-images\.myspacecdn\.com/)) {
+		if ((domain_nosub === "myspacecdn.com" && /^a[0-9](?:\...)?-images\./.test(domain)) ||
+			domain === "content.myspacecdn.com") {
 			return src.replace(/\/[^/.]*(\.[^/.]*)$/, "/full$1");
 		}
 		if (domain === "geo-media.beatport.com") {
@@ -28218,6 +28220,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/\/media\/+cache\/+resolve\//, "/cache/")
 				.replace(/\/cache\/+[^/]+\/+(uploads?)\//, "/$1/");
 		}
+		if (domain === "media.ir.lv") return src.replace(/\/media\/+cache\/+[^/]+\/+(uploads\/+.*?\.[a-zA-Z]+)\.[a-zA-Z]+(?:[?#].*)?$/, "/$1");
 		if (domain_nosub === "blogspot.es") return src.replace(/(?:\/media)?\/+cache\/+(?:resolve\/+)?media\/+files\//, "/files/");
 		if (domain === "csn.naekranie.pl") return src.replace(/\/media\/+cache\/+(?:resolve\/+)?[^/]*\/+([0-9]{4}\/+[0-9]{2}\/+)/, "/wp-content/uploads/$1");
 		if (domain === "imagesvc.timeincuk.net" ||
@@ -38377,6 +38380,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "tubedupe.com" ||
 			domain_nosub === "stfucdn.com" ||
 			domain_nosub === "porntn.com" ||
+			domain_nosub === "porndd.com" ||
 			domain_nosub === "tolkorus.info" ||
 			domain_nosub === "pornozavod.cc" ||
 			domain_nosub === "onlineporno.cc" ||
@@ -38523,6 +38527,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "epawg.com" ||
 			domain_nosub === "w1mp.com" ||
 			domain_nosub === "babehump.com" ||
+			domain_nosub === "pimpbunny.com" ||
 			domain_nosub === "mylust.com" ||
 			domain_nosub === "yourlust.com" ||
 			domain_nowww === "pornrewind.com") {
@@ -38653,6 +38658,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				domain_nosub === "pornoembed.info" ||
 				domain_nosub === "sexcelebrity.net" ||
 				domain_nosub === "watcherotic.com" ||
+				domain_nosub === "pimpbunny.com" ||
 				domain_nosub === "thisvid.com") {
 				videos_component = "embed";
 				addslash = "";
@@ -54073,6 +54079,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "images.locable.com" ||
 			domain === "image.privacy.com.br" ||
 			domain === "d21ld3wfckjpu2.cloudfront.net" ||
+			domain === "media.hswstatic.com" ||
 			domain === "images.ams-prd.blv.cloud") {
 			match = src.match(/^([a-z]+:\/\/[^/]+\/+(?:resize\/+)?)([^-_/.]{20,})(?:[?#].*)?$/);
 			if (match) {
@@ -54082,6 +54089,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					"d193frjqb908ar.cloudfront.net/milesplit": "https://milesplit.s3.amazonaws.com/",
 					"images.locable.com/impact-production": "https://impact-production.s3.amazonaws.com/",
 					"d21ld3wfckjpu2.cloudfront.net/appleticktbox": "https://appleticktbox.s3.amazonaws.com/",
+					"media.hswstatic.com/content.hswstatic.com": "http://content.hswstatic.com/",
 				};
 				var baseobj_14 = {};
 				if (domain_nosub === "privacy.com.br") {
@@ -62785,6 +62793,22 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain_nosub === "rbxcdn.com") {
 		}
+		if (domain === "tr.rbxcdn.com") {
+			newsrc = src
+				.replace(/\/720\/+720\//, "/1024/1024/")
+				.replace(/\/480\/+480\//, "/720/720/")
+				.replace(/\/256\/+256\//, "/480/480/")
+				.replace(/\/150\/+150\//, "/256/256/");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					can_head: false
+				};
+			return {
+				url: src.replace(/\/Webp\//, "/Png/"),
+				can_head: false
+			};
+		}
 		if (domain === "c.stocksy.com") return src.replace(/(\/a\/+[^/]+\/+z)[a0-8]\/+([0-9]+\.)/, "$19/$2");
 		if (domain === "crowdin-static.downloads.crowdin.com") return src.replace(/(\/avatar\/+[0-9]+\/+)[a-z]+\/+/, "$1original/");
 		if (domain_nowww === "schauspielervideos.de") {
@@ -70626,6 +70650,69 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc)
 				return newsrc;
 		}
+		if (domain_nowww === "boardgamegeek.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+image\/+([0-9]+)\//,
+				query_for_id: function(id, match) {
+					return {
+						url: "https://api.geekdo.com/api/images/" + id,
+						headers: {
+							Accept: "application/json, text/plain, */*",
+							Referer: "https://api.geekdo.com/",
+							Origin: "https://boardgamegeek.com",
+							"Sec-Fetch-Dest": "empty",
+							"Sec-Fetch-Mode": "cors",
+							"Sec-Fetch-Site": "cross-site"
+						},
+						imu_mode: "xhr",
+						json: true
+					};
+				},
+				process: function(done, resp, cache_key) {
+					var baseobj = {
+						extra: {
+							page: resp.canonical_link,
+							caption: resp.caption
+						}
+					};
+					var urls = [];
+					if (resp.images.original) {
+						urls.push({
+							url: resp.images.original.url,
+							is_original: true
+						});
+					}
+					var images = [];
+					for (var imageid in resp.images) {
+						images.push(resp.images[imageid]);
+					}
+					images = images.sort(function(a, b) {
+						return (b.height * b.width) - (a.height * a.width);
+					});
+					for (var _i = 0, images_1 = images; _i < images_1.length; _i++) {
+						var image = images_1[_i];
+						urls.push(image.url);
+					}
+					return done(fillobj_urls(urls, baseobj), 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain === "cf.geekdo-images.com") {
+			match = src.match(/\/camo\/+[0-9a-f]+\/+(68747470[0-9a-f]+)(?:[?#].*)?$/);
+			if (match) {
+				return hex_to_ascii(match[1]);
+			}
+			match = src.match(/\/img\/+.*\/pic([0-9]+)\.[a-z]+(?:[?#].*)?$/);
+			if (match) {
+				return {
+					url: "https://boardgamegeek.com/image/" + match[1] + "/a",
+					is_pagelink: true
+				};
+			}
+		}
+		if (domain === "app.igroovemusic.com") return src.replace(/(\/assets\/+(?:prpage\/+[0-9]+\/+)?(?:cover\/+)?)(?:square|thumb)_([0-9]+_[0-9a-f]{10,}\.)/, "$1$2");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -70757,6 +70844,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "img.leidschdagblad.nl" ||
 			domain === "thumbor.prod.telkku.com" ||
 			domain === "thumb.canalplus.pro" ||
+			domain === "cf.geekdo-images.com" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			src.match(/:\/\/[^/]*\/resizer\/[^/]*=\/(?:fit-in\/+)?[0-9]+x[0-9]+(?::[^/]*\/[0-9]+x[0-9]+)?\/(?:filters:[^/]*\/)?/)) {
 			newsrc = src.replace(/.*?\/(?:thumb(?:or)?|(?:new-)?resizer)\/.*?\/(?:filters(?::|%3A)[^/]*\/)?([a-z]*(?::|%3A)(?:\/|%2F){2}.*)/, "$1");
@@ -71261,9 +71349,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (!src && options.host_url && options.element && options.element.tagName && options.element.tagName.toUpperCase() === "SVG") {
-			var images_1 = options.element.querySelectorAll("image");
-			if (images_1.length === 1) {
-				var image = images_1[0];
+			var images_2 = options.element.querySelectorAll("image");
+			if (images_2.length === 1) {
+				var image = images_2[0];
 				var href_2 = image.getAttribute("href");
 				if (!href_2) {
 					href_2 = image.getAttribute("xlink:href");
