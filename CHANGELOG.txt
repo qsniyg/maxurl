@@ -7,6 +7,8 @@ Improvements:
 Bugfixes:
 
  * Don't pop up for # sources
+ * Fix HLS/DASH previews when content-type is invalid
+ * Fix HLS/DASH stream downloads crashing when individual chunks fail
 
 Special thanks to achingfigment, fireattack, KyuJuEX099, Froktime, Tenome, rudolphos for their contributions and reports for this release
 
