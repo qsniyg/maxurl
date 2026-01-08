@@ -31585,6 +31585,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return baseobj_7;
 			}
 		}
+		if (domain_nowww === "desistore.cz") return src.replace(/(:\/\/[^/]+\/+[0-9]+)-[a-z]+_[a-z0-9]+\/+/, "$1/");
 		if (domain === "skinzwearphotography.com") return src.replace(/\/prod[A-Z][a-z]*\//, "/prodImages/");
 		if (domain_nowww === "dubiobikinis.com") return src.replace(/(\/prodimages\/+[^/]*(?:-[A-Z]|_[0-9]+))t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		if (domain_nowww === "shelot.com") return src.replace(/\/upload\/thumbnails\/[0-9]+x[0-9]+[^/]*\//, "/upload/");
@@ -71028,6 +71029,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					});
 					if (!obj)
 						return done(null, false);
+					for (var _i = 0, obj_16 = obj; _i < obj_16.length; _i++) {
+						var url_15 = obj_16[_i];
+						if (url_15.video) {
+							url_15.headers = {
+								Accept: "*/*",
+								Referer: "https://" + domain + "/",
+								"Sec-Fetch-Dest": "video",
+								"Sec-Fetch-Mode": "no-cors",
+								"Sec-Fetch-Site": "cross-site"
+							};
+						}
+					}
 					var baseobj = { extra: {} };
 					var titlematch = resp.responseText.match(/<title>Embed\s+([^<]+)</);
 					if (titlematch) {
@@ -73294,8 +73307,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return obj;
 		obj = force_array(obj);
 		var newobj = [];
-		for (var _i = 0, obj_16 = obj; _i < obj_16.length; _i++) {
-			var url = obj_16[_i];
+		for (var _i = 0, obj_17 = obj; _i < obj_17.length; _i++) {
+			var url = obj_17[_i];
 			if (typeof (url) === "string") {
 				newobj.push(fullurl(currenturl, url));
 			} else {
@@ -74144,7 +74157,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			});
 		};
 		(function() { return __awaiter(_this_1, void 0, void 0, function() {
-			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_17, sobj, _a, queryobj_1, obj_18, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
+			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_18, sobj, _a, queryobj_1, obj_19, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
 			return __generator(this, function(_c) {
 				switch (_c.label) {
 					case 0:
@@ -74185,8 +74198,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							}
 						}
 						queryobj = [];
-						for (_i = 0, obj_17 = obj; _i < obj_17.length; _i++) {
-							sobj = obj_17[_i];
+						for (_i = 0, obj_18 = obj; _i < obj_18.length; _i++) {
+							sobj = obj_18[_i];
 							if (is_bad_url(sobj.url)) {
 								continue;
 							}
@@ -74194,9 +74207,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						}
 						// required to avoid querying an ok url twice
 						for (_a = 0, queryobj_1 = queryobj; _a < queryobj_1.length; _a++) {
-							obj_18 = queryobj_1[_a];
-							if (tried_urls.has(obj_18.url) && !is_bad_url(obj_18.url))
-								return [2 /*return*/, options.cb([obj_18], last_data)];
+							obj_19 = queryobj_1[_a];
+							if (tried_urls.has(obj_19.url) && !is_bad_url(obj_19.url))
+								return [2 /*return*/, options.cb([obj_19], last_data)];
 						}
 						if (!queryobj.length) {
 							if (_nir_debug_) {
