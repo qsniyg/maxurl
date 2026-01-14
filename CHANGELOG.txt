@@ -1,5 +1,9 @@
 2026.1.0 (in-dev)
 
+New features:
+
+ * Add option to support opening a new popup when an existing popup is already active (disabled by default, thanks to pendrive for the idea)
+
 Improvements:
 
  * Various improvements/fixes to existing rules (including Flickr)
@@ -10,7 +14,7 @@ Bugfixes:
  * Fix HLS/DASH previews when content-type is invalid
  * Fix HLS/DASH stream downloads crashing when individual chunks fail
 
-Special thanks to achingfigment, fireattack, KyuJuEX099, Froktime, Tenome, rudolphos for their contributions and reports for this release
+Special thanks to achingfigment, fireattack, KyuJuEX099, Froktime, Tenome, rudolphos, pendrive for their contributions and reports for this release
 
 ---
 
