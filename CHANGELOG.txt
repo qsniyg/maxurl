@@ -7,6 +7,7 @@ New features:
 Improvements:
 
  * Various improvements/fixes to existing rules (including Flickr)
+ * Disable update check for AMO builds by default (#1542, thanks to alexolog for reporting)
 
 Bugfixes:
 
@@ -14,7 +15,7 @@ Bugfixes:
  * Fix HLS/DASH previews when content-type is invalid
  * Fix HLS/DASH stream downloads crashing when individual chunks fail
 
-Special thanks to achingfigment, fireattack, KyuJuEX099, Froktime, Tenome, rudolphos, pendrive for their contributions and reports for this release
+Special thanks to achingfigment, fireattack, KyuJuEX099, Froktime, Tenome, rudolphos, pendrive, alexolog for their contributions and reports for this release
 
 ---
 
