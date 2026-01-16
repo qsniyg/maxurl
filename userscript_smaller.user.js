@@ -2574,11 +2574,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			data = new Uint8Array(Math_max(content_length, resp.response.byteLength));
 			data.set(new Uint8Array(resp.response), 0);
+			if ("content-type" in headers && headers["content-type"]) {
+				mime = headers["content-type"];
+			}
 			if (resp.response.byteLength >= content_length) {
 				return final_cb(resp);
-			}
-			if ("content-type" in headers) {
-				mime = headers["content-type"];
 			}
 			if (do_progress)
 				ip.total_size = content_length;
@@ -7502,6 +7502,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		// thanks to lnp5131 on github for the idea: https://github.com/qsniyg/maxurl/issues/421
 		mouseover_trigger_enabledisable_toggle: "disable",
 		mouseover_trigger_prevent_key: ["shift"],
+		// thanks to pendrive on discord for the idea:
+		mouseover_trigger_when_active: false,
 		// also thanks to blue-lightning: https://github.com/qsniyg/maxurl/issues/16
 		mouseover_close_behavior: "esc",
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-436594057
@@ -7834,6 +7836,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		settings.redirect = false;
 		settings.allow_apicalls = false;
 		settings.website_request_enable_button = false;
+		// because mozilla's review takes ~a week on average, it will notify users of an update that's unavailable
+		settings.check_updates = false;
 	}
 	var sensitive_settings = [
 		"tumblr_api_key"
@@ -8421,6 +8425,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				mouseover_trigger_behavior: "mouse"
 			},
 			type: "keysequence",
+			category: "popup",
+			subcategory: "trigger"
+		},
+		mouseover_trigger_when_active: {
+			name: "Allow trigger with existing popup",
+			description: "Allows a new popup to be triggered when an existing popup is already active. This will close the existing popup and create a new popup.",
+			requires: {
+				mouseover: true,
+				mouseover_trigger_behavior: "keyboard"
+			},
 			category: "popup",
 			subcategory: "trigger"
 		},
@@ -16829,12 +16843,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				console_error("Unable to fetch CryptoJS");
 				return cb(null);
 			}
+			var str;
 			try {
-				return cb(CryptoJS.MD5(text).toString());
+				str = CryptoJS.MD5(text).toString();
 			} catch (e) {
 				console_error(e);
 				return cb(null);
 			}
+			return cb(str);
 		});
 	};
 	common_functions["get_tiktok_urlvidid"] = function(url) {
@@ -19752,6 +19768,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return el[prop];
 			}
 		}
+	};
+	common_functions["str_to_arr"] = function(str) {
+		var result = [];
+		for (var i = 0; i < str.length; i++) {
+			result.push(str.charCodeAt(i));
+		}
+		return result;
 	};
 	// -- end common_functions --
 	var get_domain_from_url = function(url) {
@@ -27002,7 +27025,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/(\/[-a-z]+\/+[0-9]{5,}\/+(?:users\/+[0-9]+\/+avatars\/+)?[^/]+\.[^/.?#]+)(?:[?#].*)?$/, "$1?size=4096");
 		}
 		if (domain === "media.discordapp.net") {
-			newsrc = src.replace(/(\/stickers\/+[0-9]{5,}\.[^/.?#]+)(?:[?#].*)?$/, "$1?size=4096");
+			newsrc = src.replace(/(\/stickers\/+[0-9]{5,}\.[^/.?#]+)(?:[?#].*)?$/, "$1?size=4096&quality=lossless");
 			if (newsrc !== src)
 				return newsrc;
 			if (/\/attachments\/+[0-9]+\/+/.test(src)) {
@@ -55481,6 +55504,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "hgslave.xyz" ||
 			domain_nowww === "ryderjet.com" ||
 			domain_nowww === "callistanise.com" ||
+			domain_nowww === "hglink.to" ||
+			domain_nowww === "dumbalag.com" ||
+			domain_nowww === "kamehamehaa.xyz" ||
+			domain_nowww === "kamehaus.net" ||
 			domain_nowww === "streamwish.to") {
 			var query_domain = domain;
 			if (domain_nowww === "streamwish.to")
@@ -55521,7 +55548,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						var key_8 = keys_1[_i];
 						urls.push({
 							url: urljoin(resp.finalUrl, links[key_8], true),
-							video: "hls",
+							media_info: {
+								type: "video",
+								delivery: "hls",
+								problems: ["1x1png"]
+							},
 							headers: {
 								"Accept": "*/*",
 								"Accept-Language": "en-US,en;q=0.6",
@@ -67023,6 +67054,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain === "goods-photos.static1-sima-land.com") return src.replace(/(\/items\/+[0-9]+\/+[0-9]+\/+)(?:140|280|400|700)\./, "$11600.");
 		if (domain === "media.obi.ru") return src.replace(/\/resize\/+[0-9]+x[0-9]+\/+media\/+/, "/media/");
+		if (domain_nowww === "virdiko.com") return src.replace(/(:\/\/[^/]+\/+)resize\/+[0-9]+x[0-9]+\/+/, "$1storage/");
 		if (domain_nowww === "unc.ua") return src.replace(/\/thumbs\/+(?:medium|large)_/, "/thumbs/big_");
 		if (domain === "squat.telequebec.tv") {
 			var query_mnmedias_api_1 = function(id, cb) {
@@ -67994,6 +68026,57 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					is_pagelink: true
 				};
 			}
+		}
+		if (domain_nowww === "emturbovid.com" ||
+			domain_nowww === "turtleviplay.xyz") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+t\/+([0-9a-f]{10,})(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/t/${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<div[^>]*\sid="video_player"[^>]*\sdata-hash="([^"]+)"/);
+					if (!match) {
+						console_error(cache_key, "Unable to find video_player match from", resp);
+						return done(null, false);
+					}
+					var vidlink = decode_entities(match[1]);
+					var imglink = null;
+					match = resp.responseText.match(/var\s+poster\s*=.*?["'](https?:\/\/[^'"]+\/poster\/[^'"]+)["']/);
+					if (match) {
+						imglink = match[1];
+					}
+					var title = null;
+					match = resp.responseText.match(/var\s+title\s*=.*?\?\s*("[^"]+")/);
+					if (match) {
+						title = JSON_parse(match[1]);
+					}
+					var baseobj = {
+						extra: {
+							page: resp.finalUrl,
+							caption: title
+						}
+					};
+					var urls = [{
+							url: vidlink,
+							media_info: {
+								type: "video",
+								delivery: "hls",
+								problems: ["1x1png"]
+							},
+							headers: {
+								Origin: "https://" + domain,
+								Referer: vidlink.replace(/(:\/\/[^/]+\/+).*/, "$1"),
+								"Sec-Fetch-Dest": "empty",
+								"Sec-Fetch-Mode": "cors",
+								"Sec-Fetch-Site": "cross-site"
+							}
+						}];
+					if (imglink)
+						urls.push(imglink);
+					return done(fillobj_urls(urls, baseobj), 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
 		}
 		if (domain === "ver1.sptvp.com") {
 			match = src.match(/\/poster\/+.\/+..\/+([0-9a-f]{10,})\./);
@@ -71142,6 +71225,108 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			newsrc = src.replace(/(\/[0-9a-f]{10,}),0,0,0,0\./, "$1.");
 			if (newsrc !== src)
 				return add_extensions(newsrc);
+		}
+		if (domain_nowww === "historicacollectibles.com") return src.replace(/(\/wsp-media\/+photos\/+)(?:small|medium)\/+/, "$1large/");
+		if (domain_nowww === "cherrycams.xyz" ||
+			domain === "av.ezplayer.me") {
+			var cherrycams_decode_1 = function(hextext, cb) {
+				var str_to_uint8array = function(text) {
+					return new Uint8Array(common_functions["str_to_arr"](text));
+				};
+				var decode_utf8 = function(arr) {
+					var decoder = new TextDecoder("utf-8");
+					return decoder.decode(arr);
+				};
+				var key1 = str_to_uint8array(base64_decode("IGtpZW10aWVubXVhOTExY2E=").slice(1));
+				var iv = str_to_uint8array(base64_decode("IDEyMzQ1Njc4OTBvaXV5dHI=").slice(1));
+				var unhexed = new Uint8Array(hex_to_numberarray(hextext.toLowerCase().replace(/[^0-9a-f]/g, "")));
+				crypto.subtle.importKey("raw", key1, { name: "AES-CBC" }, true, ["decrypt"]).then(function(key) {
+					crypto.subtle.decrypt({
+						name: "AES-CBC",
+						iv: iv
+					}, key, unhexed).then(function(decoded) {
+						cb(decode_utf8(decoded));
+					});
+				});
+			};
+			var query_cherrycams_1 = function(url, cb) {
+				api_query(domain + "_xhr:" + url, {
+					url: url,
+					imu_mode: "xhr",
+					headers: {
+						Accept: "*/*",
+						Referer: "https://" + domain + "/",
+						"Sec-Fetch-Dest": "empty",
+						"Sec-Fetch-Mode": "cors",
+						"Sec-Fetch-Origin": "same-origin"
+					}
+				}, cb, function(done, resp, cache_key) {
+					cherrycams_decode_1(resp.responseText, function(dec) {
+						if (!dec)
+							return done(null, false);
+						try {
+							var json_14 = JSON_parse(dec);
+							done(json_14, 60 * 60);
+						} catch (e) {
+							console_error(e);
+							done(null, false);
+						}
+					});
+				});
+			};
+			var query_cherrycams_info = function(id, cb) {
+				query_cherrycams_1("https://" + domain_nowww + "/api/v1/info?id=" + id, cb);
+			};
+			var query_cherrycams_video_1 = function(id, cb) {
+				query_cherrycams_1("https://" + domain_nowww + "/api/v1/video?id=" + id + "&r=", cb);
+			};
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+#([0-9a-z]+)/,
+				run: function(cb, match) {
+					var vidid = match[1];
+					query_cherrycams_video_1(vidid, function(data) {
+						var baseobj = {
+							extra: {
+								page: "https://" + domain + "/#" + vidid,
+								caption: data.title
+							}
+						};
+						var urls = [];
+						if (data.cf) {
+							urls.push({
+								url: data.cf,
+								video: "hls",
+								headers: {
+									Accept: "*/*",
+									Referer: data.cf.replace(/^([a-z]+:\/\/[^/]+\/+).*/, "$1")
+								}
+							});
+						}
+						if (data.poster) {
+							urls.push(urljoin(baseobj.extra.page, data.poster, true));
+						}
+						return cb(fillobj_urls(urls, baseobj));
+					});
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (host_domain_nowww === "cherrycams.xyz" ||
+			host_domain === "av.ezplayer.me") {
+			match = options.host_url.match(/^[a-z]+:\/\/[^/]+\/+#([0-9a-z]+)$/);
+			if (match) {
+				return {
+					url: options.host_url,
+					is_pagelink: true
+				};
+			}
+		}
+		if (domain_nowww === "fapcoholic.com") {
+			newsrc = src.replace(/(:\/\/[^/]+\/+)u\/+/, "$1i/");
+			if (newsrc !== src)
+				return newsrc;
+			return src.replace(/(\/i\/+[^/]+\/+[^/]+\.)webp(?:[?#].*)?$/, "$1jpg");
 		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
@@ -79559,11 +79744,60 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				process_stream(0);
 			};
 		})();
+		var has_1x1png_problem = function(info_obj) {
+			return info_obj.media_info && info_obj.media_info.problems && array_indexof(info_obj.media_info.problems, "1x1png") >= 0;
+		};
+		var fixup_respdata_for_streaming_infoobj = function(data, mime, info_obj) {
+			if (has_1x1png_problem(info_obj) && mime === "image/png") {
+				var arr = new Uint8Array(data);
+				while (true) {
+					var i_idx = arr.indexOf(73); // I
+					if (i_idx < 0)
+						break;
+					if (arr[i_idx + 1] === 69 && // E
+						arr[i_idx + 2] === 78 && // N
+						arr[i_idx + 3] === 68) { // D
+						var slice_idx = i_idx + 8;
+						// turtleviplay.xyz
+						for (; slice_idx < arr.length; slice_idx++) {
+							if (arr[slice_idx] !== 0xFF)
+								break;
+						}
+						// FIXME: this may not always work, but needed for shaka
+						for (; slice_idx < arr.length - 1; slice_idx++) {
+							if (arr[slice_idx] === 71 && // G
+								arr[slice_idx + 1] === 64) // @
+								break;
+						}
+						arr = arr.slice(slice_idx);
+						break;
+					} else {
+						arr = arr.slice(i_idx + 1);
+					}
+				}
+				return arr.buffer;
+			}
+			return data;
+		};
+		var fixup_resp_for_streaming_infoobj = function(resp, info_obj) {
+			var headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
+			var mime = headerobj_get(headers, "content-type");
+			var fixup = false;
+			if (has_1x1png_problem(info_obj) && mime === "image/png") {
+				resp.responseHeaders = resp.responseHeaders.replace(/(content-type: )image\/png/i, "$1video/mp2t");
+				fixup = true;
+			}
+			// check if arraybuffer
+			if (fixup && resp.response && resp.response.byteLength) {
+				resp.response = fixup_respdata_for_streaming_infoobj(resp.response, mime, info_obj);
+				resp.responseHeaders = resp.responseHeaders.replace(/(content-length: )[0-9]+/i, "$1" + resp.response.byteLength);
+			}
+		};
 		var download_playlist_urls;
 		(function() {
 			var download_single_urls = function(info_obj, single_urls, progress, cb) {
 				// for testing
-				//single_urls = single_urls.slice(0, 2);
+				//single_urls = single_urls.slice(0, 10);
 				var ip = new ImpreciseProgress({
 					elements_num: single_urls.length,
 					cb: progress
@@ -79596,6 +79830,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							//console_log("got", url, data);
 							if (!data)
 								return cb(false);
+							data.data = new Uint8Array(fixup_respdata_for_streaming_infoobj(data.data.buffer, data.mime, info_obj));
 							urls_data[url] = data;
 							cb(true);
 						},
@@ -79709,7 +79944,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var add_xhr_hook = function(lib, info_obj) {
 				if (lib.overridden_xhr) {
 					lib.xhr.do_request = function(data) {
-						do_request(override_request(data, info_obj));
+						var req = override_request(data, info_obj);
+						if (has_1x1png_problem(info_obj)) {
+							var orig_onload_1 = req.onload;
+							req.onload = function(resp) {
+								fixup_resp_for_streaming_infoobj(resp, info_obj);
+								orig_onload_1(resp);
+							};
+						}
+						do_request(req);
 					};
 				}
 			};
@@ -79747,6 +79990,21 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						}
 					} catch (e) {
 						console_error(e);
+					}
+					if (has_1x1png_problem(info_obj)) {
+						try {
+							// kamehamehaa.xyz
+							var orig_createseg_1 = shaka.hls.HlsParser.prototype.createSegmentReference_;
+							shaka.hls.HlsParser.prototype.createSegmentReference_ = function(a, b, c, d, e, f, g, h, k, l) {
+								if (!k)
+									k = "video/mp2t";
+								return orig_createseg_1.bind(this)(a, b, c, d, e, f, g, h, k, l);
+							};
+							shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("png", "video/mp2t");
+							shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set(null, "video/mp2t");
+						} catch (e) {
+							console_error(e);
+						}
 					}
 					add_xhr_hook(_shaka, info_obj);
 					var player = new shaka.Player(el);
@@ -87203,22 +87461,24 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					array_foreach(triggers, function(trigger, i) {
 						if (!event_in_chord(event, trigger))
 							return;
-						if (trigger_complete(trigger) && !popups_active) {
-							// clear timeout so that all/any close behavior works
-							current_chord_timeout = {};
-							if (!delay_handle) {
-								actions.push({
-									requires_mouse: true,
-									type: "trigger_popup",
-									trigger: "keyboard"
-								});
-								ret = false;
-								release_ignore = trigger;
-							}
-							trigger_id = i ? (i + 1) : null;
-							if (get_tprofile_setting("mouseover_open_behavior") !== "popup") {
-								// especially relevant for new tab
-								clear_chord();
+						if (trigger_complete(trigger)) {
+							if (settings.mouseover_trigger_when_active || !popups_active) {
+								// clear timeout so that all/any close behavior works
+								current_chord_timeout = {};
+								if (!delay_handle) {
+									actions.push({
+										requires_mouse: true,
+										type: "trigger_popup",
+										trigger: "keyboard"
+									});
+									ret = false;
+									release_ignore = trigger;
+								}
+								trigger_id = i ? (i + 1) : null;
+								if (get_tprofile_setting("mouseover_open_behavior") !== "popup") {
+									// especially relevant for new tab
+									clear_chord();
+								}
 							}
 						}
 						var close_behavior = get_close_behavior();
