@@ -20964,6 +20964,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain === "img-cdn.inc.com" && /\/image\/+upload\//.test(src)) ||
 			domain === "img.mlbstatic.com" ||
 			(domain_nosub === "hotstar.com" && /^img[0-9]*\./.test(domain) && /\/image\/+upload\//.test(src)) ||
+			(domain === "static.ffx.io" && string_indexof(src, "/images/") >= 0) ||
 			domain === "resource.logitechg.com") {
 			newsrc = src
 				.replace(/%2C/g, ",")
@@ -23400,8 +23401,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 		}
 		if (domain === "ci.xiaohongshu.com" ||
-			domain === "sns-img-al.xhscdn.com" ||
-			domain === "sns-img-bd.xhscdn.com" ||
+			(domain_nosub === "xhscdn.com" && /^sns-img-[a-z]+\./.test(domain)) ||
 			(domain_nosub === "xhscdn.com" && /^sns-[a-z]+-i[0-9]*\./.test(domain)) ||
 			domain === "sns-avatar-qc.xhscdn.com" ||
 			domain === "sns-webpic-qc.xhscdn.com") {
@@ -66130,7 +66130,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (domain_nowww === "allinks.me") return src.replace(/(\/storage\/+logos\/+[0-9a-f]+)_small\./, "$1.");
-		if (domain_nowww === "imagedelivery.net") {
+		if (domain_nowww === "imagedelivery.net" ||
+			domain === "images.newyorkstyleguide.com") {
 			var cf_original_map = {
 				"QondspN4HIUvB_R16-ddAQ": "original",
 				"qQuMkbHJ-0s6rwu8vup_5w": "original",
@@ -71327,6 +71328,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc !== src)
 				return newsrc;
 			return src.replace(/(\/i\/+[^/]+\/+[^/]+\.)webp(?:[?#].*)?$/, "$1jpg");
+		}
+		if (domain === "d34dlyar50uy21.cloudfront.net") {
+			newsrc = common_functions["get_thumbor_url"](src.replace(/^[a-z]+:\/\/[^/]+\/+/, "/"));
+			if (newsrc !== src)
+				return "https://d1mf2gqihyoof.cloudfront.net/" + newsrc;
 		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
