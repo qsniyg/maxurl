@@ -16,7 +16,7 @@ Bugfixes:
  * Fix HLS/DASH stream downloads crashing when individual chunks fail
  * Workaround data URL crash for Violentmonkey
 
-Special thanks to achingfigment, fireattack, KyuJuEX099, Froktime, Tenome, rudolphos, pendrive, alexolog, liamengland1, sunshinespecialist, James Joint, in-the-halfway, pleg, Flash, fyhtma, karpuzikov for their contributions and reports for this release
+Special thanks to achingfigment, fireattack, KyuJuEX099, Froktime, Tenome, rudolphos, pendrive, alexolog, liamengland1, sunshinespecialist, James Joint, in-the-halfway, pleg, Flash, fyhtma, karpuzikov, ValiumBear for their contributions and reports for this release
 
 ---
 
