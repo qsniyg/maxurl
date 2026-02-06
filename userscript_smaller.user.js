@@ -23343,6 +23343,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "images.aeonmedia.co" ||
 			(domain_nowww === "multikino.pl" && string_indexof(src, "/images/") >= 0) ||
 			(domain === "static.tcm.com" && /\/tcm\/+files\//.test(src)) ||
+			(domain === "falstaff.b-cdn.net" && string_indexof(src, "/storage/") >= 0) ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -51138,6 +51139,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
 		}
+		if (domain_nosub === "fdbimg.pl" && /^v[0-9]*\./.test(domain)) {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(?:crop|resize)\?(?:.*&)?url=([^&]+)(?:[&#].*)?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
 		if (domain_nosub === "ccnxs.cn" && /^img[0-9]*\./.test(domain)) {
 			return src.replace(/(\/uploadfile\/+.*\/[^/]*\.[^/.]+)_\/+fillcrop\/+[0-9]+x[0-9]+(?:[?#].*)?$/, "$1");
 		}
@@ -64362,6 +64368,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "syracuse.com" ||
 			domain_nowww === "cleveland.com" ||
 			domain_nowww === "infobae.com" ||
+			domain_nowww === "eltrecetv.com.ar" ||
 			domain_nowww === "theglobeandmail.com") {
 			var info_2 = { folder: "", loc: "" };
 			if (domain_nowww === "nzherald.co.nz")
@@ -64430,6 +64437,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				info_2 = { folder: "thenational", loc: "eu-central-1" };
 			else if (domain_nowww === "infobae.com")
 				info_2 = { folder: "infobae", loc: "us-east-1" };
+			else if (domain_nowww === "eltrecetv.com.ar")
+				info_2 = { folder: "artear", loc: "us-east-1" };
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+resizer\/+v2\/+([^?#/]+)(?:[?#].*)?$/, "https://cloudfront-" + info_2.loc + ".images.arcpublishing.com/" + info_2.folder + "/$1");
 			if (newsrc !== src)
 				return newsrc;
@@ -69770,8 +69779,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (created_date)
 						extra.created_date = new Date(created_date).getTime();
 					var urls = [];
-					for (var _i = 0, sources_1 = sources; _i < sources_1.length; _i++) {
-						var source = sources_1[_i];
+					for (var _i = 0, sources_2 = sources; _i < sources_2.length; _i++) {
+						var source = sources_2[_i];
 						urls.push({
 							url: source.src,
 							video: true
@@ -71608,6 +71617,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (domain_nowww === "trud.bg") return src.replace(/(\/storage\/+media\/+[0-9]{4}-[0-9]{2}\/+[0-9]+\/+)conversions\/+([^/.]+)-thumb-[0-9]+x[0-9]+\.[a-z]+/, "$1$2.jpg");
+		if (domain === "files.legimi.com") return src.replace(/(\/images\/+[0-9a-f]{10,}\/+)w(?:200|512)_u[0-9]+\./, "$1cover.");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -71778,7 +71788,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			newsrc = src.replace(/.*\/(?:thumbnail|crop|resize)\/.*?\/(https?:\/\/.*)/, "$1");
 			if (newsrc !== src)
 				return newsrc;
-			newsrc = src.replace(/.*\/(?:thumbnail|crop|resize)\/.*?\/[a-z]*\?url=(https?.*)/, "$1");
+			newsrc = src.replace(/.*\/(?:thumbnail|crop|resize)\/.*?\/[a-z]*\?url=(https?[^&#]+)(?:[&#].*)?$/, "$1");
 			if (newsrc !== src)
 				return decodeURIComponent(newsrc);
 		}
@@ -72214,6 +72224,50 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			newsrc = src.replace(/\/cropped-([^/]+(?:[?#].*)?)$/, "/$1");
 			if (newsrc !== src)
 				return newsrc;
+		}
+		if (!src && options.element && (options.element.tagName === "SOURCE" || options.element.tagName === "VIDEO")) {
+			var parent_14 = options.element.parentElement;
+			if (parent_14 && (parent_14.tagName === "DIV" || parent_14.tagName === "VIDEO-JS")) {
+				if (parent_14.classList.contains("video-js")) {
+					if (typeof parent_14.player === "object" && parent_14.player &&
+						typeof parent_14.player.options_ === "object" && parent_14.player.options_) {
+						var vjs = parent_14.player;
+						var vjsopts = vjs.options_;
+						var sources = [];
+						if (is_array(vjsopts.sources)) {
+							array_extend(sources, vjsopts.sources);
+						}
+						if (typeof vjs.cache_ === "object" && vjs.cache_) {
+							if (vjs.cache_.source)
+								sources.push(vjs.cache_.source);
+							if (is_array(vjs.cache_.sources))
+								array_extend(sources, vjs.cache_.sources);
+						}
+						var urls_20 = [];
+						var urls_set = new_set();
+						for (var _m = 0, sources_1 = sources; _m < sources_1.length; _m++) {
+							var source = sources_1[_m];
+							if (typeof source !== "object" || !source || !source.src)
+								continue;
+							if (set_has(urls_set, source.src))
+								continue;
+							var video = true;
+							var sourcetype = (source.type || "").toLowerCase();
+							if (sourcetype === "application/x-mpegurl")
+								video = "hls";
+							set_add(urls_set, source.src);
+							urls_20.push({
+								url: urljoin(options.host_url, source.src, "real"),
+								video: video
+							});
+						}
+						if (vjsopts.poster)
+							urls_20.push(urljoin(options.host_url, vjsopts.poster, "real"));
+						if (urls_20.length)
+							return urls_20;
+					}
+				}
+			}
 		}
 		if (/\?(?:(?:width|height|quality)=[0-9]+|fit=[a-z]+|format=(?:p?jpg|webp|png)|auto=[a-z,]+)/.test(src)) {
 			var allowed_query_values = {
@@ -73527,9 +73581,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				element_ok: function(el) {
 					if (el.tagName.toUpperCase() === "BUTTON" && (el.classList.contains("gallery-inline__next-overlay") ||
 						el.classList.contains("gallery-inline__prev-overlay"))) {
-						var parent_14 = el.parentElement;
-						if (parent_14.classList.contains("gallery-inline__container")) {
-							var slides = parent_14.querySelector(".gallery-inline__slides");
+						var parent_15 = el.parentElement;
+						if (parent_15.classList.contains("gallery-inline__container")) {
+							var slides = parent_15.querySelector(".gallery-inline__slides");
 							return {
 								el: slides,
 								search: true
@@ -73659,10 +73713,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (el.tagName === "SOURCE")
 						el = el.parentElement;
 					if (el.tagName === "VIDEO" && el.parentElement) {
-						var parent_15 = el.parentElement;
-						if (parent_15.tagName === "DIV" && parent_15.classList.contains("Player-Video"))
-							parent_15 = parent_15.parentElement;
-						var img = parent_15.querySelector("IMG");
+						var parent_16 = el.parentElement;
+						if (parent_16.tagName === "DIV" && parent_16.classList.contains("Player-Video"))
+							parent_16 = parent_16.parentElement;
+						var img = parent_16.querySelector("IMG");
 						if (img)
 							return get_next_in_gallery(img, nextprev);
 					}
@@ -86122,8 +86176,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							sources = [];
 							source_el_set = new_set();
 							_find_source = function(source_el) {
-								for (var _i = 0, sources_2 = sources; _i < sources_2.length; _i++) {
-									var src = sources_2[_i];
+								for (var _i = 0, sources_3 = sources; _i < sources_3.length; _i++) {
+									var src = sources_3[_i];
 									if (src.el === source_el)
 										return src;
 								}
@@ -86172,8 +86226,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								return remove_source_el(source.el);
 							};
 							reposition_source_outlines = function() {
-								for (var _i = 0, sources_3 = sources; _i < sources_3.length; _i++) {
-									var source = sources_3[_i];
+								for (var _i = 0, sources_4 = sources; _i < sources_4.length; _i++) {
+									var source = sources_4[_i];
 									var rect = source._real_el.getBoundingClientRect();
 									var outline_el = source._outline_el;
 									if (!outline_el)
@@ -86202,8 +86256,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								if (!sources.length)
 									return;
 								override_album = [];
-								for (var _i = 0, sources_4 = sources; _i < sources_4.length; _i++) {
-									var source = sources_4[_i];
+								for (var _i = 0, sources_5 = sources; _i < sources_5.length; _i++) {
+									var source = sources_5[_i];
 									override_album.push(source.el);
 								}
 								trigger_popup_with_source(sources[0], options);
