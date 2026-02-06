@@ -3,6 +3,7 @@
 New features:
 
  * Add option to support opening a new popup when an existing popup is already active (disabled by default, thanks to pendrive for the idea)
+ * Add generic video.js rule
 
 Improvements:
 
