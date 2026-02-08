@@ -9,6 +9,7 @@ Improvements:
 
  * Various improvements/fixes to existing rules (including Discord, Flickr)
  * Disable update check for AMO builds by default (#1542, thanks to alexolog for reporting)
+ * Support shadow DOM for galleries
 
 Bugfixes:
 
