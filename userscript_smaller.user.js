@@ -20993,6 +20993,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "img.mlbstatic.com" ||
 			(domain_nosub === "hotstar.com" && /^img[0-9]*\./.test(domain) && /\/image\/+upload\//.test(src)) ||
 			(domain === "static.ffx.io" && string_indexof(src, "/images/") >= 0) ||
+			domain === "cloudinary.images-iherb.com" ||
 			domain === "resource.logitechg.com") {
 			newsrc = src
 				.replace(/%2C/g, ",")
@@ -23034,6 +23035,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain === "img.pixelz.com" && string_indexof(src, "/blog/") >= 0) ||
 			(domain_nosub === "hellomagazine.com" && (string_indexof(src, "/imagenes/") >= 0 || string_indexof(src, "/images/") >= 0)) ||
 			domain === "images.hellomagazine.com" ||
+			domain === "kmartau.mo.cloudinary.net" ||
 			(domain_nosub === "1616.ro" && domain.match(/^i[0-9]*\./)) ||
 			domain === "images.lifeandstylemag.com" ||
 			(domain_nosub === "fonwall.ru" && domain.match(/^img[0-9]*\./)) ||
@@ -23277,6 +23279,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain_nowww === "wnoz.de" && /\/imgs\//.test(src)) ||
 			domain === "assets.steadyhq.com" ||
 			((domain === "eu-images.contentstack.com" ||
+				domain === "au-images.contentstack.com" ||
 				domain === "images.blz-contentstack.com")
 				&& /\/v3\/+assets\//.test(src)) ||
 			domain === "img.projektn.sk" ||
@@ -23285,6 +23288,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain === "metac.nxtv.jp" && /\/img\//.test(src)) ||
 			(domain === "media.victorinox.com" && string_indexof(src, "/transform/") >= 0) ||
 			(domain === "assets.bosecreative.com" && string_indexof(src, "/transform/") >= 0) ||
+			(domain === "assets.kmart.com.au" && string_indexof(src, "/transform/") >= 0) ||
 			domain === "image.heavenly.tv" ||
 			domain === "images.footballfanatics.com" ||
 			domain === "stat.dokusho-ojikan.jp" ||
@@ -23358,6 +23362,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain === "dt565gqrz3z7y.cloudfront.net" && /\/ce\/+image\//.test(src)) ||
 			domain === "i.sstatic.net" ||
 			(domain === "media.bunnings.com.au" && /\/api\/+public\/+content\//.test(src)) ||
+			domain === "static-media.fox.com" ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -29660,6 +29665,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "img.fanatik.com.tr" ||
 			domain === "assets.dogannet.tv" ||
 			domain_nosub === "fanatik.com.tr" ||
+			domain === "image.radyod.com" ||
+			domain === "image.kanald.com.tr" ||
 			((domain_nosub === "pstimaj.com" ||
 				domain_nosub === "milimaj.com" ||
 				domain_nosub === "cnnturk.com") && /^i[0-9]*\./.test(domain))) {
@@ -34349,6 +34356,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain_nosub === "asus.com" && /^img(?:-[a-z]+)?[0-9]*\./.test(domain) && /!t[0-9]+x[0-9]+(?:[?#].*)?$/.test(src)) ||
 			(domain_nosub === "gitee.com" && /\/avatar\//.test(src)) ||
 			domain === "image-assets.mihuashi.com" ||
+			domain === "img.jandan.net" ||
 			domain === "img.mgpyh.com") {
 			newsrc = src.replace(/!.*/, "");
 			if (newsrc !== src)
@@ -71675,6 +71683,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc !== src)
 				return add_full_extensions(newsrc, ["jpg", "jpeg", "JPG", "png", ""]);
 		}
+		if (domain === "media.etalenta.eu") return src.replace(/(\/foto\/+)[0-9]+\/+[0-9]+\/+/, "$10/0/");
+		if (domain_nosub === "fsimg.co.nz") {
+			return src
+				.replace(/(\/image\/+)[0-9]+x[0-9]+\/+/, "$1master/")
+				.replace(/\?.*/, "");
+		}
+		if (domain_nosub === "tmcdn.co.nz") return src.replace(/(\/photoserver\/+)(?:[0-9]+x[0-9]+[a-z]?|med|large|full)\/+/, "$1plus/");
+		if (domain === "images.thalia.media") return src.replace(/(:\/\/[^/]+\/+)[^/]+\/+[^/]+\/+([0-9]+\/+)/, "$1-/BF-/$2");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
