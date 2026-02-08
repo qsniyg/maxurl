@@ -12512,7 +12512,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			for (var i = 0; i < extensions.length; i++) {
 				if (!prefer_order && ext === extensions[i])
 					continue;
-				var currenturl = basename + "." + extensions[i] + query;
+				var currenturl = basename;
+				if (extensions[i] !== "")
+					currenturl += "." + extensions[i];
+				currenturl += query;
 				if (typeof currentobj === "string") {
 					result.push(currenturl);
 				} else {
@@ -21020,6 +21023,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/\/images\/[^/]*_[^/]*\//, "/images/");
 		}
 		if (domain === "www-konga-com-res.cloudinary.com") return src.replace(/(:\/\/[^/]+\/+).*?\/+media\//, "$1media/");
+		if (domain === "images.luxuryescapes.com") {
+			return {
+				url: src
+					.replace(/(:\/\/[^/]+\/+[0-9a-z]+\.)webp(?:[?#].*)?$/, "$1png")
+					.replace(/(:\/\/[^/]+\/+)[a-z]+_[^/]+\/+([0-9a-z]+\.)/, "$1$2"),
+				head_wrong_contentlength: true
+			};
+		}
 		if (((domain_nosub === "biography.com" ||
 			domain_nowww === "guitarworld.com" ||
 			domain_nowww === "guitaraficionado.com" ||
@@ -23344,6 +23355,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain_nowww === "multikino.pl" && string_indexof(src, "/images/") >= 0) ||
 			(domain === "static.tcm.com" && /\/tcm\/+files\//.test(src)) ||
 			(domain === "falstaff.b-cdn.net" && string_indexof(src, "/storage/") >= 0) ||
+			(domain === "dt565gqrz3z7y.cloudfront.net" && /\/ce\/+image\//.test(src)) ||
+			domain === "i.sstatic.net" ||
+			(domain === "media.bunnings.com.au" && /\/api\/+public\/+content\//.test(src)) ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -25720,7 +25734,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/([0-9]+)-[0-9]+-[0-9]+(\.[^/.]*)$/, "$1$2")
 				.replace(/([0-9]+)_[0-9]+_[0-9]+(\.[^/.]*)$/, "$1$2");
 		}
-		if (domain === "image.jimcdn.com") return src.replace(/(\/app\/cms\/image\/transf\/)[^/]*\//, "$1none/");
+		if (domain === "image.jimcdn.com") {
+			newsrc = src.replace(/(\/app\/cms\/image\/transf\/)[^/]*\//, "$1none/");
+			if (newsrc !== src)
+				return newsrc;
+		}
 		if ((domain_nosub === "ladmedia.fr" ||
 			domain_nosub === "lanmedia.fr") &&
 			domain.match(/(?:resize|cdn)[0-9]*-[a-z]*\./)) {
@@ -25869,6 +25887,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "blog.chron.com" ||
 			(domain_nosub === "comingsoon.net" && domain.match(/cdn[0-9]*-www\./)) ||
 			(domain_nowww === "porngirlserotica.com" && /\/wp-content\/+blogs\.dir\/+[0-9]+\/+files\/+/.test(src)) ||
+			(domain_nowww === "slavishow.com" && /\/content\/+(?:gallery|uploads)\/+/.test(src)) ||
 			(domain_nosub === "dogtime.com" && domain.match(/cdn[0-9]*-www\./))) {
 			newsrc = src.replace("/thumbs/thumbs_", "/");
 			if (newsrc !== src)
@@ -35137,6 +35156,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			amazon_container === "botw-pd" ||
 			amazon_container === "cartoons-s3" ||
 			domain === "static.cdn.turner.com" ||
+			domain === "cdn.fstoppers.com" ||
 			amazon_container === "kpopimg") {
 			newsrc = src.replace(/\/styles\/+[^/]+\/+s3(?:fs)?\//, "/");
 			if (newsrc !== src)
@@ -46248,6 +46268,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "img.mylibrary.digital" ||
 			domain === "images.psmcdn.net" ||
 			domain === "cdn.getyourguide.com" ||
+			domain === "image.jimcdn.com" ||
 			/^[a-z]+:\/\/[^/]+\/+cdn-cgi\/+image\/+[^/]*=[^/]*\//.test(src)) {
 			newsrc = src.replace(/^([a-z]+:\/\/[^/]+\/+(?:cdn-cgi\/+)?image\/+[^/]*=[^/]*),(https?:\/\/)/, "$1/$2");
 			if (newsrc !== src)
@@ -71047,7 +71068,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc)
 				return newsrc;
 		}
-		if (domain_nowww === "jable.tv") {
+		if (domain_nosub === "jable.tv") {
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+videos\/+([^/]+)\/+(?:[?#].*)?$/,
 				query_for_id: "https://" + domain + "/videos/${id}/",
@@ -71065,6 +71086,17 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							Referer: resp.finalUrl
 						}
 					}, resp), 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (host_domain_nosub === "jable.tv") {
+			newsrc = common_functions["get_pagelink_host_el_matching"](options, {
+				url_match: /:\/\/[^/]+\/+videos\/+[^/]+\/+(?:[?#].*)?$/,
+				el_match: function(x) {
+					if (x.tagName === "VIDEO" && x.id === "player")
+						return true;
 				}
 			});
 			if (newsrc)
@@ -71618,6 +71650,31 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain_nowww === "trud.bg") return src.replace(/(\/storage\/+media\/+[0-9]{4}-[0-9]{2}\/+[0-9]+\/+)conversions\/+([^/.]+)-thumb-[0-9]+x[0-9]+\.[a-z]+/, "$1$2.jpg");
 		if (domain === "files.legimi.com") return src.replace(/(\/images\/+[0-9a-f]{10,}\/+)w(?:200|512)_u[0-9]+\./, "$1cover.");
+		if (domain === "img.dnevnik.bg" ||
+			domain_nowww === "dnevnik.bg") {
+			return src.replace(/(\/sh(?:ow)?img\/+zx)(?:[0-9]{3}|1[10][0-9]{2}|12[0-6][0-9])(?:y[0-9]+)?(?:dx)?_/, "$11278_");
+		}
+		if (domain === "img.zeit.de") return src.replace(/\/[a-z]+__[0-9]+x[0-9]+__[^/]+(?:[?#].*)?$/, "/original");
+		if (domain_nowww === "andino.shop" && /\/storage\/+images\//.test(src)) {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+storage\/+images\/+image\?(?:.*&)?remote=([^&]+)(?:[&#].*)?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+			return {
+				url: remove_queries(src, ["width", "height"]),
+				can_head: false // 500
+			};
+		}
+		if (domain === "assets.woolworths.com.au") {
+			if (/\/images\//.test(src))
+				return remove_queries(src, ["w", "h"]);
+		}
+		if (domain === "img.dizi.la") {
+			newsrc = src
+				.replace(/(\/uploads\/+[0-9]+\/+)conversions\/+([^/]+)-(?:medium|thumb|episode|slide)\./, "$1$2.")
+				.replace(/(\/uploads\/+[0-9]+\/+)responsive-images\/+([^/]+)___[a-z]+_[0-9]+_[0-9]+\./, "$1$2.");
+			if (newsrc !== src)
+				return add_full_extensions(newsrc, ["jpg", "jpeg", "JPG", "png", ""]);
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -84511,13 +84568,35 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return true;
 			return false;
 		};
+		var get_element_parent = function(el) {
+			var parent = el.parentElement;
+			if (parent)
+				return parent;
+			var parentnode = el.parentNode;
+			if (!parentnode)
+				return null;
+			// shadow element: https://dizilah.com/show/uc-kiz-kardes ("photos" / gallery)
+			if (parentnode.host)
+				return parentnode.host;
+			return null;
+		};
+		var get_element_children = function(el) {
+			var children = el.children;
+			if (children.length)
+				return children;
+			// shadow element: https://dizilah.com/show/uc-kiz-kardes ("photos" / gallery)
+			if (el.shadowRoot)
+				return el.shadowRoot.children;
+			return children;
+		};
 		var get_next_in_gallery_generic = function(el, nextprev) {
 			if (!el)
 				return null;
+			var elparent = get_element_parent(el);
 			// https://www.gog.com/game/shadow_warrior_complete
 			// "Buy series" gallery
-			if (array_indexof(["SOURCE", "IMG"], el.tagName) >= 0 && el.parentElement && array_indexof(["PICTURE", "VIDEO"], el.parentElement.tagName) >= 0) {
-				el = el.parentElement;
+			if (array_indexof(["SOURCE", "IMG"], el.tagName) >= 0 && elparent && array_indexof(["PICTURE", "VIDEO"], elparent.tagName) >= 0) {
+				el = elparent;
 			}
 			var stack = [el.tagName];
 			var current_el = el;
@@ -84528,7 +84607,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (!nextprev)
 						next = current_el.previousElementSibling;
 					if (!next) {
-						current_el = current_el.parentElement;
+						current_el = get_element_parent(current_el);
 						if (!current_el)
 							break;
 						stack.unshift(current_el.tagName);
@@ -84545,19 +84624,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							return current_el;
 						continue;
 					}
+					var current_children = get_element_children(current_el);
 					if (nextprev) {
-						for (var i = 0; i < current_el.children.length; i++) {
-							if (gallery_similar_tagname(current_el.children[i].tagName, stack[1])) {
-								current_el = current_el.children[i];
+						for (var i = 0; i < current_children.length; i++) {
+							if (gallery_similar_tagname(current_children[i].tagName, stack[1])) {
+								current_el = current_children[i];
 								stack.shift();
 								firstchild = true;
 								break;
 							}
 						}
 					} else {
-						for (var i = current_el.children.length - 1; i >= 0; i--) {
-							if (gallery_similar_tagname(current_el.children[i].tagName, stack[1])) {
-								current_el = current_el.children[i];
+						for (var i = current_children.length - 1; i >= 0; i--) {
+							if (gallery_similar_tagname(current_children[i].tagName, stack[1])) {
+								current_el = current_children[i];
 								stack.shift();
 								firstchild = true;
 								break;
