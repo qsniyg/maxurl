@@ -75,7 +75,7 @@ var __assign = (this && this.__assign) || function() {
 // @description:zh-TW 為10,000多個網站查找更大或原始圖像
 // @description:zh-HK 為10,000多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2025.12.1
+// @version           2026.2.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -113,7 +113,7 @@ var __assign = (this && this.__assign) || function() {
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@52bc8d248af4519c8bd81b2c40445b6682838612/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@a255b5a8bf5f97fe50b7716a4525e8cb3f3a0a86/build/rules.js
 // ==/UserScript==
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
 //   * Detecting whether or not the destination URL exists before redirecting
@@ -192,10 +192,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// channels
 			map: false,
 			cache: false,
-			bigimage_recursive: true,
+			bigimage_recursive: false,
 			input: false,
 			check_image_get: false,
-			find_source: false
+			find_source: true
 		};
 		console.log("Loaded");
 	}
@@ -223,13 +223,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
 	var imu_icon = "https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png";
-	var current_version = "2025.12.1";
+	var current_version = "2026.2.0";
 	var imagetab_ok_override = false;
 	var has_ffmpeg_lib = true;
 	// -- Currently this is unused, it'll be used in a future release (to workaround the 1MB and 2MB limits for OUJS and Greasyfork respectively) --
 	// This is only set for the Greasyfork/OUJS versions if it fails to @require the rules (contents of bigimage).
 	// The likely causes would be either a CDN failure, or that the userscript manager doesn't support @require.
 	var require_rules_failed = false;
+	var get_node_window = function() {
+		return {
+			location: "https://qsniyg.github.io/maxurl/node.html" // fake
+		};
+	};
 	var get_raw_window = function() {
 		if (typeof (unsafeWindow) !== "undefined")
 			return unsafeWindow || this.window || window;
@@ -1651,7 +1656,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	} else if (typeof (GM_xmlhttpRequest) !== "undefined") {
 		// idol.sankakucomplex.com overrides array.prototype.reduce
 		// not an issue for newer Violentmonkey versions
-		if (userscript_manager === "Violentmonkey" && version_compare(userscript_manager_version, "2.12.7") <= 0) {
+		if (userscript_manager === "Violentmonkey" && version_compare(userscript_manager_version, "2.12.7") > 0) {
 			do_request_raw = function(data) {
 				var orig_cbs = {};
 				var is_native = function(x) {
@@ -1693,7 +1698,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 				return GM_xmlhttpRequest(data);
 			};
-		} else if (userscript_manager === "Tampermonkey") {
+		} else if (userscript_manager === "Tampermonkey" ||
+			// Violentmonkey 2.31.6+ crashes on data URLs, due to this commit: https://github.com/violentmonkey/violentmonkey/commit/41fb13fb1d25ed01fae36665933263b0bd7759f0
+			(userscript_manager === "Violentmonkey" && version_compare(userscript_manager_version, "2.31.6") <= 0)) {
 			// Tampermonkey has a bug where requesting data: urls hangs
 			do_request_raw = function(data) {
 				if (/^data:/.test(data.url) && do_request_browser) {
@@ -1727,13 +1734,21 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				port = portmatch[2] | 0;
 			}
 			var path = request.url.match(/^[a-z]+:\/\/[^/]+(\/.*)?$/)[1] || "/";
+			var headers = deepcopy(request.headers);
+			var base_headers = {
+				"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.3"
+			};
+			for (var headername in base_headers) {
+				if (headerobj_get(headers, headername) === void 0)
+					headerobj_set(headers, headername, base_headers[headername]);
+			}
 			var req = our_http.request({
 				hostname: hostname,
 				port: port,
 				method: method,
 				path: path,
-				// FIXME: add realistic browser headers, cookie jar
-				headers: request.headers
+				// FIXME: add cookie jar
+				headers: headers
 			}, function(res) {
 				var chunks = [];
 				res.on("data", function(chunk) {
@@ -2568,11 +2583,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			data = new Uint8Array(Math_max(content_length, resp.response.byteLength));
 			data.set(new Uint8Array(resp.response), 0);
+			if ("content-type" in headers && headers["content-type"]) {
+				mime = headers["content-type"];
+			}
 			if (resp.response.byteLength >= content_length) {
 				return final_cb(resp);
-			}
-			if ("content-type" in headers) {
-				mime = headers["content-type"];
 			}
 			if (do_progress)
 				ip.total_size = content_length;
@@ -7496,6 +7511,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		// thanks to lnp5131 on github for the idea: https://github.com/qsniyg/maxurl/issues/421
 		mouseover_trigger_enabledisable_toggle: "disable",
 		mouseover_trigger_prevent_key: ["shift"],
+		// thanks to pendrive on discord for the idea:
+		mouseover_trigger_when_active: false,
 		// also thanks to blue-lightning: https://github.com/qsniyg/maxurl/issues/16
 		mouseover_close_behavior: "esc",
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-436594057
@@ -7828,6 +7845,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		settings.redirect = false;
 		settings.allow_apicalls = false;
 		settings.website_request_enable_button = false;
+		// because mozilla's review takes ~a week on average, it will notify users of an update that's unavailable
+		settings.check_updates = false;
 	}
 	var sensitive_settings = [
 		"tumblr_api_key"
@@ -8415,6 +8434,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				mouseover_trigger_behavior: "mouse"
 			},
 			type: "keysequence",
+			category: "popup",
+			subcategory: "trigger"
+		},
+		mouseover_trigger_when_active: {
+			name: "Allow trigger with existing popup",
+			description: "Allows a new popup to be triggered when an existing popup is already active. This will close the existing popup and create a new popup.",
+			requires: {
+				mouseover: true,
+				mouseover_trigger_behavior: "keyboard"
+			},
 			category: "popup",
 			subcategory: "trigger"
 		},
@@ -12270,6 +12299,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		return protocol_split[0] + "://" + newsplitted.join("/");
 	}
 	var is_valid_resource_url = function(url) {
+		if (/^#/.test(url))
+			return false;
 		var match = url.match(/^([-a-z]+):/);
 		if (match) {
 			var valid_schemes = ["http", "https", "ftp", "data", "x-raw-image", "blob", "chrome", "file"];
@@ -12483,7 +12514,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			for (var i = 0; i < extensions.length; i++) {
 				if (!prefer_order && ext === extensions[i])
 					continue;
-				var currenturl = basename + "." + extensions[i] + query;
+				var currenturl = basename;
+				if (extensions[i] !== "")
+					currenturl += "." + extensions[i];
+				currenturl += query;
 				if (typeof currentobj === "string") {
 					result.push(currenturl);
 				} else {
@@ -13584,11 +13618,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		},
 		"shaka": {
 			name: "shaka.debug",
-			url: "https://raw.githubusercontent.com/qsniyg/maxurl/a4ca480a6cc503792762b4343f2f855cdf9cf48a/lib/shaka.debug.js",
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/c669411a3d04b319c057de13942896d10f886568/lib/shaka.debug.js",
 			archive_time: "20210215220612",
-			size: 1270454,
-			crc32: 2187951259,
-			crc32_size: 3680154806,
+			size: 1876094,
+			crc32: 2406332787,
+			crc32_size: 2190882486,
 			xhr: true
 		},
 		"cryptojs_aes": {
@@ -16821,12 +16855,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				console_error("Unable to fetch CryptoJS");
 				return cb(null);
 			}
+			var str;
 			try {
-				return cb(CryptoJS.MD5(text).toString());
+				str = CryptoJS.MD5(text).toString();
 			} catch (e) {
 				console_error(e);
 				return cb(null);
 			}
+			return cb(str);
 		});
 	};
 	common_functions["get_tiktok_urlvidid"] = function(url) {
@@ -18331,7 +18367,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			options.videotag = true;
 		var sources = { video: [], image: [], subtitles: [] };
 		if (options.videotag) {
-			var newsources = common_functions["get_videotag_sources"](resp.responseText);
+			var newsources = common_functions["get_videotag_sources"](options.videotag_txt || resp.responseText);
 			if (!options.ogvideo || newsources) {
 				sources = newsources;
 			} else if (!options.ogvideo)
@@ -18468,21 +18504,33 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return null;
 			}
 		}
-		//var match = jwplayerstr.match(/\.setup\({[\s\S]*?file:\s*"([^"]+)"[,}]/);
-		var match = jwplayerstr.match(/\.setup\s*\(({[\s\S]*?\"?file\"?:\s*"[\s\S]*?})\);/);
-		if (!match) {
-			console_error("Unable to find jwplayer match for", { resp: resp, jwplayerstr: jwplayerstr });
-			return null;
-		}
-		// remove comments
-		var jsontext = match[1].replace(/\n\s*\/\/.*/ig, "");
-		var proper_json = fixup_js_obj_proper(jsontext);
 		var json = null;
-		try {
-			json = JSON_parse(proper_json);
-		} catch (e) {
-			console_error(e, { resp: resp, proper_json: proper_json, jwplayerstr: jwplayerstr });
-			return null;
+		var jsontext = null;
+		if (options.setupobj) {
+			if (typeof options.setupobj === "string") {
+				jsontext = options.setupobj;
+			} else {
+				json = options.setupobj;
+			}
+		} else {
+			//var match = jwplayerstr.match(/\.setup\({[\s\S]*?file:\s*"([^"]+)"[,}]/);
+			var match = jwplayerstr.match(/\.setup\s*\(({[\s\S]*?\"?file\"?:\s*"[\s\S]*?})\);/);
+			if (!match) {
+				console_error("Unable to find jwplayer match for", { resp: resp, jwplayerstr: jwplayerstr });
+				return null;
+			}
+			jsontext = match[1];
+		}
+		if (jsontext) {
+			// remove comments
+			jsontext = jsontext.replace(/\n\s*\/\/.*/ig, "");
+			var proper_json = fixup_js_obj_proper(jsontext);
+			try {
+				json = JSON_parse(proper_json);
+			} catch (e) {
+				console_error(e, { resp: resp, proper_json: proper_json, jwplayerstr: jwplayerstr });
+				return null;
+			}
 		}
 		var videotype = true;
 		var jsonsources = json.sources;
@@ -18491,6 +18539,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (json.playlist) {
 				// FIXME: support other playlist entries
 				jsonsources = json.playlist[0].sources;
+			}
+		}
+		if (!jsonsources) {
+			// anonvideo.net
+			if (json.file) {
+				jsonsources = [{
+						file: json.file
+					}];
 			}
 		}
 		if (!jsonsources) {
@@ -18543,6 +18599,22 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			links[0].is_current = true;
 		}
 		return origobj;
+	};
+	common_functions["update_album_info_links_by_id"] = function(obj, wanted, regex) {
+		var get_id = function(x) {
+			if (!x)
+				return null;
+			var match = x.match(regex);
+			if (!match)
+				return null;
+			return match[1];
+		};
+		var wanted_id = get_id(wanted);
+		if (!wanted_id)
+			return obj;
+		return common_functions["update_album_info_links"](obj, function(x) {
+			return get_id(x) === wanted_id;
+		});
 	};
 	common_functions["run_msml_op"] = function(state, process_data, cb) {
 		var matches = state.matches;
@@ -19261,6 +19333,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "nitter.koyu.space" ||
 			domain === "nitter.dark.fail" ||
 			domain === "nitter.poast.org" ||
+			domain === "cdn.xcancel.com" ||
 			//domain === "t.maisputain.ovh" ||
 			//domain === "nitter.weaponizedhumiliation.com" ||
 			domain === "nitter.snopyta.org";
@@ -19387,6 +19460,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "vide0.net" ||
 			domain_nowww === "d-s.io" ||
 			domain_nowww === "dsvplay.com" ||
+			domain_nowww === "myvidplay.com" ||
+			domain_nowww === "dooood.com" ||
 			domain_nowww === "doodstream.com";
 	};
 	// this requires removing everything before the thumbor url with /
@@ -19724,6 +19799,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 	};
+	common_functions["str_to_arr"] = function(str) {
+		var result = [];
+		for (var i = 0; i < str.length; i++) {
+			result.push(str.charCodeAt(i));
+		}
+		return result;
+	};
 	// -- end common_functions --
 	var get_domain_from_url = function(url) {
 		return url.replace(/^[a-z]+:\/\/([^/]*)(?:\/+.*)?$/, "$1");
@@ -19887,13 +19969,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "1mkahefo0io23542") {
+	            } else if (bigimage_obj.nonce !== "1hepc3kmp3c10149") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "1mkahefo0io23542"
+	                    message: "Bad nonce, expected: " + "1hepc3kmp3c10149"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -20541,6 +20623,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (el.tagName === "DIV" && el.classList.contains("photo-well-media-scrappy-view")) {
 						return true;
 					}
+					if (el.tagName === "DIV" && el.classList.contains("photo-well-media-view")) {
+						// thanks to anonymous for reporting:
+						// lightbox: https://www.flickr.com/photos/89028438@N05/8136511296/in/photostream/lightbox/
+						return {
+							el: el,
+							search: true
+						};
+					}
 					var current = el;
 					while ((current = current.parentElement)) {
 						if (current.tagName === "DIV" && current.classList.contains("restricted-interstitial")) {
@@ -20803,6 +20893,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			host_domain === "nitter.koyu.space" ||
 			host_domain === "nitter.dark.fail" ||
 			host_domain === "nitter.poast.org" ||
+			host_domain === "cdn.xcancel.com" ||
 			//host_domain === "t.maisputain.ovh" ||
 			//host_domain === "nitter.weaponizedhumiliation.com" ||
 			host_domain === "nitter.snopyta.org") ||
@@ -21060,9 +21151,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				element_ok: function(el) {
 					if (el.tagName.toUpperCase() === "BUTTON" && (el.classList.contains("gallery-inline__next-overlay") ||
 						el.classList.contains("gallery-inline__prev-overlay"))) {
-						var parent_13 = el.parentElement;
-						if (parent_13.classList.contains("gallery-inline__container")) {
-							var slides = parent_13.querySelector(".gallery-inline__slides");
+						var parent_15 = el.parentElement;
+						if (parent_15.classList.contains("gallery-inline__container")) {
+							var slides = parent_15.querySelector(".gallery-inline__slides");
 							return {
 								el: slides,
 								search: true
@@ -21192,10 +21283,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (el.tagName === "SOURCE")
 						el = el.parentElement;
 					if (el.tagName === "VIDEO" && el.parentElement) {
-						var parent_14 = el.parentElement;
-						if (parent_14.tagName === "DIV" && parent_14.classList.contains("Player-Video"))
-							parent_14 = parent_14.parentElement;
-						var img = parent_14.querySelector("IMG");
+						var parent_16 = el.parentElement;
+						if (parent_16.tagName === "DIV" && parent_16.classList.contains("Player-Video"))
+							parent_16 = parent_16.parentElement;
+						var img = parent_16.querySelector("IMG");
 						if (img)
 							return get_next_in_gallery(img, nextprev);
 					}
@@ -21219,6 +21310,34 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						var url_raw = match[2];
 						var url = unjson_str_1(unjson_str_1(url_raw));
 						real_api_cache.set("google_images:" + tbnid, url);
+					}
+				}
+			};
+		}
+		if (host_domain_nowww === "gundam.info") {
+			// thanks to KyuJuEX099 on discord for reporting:
+			return {
+				element_ok: function(el) {
+					if (el.tagName === "DIV" && el.classList.contains("image-wrapper")) {
+						return el.querySelector("div.item > img");
+					}
+				}
+			};
+		}
+		if (host_domain_nowww === "goloveai.com") {
+			// thanks to anonymous for reporting:
+			return {
+				element_ok: function(el) {
+					if (el.tagName === "BUTTON" ||
+						(el.tagName === "DIV" && el.classList.contains("relative"))) {
+						var imgs = el.querySelectorAll("img");
+						if (imgs.length === 1)
+							return imgs[0];
+						else
+							return {
+								el: el,
+								search: true
+							};
 					}
 				}
 			};
@@ -21307,8 +21426,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return obj;
 		obj = force_array(obj);
 		var newobj = [];
-		for (var _i = 0, obj_16 = obj; _i < obj_16.length; _i++) {
-			var url = obj_16[_i];
+		for (var _i = 0, obj_17 = obj; _i < obj_17.length; _i++) {
+			var url = obj_17[_i];
 			if (typeof (url) === "string") {
 				newobj.push(fullurl(currenturl, url));
 			} else {
@@ -22157,7 +22276,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			});
 		};
 		(function() { return __awaiter(_this_1, void 0, void 0, function() {
-			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_17, sobj, _a, queryobj_1, obj_18, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
+			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_18, sobj, _a, queryobj_1, obj_19, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
 			return __generator(this, function(_c) {
 				switch (_c.label) {
 					case 0:
@@ -22198,8 +22317,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							}
 						}
 						queryobj = [];
-						for (_i = 0, obj_17 = obj; _i < obj_17.length; _i++) {
-							sobj = obj_17[_i];
+						for (_i = 0, obj_18 = obj; _i < obj_18.length; _i++) {
+							sobj = obj_18[_i];
 							if (is_bad_url(sobj.url)) {
 								continue;
 							}
@@ -22207,9 +22326,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						}
 						// required to avoid querying an ok url twice
 						for (_a = 0, queryobj_1 = queryobj; _a < queryobj_1.length; _a++) {
-							obj_18 = queryobj_1[_a];
-							if (tried_urls.has(obj_18.url) && !is_bad_url(obj_18.url))
-								return [2 /*return*/, options.cb([obj_18], last_data)];
+							obj_19 = queryobj_1[_a];
+							if (tried_urls.has(obj_19.url) && !is_bad_url(obj_19.url))
+								return [2 /*return*/, options.cb([obj_19], last_data)];
 						}
 						if (!queryobj.length) {
 							if (_nir_debug_) {
@@ -26776,8 +26895,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						var uri = playlist.uri;
 						//console_log("Requesting", playlist.uri);
 						request_parsed_stream(info_obj, uri, function(data) {
-							if (!data)
+							if (!data) {
+								console_warn("Ignoring playlist:", uri, info_obj);
 								return cb(null);
+							}
 							var origattrs = playlist.attributes;
 							// should return just a playlist (not a manifest) object for m3u8
 							obj_extend(playlist, data);
@@ -26805,6 +26926,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				do_process(0, cb);
 			};
 			var get_downloadable_playlists = function(info_obj, manifest, cb) {
+				// manifest is already a playlist
+				if (!manifest.playlists && manifest.segments && manifest.segments.length) {
+					return cb({
+						video: manifest
+					});
+				}
 				get_actual_best_playlist(info_obj, manifest.playlists, function(playlist) {
 					if (!playlist)
 						return cb(null);
@@ -26870,11 +26997,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 			get_download_urls_from_infoobj = function(info_obj, cb) {
 				request_parsed_stream(info_obj, info_obj.url, function(manifest) {
-					if (!manifest)
+					if (!manifest) {
+						console_warn("get_download_urls_from_infoobj: Unable to request parsed manifest", { info_obj: info_obj });
 						return cb(null);
+					}
 					get_downloadable_playlists(info_obj, manifest, function(playlists) {
-						if (!playlists)
+						if (!playlists) {
+							console_warn("get_download_urls_from_infoobj: No downloadable playlists", { info_obj: info_obj, manifest: manifest });
 							return cb(null);
+						}
 						//console_log("playlists", playlists);
 						var urls = get_download_urls_from_playlists(info_obj, playlists);
 						//console_log("urls", urls);
@@ -27104,7 +27235,71 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 			// prefix in case multiple ops are running
 			var get_ffmpeg_prefix = function(prefix) {
-				return prefix + "_" + get_random_text(10) + "_";
+				return prefix + "_" + get_random_text(15) + "_";
+			};
+			// FIXME: should this be used?
+			var use_workerfs = false;
+			var ffmpeg_mount_file = function(ffmpeg, file) {
+				return __awaiter(this, void 0, void 0, function() {
+					var filename, dirname, blob;
+					return __generator(this, function(_a) {
+						switch (_a.label) {
+							case 0:
+								if (!!use_workerfs) return [3 /*break*/, 2];
+								filename = get_ffmpeg_prefix("mountfile");
+								return [4 /*yield*/, ffmpeg.writeFile(filename, file)];
+							case 1:
+								_a.sent();
+								return [2 /*return*/, filename];
+							case 2:
+								dirname = get_ffmpeg_prefix("mounted");
+								return [4 /*yield*/, ffmpeg.createDir(dirname)];
+							case 3:
+								_a.sent();
+								blob = new native_blob([file]);
+								return [4 /*yield*/, ffmpeg.mount("WORKERFS", {
+										blobs: [
+											{
+												data: blob,
+												name: "file"
+											}
+										]
+									}, dirname)];
+							case 4:
+								_a.sent();
+								return [2 /*return*/, dirname + "/file"];
+						}
+					});
+				});
+			};
+			var ffmpeg_unmount_file = function(ffmpeg, path) {
+				return __awaiter(this, void 0, void 0, function() {
+					var dirname, exists;
+					return __generator(this, function(_a) {
+						switch (_a.label) {
+							case 0:
+								if (!!use_workerfs) return [3 /*break*/, 2];
+								return [4 /*yield*/, ffmpeg.deleteFile(path)];
+							case 1:
+								_a.sent();
+								return [2 /*return*/];
+							case 2:
+								dirname = path.replace(/\/.*/, "");
+								return [4 /*yield*/, ffmpeg_fs_exists(ffmpeg, dirname)];
+							case 3:
+								exists = _a.sent();
+								if (!exists)
+									return [2 /*return*/];
+								return [4 /*yield*/, ffmpeg.unmount(dirname)];
+							case 4:
+								_a.sent();
+								return [4 /*yield*/, ffmpeg.deleteDir(dirname)];
+							case 5:
+								_a.sent();
+								return [2 /*return*/];
+						}
+					});
+				});
 			};
 			// files = array of {data: uint8array, mime: ...}, not filenames
 			var ffmpeg_concat = function(ffmpeg, files, cb) {
@@ -27126,10 +27321,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 									out.set(file.data, current_size);
 									current_size += file.data.byteLength;
 								}
-								ourfilename = get_ffmpeg_prefix("concat");
-								return [4 /*yield*/, ffmpeg.writeFile(ourfilename, out)];
+								return [4 /*yield*/, ffmpeg_mount_file(ffmpeg, out)];
 							case 1:
-								_b.sent();
+								ourfilename = _b.sent();
 								return [2 /*return*/, cb(ourfilename)];
 							case 2:
 								if (!ffmpeg)
@@ -27232,18 +27426,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					});
 				});
 			};
-			var ffmpeg_fs_size = function(ffmpeg, file) {
-				try {
-					var stat = ffmpeg.FS("stat", file);
-					if (!stat)
-						return null;
-					return stat.size;
-				} catch (e) {
-					//console_error(e);
-					return null;
-				}
-				;
-			};
 			var ffmpeg_fs_exists = function(ffmpeg, file) {
 				return __awaiter(this, void 0, void 0, function() {
 					var entries, _i, entries_1, entry;
@@ -27338,10 +27520,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 			ffmpeg_join = function(ffmpeg, datas, progress, cb) {
 				var streams = [];
-				if (datas.video)
+				if (datas.video) {
 					streams.push(datas.video);
-				if (datas.audio)
+					datas.video = null; // deref
+				}
+				if (datas.audio) {
 					streams.push(datas.audio);
+					datas.audio = null; // deref
+				}
 				if (!streams.length)
 					return cb(null);
 				var files = [];
@@ -27357,8 +27543,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								case 1:
 									if (!(_i < files_4.length)) return [3 /*break*/, 4];
 									filename = files_4[_i];
-									return [4 /*yield*/, ffmpeg.deleteFile(filename)];
+									//await ffmpeg.deleteFile(filename);
+									return [4 /*yield*/, ffmpeg_unmount_file(ffmpeg, filename)];
 								case 2:
+									//await ffmpeg.deleteFile(filename);
 									_a.sent();
 									_a.label = 3;
 								case 3:
@@ -27386,7 +27574,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				};
 				var process_stream = function(i) {
 					return __awaiter(this, void 0, void 0, function() {
-						var stream, filename;
+						var stream, next_stream, filename;
 						return __generator(this, function(_a) {
 							switch (_a.label) {
 								case 0:
@@ -27396,19 +27584,28 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 										progress((i / streams.length) * 0.5);
 									}
 									stream = streams[i];
+									streams[i] = null; // deref
+									next_stream = function() {
+										// deref current stream data
+										for (var i_26 = 0; i_26 < stream.length; i_26++) {
+											stream[i_26] = null;
+										}
+										set_timeout(function() {
+											process_stream(i + 1);
+										}, 1);
+									};
 									if (!!stream.length) return [3 /*break*/, 1];
 									// shouldn't happen?
 									console_warn("No stream data for", i);
-									process_stream(i + 1);
+									next_stream();
 									return [3 /*break*/, 4];
 								case 1:
 									if (!(stream.length === 1)) return [3 /*break*/, 3];
-									filename = prefix + "stream" + i;
-									return [4 /*yield*/, ffmpeg.writeFile(filename, stream[0].data)];
+									return [4 /*yield*/, ffmpeg_mount_file(ffmpeg, stream[0].data)];
 								case 2:
-									_a.sent();
+									filename = _a.sent();
 									files.push(filename);
-									process_stream(i + 1);
+									next_stream();
 									return [3 /*break*/, 4];
 								case 3:
 									// todo: progress
@@ -27416,7 +27613,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 										if (!filename)
 											return err();
 										files.push(filename);
-										process_stream(i + 1);
+										next_stream();
 									});
 									_a.label = 4;
 								case 4: return [2 /*return*/];
@@ -27451,11 +27648,60 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				process_stream(0);
 			};
 		})();
+		var has_1x1png_problem = function(info_obj) {
+			return info_obj.media_info && info_obj.media_info.problems && array_indexof(info_obj.media_info.problems, "1x1png") >= 0;
+		};
+		var fixup_respdata_for_streaming_infoobj = function(data, mime, info_obj) {
+			if (has_1x1png_problem(info_obj) && mime === "image/png") {
+				var arr = new Uint8Array(data);
+				while (true) {
+					var i_idx = arr.indexOf(73); // I
+					if (i_idx < 0)
+						break;
+					if (arr[i_idx + 1] === 69 && // E
+						arr[i_idx + 2] === 78 && // N
+						arr[i_idx + 3] === 68) { // D
+						var slice_idx = i_idx + 8;
+						// turtleviplay.xyz
+						for (; slice_idx < arr.length; slice_idx++) {
+							if (arr[slice_idx] !== 0xFF)
+								break;
+						}
+						// FIXME: this may not always work, but needed for shaka
+						for (; slice_idx < arr.length - 1; slice_idx++) {
+							if (arr[slice_idx] === 71 && // G
+								arr[slice_idx + 1] === 64) // @
+								break;
+						}
+						arr = arr.slice(slice_idx);
+						break;
+					} else {
+						arr = arr.slice(i_idx + 1);
+					}
+				}
+				return arr.buffer;
+			}
+			return data;
+		};
+		var fixup_resp_for_streaming_infoobj = function(resp, info_obj) {
+			var headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
+			var mime = headerobj_get(headers, "content-type");
+			var fixup = false;
+			if (has_1x1png_problem(info_obj) && mime === "image/png") {
+				resp.responseHeaders = resp.responseHeaders.replace(/(content-type: )image\/png/i, "$1video/mp2t");
+				fixup = true;
+			}
+			// check if arraybuffer
+			if (fixup && resp.response && resp.response.byteLength) {
+				resp.response = fixup_respdata_for_streaming_infoobj(resp.response, mime, info_obj);
+				resp.responseHeaders = resp.responseHeaders.replace(/(content-length: )[0-9]+/i, "$1" + resp.response.byteLength);
+			}
+		};
 		var download_playlist_urls;
 		(function() {
 			var download_single_urls = function(info_obj, single_urls, progress, cb) {
 				// for testing
-				//single_urls = single_urls.slice(0, 2);
+				//single_urls = single_urls.slice(0, 10);
 				var ip = new ImpreciseProgress({
 					elements_num: single_urls.length,
 					cb: progress
@@ -27487,7 +27733,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							running--;
 							//console_log("got", url, data);
 							if (!data)
-								cb(false);
+								return cb(false);
+							data.data = new Uint8Array(fixup_respdata_for_streaming_infoobj(data.data.buffer, data.mime, info_obj));
 							urls_data[url] = data;
 							cb(true);
 						},
@@ -27507,6 +27754,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						var out_urls = [];
 						for (var _i = 0, single_urls_1 = single_urls; _i < single_urls_1.length; _i++) {
 							var url = single_urls_1[_i];
+							if (!(url in urls_data)) {
+								console_warn("Unable to download chunk:", url);
+								continue;
+							}
 							out_urls.push(urls_data[url]);
 						}
 						return cb(out_urls);
@@ -27518,7 +27769,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							finished++;
 							if (do_stop)
 								return;
-							if (!succeeded) {
+							if (false && !succeeded) {
 								stop();
 								return cb(null);
 							} else {
@@ -27560,6 +27811,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						// todo: improve check?
 						if (Object.keys(final_data).length === Object.keys(urls).length) {
 							cb(final_data);
+						} else {
+							console_warn("Mismatched type keys");
+							cb(null);
 						}
 					});
 				});
@@ -27594,7 +27848,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var add_xhr_hook = function(lib, info_obj) {
 				if (lib.overridden_xhr) {
 					lib.xhr.do_request = function(data) {
-						do_request(override_request(data, info_obj));
+						var req = override_request(data, info_obj);
+						if (has_1x1png_problem(info_obj)) {
+							var orig_onload_1 = req.onload;
+							req.onload = function(resp) {
+								fixup_resp_for_streaming_infoobj(resp, info_obj);
+								orig_onload_1(resp);
+							};
+						}
+						do_request(req);
 					};
 				}
 			};
@@ -27614,6 +27876,39 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (!shaka.Player.isBrowserSupported()) {
 						console_warn("Unsupported browser for Shaka");
 						return fail();
+					}
+					try {
+						var override_mime_1 = null;
+						if (info_obj.media_info.delivery === "hls")
+							override_mime_1 = "application/x-mpegurl";
+						else if (info_obj.media_info.delivery === "dash")
+							override_mime_1 = "application/dash+xml";
+						if (override_mime_1) {
+							var origfactory_1 = shaka.media.ManifestParser.getFactory;
+							// upload18.com returns text/html
+							shaka.media.ManifestParser.getFactory = function(url, mime) {
+								if (!mime)
+									mime = override_mime_1;
+								return origfactory_1(url, mime);
+							};
+						}
+					} catch (e) {
+						console_error(e);
+					}
+					if (has_1x1png_problem(info_obj)) {
+						try {
+							// kamehamehaa.xyz
+							var orig_createseg_1 = shaka.hls.HlsParser.prototype.createSegmentReference_;
+							shaka.hls.HlsParser.prototype.createSegmentReference_ = function(a, b, c, d, e, f, g, h, k, l) {
+								if (!k)
+									k = "video/mp2t";
+								return orig_createseg_1.bind(this)(a, b, c, d, e, f, g, h, k, l);
+							};
+							shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("png", "video/mp2t");
+							shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set(null, "video/mp2t");
+						} catch (e) {
+							console_error(e);
+						}
 					}
 					add_xhr_hook(_shaka, info_obj);
 					var player = new shaka.Player(el);
@@ -28085,18 +28380,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 															console.error("Invalid regex stage:", { stage: stage, c: c, regexval: regexval_1 });
 														}
 													};
-													for (var i_26 = 0; i_26 < regexval_1.length; i_26++) {
-														var c = regexval_1[i_26];
+													for (var i_27 = 0; i_27 < regexval_1.length; i_27++) {
+														var c = regexval_1[i_27];
 														var nextc = null;
-														if (i_26 + 1 < regexval_1.length)
-															nextc = regexval_1[i_26 + 1];
+														if (i_27 + 1 < regexval_1.length)
+															nextc = regexval_1[i_27 + 1];
 														if (stage === 2) {
 															commit(c);
 															continue;
 														}
 														if (c === "\\" && nextc === "/") {
 															commit("/");
-															i_26++;
+															i_27++;
 															continue;
 														}
 														if (c === "/") {
@@ -31786,13 +32081,35 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return true;
 			return false;
 		};
+		var get_element_parent = function(el) {
+			var parent = el.parentElement;
+			if (parent)
+				return parent;
+			var parentnode = el.parentNode;
+			if (!parentnode)
+				return null;
+			// shadow element: https://dizilah.com/show/uc-kiz-kardes ("photos" / gallery)
+			if (parentnode.host)
+				return parentnode.host;
+			return null;
+		};
+		var get_element_children = function(el) {
+			var children = el.children;
+			if (children.length)
+				return children;
+			// shadow element: https://dizilah.com/show/uc-kiz-kardes ("photos" / gallery)
+			if (el.shadowRoot)
+				return el.shadowRoot.children;
+			return children;
+		};
 		var get_next_in_gallery_generic = function(el, nextprev) {
 			if (!el)
 				return null;
+			var elparent = get_element_parent(el);
 			// https://www.gog.com/game/shadow_warrior_complete
 			// "Buy series" gallery
-			if (array_indexof(["SOURCE", "IMG"], el.tagName) >= 0 && el.parentElement && array_indexof(["PICTURE", "VIDEO"], el.parentElement.tagName) >= 0) {
-				el = el.parentElement;
+			if (array_indexof(["SOURCE", "IMG"], el.tagName) >= 0 && elparent && array_indexof(["PICTURE", "VIDEO"], elparent.tagName) >= 0) {
+				el = elparent;
 			}
 			var stack = [el.tagName];
 			var current_el = el;
@@ -31803,7 +32120,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (!nextprev)
 						next = current_el.previousElementSibling;
 					if (!next) {
-						current_el = current_el.parentElement;
+						current_el = get_element_parent(current_el);
 						if (!current_el)
 							break;
 						stack.unshift(current_el.tagName);
@@ -31820,19 +32137,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							return current_el;
 						continue;
 					}
+					var current_children = get_element_children(current_el);
 					if (nextprev) {
-						for (var i = 0; i < current_el.children.length; i++) {
-							if (gallery_similar_tagname(current_el.children[i].tagName, stack[1])) {
-								current_el = current_el.children[i];
+						for (var i = 0; i < current_children.length; i++) {
+							if (gallery_similar_tagname(current_children[i].tagName, stack[1])) {
+								current_el = current_children[i];
 								stack.shift();
 								firstchild = true;
 								break;
 							}
 						}
 					} else {
-						for (var i = current_el.children.length - 1; i >= 0; i--) {
-							if (gallery_similar_tagname(current_el.children[i].tagName, stack[1])) {
-								current_el = current_el.children[i];
+						for (var i = current_children.length - 1; i >= 0; i--) {
+							if (gallery_similar_tagname(current_children[i].tagName, stack[1])) {
+								current_el = current_children[i];
 								stack.shift();
 								firstchild = true;
 								break;
@@ -33451,8 +33769,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							sources = [];
 							source_el_set = new_set();
 							_find_source = function(source_el) {
-								for (var _i = 0, sources_2 = sources; _i < sources_2.length; _i++) {
-									var src = sources_2[_i];
+								for (var _i = 0, sources_3 = sources; _i < sources_3.length; _i++) {
+									var src = sources_3[_i];
 									if (src.el === source_el)
 										return src;
 								}
@@ -33501,8 +33819,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								return remove_source_el(source.el);
 							};
 							reposition_source_outlines = function() {
-								for (var _i = 0, sources_3 = sources; _i < sources_3.length; _i++) {
-									var source = sources_3[_i];
+								for (var _i = 0, sources_4 = sources; _i < sources_4.length; _i++) {
+									var source = sources_4[_i];
 									var rect = source._real_el.getBoundingClientRect();
 									var outline_el = source._outline_el;
 									if (!outline_el)
@@ -33531,8 +33849,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								if (!sources.length)
 									return;
 								override_album = [];
-								for (var _i = 0, sources_4 = sources; _i < sources_4.length; _i++) {
-									var source = sources_4[_i];
+								for (var _i = 0, sources_5 = sources; _i < sources_5.length; _i++) {
+									var source = sources_5[_i];
 									override_album.push(source.el);
 								}
 								trigger_popup_with_source(sources[0], options);
@@ -34537,6 +34855,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				start_waiting();
 				get_download_urls_from_infoobj(popup_obj, function(urls) {
 					if (!urls) {
+						console_warn("download_popup_media: No urls");
 						cursor_not_allowed();
 						return;
 					}
@@ -34544,6 +34863,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					// todo: only request ffmpeg if necessary
 					get_ffmpeg(function(ffmpeg) {
 						if (!ffmpeg) {
+							console_warn("download_popup_media: Unable to load ffmpeg");
 							cursor_not_allowed();
 							return;
 						}
@@ -35068,22 +35388,24 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					array_foreach(triggers, function(trigger, i) {
 						if (!event_in_chord(event, trigger))
 							return;
-						if (trigger_complete(trigger) && !popups_active) {
-							// clear timeout so that all/any close behavior works
-							current_chord_timeout = {};
-							if (!delay_handle) {
-								actions.push({
-									requires_mouse: true,
-									type: "trigger_popup",
-									trigger: "keyboard"
-								});
-								ret = false;
-								release_ignore = trigger;
-							}
-							trigger_id = i ? (i + 1) : null;
-							if (get_tprofile_setting("mouseover_open_behavior") !== "popup") {
-								// especially relevant for new tab
-								clear_chord();
+						if (trigger_complete(trigger)) {
+							if (settings.mouseover_trigger_when_active || !popups_active) {
+								// clear timeout so that all/any close behavior works
+								current_chord_timeout = {};
+								if (!delay_handle) {
+									actions.push({
+										requires_mouse: true,
+										type: "trigger_popup",
+										trigger: "keyboard"
+									});
+									ret = false;
+									release_ignore = trigger;
+								}
+								trigger_id = i ? (i + 1) : null;
+								if (get_tprofile_setting("mouseover_open_behavior") !== "popup") {
+									// especially relevant for new tab
+									clear_chord();
+								}
 							}
 						}
 						var close_behavior = get_close_behavior();

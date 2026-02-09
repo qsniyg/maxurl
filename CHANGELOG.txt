@@ -1,13 +1,14 @@
-2026.1.0 (in-dev)
+2026.2.0
 
 New features:
 
+ * Support for ~145 new websites (using ~75 new rules)
  * Add option to support opening a new popup when an existing popup is already active (disabled by default, thanks to pendrive for the idea)
- * Add generic video.js rule
 
 Improvements:
 
  * Various improvements/fixes to existing rules (including Discord, Flickr)
+ * Add generic video.js rule
  * Disable update check for AMO builds by default (#1542, thanks to alexolog for reporting)
  * Support shadow DOM for galleries
 
