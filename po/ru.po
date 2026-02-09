@@ -657,6 +657,14 @@ msgstr "Клавиша включения/отключения всплываю�
 msgid "Holding down this key will enable or disable the popup from being opened, depending on the 'Enable/disable toggle' setting"
 msgstr "Удерживание этой клавиши включит или отключит всплывающее окно, в зависимости от настройки 'Включить/Выключить'."
 
+#. mouseover_trigger_when_active.name
+msgid "Allow trigger with existing popup"
+msgstr ""
+
+#. mouseover_trigger_when_active.description
+msgid "Allows a new popup to be triggered when an existing popup is already active. This will close the existing popup and create a new popup."
+msgstr ""
+
 #. mouseover_allow_partial.name
 msgid "Allow showing partially loaded"
 msgstr "Разрешить показывать частично загруженные"

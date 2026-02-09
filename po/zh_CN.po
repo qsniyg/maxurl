@@ -657,6 +657,14 @@ msgstr "弹窗启用/禁用键"
 msgid "Holding down this key will enable or disable the popup from being opened, depending on the 'Enable/disable toggle' setting"
 msgstr "按住这个键将启用/禁用弹窗打开，具体取决于“启用/禁用切换开关”设置"
 
+#. mouseover_trigger_when_active.name
+msgid "Allow trigger with existing popup"
+msgstr ""
+
+#. mouseover_trigger_when_active.description
+msgid "Allows a new popup to be triggered when an existing popup is already active. This will close the existing popup and create a new popup."
+msgstr ""
+
 #. mouseover_allow_partial.name
 msgid "Allow showing partially loaded"
 msgstr "允许显示部分加载的内容"
