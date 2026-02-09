@@ -20,6 +20,7 @@ declare var GM_registerMenuCommand: Function;
 declare var GM_unregisterMenuCommand: Function;
 declare var GM_openInTab: Function;
 declare var GM_download: Function;
+declare var GM_cookie: Function;
 
 declare var GM: {
 	getValue: (key:string, default_value?:any)=>Promise<any>;
