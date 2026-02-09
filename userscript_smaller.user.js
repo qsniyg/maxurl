@@ -23886,6 +23886,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "images.elle.com.br" ||
 			domain === "img.vietcetera.com" ||
 			(domain_nowww === "mancover.xyz" && string_indexof(src, "/cover/") >= 0) ||
+			(domain === "static01.nyt.com" && /\/uploads\/+wp\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]+\/+/.test(src)) ||
 			domain === "cdn.entameclip.com") {
 			src = src.replace(/-[0-9]+x[0-9]+\.([^/]*(?:[?#].*)?)$/, ".$1");
 		}
@@ -71690,7 +71691,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/\?.*/, "");
 		}
 		if (domain_nosub === "tmcdn.co.nz") return src.replace(/(\/photoserver\/+)(?:[0-9]+x[0-9]+[a-z]?|med|large|full)\/+/, "$1plus/");
-		if (domain === "images.thalia.media") return src.replace(/(:\/\/[^/]+\/+)[^/]+\/+[^/]+\/+([0-9]+\/+)/, "$1-/BF-/$2");
+		if (domain === "images.thalia.media") return src.replace(/(:\/\/[^/]+\/+)[^/]+\/+[^/]+\/+([0-9a-f]+\/+)/, "$1-/BF-/$2");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
