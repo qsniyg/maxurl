@@ -1,10 +1,14 @@
 2026.2.1 (in-dev)
 
+New features:
+
+ * Popup icon beside media (#1570, disabled by default, thanks to PMiles for the idea)
+
 Bugfixes:
 
  * Don't use chunked downloads when can_multiple_request is disabled
 
-Special thanks to ValiumBear for their contributions and reports for this release
+Special thanks to ValiumBear, PMiles for their contributions and reports for this release
 
 ---
 
