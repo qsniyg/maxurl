@@ -3,10 +3,12 @@
 New features:
 
  * Popup icon beside media (#1570, disabled by default, thanks to PMiles for the idea)
+ * Auto-detect audio file extensions
 
 Bugfixes:
 
  * Don't use chunked downloads when can_multiple_request is disabled
+ * Fix num_in_gallery for gallery downloads with album_info
 
 Special thanks to ValiumBear, PMiles for their contributions and reports for this release
 
