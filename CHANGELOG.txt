@@ -3,6 +3,10 @@
 New features:
 
  * Popup icon beside media (#1570, disabled by default, thanks to PMiles for the idea)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Bing)
  * Auto-detect audio file extensions
 
 Bugfixes:
