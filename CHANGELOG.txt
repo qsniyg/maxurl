@@ -9,6 +9,7 @@ Bugfixes:
 
  * Don't use chunked downloads when can_multiple_request is disabled
  * Fix num_in_gallery for gallery downloads with album_info
+ * Fix downloading playlists with redirected URLs
 
 Special thanks to ValiumBear, PMiles for their contributions and reports for this release
 
