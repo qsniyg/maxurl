@@ -6,7 +6,7 @@ New features:
 
 Improvements:
 
- * Various improvements/fixes to existing rules (including Bing)
+ * Various improvements/fixes to existing rules (including Bing, Discord)
  * Auto-detect audio file extensions
 
 Bugfixes:
@@ -15,7 +15,7 @@ Bugfixes:
  * Fix num_in_gallery for gallery downloads with album_info
  * Fix downloading playlists with redirected URLs
 
-Special thanks to ValiumBear, PMiles, a-random-lemurian, remlap for their contributions and reports for this release
+Special thanks to ValiumBear, PMiles, a-random-lemurian, remlap, haz for their contributions and reports for this release
 
 ---
 
