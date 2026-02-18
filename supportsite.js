@@ -129,11 +129,7 @@ function reqsite_userid() {
     return reqsite_simplehash(fields_str.join("\n")).toString(16);
 }
 
-function reqsite_discord(siteurl, extrainfo, cb) {
-    if (!siteurl || typeof siteurl !== "string") {
-        return cb(false, "Invalid URL");
-    }
-
+function reqsite_discord_webhook(contents, cb) {
     // simple protection against web scrapers
     var webhookurl = reqsite_cipher(atob('FwsLDwxFUFAbFgwcEA0bURwQElAeDxZQCBodFxAQFAxQTk9GRk5ITEpKRktPTEdOS0ZMTVAOHE0cFUkKGSYmR0sQCBYqPD4bKRg3Mz4eCSYvCyk2Mw8rCTMlCEsQOBYGDRcwLTcFE0kRTAg8HAkGFkYqLgUQHigbEg=='));
 
@@ -141,7 +137,60 @@ function reqsite_discord(siteurl, extrainfo, cb) {
     request.open("POST", webhookurl, true);
     request.setRequestHeader("Content-Type", "application/json");
 
-    var domain = reqsite_get_domain(siteurl);
+    var params = {
+        username: "[Bot] Site Request",
+        content: contents.join("\n")
+    };
+
+    var handler = function(e) {
+        var status_string = request.status.toString();
+        if (status_string[0] !== "2") {
+            cb(false);
+        } else {
+            cb(true);
+        }
+    };
+
+    request.onload = handler;
+    request.onerror = handler;
+
+    request.send(JSON.stringify(params));
+}
+
+function reqsite_stoat_webhook(contents, cb) {
+    // simple protection against web scrapers
+    var webhookurl = reqsite_cipher(atob("FwsLDwxFUFAMCxAeC1EcFx4LUB4PFlAIGh0XEBAUDFBPTjQ3LDc6LSwuTDU+TScxNS48RjVLKSdKNVARLykJHEwKSzoPMUcqTSoFNhErKUgGKzEeGQ8xFk0rBRQPEi8+TCA8TA4NCU0pFDUuEzkFIBI+FBw4MTwwGC0I"));
+
+    var request = new XMLHttpRequest();
+    request.open("POST", webhookurl, true);
+    request.setRequestHeader("Content-Type", "application/json");
+
+    var params = {
+        masquerade: {
+            name: "[Bot] Site Request"
+        },
+        content: contents.join("\n")
+    };
+
+    var handler = function(e) {
+        var status_string = request.status.toString();
+        if (status_string[0] !== "2") {
+            cb(false);
+        } else {
+            cb(true);
+        }
+    };
+
+    request.onload = handler;
+    request.onerror = handler;
+
+    request.send(JSON.stringify(params));
+}
+
+function reqsite_discord(siteurl, extrainfo, cb) {
+    if (!siteurl || typeof siteurl !== "string") {
+        return cb(false, "Invalid URL");
+    }
 
     // to prevent discord from parsing the links
     var encodedurl = siteurl
@@ -158,22 +207,23 @@ function reqsite_discord(siteurl, extrainfo, cb) {
     if (extrainfo)
         contents.push("Extra: ```\n" + extrainfo + "\n```");
 
-    var params = {
-        username: "[Bot] Site Request",
-        content: contents.join("\n")
-    };
+    var webhook_cb = function(success) {
+        results++;
 
-    var handler = function(e) {
-        var status_string = request.status.toString();
-        if (status_string[0] !== "2") {
-            cb(false, "Unable to send message");
-        } else {
-            cb(true);
+        if (success)
+            successes++;
+
+        if (results >= 2) {
+            if (successes > 0) {
+                cb(true);
+            } else {
+                cb(false, "Unable to send message");
+            }
         }
-    };
+    }
 
-    request.onload = handler;
-    request.onerror = handler;
-
-    request.send(JSON.stringify(params));
+    var results = 0;
+    var successes = 0;
+    reqsite_discord_webhook(contents, webhook_cb);
+    reqsite_stoat_webhook(contents, webhook_cb);
 }
