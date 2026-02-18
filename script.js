@@ -74,6 +74,7 @@ var decodeuri_ifneeded = function(url) {
 };
 
 var ignore_input = false;
+var auto_request = false;
 // thanks to MillennialDIYer on github for the idea: https://github.com/qsniyg/maxurl/issues/665#url=test
 if (window.location.hash) {
   var lochash = window.location.hash;
@@ -86,6 +87,7 @@ if (window.location.hash) {
 
     lochash = lochash.replace(/#imu-request-site&/, "#");
     ignore_input = true;
+    auto_request = true;
   }
 
   var hash_urlmatch = lochash.match(/#url=(https?[:%][^#]*)(?:#.*)?$/);
@@ -172,7 +174,11 @@ function main_reqsupport(e) {
 
   maxspanel.innerHTML = "Requesting...";
 
-  reqsite_discord(url, null, function(status, msg) {
+  var extra_info = null;
+  if (auto_request)
+    extra_info = "autorequest";
+
+  reqsite_discord(url, extra_info, function(status, msg) {
     sent_requests[url] = true;
     sending_request = false;
 
