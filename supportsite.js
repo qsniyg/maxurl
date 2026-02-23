@@ -191,8 +191,13 @@ function reqsite_discord(siteurl, extrainfo, cb) {
     contents.push("User: `" + userid + "`");
     //contents.push("Domain: `" + domain + "`");
     contents.push("Link: `" + encodedurl + "`");
-    if (extrainfo)
-        contents.push("Extra: ```\n" + extrainfo + "\n```");
+    if (extrainfo) {
+        if (extrainfo.indexOf("\n") < 0) {
+            contents.push("Extra: `" + extrainfo.replace(/\\/g, "\\\\").replace(/`/g, "\\`") + "`");
+        } else {
+            contents.push("Extra: ```\n" + extrainfo + "\n```");
+        }
+    }
 
     var webhook_cb = function(success) {
         results++;
