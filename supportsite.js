@@ -46,19 +46,6 @@ var reqsite_invalid_domains = [
     // onion links aren't currently supported
     /\.onion(?:\.ly)?$/,
 
-    // Commonly requested NSFW domains.
-    /e-hentai\.org$/,
-    /coomer\.su$/,
-    /xhamster\.[a-z]+$/,
-    /pornhub\.com$/,
-    /viper(?:girls)\.to$/,
-    /kitty-kats\.net$/,
-    /onlyfans\.com$/,
-    /\.xhcdn\.com$/,
-    /imagefap\.com$/,
-    /xvideos\.[a-z]+$/,
-    /xnxx\.[a-z]+$/,
-
     // Frequently requested domains that are already supported.
     // If you encounter an issue with these, please open an issue on Github or message me.
     /i\.pinimg\.com$/
