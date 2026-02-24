@@ -21221,6 +21221,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain_nosub === "hotstar.com" && /^img[0-9]*\./.test(domain) && /\/image\/+upload\//.test(src)) ||
 			(domain === "static.ffx.io" && string_indexof(src, "/images/") >= 0) ||
 			domain === "cloudinary.images-iherb.com" ||
+			(domain === "media.jewson.co.uk" && string_indexof(src, "/product-images/") >= 0) ||
 			domain === "resource.logitechg.com") {
 			newsrc = src
 				.replace(/%2C/g, ",")
@@ -46158,6 +46159,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/(:\/\/[^/]+\/+)120\/+/, "$1160/");
 		}
 		if (domain === "s.mxmcdn.net") {
+			match = src.match(/\/dynamic-images\/+image\/+[0-9]+\/+[0-9]+\/+[^/]+\/+([^/]+?)(?:[?#].*)?$/);
+			if (match) {
+				return decodeuri_ifneeded(match[1]);
+			}
 			return src
 				.replace(/(\/images-storage\/.*\/[0-9]+_)(?:[89][0-9]{2}|1[01][0-9]{2})_(?:[89][0-9]{2}|1[01][0-9]{2})(\.[^/.]*)(?:[?#].*)?$/, "$11200_1200$2")
 				.replace(/(\/images-storage\/.*\/[0-9]+_)[0-7][0-9][0-9]_[0-7][0-9][0-9](\.[^/.]*)(?:[?#].*)?$/, "$1800_800$2")
@@ -71727,10 +71732,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain_nowww === "krakenfiles.com") {
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+embed-video\/+([0-9a-zA-Z]+)(?:[?#].*)?$/,
+				website_regex: [
+					/^[a-z]+:\/\/[^/]+\/+embed-video\/+([0-9a-zA-Z]+)(?:[?#].*)?$/,
+					/^[a-z]+:\/\/[^/]+\/+view\/+([0-9a-zA-Z]+)\/+file\.html(?:[?#].*)?$/,
+				],
 				query_for_id: function(id) {
 					return {
 						url: "https://" + domain + "/embed-video/" + id,
+						headers: {
+							"Accept-Language": "en-US,en;q=0.9",
+							"Sec-Fetch-Site": "none",
+							"Sec-Fetch-Storage-Access": ""
+						},
 						imu_mode: "document"
 					};
 				},
@@ -71747,10 +71760,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								Accept: "*/*",
 								"Accept-Language": "en-US,en;q=0.5",
 								"Accept-Encoding": "identity;q=1, *;q=0",
+								"Range": "bytes=0-",
 								Referer: url_15.url.replace(/^([a-z]+:\/\/[^/]+\/+).*$/, "$1"),
 								"Sec-Fetch-Dest": "video",
 								"Sec-Fetch-Mode": "no-cors",
-								"Sec-Fetch-Site": "cross-site"
+								"Sec-Fetch-Site": "cross-site",
+								"Sec-Fetch-Storage-Access": "none"
 							};
 							url_15.can_head = false;
 						}
@@ -72288,11 +72303,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				};
 			}
 		}
-		if (domain_nowww === "vidara.so") {
+		if (domain_nowww === "vidara.so" ||
+			domain_nowww === "vidara.to") {
 			var query_vidara_1 = function(id, cb) {
-				var page = "https://vidara.so/e/" + id;
+				var page = "https://" + domain + "/e/" + id;
 				api_query("vidara:" + id, {
-					url: "https://vidara.so/api/stream?filecode=" + id,
+					url: "https://" + domain + "/api/stream?filecode=" + id,
 					headers: {
 						Accept: "*/*",
 						Referer: page,
@@ -72355,6 +72371,83 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			match = src.match(/^([a-z]+:\/\/[^/]+\/+)(.*\/media\/.*)/);
 			if (match)
 				return match[1] + common_functions["get_thumbor_url"](match[2]);
+		}
+		if (domain_nosub === "loopnet.com" && /^images[0-9]*\./.test(domain)) {
+			return src.replace(/(\/i[0-9]+\/+[^/]+\/+)1[0-2][0-9]\/+/, "$1116/");
+		}
+		if (domain === "images.crexi.com") return src.replace(/(\/lease-assets\/+[0-9]+\/+[0-9a-f]{10,})_[0-9]*x[0-9]*(?:_resize)?\./, "$1.");
+		if (domain_nowww === "vinovo.to") {
+			var query_vinovo_1 = function(vidid, token, cb) {
+				api_query("vinovo:" + vidid, {
+					url: "https://vinovo.to/api/file/url/" + vidid,
+					data: "recaptcha=&token=" + token,
+					method: "POST",
+					imu_mode: "xhr",
+					headers: {
+						Accept: "*/*",
+						"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+						Origin: "https://" + domain,
+						Referer: "https://" + domain + "/e/" + vidid,
+						"Sec-Fetch-Dest": "empty",
+						"Sec-Fetch-Mode": "cors",
+						"Sec-Fetch-Site": "same-origin",
+						"X-Requested-With": "XMLHttpRequest"
+					},
+					json: true
+				}, cb, function(done, resp, cache_key) {
+					if (resp.status !== "ok" || !resp.token) {
+						console_error(cache_key, "Invalid status for", { resp: resp, vidid: vidid, token: token });
+						return done(null, false);
+					}
+					return done(resp.token, 60 * 60);
+				});
+			};
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+[ed]\/+([0-9a-z]+)(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/e/${id}",
+				process: function(done, resp, cache_key, match) {
+					var vidid = match[1];
+					var token = get_meta(resp.responseText, "token");
+					if (!token) {
+						console_error(cache_key, "Unable to get token from", resp);
+						return done(null, false);
+					}
+					var basematch = resp.responseText.match(/data-base="(https?:\/\/[^"]+)"/);
+					if (!basematch) {
+						console_error(cache_key, "Unable to find base URL for", resp);
+						return done(null, false);
+					}
+					var baseurl = decode_entities(basematch[1]) + "/stream/";
+					var urls = [];
+					var postermatch = resp.responseText.match(/poster="(https?:\/\/[^"]+)"/);
+					if (postermatch) {
+						urls.push(decode_entities(postermatch[1]));
+					}
+					var baseobj = {
+						extra: {
+							page: resp.finalUrl
+						}
+					};
+					var titlematch = resp.responseText.match(/data-title="([^"]+)"/);
+					if (titlematch) {
+						baseobj.extra.caption = decode_entities(titlematch[1]);
+					}
+					query_vinovo_1(vidid, token, function(streamtoken) {
+						if (!streamtoken)
+							return done(fillobj_urls(urls, baseobj), false);
+						urls.unshift({
+							url: baseurl + streamtoken,
+							video: true,
+							headers: {
+								Referer: resp.finalUrl
+							}
+						});
+						done(fillobj_urls(urls, baseobj), 60 * 60);
+					});
+				}
+			});
+			if (newsrc)
+				return newsrc;
 		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
