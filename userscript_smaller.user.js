@@ -21390,7 +21390,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					bad: "mask"
 				};
 			var split_amazon_url_1 = function(url) {
-				var match = url.match(/^(.*)(\.(?:_*(?:0_)?(?:[A-Z][A-Z0-9]|[A-Z]{2}[0-9]+\.[0-9]+|V_)[^/.]*[_.]+)+)(?<=\.)([^/.]+)(?:[?#].*)?$/);
+				var match = url.match(/^(.*)(\.(?:jpg_)?(?:_*(?:0_)?(?:[A-Z][A-Z0-9]|[A-Z]{2}[0-9]+\.[0-9]+|V_)[^/.]*[_.]+)+)(?<=\.)([^/.]+)(?:[?#].*)?$/);
 				if (!match)
 					return null;
 				return [match[1], match[2], match[3]];
@@ -21399,7 +21399,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var splitted = split_amazon_url_1(url);
 				if (!splitted)
 					return null;
-				var raw_directives = splitted[1].replace(/\./g, "_").replace(/_+/g, "_").split("_");
+				var raw_directives = splitted[1].replace(/^\.jpg_/, ".").replace(/\./g, "_").replace(/_+/g, "_").split("_");
 				var directives = [];
 				for (var i_1 = 0; i_1 < raw_directives.length; i_1++) {
 					var directive = raw_directives[i_1];
@@ -21463,6 +21463,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						directive.key === "QL" ||
 						directive.key === "V" ||
 						directive.key === "BG" || // background color
+						directive.key === "BO" ||
+						directive.key === "QL" || // quality
 						directive.key === "0" ||
 						directive.key === "CB") {
 						continue;
@@ -21705,7 +21707,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				};
 			}
 		}
-		if (/^google\./.test(domain_nosub) && /^books\./.test(domain)) {
+		if (/^google\./.test(domain_nosub) && /^books\./.test(domain) ||
+			domain === "play.google.com") {
 			if (/\/books\/+(?:publisher\/+)?content\?/.test(src)) {
 				var urls_2 = [];
 				newsrc = remove_queries(add_queries(src, { w: "99999" }), ["h", "imgtk", "edge"]);
@@ -21717,8 +21720,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						}
 					});
 				}
-				if (!/[?&]sig=/.test(src)) {
+				if (false && !/[?&]sig=/.test(src)) {
 					urls_2.unshift(remove_queries(add_queries(src, { img: "0", zoom: "0" }), ["w", "h", "imgtk", "edge"]));
+				}
+				if (/[?&]printsec=frontcover/.test(src)) {
+					var id_1 = get_queries(src).id;
+					if (id_1) {
+						urls_2.unshift("https://" + domain + "/books/publisher/content/images/frontcover/" + id_1);
+					}
 				}
 				if (urls_2.length)
 					return urls_2;
@@ -34509,9 +34518,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return newsrc;
 			match = src.match(/\/imgs\/+src\/+([0-9]+)(?:[?#].*)?$/);
 			if (false && match) {
-				var id_1 = match[1];
+				var id_2 = match[1];
 				var folder_id = zpadnum(match[1], 9);
-				return "https://images.merumo.ne.jp/" + folder_id.slice(0, 3) + "/" + folder_id.slice(3, 6) + "/" + folder_id.slice(6, 9) + "/" + id_1 + "_src_0.jpg";
+				return "https://images.merumo.ne.jp/" + folder_id.slice(0, 3) + "/" + folder_id.slice(3, 6) + "/" + folder_id.slice(6, 9) + "/" + id_2 + "_src_0.jpg";
 			}
 		}
 		if (domain === "images.merumo.ne.jp") return src.replace(/(\/(?:[0-9]{3}\/+){3}[0-9]+)_(?:[a-z]+|rect[0-9]*)((?:_[0-9]+)?\.)/, "$1_src$2");
@@ -38871,6 +38880,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "saintporn.com" ||
 			domain_nowww === "thehornygay.com" ||
 			domain_nowww === "everydayporn.com" ||
+			domain_nowww === "cloudbate.com" ||
 			domain_nosub === "mylust.com" ||
 			domain_nosub === "yourlust.com" ||
 			domain_nowww === "pornrewind.com") {
@@ -39101,6 +39111,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				domain_nosub === "x-video.tube" ||
 				domain_nosub === "nudebase.com" ||
 				domain_nosub === "pornwex.tv" ||
+				domain_nosub === "cloudbate.com" ||
 				domain_nosub === "porno666.cam") {
 				videos_component = "video";
 			} else if (domain_nosub === "anysex.com") {
@@ -45578,8 +45589,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nosub === "cmjornal.pt" ||
 			domain_nosub === "destakjornal.com.br" ||
 			domain_nosub === "maxima.pt" ||
-			src.match(/^[a-z]+:\/\/cdn[0-9]*\.[^/]*\/+images\/+[0-9]{4}-[0-9]{2}\/+img_[0-9]+x[0-9]+\$[0-9]{4}(?:_[0-9]{2}){5}_[0-9]+\.[^/.]*(?:[?#].*)?$/)) {
-			return src.replace(/(\/images\/+[0-9]{4}-[0-9]{2}\/+)img_[0-9]+x[0-9]+[$]/, "$1OriginalSize$");
+			src.match(/^[a-z]+:\/\/cdn[0-9]*\.[^/]*\/+images\/+[0-9]{4}-[0-9]{2}\/+img_[0-9]+x[0-9]+(?:[$]|uu)[0-9]{4}(?:_[0-9]{2}){5}_[0-9]+\.[^/.]*(?:[?#].*)?$/)) {
+			return src.replace(/(\/images\/+[0-9]{4}-[0-9]{2}\/+)img_[0-9]+x[0-9]+([$]|uu)/, "$1OriginalSize$2");
 		}
 		if (domain_nowww === "latestwall.com") {
 			newsrc = src
@@ -49335,6 +49346,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nosub === "erome.com" && /^s[0-9]*\./.test(domain)) {
 			return src.replace(/\/thumbs\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/$1");
 		}
+		if (host_domain_nowww === "erome.com" && options.element) {
+			if (options.element.tagName === "IMG" && !src) {
+				if (options.element.hasAttribute("data-src"))
+					return options.element.getAttribute("data-src");
+			}
+		}
 		if (domain_nosub === "bdsmlr.com") return src.replace(/(\/uploads\/+photos\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]+\/+[^/]*-[0-9]+-[a-zA-Z0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1-og$2");
 		if (domain_nowww === "sofurryfiles.com") {
 			newsrc = src.replace(/\/std\/+(?:thumb|preview)\?/, "/std/content?");
@@ -49770,9 +49787,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			newsrc = src.replace(/\?.*$/, "");
 			if (newsrc !== src)
 				return newsrc;
-			return src
-				.replace(/(\/product\/+[0-9]+\/+[0-9]+\/+)cover500\/+([a-z]*[0-9]+_)1\./i, "$1letslook/$2fl.")
-				.replace(/(\/product\/+[0-9]+\/+[0-9]+\/+)cover(?:sum|1[50]0|200|mini)\/+/i, "$1cover500/");
+			newsrc = src.replace(/(\/product\/+[0-9]+\/+[0-9]+\/+)cover(?:sum|1[50]0|200|mini)\/+/i, "$1cover500/");
+			if (newsrc !== src)
+				return newsrc;
+			newsrc = src.replace(/(\/product\/+[0-9]+\/+[0-9]+\/+)cover500\/+([a-z]*[0-9]+_)1\./i, "$1letslook/$2fl.");
+			if (newsrc !== src)
+				return [
+					newsrc,
+					newsrc.replace(/_fl(\.[a-z]+)$/, "_1$1")
+				];
 		}
 		if (domain === "book.interpark.com" ||
 			domain === "bimage.interpark.com") {
@@ -63254,8 +63277,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nosub === "dial4trade.com") {
 			var idmatch = src.match(/\/uploaded_files\/+product_images\/+(?:thumbs\/+)?[^/]+-([0-9]{5,})\./);
 			if (idmatch) {
-				var id_2 = parse_int(idmatch[1]);
-				if (id_2 >= 1846699492419) {
+				var id_3 = parse_int(idmatch[1]);
+				if (id_3 >= 1846699492419) {
 					return src.replace(/(\/product_images\/+)([^/]+)(?:[?#].*)?$/, "$1thumbs/$2");
 				} else {
 					return src.replace(/(\/product_images\/+)thumbs\/+([^/]+)(?:[?#].*)?$/, "$1$2");
@@ -67096,7 +67119,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain === "imaging.broadway.com") return src.replace(/(\/images\/+)[^/]+\/+[^/]+\/+([0-9]+-[0-9]+\.)/, "$1custom/$2");
 		if (domain === "cdn.kobo.com") {
-			return src.replace(/(\/book-images\/+[-0-9a-f]{10,}\/+)[0-9]+\/+[0-9]+\/+[0-9]+\/+(?:true|false)\/+/i, "$1");
+			newsrc = src.replace(/(\/book-images\/+[-0-9a-f]{10,}\/+)[0-9]+\/+[0-9]+\/+[0-9]+\/+(?:true|false)\/+/i, "$1");
+			if (newsrc !== src)
+				return newsrc;
+			return src.replace(/(\/book-images\/+[-0-9a-f]{10,}\/+.*?\.)(?:webp|jpg)(?:[?#].*)?$/, "$1png");
 		}
 		if (domain_nowww === "gofile.io" && options.do_request && options.cb) {
 			var get_gofile_website_token_1 = function(cb) {
@@ -72449,6 +72475,19 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc)
 				return newsrc;
 		}
+		if (domain_nowww === "brazenbooks.co.uk") {
+			if (/\/wp-content\/+uploads\//.test(src)) {
+				return {
+					url: src.replace(/(\/wp-content\/+uploads\/+[0-9]{4}\/+[0-9]{2}\/+[^/]+)-[0-9]+x[0-9]+_[a-z]+\./, "$1."),
+					headers: {
+						Accept: "*/*"
+					}
+				};
+			}
+		}
+		if (domain === "s.vgy.me") {
+			return src.replace(/:\/\/[^/]+\/+/, "://i." + domain_nosub + "/");
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -72581,6 +72620,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "thumbor.prod.telkku.com" ||
 			domain === "thumb.canalplus.pro" ||
 			domain === "cf.geekdo-images.com" ||
+			domain === "img.pressone.ro" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			src.match(/:\/\/[^/]*\/resizer\/[^/]*=\/(?:fit-in\/+)?[0-9]+x[0-9]+(?::[^/]*\/[0-9]+x[0-9]+)?\/(?:filters:[^/]*\/)?/)) {
 			newsrc = src.replace(/.*?\/(?:thumb(?:or)?|(?:new-)?resizer)\/.*?\/(?:filters(?::|%3A)[^/]*\/)?([a-z]*(?::|%3A)(?:\/|%2F){2}.*)/, "$1");
@@ -74599,6 +74639,44 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								el: el,
 								search: true
 							};
+					}
+				}
+			};
+		}
+		if (host_domain_nowww === "erome.com") {
+			// thanks to anonymous for reporting:
+			return {
+				element_ok: function(el) {
+					// pop up the video instead of the poster
+					// FIXME: should this be generic for video.js?
+					if (el.tagName === "DIV" && el.classList.contains("vjs-poster")) {
+						var parent_18 = el.parentElement;
+						if (parent_18) {
+							var videos = parent_18.querySelectorAll("video");
+							if (videos.length === 1)
+								return videos[0];
+						}
+					}
+					// get .img-box instead of .img-blur
+					// FIXME: is this needed?
+					if (el.tagName === "IMG" &&
+						el.parentElement && el.parentElement.tagName === "DIV" && el.parentElement.classList.contains("img-blur") &&
+						el.parentElement.parentElement && el.parentElement.parentElement.tagName === "DIV" && el.parentElement.parentElement.classList.contains("img")) {
+						var baseimg = el.parentElement.parentElement.querySelector(".img-box > img");
+						if (baseimg)
+							return baseimg;
+					}
+				},
+				gallery: function(el, nextprev) {
+					var parent = common_functions["get_parent_el_matching"](el, function(x) { return x.tagName === "DIV" && x.classList.contains("media-group"); });
+					if (parent) {
+						return {
+							el: get_nextprev_from_tree(parent, nextprev, [
+								{ tagName: "DIV", classList: ["media-group"] },
+								{ tagName: "DIV" }
+							], "div > .media-group"),
+							search: true
+						};
 					}
 				}
 			};
@@ -85238,47 +85316,47 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var have_something = false;
 				for (var j = 0; j < layers[i].length; j++) {
 					var source_url = layers[i][j];
-					var source = sources[source_url];
-					if (source.width && source.width > minW) {
-						minW = source.width;
-						elW = source;
+					var source_2 = sources[source_url];
+					if (source_2.width && source_2.width > minW) {
+						minW = source_2.width;
+						elW = source_2;
 						have_something = true;
 					}
-					if (source.height && source.height > minH) {
-						minH = source.height;
-						elH = source;
+					if (source_2.height && source_2.height > minH) {
+						minH = source_2.height;
+						elH = source_2;
 						have_something = true;
 					}
-					if (source.minWidth && source.minWidth > minMinW) {
-						minMinW = source.minWidth;
-						elMinW = source;
+					if (source_2.minWidth && source_2.minWidth > minMinW) {
+						minMinW = source_2.minWidth;
+						elMinW = source_2;
 						have_something = true;
 					}
-					if (source.minHeight && source.minHeight > minMinH) {
-						minMinH = source.minHeight;
-						elMinH = source;
+					if (source_2.minHeight && source_2.minHeight > minMinH) {
+						minMinH = source_2.minHeight;
+						elMinH = source_2;
 						have_something = true;
 					}
-					if (source.maxWidth && source.maxWidth > minMaxW) {
-						minMaxW = source.maxWidth;
-						elMaxW = source;
+					if (source_2.maxWidth && source_2.maxWidth > minMaxW) {
+						minMaxW = source_2.maxWidth;
+						elMaxW = source_2;
 					}
-					if (source.maxHeight && source.maxHeight > minMaxH) {
-						minMaxH = source.maxHeight;
-						elMaxH = source;
+					if (source_2.maxHeight && source_2.maxHeight > minMaxH) {
+						minMaxH = source_2.maxHeight;
+						elMaxH = source_2;
 					}
-					if (source.desc_x && source.desc_x > minX) {
-						minX = source.desc_x;
-						elX = source;
+					if (source_2.desc_x && source_2.desc_x > minX) {
+						minX = source_2.desc_x;
+						elX = source_2;
 						have_something = true;
 					}
-					if (source.dpi && source.dpi > minDpi) {
+					if (source_2.dpi && source_2.dpi > minDpi) {
 						//dpiX = source.dpi; // commenting out because dpiX doesn't exist
-						elDpi = source;
+						elDpi = source_2;
 						have_something = true;
 					}
-					if (source.isbg) {
-						okurls[source.src] = true;
+					if (source_2.isbg) {
+						okurls[source_2.src] = true;
 						have_something = true;
 					}
 				}
@@ -86144,8 +86222,31 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (helpers && helpers.gallery) {
 				gallery = function(el, nextprev) {
 					var value = helpers.gallery(el, nextprev);
-					if (value || value === null)
-						return value;
+					if (value || value === null) {
+						if (!value)
+							return value;
+						if (is_element(value)) {
+							value = {
+								el: value
+							};
+						}
+						if (value.search && value.el) {
+							// FIXME: copy-pasted from element_ok in _find_source
+							var rect = get_bounding_client_rect(value.el);
+							var point = [
+								rect.left + (rect.width / 2),
+								rect.top + (rect.height / 2)
+							];
+							var found_els = find_els_at_point(point, {
+								els_mode: "full",
+								els: [value.el]
+							});
+							var source = find_source(found_els);
+							if (source && source.el)
+								return source.el;
+						}
+						return value.el;
+					}
 					return get_next_in_gallery(el, nextprev);
 				};
 			}
@@ -86611,7 +86712,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			var do_replace = false;
 			if (el.tagName === "A") {
-				el = el;
 				if (options.plainlink_replace_link) {
 					el.href = newsrc;
 				}
@@ -86766,7 +86866,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					}
 				}
 			} else {
-				imgs = raw_imgs;
+				imgs = Array.from(raw_imgs);
 			}
 			if (imgs.length === 0)
 				return;
@@ -86848,7 +86948,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			var current_img_i = 0;
 			var next_img = function() {
-				var total_limit = parseInt(settings.replaceimgs_totallimit);
+				var total_limit = parse_int(settings.replaceimgs_totallimit);
 				if (currently_processing > total_limit) {
 					currently_processing--;
 					return;
@@ -86860,7 +86960,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var our_domain = null;
 				var now = Date.now();
 				for (var domain in domains) {
-					if (domains_processing[domain] >= parseInt(settings.replaceimgs_domainlimit)) {
+					if (domains_processing[domain] >= parse_int(settings.replaceimgs_domainlimit)) {
 						continue;
 					}
 					var delta = now - domains_lastrequest[domain];
@@ -86924,11 +87024,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var total_imgs = imgs.length;
 			for (var i = 0; i < imgs.length; i++) {
 				// fixme: if find_source only returns null, it will "hang" (progress bar will never close)
-				var source = find_source([imgs[i]], { links: options.support_plainlinks });
-				if (!source) {
+				var _source = find_source([imgs[i]], { links: options.support_plainlinks });
+				if (!_source) {
 					total_imgs--;
 					continue;
 				}
+				var source = _source;
 				source._replace_id = i;
 				if (!source.src) {
 					other.push(source);
