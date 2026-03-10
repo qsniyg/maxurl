@@ -15,7 +15,7 @@ Bugfixes:
  * Fix num_in_gallery for gallery downloads with album_info
  * Fix downloading playlists with redirected URLs
 
-Special thanks to ValiumBear, PMiles, a-random-lemurian, remlap, haz, fyhtma, sn3akyb3ar, Froktime, Gateway31 for their contributions and reports for this release
+Special thanks to ValiumBear, PMiles, a-random-lemurian, remlap, haz, fyhtma, sn3akyb3ar, Froktime, Gateway31, fireattack for their contributions and reports for this release
 
 ---
 
