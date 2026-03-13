@@ -8,6 +8,7 @@ Improvements:
 
  * Various improvements/fixes to existing rules (including Bing, Discord, iTunes)
  * Auto-detect audio file extensions
+ * Improve forced download detection when content-disposition is set to download
 
 Bugfixes:
 
