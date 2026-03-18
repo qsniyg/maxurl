@@ -21587,6 +21587,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nosub === "sportkp.ru" ||
 			domain === "cdn-live.foreignaffairs.com" ||
 			domain_nowww === "negrusty.pro" ||
+			domain === "information.tv5monde.com" ||
 			src.match(/\/sites\/[^/]*\/files2?\/styles\/[^/]*/) ||
 			src.match(/\/sites\/[^/]*\/files2?\/[^/]*\/styles\/[^/]*/) ||
 			src.match(/(?:(?:\/sites\/+[^/]*)?\/files\/+|\/sites\/+[^/]*\/+)imagecache\/+[^/]*|\/sites\/+[^/]*\/+public\/+styles\/+/) ||
@@ -72092,8 +72093,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return urljoin(src, decodeuri_ifneeded(newsrc), true);
 		}
 		if (domain === "img.moskvadsm.com") return src.replace(/(\/image\/+[0-9a-f]{10,}\/+)c\/+[0-9]+\/+[0-9]+\/*(?:[?#].*)?$/, "$1");
-		if (domain_nowww === "gigabyte.com") {
-			return src.replace(/(\/Image\/+[0-9a-f]{5,}\/+[^/]+\/+[0-9]+\/+)webp\/+[0-9]+\/*(?:[?#].*)?$/i, "$1");
+		if (domain_nowww === "gigabyte.com" ||
+			domain === "static.gigabyte.com") {
+			return src.replace(/(\/Image\/+(?:[a-z]+\/+)?[0-9a-f]{5,}\/+[^/]+\/+[0-9]+\/+)webp\/+[0-9]+\/*(?:[?#].*)?$/i, "$1");
 		}
 		if (domain === "media.hardwax.com") return src.replace(/(\/images\/+[0-9]+[a-z])(\.)/, "$1big$2");
 		if (domain_nosub === "gs-static.com") return src.replace(/(:\/\/[^/]+\/+products\/+)[0-9]{2,3}x[0-9]{2,3}(\/+[0-9]{4}\/+[0-9]{2}\/)/, "$14096x4096$2");
@@ -72583,6 +72585,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain_nowww === "vintageerotica.net") return src.replace(/(\/wp-content\/+gf-uploads\/+)preview-[a-z]+\/+([^/.]+)-[0-9]+\./, "$1$2.");
 		if (domain_nowww === "pagina12.com.ar") return src.replace(/(\/fotos\/+)thumb\/+[0-9]+\/+/, "$1");
+		if (domain === "i.fod.fujitv.co.jp") {
+			match = src.match(/\/synth\/+[^/]*,l=\([^)]*u=([^,)]+)/);
+			if (match) {
+				var decoded_11 = decodeURIComponent(match[1]);
+				return "https://" + domain + "/" + decoded_11.replace(/^[0-9]+\/+img\/+/, "img/");
+			}
+			return src.replace(/\/imf\/+synth\/+[^/]+\/+img\//, "/img/");
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
