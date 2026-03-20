@@ -40469,6 +40469,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "hosted.showybeauty.com" ||
 			domain_nowww === "sexyhairyvagina.com" ||
 			domain_nowww === "pronpic.org" ||
+			domain_nowww === "hqhairypictures.com" ||
 			domain_nowww === "teengalleries.mobi") {
 			return src.replace(/\/th_([0-9]+\.[^/.]*)$/, "/$1");
 		}
@@ -43448,6 +43449,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			}
 		}
+		if (domain_nowww === "hairypics.org") return src.replace(/(\/galleries\/+[^/]+\/+[0-9]+)t\./, "$1.");
 		if (domain === "img.insight.co.kr") return src.replace(/(\/static\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+)[0-9]+\/+([0-9a-z]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		if (domain_nowww === "express.de") return src.replace(/\/+image\/+([0-9]+)\/+[0-9]+x[0-9]+\/+[0-9]+\/+[0-9]+\/+([0-9a-f]+)\/+..\/+([^/.]*)(\.[^/]*)(?:[?#].*)?$/, "/blob/$1/$2/$3-data$4");
 		if (domain === "media.news.de") return src.replace(/:\/\/[^/]*\/(?:images\/+[0-9]+|resources)\/+images\/+([0-9a-f]{2}\/+[0-9a-f]{2}\/+)([0-9a-f]+)\/+.*(\.[^/.]*)(?:[?#].*)?$/, "://media.news.de/resources/images/$1$2$3");
@@ -72593,6 +72595,62 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			return src.replace(/\/imf\/+synth\/+[^/]+\/+img\//, "/img/");
 		}
+		if (domain_nowww === "freepornpicss.com") return src.replace(/(\/media\/+images\/+(?:[0-9a-f]\/+){4}[0-9a-f]{10,})-thumb(-[0-9]+\.)/, "$1$2");
+		if (domain_nowww === "pornwix.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video\.php\?(?:.*&)?video=([^&#]+)/,
+				query_for_id: function(id) {
+					return {
+						url: "https://" + domain + "/video.php?video=" + id,
+						headers: {
+							Referer: "https://" + domain + "/video/1-/",
+							"Sec-Fetch-Dest": "iframe",
+							"Sec-Fetch-Mode": "navigate",
+							"Sec-Fetch-Site": "same-origin"
+						},
+						imu_mode: "document"
+					};
+				},
+				process: function(done, resp, cache_key) {
+					var obj = common_functions["get_videotag_obj"](resp, {
+						ogvideo: false,
+						videotag: true
+					});
+					if (!obj)
+						return done(null, false);
+					return done(fillobj_urls(obj, {
+						headers: {
+							Accept: "*/*",
+							"Referer": "",
+							"Sec-Fetch-Dest": "empty",
+							"Sec-Fetch-Mode": "cors",
+							"Sec-Fetch-Site": "same-origin"
+						}
+					}), 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+([0-9]+)-[^/]*\/+(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/video/${id}-/",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<img[^>]*\sdata-video='([^']+)'/);
+					if (!match) {
+						console_error(cache_key, "Unable to find video frame match for", resp);
+						return done(null, false);
+					}
+					var frameurl = urljoin(resp.finalUrl, match[1], true);
+					return done({
+						url: frameurl,
+						is_pagelink: true
+					}, 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "graphicnews.com") return src.replace(/(\/media\/+[^/]+\/+[0-9]+\/+)[RT]\/+/, "$1C/");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
