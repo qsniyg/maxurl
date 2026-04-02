@@ -64048,7 +64048,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return src.replace(/(\/photos\/+\d+\/+)thumb(?:nail)?s\/+(.*)/i, "$1$2");
 		}
 		if (domain === "cdn.aniplaylist.com") return src.replace(/(\/thumbnails\/+[0-9a-f]+)@[0-9a-z]+\./, "$1.");
-		if (domain === "statics.tver.jp") return src.replace(/(\/images\/+content\/+thumbnail\/+[^/]+\/+)(?:small|medium|large)\/+/, "$1xlarge/");
+		if (domain === "statics.tver.jp" ||
+			domain === "image-cdn.tver.jp") {
+			newsrc = src.replace(/(:\/\/[^/]+\/+)[a-z]=[^/]+\/+images\/+/, "$1images/");
+			if (newsrc !== src)
+				return newsrc;
+			return src.replace(/(\/images\/+content\/+thumbnail\/+[^/]+\/+)(?:small|medium|large)\/+/, "$1xlarge/");
+		}
 		if (domain_nowww === "tver.jp") {
 			var query_tver_episode_1 = function(id, cb) {
 				api_query("tver:" + id, {
