@@ -23547,7 +23547,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain_nowww === "wnoz.de" && /\/imgs\//.test(src)) ||
 			domain === "assets.steadyhq.com" ||
 			((domain === "eu-images.contentstack.com" ||
-				domain === "au-images.contentstack.com" ||
+				(domain_nosub === "contentstack.com" && /-images\./.test(domain)) ||
 				domain === "images.blz-contentstack.com")
 				&& /\/v3\/+assets\//.test(src)) ||
 			domain === "img.projektn.sk" ||
@@ -38782,6 +38782,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nosub === "cambro.io" ||
 			domain_nosub === "camseek.tv" ||
 			domain_nowww === "camvideos.tv" ||
+			domain_nowww === "camvideos.org" ||
 			domain_nosub === "anysex.com" ||
 			domain_nosub === "mrdeepfakes.com" ||
 			domain_nosub === "pornktu.be" ||
@@ -39255,6 +39256,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 				detected_url = src;
 			}
+			var referer_1 = null;
+			if (domain_nowww === "camvideos.org") {
+				referer_1 = "https://www.camwhores.tv/";
+			}
 			cache_host = basedomain.replace(/^[a-z]+:\/\/(?:www\.)?([^/]+)\/*$/, "$1");
 			var fixup_function_url = function(flashvars) {
 				var global_fn_num = 0;
@@ -39633,9 +39638,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							console_error("Null url, ignoring");
 							return done(null, false);
 						}
+						var headers = undefined;
+						if (referer_1)
+							headers = {
+								Referer: referer_1
+							};
 						options.do_request({
 							url: url,
 							method: "GET",
+							headers: headers,
 							onload: function(resp) {
 								if (resp.readyState !== 4)
 									return;
@@ -40124,17 +40135,17 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			obj = {
 				url: newsrc
 			};
-			var referer_1 = "https://" + domain_nosub + "/"; // https is required for x-video.tube
+			var referer_2 = "https://" + domain_nosub + "/"; // https is required for x-video.tube
 			if (domain_nosub === "p7cdn.com") {
-				referer_1 = "https://www.sex-hd.xxx/";
+				referer_2 = "https://www.sex-hd.xxx/";
 			} else if (domain_nosub === "cdntrex.com") {
-				referer_1 = "";
+				referer_2 = "";
 			} else if (domain === "109.206.187.183" || domain_nosub === "porntb.com") {
-				referer_1 = "http://www.porntb.com/";
+				referer_2 = "http://www.porntb.com/";
 			} else {
 				obj.referer_ok = { same_domain: true };
 			}
-			obj.headers = { Referer: referer_1 };
+			obj.headers = { Referer: referer_2 };
 			if (string_indexof(src, "/get_file/") < 0)
 				return obj;
 		}
@@ -51986,30 +51997,27 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						tags.push("#" + tag.replace(/\s+/g, "-"));
 					}
 					var is_video = data.duration !== null;
-					return cb(fillobj_urls([
-						{
-							url: data.urls.hd,
-							headers: {
-								Referer: data._referer
-							},
-							can_head: false, // 403?
-							private: true,
-							video: is_video
+					var vidurls = [];
+					if (data.urls.hd)
+						vidurls.push(data.urls.hd);
+					if (data.urls.silent)
+						vidurls.push(data.urls.silent);
+					if (data.urls.sd)
+						vidurls.push(data.urls.sd); // sometimes hd doesn't work
+					var urls = fillobj_urls(vidurls, {
+						headers: {
+							Referer: data._referer
 						},
-						{
-							url: data.urls.sd, // sometimes hd doesn't work
-							headers: {
-								Referer: data._referer
-							},
-							can_head: false, // 403?
-							private: true,
-							video: is_video
-						},
-						{
+						can_head: false, // 403?
+						private: true,
+						video: is_video
+					});
+					if (data.urls.thumbnail)
+						urls.push({
 							url: data.urls.thumbnail,
 							private: true
-						}
-					], {
+						});
+					return cb(fillobj_urls(urls, {
 						extra: {
 							page: data._pagelink,
 							caption: tags.join(" ")
@@ -53473,16 +53481,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain_nowww === "24cos.com" ||
 			domain === "imgs.diercun.com") {
-			var referer_2 = "https://" + domain_nosub + "/";
+			var referer_3 = "https://" + domain_nosub + "/";
 			if (domain_nosub === "diercun.com") {
-				referer_2 = "https://www.24mntp.com/";
+				referer_3 = "https://www.24mntp.com/";
 			}
 			return {
 				url: src
 					.replace(/:\/\/imgs(\.[^/]+\/+[^/]+\/+[0-9]{4}\/+[0-9]{4}\/+[0-9]+\/+)m(24[a-z]+_[0-9]+\.[^/.]+)(?:[?#].*)?$/, "://bimg$1$2")
 					.replace(/(\/+[0-9]{4}\/+[0-9]{4}\/+[0-9]+\/+)m(24[a-z]+_[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2"),
 				headers: {
-					Referer: referer_2
+					Referer: referer_3
 				}
 			};
 		}
