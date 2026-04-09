@@ -72995,6 +72995,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (domain_nowww === "volume.at") return src.replace(/(\/cdn\/+gallery\/+[0-9]{4}\/+[0-9]{2}\/+[^/]+)-[0-9]+x[0-9]+__[a-z]+_x[0-9]+\./, "$1.");
+		if (domain === "d3s3zh7icgjwgd.cloudfront.net") return src.replace(/(\/[0-9]+\/+[^/.?#]+)_(?:Thumb|LargeLandscape|Main)\./, "$1.");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
