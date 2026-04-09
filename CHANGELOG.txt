@@ -17,7 +17,7 @@ Bugfixes:
  * Fix downloading playlists with redirected URLs
  * Fix custom gallery detection for img elements with srcsets
 
-Special thanks to ValiumBear, PMiles, a-random-lemurian, remlap, haz, fyhtma, sn3akyb3ar, Froktime, Gateway31, fireattack, abc1763613206, karpuzikov, newstarshipsmell, nimbuz, ChipFIN, sunshinespecialist, Skye, Fractal-Infinity, liamengland1 for their contributions and reports for this release
+Special thanks to ValiumBear, PMiles, a-random-lemurian, remlap, haz, fyhtma, sn3akyb3ar, Froktime, Gateway31, fireattack, abc1763613206, karpuzikov, newstarshipsmell, nimbuz, ChipFIN, sunshinespecialist, Skye, Fractal-Infinity, liamengland1, in-the-halfway for their contributions and reports for this release
 
 ---
 
