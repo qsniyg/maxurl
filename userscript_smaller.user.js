@@ -21306,8 +21306,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nowww === "chanel.com" ||
 			domain_nosub === "mynewsdesk.com" ||
 			(domain === "assets.digitalcontent.marksandspencer.app" && /\/image(?:s|\/+upload)\/+/.test(src)) ||
+			domain === "images.confetticdn.com" ||
 			domain === "img.olympics.com") {
-			return src.replace(/(\/(?:images\/+(?:image\/+private\/+)?|image\/+upload\/+))(?:(?:q|fl?|dpr|w|h|t|c|ar|g)_[^/]+\/+)+/, "$1c_limit/");
+			return src.replace(/(\/(?:images\/+(?:image\/+private\/+)?|image\/+upload\/+|images\/+scale\/+))(?:(?:q|fl?|dpr|w|h|t|c|ar|g)_[^/]+\/+)+/, "$1c_limit/");
 		}
 		if (domain === "cloudinary-cdn.ffm.to") {
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+.*?\/+(https?.*)$/, "$1");
@@ -23656,6 +23657,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "assets.sbs.com.au" ||
 			domain === "image.seated.com" ||
 			domain === "cdn.mens-folio.com" ||
+			domain === "cdn.carhp.in" ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -31066,6 +31068,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return newsrc;
 		}
 		if (domain === "cdn.phevn.com") return src.replace(/(\/img[0-9]*\/+[0-9a-zA-Z]+)(?:\.[a-z]+)(\.[a-z]+)(?:-(?:[0-9]+px|wp))?(?:[?#].*)?$/, "$1$2");
+		if (domain_nowww === "goonvilla.xyz") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+r\.php\?(?:.*&)?image=([^&#]+)/);
+			if (match) {
+				return decodeuri_ifneeded(match[1]);
+			}
+		}
 		if (domain_nowww === "cheapesthosting.xyz") return src.replace(/\/upload\/[a-z]+(\/[0-9]+\/[0-9]+\/[0-9]+\/)/, "/upload/big$1");
 		if (domain === "static.maxmodels.pl") {
 			if (string_indexof(src, "/photos/") >= 0 || string_indexof(src, "/article/") >= 0) {
@@ -32441,6 +32449,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "store.storeimages.cdn-apple.com" ||
 			(domain_nowww === "sony.lu" && string_indexof(src, "/image/") >= 0) ||
 			domain === "slimages.macysassets.com" ||
+			domain === "n.nordstrommedia.com" ||
 			/^[a-z]+:\/\/[^/]+\/+is\/+image\/+[^/]+\/+[^/]+(?:[?#].*)?$/.test(src)) {
 			obj = { url: src };
 			if (domain_nosub === "scene7.com") {
@@ -45453,7 +45462,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain === "cdn.axar.az") return src.replace(/(:\/\/[^/]*\/[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+)[0-9]+\/+([^/]*)(?:[?#].*)?$/, "$1$2");
 		if (domain === "media.milovana.com") return src.replace(/(\/timg\/+(?:[0-9]+\/+[0-9]+\/+)?)tb_[a-z]+\/+/, "$1tb_l/");
 		if (domain === "uploads.spiritfanfiction.com") return src.replace(/\/fanfics\/+thumbs\/+/, "/fanfics/historias/");
-		if (domain_nosub === "homepornbay.com") return src.replace(/(\/[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+)s(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		if (domain_nosub === "homepornbay.com") return src.replace(/(\/[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+)st?(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		if (domain === "cdn.funpic.us") return src.replace(/(-[0-9]+)-[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		if (domain_nowww === "themanwiththehat.de") return src.replace(/\/files\/+attachments\/+[0-9]+\/+/, "/files/attachments/");
 		if (domain_nosub === "motorsport.com" && /^cdn(?:-[0-9]*)?\./.test(domain)) {
@@ -50443,7 +50452,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nowww === "girlswithmuscle.com") {
 			newsrc = src.replace(/\/images\/+thumbs\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/images/full/$1");
 			if (newsrc !== src) {
-				return add_full_extensions(newsrc, ["mp4", "jpg"], true);
+				return add_full_extensions(newsrc, ["mp4", "png", "jpg"], true);
 			}
 		}
 		if (domain === "img.jiahes.com") return src.replace(/(\/upload\/+image\/+[^/]*\/+[0-9]+\/+)c_[0-9]{3}([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
@@ -73195,6 +73204,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (domain === "images.subvert.fm") return src.replace(/(:\/\/[^/]+\/+[0-9a-z]+)-[0-9]+[wh](?:[?#].*)?$/, "$1");
+		if (amazon_container === "weekend-bucket") {
+			return src.replace(/\/(?:small|medium|large)_([^/]+)(?:[?#].*)?$/, "/$1");
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
