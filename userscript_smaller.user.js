@@ -64081,10 +64081,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nosub === "bntnews.co.kr" ||
 			domain === "bnt.kod.es" ||
 			domain === "img.edailystarin.co.kr" ||
+			domain === "isp.edailystatic.com" ||
 			domain_nosub === "isplus.com") {
 			var newdomain_1 = "www." + domain_nosub;
 			if (domain === "bnt.kod.es" ||
-				domain === "img.edailystarin.co.kr")
+				domain === "img.edailystarin.co.kr" ||
+				domain === "isp.edailystatic.com")
 				newdomain_1 = domain;
 			return src
 				.replace(/^[a-z]+:\/\/[^/]+\/+(data\/+(?:bnt|isp)\/+upload\/+save\/+[a-z]{3}(?:[0-9]{5,}|[-0-9a-f]{20,})\.)[0-9]+(?:x[0-9]*)?\.[0-9]+\./, "https://" + newdomain_1 + "/$1")
