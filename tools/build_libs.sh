@@ -30,6 +30,7 @@ if [ -f orig/ffmpeg.min.js ]; then
 	cp orig/ffmpeg.min.js ffmpeg.min.orig.js
 	cp orig/ffmpeg-core.js ffmpeg-core.orig.js
 	cp orig/ffmpeg-core.worker.js ffmpeg-core.worker.js
+	cp orig/ffmpeg-core.wasm ffmpeg-core.wasm
 	cp ffmpeg-core.orig.js ffmpeg-core.js
 	# window.* and self->_fakeGlobal are for preventing leaking
 	# remove sourcemapping to avoid warnings under devtools

@@ -13,6 +13,7 @@ https://ajax.googleapis.com/ajax/libs/shaka-player/4.16.12/shaka-player.compiled
 # Libraries below are not included in the firefox extension
 https://unpkg.com/@ffmpeg/ffmpeg@0.12.15/dist/umd/ffmpeg.js = ffmpeg.min.js
 https://unpkg.com/@ffmpeg/core@0.12.9/dist/umd/ffmpeg-core.js
+https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm
 #https://unpkg.com/@ffmpeg/core@0.8.5/dist/ffmpeg-core.worker.js
 https://unpkg.com/@ffmpeg/ffmpeg@0.12.15/dist/umd/814.ffmpeg.js = ffmpeg-core.worker.js
 https://unpkg.com/mpd-parser@0.15.0/dist/mpd-parser.js
