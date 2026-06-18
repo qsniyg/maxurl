@@ -1748,10 +1748,6 @@ msgstr ""
 msgid "Threshold for mouse movement before the mouse cursor is shown again, 0 always shows the cursor after any movement"
 msgstr ""
 
-#. mouseover_zoom_max_width.number_unit, mouseover_zoom_max_height.number_unit, mouseover_mouse_inactivity_jitter.number_unit
-msgid "px"
-msgstr ""
-
 #. mouseover_clickthrough.name
 msgid "Disable pointer events"
 msgstr ""
@@ -2216,10 +2212,6 @@ msgstr ""
 msgid "Fade in/out time (in milliseconds) for the page background, set to 0 to disable"
 msgstr ""
 
-#. retry_503_ms.number_unit, mouseover_notallowed_duration.number_unit, mouseover_hide_cursor_after.number_unit, mouseover_fade_time.number_unit, mouseover_mask_fade_time.number_unit
-msgid "ms"
-msgstr ""
-
 #. mouseover_ui_styles.name
 msgid "Button CSS style"
 msgstr ""
@@ -2669,6 +2661,10 @@ msgstr ""
 
 #. deviantart_support_download.description
 msgid "Prefers using the download link (if available) by default. Note that this only works if you're logged in to DeviantART"
+msgstr ""
+
+#. deviantart_support_download.warning.true
+msgid "Enabling this option will count against your weekly download limit."
 msgstr ""
 
 #. ehentai_full_image.name
@@ -3236,6 +3232,141 @@ msgstr ""
 msgid "CSS style to apply for highlight. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)"
 msgstr ""
 
+#. popupicon_enable.name
+msgid "Enable popup icon"
+msgstr ""
+
+#. popupicon_enable.description
+msgid "Displays a button to trigger the popup beside supported media on hover"
+msgstr ""
+
+#. popupicon_size.name
+msgid "Icon size"
+msgstr ""
+
+#. popupicon_size.description
+msgid "Size of the icon"
+msgstr ""
+
+#. popupicon_opacity.name
+msgid "Base opacity"
+msgstr ""
+
+#. popupicon_opacity.description
+msgid "Base opacity of the icon (before hovering)"
+msgstr ""
+
+#. popupicon_fade_time.name
+msgid "Fade time"
+msgstr ""
+
+#. popupicon_fade_time.description
+msgid "Fade in/out time in milliseconds"
+msgstr ""
+
+#. popupicon_delay.name
+msgid "Initial delay"
+msgstr ""
+
+#. popupicon_delay.description
+msgid "Initial delay (in milliseconds) before showing the popup icon"
+msgstr ""
+
+#. retry_503_ms.number_unit, mouseover_notallowed_duration.number_unit, mouseover_hide_cursor_after.number_unit, mouseover_fade_time.number_unit, mouseover_mask_fade_time.number_unit, popupicon_fade_time.number_unit, popupicon_delay.number_unit
+msgid "ms"
+msgstr ""
+
+#. popupicon_origin.name
+msgid "Origin"
+msgstr ""
+
+#. popupicon_origin.description
+msgid "Where the icon should appear relative to the media"
+msgstr ""
+
+#. popupicon_origin.options.topleft.name
+msgid "Top left"
+msgstr ""
+
+#. popupicon_origin.options.topright.name
+msgid "Top right"
+msgstr ""
+
+#. popupicon_origin.options.bottomleft.name
+msgid "Bottom left"
+msgstr ""
+
+#. popupicon_origin.options.bottomright.name
+msgid "Bottom right"
+msgstr ""
+
+#. popupicon_inset.name
+msgid "Inset"
+msgstr ""
+
+#. popupicon_inset.description
+msgid "Whether the popup icon should appear within the media"
+msgstr ""
+
+#. popupicon_margin.name
+msgid "Margin"
+msgstr ""
+
+#. popupicon_margin.description
+msgid "Margin between the media and the icon"
+msgstr ""
+
+#. mouseover_zoom_max_width.number_unit, mouseover_zoom_max_height.number_unit, mouseover_mouse_inactivity_jitter.number_unit, popupicon_size.number_unit, popupicon_margin.number_unit
+msgid "px"
+msgstr ""
+
+#. popupicon_click_behavior.name
+msgid "Click behavior"
+msgstr ""
+
+#. popupicon_click_behavior.description
+msgid "Action to run when the icon is clicked"
+msgstr ""
+
+#. popupicon_middleclick_behavior.name
+msgid "Middle click behavior"
+msgstr ""
+
+#. popupicon_middleclick_behavior.description
+msgid "Action to run when the icon is clicked using the middle mouse button"
+msgstr ""
+
+#. popupicon_rightclick_behavior.name
+msgid "Right click behavior"
+msgstr ""
+
+#. popupicon_rightclick_behavior.description
+msgid "Action to run when the icon is right clicked"
+msgstr ""
+
+#. popupicon_middleclick_behavior.options.unset.name, popupicon_rightclick_behavior.options.unset.name
+msgid "Unset"
+msgstr ""
+
+#. popupicon_onlysupported.name
+msgid "Only explicitly supported media"
+msgstr ""
+
+#. popupicon_onlysupported.description
+msgid "Only show the popup icon for media that can be made larger or the original version can be found"
+msgstr ""
+
+#. popupicon_css.name
+msgid "CSS stylesheet"
+msgstr ""
+
+#. popupicon_css.description
+msgid ""
+"Stylesheet to apply to the popup icon.\n"
+"`-imu-title` sets the title text.\n"
+"`-imu-image` sets the icon (use a data URL if possible)."
+msgstr ""
+
 #. replaceimgs_enable_keybinding.name, highlightimgs_enable_keybinding.name, customgallery_enable_keybinding.name
 msgid "Enable trigger key"
 msgstr ""
@@ -3299,31 +3430,31 @@ msgstr ""
 msgid "Determines how the mouseover popup will open"
 msgstr ""
 
-#. mouseover_open_behavior.options.popup.name, mouseover_close_el_policy.options.popup.name, t2_mouseover_open_behavior.options.popup.name, t3_mouseover_open_behavior.options.popup.name
+#. mouseover_open_behavior.options.popup.name, mouseover_close_el_policy.options.popup.name, t2_mouseover_open_behavior.options.popup.name, t3_mouseover_open_behavior.options.popup.name, popupicon_click_behavior.options.popup.name, popupicon_middleclick_behavior.options.popup.name, popupicon_rightclick_behavior.options.popup.name
 msgid "Popup"
 msgstr ""
 
-#. mouseover_open_behavior.options.newtab.name, t2_mouseover_open_behavior.options.newtab.name, t3_mouseover_open_behavior.options.newtab.name
+#. mouseover_open_behavior.options.newtab.name, t2_mouseover_open_behavior.options.newtab.name, t3_mouseover_open_behavior.options.newtab.name, popupicon_click_behavior.options.newtab.name, popupicon_middleclick_behavior.options.newtab.name, popupicon_rightclick_behavior.options.newtab.name
 msgid "New tab"
 msgstr ""
 
-#. mouseover_open_behavior.options.newtab_bg.name, t2_mouseover_open_behavior.options.newtab_bg.name, t3_mouseover_open_behavior.options.newtab_bg.name
+#. mouseover_open_behavior.options.newtab_bg.name, t2_mouseover_open_behavior.options.newtab_bg.name, t3_mouseover_open_behavior.options.newtab_bg.name, popupicon_click_behavior.options.newtab_bg.name, popupicon_middleclick_behavior.options.newtab_bg.name, popupicon_rightclick_behavior.options.newtab_bg.name
 msgid "New background tab"
 msgstr ""
 
-#. mouseover_open_behavior.options.download.name, t2_mouseover_open_behavior.options.download.name, t3_mouseover_open_behavior.options.download.name
+#. mouseover_open_behavior.options.download.name, t2_mouseover_open_behavior.options.download.name, t3_mouseover_open_behavior.options.download.name, popupicon_click_behavior.options.download.name, popupicon_middleclick_behavior.options.download.name, popupicon_rightclick_behavior.options.download.name
 msgid "Download"
 msgstr ""
 
-#. mouseover_open_behavior.options.download_album.name, t2_mouseover_open_behavior.options.download_album.name, t3_mouseover_open_behavior.options.download_album.name
+#. mouseover_open_behavior.options.download_album.name, t2_mouseover_open_behavior.options.download_album.name, t3_mouseover_open_behavior.options.download_album.name, popupicon_click_behavior.options.download_album.name, popupicon_middleclick_behavior.options.download_album.name, popupicon_rightclick_behavior.options.download_album.name
 msgid "Gallery download"
 msgstr ""
 
-#. mouseover_open_behavior.options.copylink.name, t2_mouseover_open_behavior.options.copylink.name, t3_mouseover_open_behavior.options.copylink.name
+#. mouseover_open_behavior.options.copylink.name, t2_mouseover_open_behavior.options.copylink.name, t3_mouseover_open_behavior.options.copylink.name, popupicon_click_behavior.options.copylink.name, popupicon_middleclick_behavior.options.copylink.name, popupicon_rightclick_behavior.options.copylink.name
 msgid "Copy link"
 msgstr ""
 
-#. mouseover_open_behavior.options.replace.name, t2_mouseover_open_behavior.options.replace.name, t3_mouseover_open_behavior.options.replace.name
+#. mouseover_open_behavior.options.replace.name, t2_mouseover_open_behavior.options.replace.name, t3_mouseover_open_behavior.options.replace.name, popupicon_click_behavior.options.replace.name, popupicon_middleclick_behavior.options.replace.name, popupicon_rightclick_behavior.options.replace.name
 msgid "Replace"
 msgstr ""
 
