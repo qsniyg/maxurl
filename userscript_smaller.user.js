@@ -77,7 +77,7 @@ var __assign = (this && this.__assign) || function() {
 // @description:zh-TW 為10,000多個網站查找更大或原始圖像
 // @description:zh-HK 為10,000多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2026.2.0
+// @version           2026.6.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -221,7 +221,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
 	var imu_icon = "https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png";
-	var current_version = "2026.2.0";
+	var current_version = "2026.6.0";
 	var imagetab_ok_override = false;
 	var has_ffmpeg_lib = true;
 	// -- Currently this is unused, it'll be used in a future release (to workaround the 1MB and 2MB limits for OUJS and Greasyfork respectively) --
@@ -5592,11 +5592,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			"ru": "\u041F\u043E\u0440\u043E\u0433 \u0434\u043B\u044F \u043F\u0435\u0440\u0435\u043C\u0435\u0449\u0435\u043D\u0438\u044F \u043C\u044B\u0448\u0438 \u0434\u043E \u0442\u043E\u0433\u043E, \u043A\u0430\u043A \u043A\u0443\u0440\u0441\u043E\u0440 \u043C\u044B\u0448\u0438 \u0431\u0443\u0434\u0435\u0442 \u043F\u043E\u043A\u0430\u0437\u0430\u043D \u0441\u043D\u043E\u0432\u0430. `0` - \u0432\u0441\u0435\u0433\u0434\u0430 \u043F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0442\u044C \u043A\u0443\u0440\u0441\u043E\u0440 \u043F\u043E\u0441\u043B\u0435 \u043B\u044E\u0431\u043E\u0433\u043E \u0434\u0432\u0438\u0436\u0435\u043D\u0438\u044F.",
 			"zh-CN": "\u9F20\u6807\u6307\u9488\u518D\u6B21\u663E\u793A\u524D\u7684\u79FB\u52A8\u9608\u503C\uFF0C0 \u4E3A\u59CB\u7EC8\u663E\u793A\u79FB\u52A8\u540E\u7684\u6307\u9488"
 		},
-		"px": {
-			"pt-BR": "px",
-			"ru": "\u043F\u0438\u043A\u0441.",
-			"zh-CN": "\u50CF\u7D20"
-		},
 		"Disable pointer events": {
 			"pt-BR": "Desabilitar eventos do ponteiro",
 			"ru": "\u041E\u0442\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u0441\u043E\u0431\u044B\u0442\u0438\u044F \u0443\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044F",
@@ -6152,11 +6147,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			"pt-BR": "Tempo de fade in/out (em milissegundos) para o fundo da p\u00E1gina, defina como 0 para desativar",
 			"ru": "\u0412\u0440\u0435\u043C\u044F \u0437\u0430\u0442\u0443\u0445\u0430\u043D\u0438\u044F/\u043F\u043E\u044F\u0432\u043B\u0435\u043D\u0438\u044F (\u0432 \u043C\u0438\u043B\u043B\u0438\u0441\u0435\u043A\u0443\u043D\u0434\u0430\u0445) \u0434\u043B\u044F \u0444\u043E\u043D\u0430 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B. 0 - \u043E\u0442\u043A\u043B\u044E\u0447\u0438\u0442\u044C",
 			"zh-CN": "\u9875\u9762\u80CC\u666F\u7684\u6DE1\u5165/\u6DE1\u51FA\u65F6\u95F4\uFF08\u6BEB\u79D2\uFF09 \uFF0C\u8BBE\u4E3A 0 \u5219\u7981\u7528"
-		},
-		"ms": {
-			"pt-BR": "ms",
-			"ru": "\u043C\u0441",
-			"zh-CN": "\u6BEB\u79D2"
 		},
 		"Button CSS style": {
 			"pt-BR": "Estilo CSS dos bot\u00F5es",
@@ -7192,6 +7182,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			"pt-BR": "Estilo CSS para aplicar ao destaque. Consulte a documenta\u00E7\u00E3o para o estilo CSS de Popup para mais informa\u00E7\u00F5es (as vari\u00E1veis thumb/full URL n\u00E3o s\u00E3o suportadas aqui)",
 			"ru": "\u0421\u0442\u0438\u043B\u0438\u0437\u0430\u0446\u0438\u044F CSS, \u0434\u043B\u044F \u043F\u0440\u0438\u043C\u0435\u043D\u0435\u043D\u0438\u044F \u043A \u043F\u043E\u0434\u0441\u0432\u0435\u0442\u043A\u0435. \u0414\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0435 \u0441\u0432\u0435\u0434\u0435\u043D\u0438\u044F \u0441\u043C\u043E\u0442\u0440\u0438\u0442\u0435 \u0432 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u0430\u0446\u0438\u0438 '\u0421\u0442\u0438\u043B\u0438\u0437\u0430\u0446\u0438\u044F CSS \u0432\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0435\u0433\u043E \u043E\u043A\u043D\u0430' (\u0437\u0434\u0435\u0441\u044C \u043D\u0435 \u043F\u043E\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u044E\u0442\u0441\u044F \u043F\u0435\u0440\u0435\u043C\u0435\u043D\u043D\u044B\u0435 URL thumb/full).",
 			"zh-CN": "\u9AD8\u4EAE\u65F6\u4F7F\u7528\u7684 CSS \u6837\u5F0F\u3002\u66F4\u591A\u4FE1\u606F\u8BE6\u89C1\u201C\u5F39\u7A97 CSS \u6837\u5F0F\u201D\u6587\u6863\uFF08\u6B64\u5904\u4E0D\u652F\u6301 thumb/full URL \u53D8\u91CF\uFF09"
+		},
+		"ms": {
+			"pt-BR": "ms",
+			"ru": "\u043C\u0441",
+			"zh-CN": "\u6BEB\u79D2"
+		},
+		"px": {
+			"pt-BR": "px",
+			"ru": "\u043F\u0438\u043A\u0441.",
+			"zh-CN": "\u50CF\u7D20"
 		},
 		"Enable trigger key": {
 			"pt-BR": "Habilitar tecla de disparo",
