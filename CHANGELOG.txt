@@ -1,6 +1,6 @@
 2026.7.0 (in-dev)
 
-Special thanks to sn3akyb3ar, Froktime, jespermhl, a-random-lemurian, karpuzikov for their contributions and reports for this release
+Special thanks to sn3akyb3ar, Froktime, jespermhl, a-random-lemurian, karpuzikov, BlindWanda for their contributions and reports for this release
 
 ---
 
