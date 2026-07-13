@@ -20503,13 +20503,25 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nowww === "topstarnews.net" ||
 			domain === "cdn.topstarnews.net" ||
 			domain === "cds.topstarnews.net") {
+			newsrc = src.replace(/\/thumbnail\/+([0-9]{6}\/+[^/]+_[0-9]+)_v[0-9]+\./, "/photo/$1.");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					can_head: false
+				};
 			newsrc = src.replace(/:\/\/[^/]*\/(.*\/photo\/.*_[0-9]+)(\.[^/.]*)\/.*$/, "://www.topstarnews.net/$1_org$2");
 			if (newsrc !== src)
-				return newsrc;
-			return src
-				.replace(/_v[0-9]+(\.[^/.]*)$/, "_org$1")
-				.replace(/(_[0-9]+)(\.[^/.]*)$/, "$1_org$2")
-				.replace("/thumbnail/", "/photo/");
+				return {
+					url: newsrc,
+					can_head: false // 404
+				};
+			return {
+				url: src
+					.replace(/_v[0-9]+(\.[^/.]*)$/, "_org$1")
+					.replace(/(_[0-9]+)(\.[^/.]*)$/, "$1_org$2")
+					.replace("/thumbnail/", "/photo/"),
+				can_head: false
+			};
 		}
 		if (domain === "thumb.mt.co.kr" ||
 			domain === "thumb.mtstarnews.com") {
@@ -23703,6 +23715,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain === "i.cbc.ca" && /:\/\/[^/]+\/+ais\/+/.test(src)) ||
 			(domain_nosub === "editmysite.com" && /\.cdn[0-9]*\./.test(domain) && string_indexof(src, "/uploads/") >= 0) ||
 			(domain === "assets.teenage.engineering" && /\/_img\/+store\//.test(src)) ||
+			(domain === "pb.appnetica.com" && /\/api\/+files\//.test(src)) ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -35065,7 +35078,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return src.replace(/:\/\/[^/]*\/thumb\/(.*?)\/(?:[0-9]+)?([^/]*)$/, "://www.teenidols4you.com/blink/$1/$2");
 		}
 		if (domain === "cdn.pixabay.com") {
-			newsrc = src.replace(/(\/+photo\/+.*?)_960_720\./, "$1_1280.");
+			newsrc = src.replace(/(\/+photo\/+.*?)_(?:960_720|640)\./, "$1_1280.");
 			if (newsrc !== src)
 				return newsrc;
 			newsrc = src.replace(/.*?\/photo\/.*\/([^/]*-[0-9]+)_+[0-9]+[^/]*(\.[^/.]*)$/, "https://pixabay.com/en/photos/download/$1$2");
@@ -43231,6 +43244,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain.match(/^cdn-i[0-9]+\./)) {
 			return src.replace(/(\/+[0-9a-f]+\/+)[a-z]?[0-9]+\/+((?:[^/]*-)?[0-9]+\.[^/.]*)$/, "$1$2");
 		}
+		if (domain === "s3.definebabe.com") return src.replace(/(\/p\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[^/]+)_\.[a-z]+(?:[?#].*)?$/, "$1.jpg");
 		if (amazon_container === "everipedia-storage") {
 			return add_extensions_upper(src.replace(/(\/NewlinkFiles\/+[0-9]+\/+(?:[^/]*\/+)?[^/]+)_[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2"));
 		}
