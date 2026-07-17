@@ -2615,6 +2615,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				console_error("Bad status", resp.status, resp);
 				return options.onload(null, resp);
 			}
+			if (!resp.response) {
+				console_error("No response", resp);
+				return options.onload(null, resp);
+			}
 			data = new Uint8Array(Math_max(content_length, resp.response.byteLength));
 			data.set(new Uint8Array(resp.response), 0);
 			if ("content-type" in headers && headers["content-type"]) {
@@ -21768,6 +21772,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain_nosub === "blogger.com" && domain.match(/^bp[0-9]*\.blogger\.com/)) ||
 			domain === "drive.google.com" ||
 			domain === "drive.fife.usercontent.google.com" ||
+			(domain === "docs.google.com" && /:\/\/[^/]+\/+u\/+[0-9]+\/+forms-images-rt\//.test(src)) ||
 			(domain_nowww === "gstatic.com" && /\/marketing-cms\/+assets\/+images\//.test(src)) ||
 			domain_nosub === "ggpht.com") {
 			newsrc = src;
@@ -23012,6 +23017,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/(:\/\/[^/]*\/)x\/+r\/+[wh][0-9]+\/+i\/+/, "$1i/");
 			if (newsrc !== src)
 				return newsrc;
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+lo\/+mysterio\/+api\/+[0-9a-f]+\/+.*\/(https?:[^/]+)(?:[?#].*)?$/, "$1");
+			if (newsrc !== src)
+				return decodeURIComponent(newsrc);
 		}
 		if (domain === "image.iol.co.za" ||
 			domain === "image.tfgmedia.co.za") {
@@ -24425,7 +24433,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain === "www.tsn.ca") return src.replace(/(\/image\.[^_/]*_gen\/+derivatives\/+)[^/]*\//, "$1default/");
 		if ((domain_nosub === "bbci.co.uk" ||
 			domain_nosub === "bbc.co.uk") && domain.match(/^ichef(?:-[0-9]*)?\./)) {
-			newsrc = src.replace(/\.jpg\.webp([?#].*)?$/, ".jpg$1");
+			newsrc = src.replace(/(\.(?:jpg|png))\.webp([?#].*)?$/, "$1$2");
 			if (newsrc !== src)
 				return newsrc;
 			newsrc = src.replace(/\/[0-9]+_[0-9]+\//, "/original/");
@@ -26248,7 +26256,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					head_wrong_contentlength: true
 				};
 		}
-		if ((domain_nosub === "steamstatic.com" && domain.match(/(?:cdn|shared)\.[^.]*\.steamstatic\.com/)) ||
+		if ((domain_nosub === "steamstatic.com" && domain.match(/(?:cdn|shared|clan)\.[^.]*\.steamstatic\.com/)) ||
 			(domain_nosub === "akamaihd.net" && domain.match(/steamcdn(?:-[a-z]*)?\.akamaihd\.net/))) {
 			newsrc = src.replace(/(\/steam\/+apps\/+[0-9]+\/+movie)[0-9]+(?:_vp9)?(\.[^/.]+)(?:[?#].*)?$/, "$1_max$2");
 			if (newsrc !== src)
@@ -26259,7 +26267,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					url: newsrc,
 					video: true
 				};
-			newsrc = src.replace(/(\/steamcommunity\/+public\/+images\/+clans\/+[0-9]+\/+[0-9a-f]{20,})_[0-9]+x[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			newsrc = src
+				.replace(/(\/steamcommunity\/+public\/+images\/+clans\/+[0-9]+\/+[0-9a-f]{20,})_[0-9]+x[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2")
+				.replace(/(:\/\/clan\.[^/]+\/+images\/+[0-9]+\/+[0-9a-f]{20,})_[0-9]+x[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 			if (newsrc !== src)
 				return newsrc;
 			if (string_indexof(src, "/public/images/avatars/") >= 0) {
@@ -38868,6 +38878,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "nudostar.tv" ||
 			domain_nowww === "fapomania.com" ||
 			domain === "cdn.leakgallery.com" ||
+			domain_nowww === "fapeza.com" ||
 			domain_nowww === "thefappeningblog.com") {
 			newsrc = src
 				.replace(/(:\/\/[^/]+\/+content[0-9]*\/+[^/]+\/+[^/]+)_[0-9]+px\./, "$1.")
@@ -53935,7 +53946,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain === "imgs.ototoy.jp") {
 			return src
-				.replace(/(\/imgs\/+jacket\/+[0-9]+\/+[0-9]+\.[0-9]+\.[0-9]+)_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1orig$2")
+				.replace(/(\/imgs\/+[^/]+\/+(?:[0-9]+\/+)+[0-9.]+)_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1orig$2")
 				.replace(/(\/image\.php\/+[0-9]+\/+[^/?#]+)(?:[?#].*)?$/, "$1?width=999999");
 		}
 		if (domain === "gl.weburg.net") return src.replace(/(\/(?:albums|persons|movies|objectannounce|news)\/+[0-9]+\/+[0-9]+\/+)[^/]+\/+([0-9]+\.)/, "$1original/$2");
@@ -59834,6 +59845,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain_nowww === "streamtape.com" ||
 			domain_nowww === "strtape.cloud" ||
+			domain_nowww === "tpead.net" ||
 			domain_nowww === "streamtape.to") {
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+[ev]\/+([0-9a-zA-Z]{5,})\/*(?:[?#].*)?$/,
@@ -65823,7 +65835,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc)
 				return newsrc;
 		}
-		if (host_domain_nowww === "bunkr.cr" && options.element) {
+		if ((host_domain_nowww === "bunkr.cr" ||
+			host_domain_nowww === "bunkr.si" ||
+			host_domain_nowww === "bunkr.pk") && options.element) {
 			var linkregex = /:\/\/[^/]+\/+f\/+[0-9a-zA-Z]+(?:[?#].*)?$/;
 			newsrc = common_functions["get_pagelink_el_matching"](options.element, linkregex);
 			if (newsrc)
