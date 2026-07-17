@@ -9,7 +9,7 @@ Bugfixes:
  * Fix crash when downloading HLS/DASH streams if blob workers aren't supported
  * Fix extra properties disappearing when switching between album images on some websites
 
-Special thanks to sn3akyb3ar, Froktime, jespermhl, a-random-lemurian, karpuzikov, BlindWanda, ChipFIN, rRoler, Liz, f2005, in-the-halfway, FibreTTP, fireattack for their contributions and reports for this release
+Special thanks to sn3akyb3ar, Froktime, jespermhl, a-random-lemurian, karpuzikov, BlindWanda, ChipFIN, rRoler, Liz, f2005, in-the-halfway, FibreTTP, fireattack, nimbuz for their contributions and reports for this release
 
 ---
 
