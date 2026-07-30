@@ -44,38 +44,38 @@ var __assign = (this && this.__assign) || function() {
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 10,000+ websites, including a powerful media popup and download feature
-// @description:en    Finds larger or original versions of images and videos for 10,000+ websites, including a powerful media popup and download feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 10,000 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 10,000 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 10,000 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 10,000 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 10,000 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 10,000 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 10,000 sitios
-// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 10,000 verkkosivustolle
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 10 000 sites web, y compris une puissante fonction de popup média
-// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 10 000 sites web, y compris une puissante fonction de popup média
-// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-10,000 אתרים
-// @description:hi    10,000 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
-// @description:hu    Több mint 10,000 webhely képének és videóinak nagyobb vagy eredeti változatát találja
-// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 10,000 situs web
-// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 10,000 siti web
-// @description:ja    10,000以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ko    10,000개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 10,000 nettsteder
-// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 10,000 websites
-// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 10,000 stron internetowych
-// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 10,000 sites
-// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 10,000+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 10,000 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 10,000 веб-сайтів
-// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 10,000 งเว็บไซต์
-// @description:tr    10,000'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
-// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 10,000 trang web
+// @description       Finds larger or original versions of images and videos for 11,000+ websites, including a powerful media popup and download feature
+// @description:en    Finds larger or original versions of images and videos for 11,000+ websites, including a powerful media popup and download feature
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 11,000 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 11,000 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 11,000 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 11,000 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 11,000 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 11,000 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 11,000 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 11,000 verkkosivustolle
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 11 000 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 11 000 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-11,000 אתרים
+// @description:hi    11,000 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
+// @description:hu    Több mint 11,000 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 11,000 situs web
+// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 11,000 siti web
+// @description:ja    11,000以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ko    11,000개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 11,000 nettsteder
+// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 11,000 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 11,000 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 11,000 sites
+// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 11,000+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 11,000 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 11,000 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 11,000 งเว็บไซต์
+// @description:tr    11,000'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 11,000 trang web
 // @description:zh-CN 在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能
-// @description:zh-TW 為10,000多個網站查找更大或原始圖像
-// @description:zh-HK 為10,000多個網站查找更大或原始圖像
+// @description:zh-TW 為11,000多個網站查找更大或原始圖像
+// @description:zh-HK 為11,000多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
 // @version           2026.6.0
 // @author            qsniyg
