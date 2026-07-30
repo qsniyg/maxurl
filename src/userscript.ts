@@ -39451,6 +39451,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "pixhost.org" ||
 			domain_nosub === "pixhost.cc" ||
+			// thanks to randomuser1574 on github: https://github.com/qsniyg/maxurl/issues/1638
 			domain_nosub === "pixho.st" ||
 			domain_nosub === "pixhost.to") {
 			// https://pixhost.to/image/removed.png
@@ -133488,6 +133489,18 @@ var $$IMU_EXPORT$$;
 				}
 			});
 			if (newsrc) return newsrc;
+		}
+
+		if (domain_nosub === "cuckcapital.cr" && /^simp[0-9]*\./.test(domain) && options.element) {
+			// thanks to randomuser1574 on github for reporting: https://github.com/qsniyg/maxurl/issues/1639
+			// for forums
+			let link = common_functions["get_link_el_matching"](options.element, /^[a-z]+:\/\/goonbox\.cr\/+img\/+[0-9a-zA-Z]+(?:[?#].*)?$/);
+			if (link) {
+				return {
+					url: link.href,
+					is_pagelink: true
+				};
+			}
 		}
 
 		if (domain === "app.igroovemusic.com") {

@@ -36197,6 +36197,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain_nosub === "pixhost.org" ||
 			domain_nosub === "pixhost.cc" ||
+			// thanks to randomuser1574 on github: https://github.com/qsniyg/maxurl/issues/1638
 			domain_nosub === "pixho.st" ||
 			domain_nosub === "pixhost.to") {
 			// https://pixhost.to/image/removed.png
@@ -120190,6 +120191,17 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc)
 				return newsrc;
 		}
+		if (domain_nosub === "cuckcapital.cr" && /^simp[0-9]*\./.test(domain) && options.element) {
+			// thanks to randomuser1574 on github for reporting: https://github.com/qsniyg/maxurl/issues/1639
+			// for forums
+			var link_8 = common_functions["get_link_el_matching"](options.element, /^[a-z]+:\/\/goonbox\.cr\/+img\/+[0-9a-zA-Z]+(?:[?#].*)?$/);
+			if (link_8) {
+				return {
+					url: link_8.href,
+					is_pagelink: true
+				};
+			}
+		}
 		if (domain === "app.igroovemusic.com") {
 			// thanks to anonymous for reporting:
 			// https://app.igroovemusic.com/assets/cover/square_1765455110_82a7566ff4856ec7901a6c3c282865dc.jpg
@@ -121006,10 +121018,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							}
 							var found = false;
 							for (var _i = 0, _a = album_info.links; _i < _a.length; _i++) {
-								var link_8 = _a[_i];
-								var linkmatch = decodeURIComponent(link_8.url).match(/\/track-new\/+([0-9]+)\//);
-								link_8.is_current = our_match && linkmatch && our_match[1] === linkmatch[1];
-								if (link_8.is_current)
+								var link_9 = _a[_i];
+								var linkmatch = decodeURIComponent(link_9.url).match(/\/track-new\/+([0-9]+)\//);
+								link_9.is_current = our_match && linkmatch && our_match[1] === linkmatch[1];
+								if (link_9.is_current)
 									found = true;
 							}
 							if (!found)
