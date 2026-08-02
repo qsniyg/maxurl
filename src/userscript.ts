@@ -535,6 +535,7 @@ var $$IMU_EXPORT$$;
 		string_fromcharcode, string_charat,
 		array_reduce, array_reduce_prototype,
 		set_timeout, clear_timeout,
+		set_interval, clear_interval,
 		document_createElement;
 
 	if (is_node) {
@@ -1056,29 +1057,116 @@ var $$IMU_EXPORT$$;
 		get_compat_blob();
 
 		var get_compat_settimeout = function() {
-			// ublock on txxx.com blocks settimeout
-			// TODO: support setInterval blocked and requestAnimationFrame fallback
 			let good = {
-				timeout: false
+				timeout: false,
+				interval: false
 			};
 
-			try {
-				setTimeout(function() {}, 1);
-				good.timeout = true
-			} catch (e) {
-			}
+			// ublock on txxx.com blocks settimeout
+			(() => {
+				try {
+					setTimeout(function() {}, 1);
+					good.timeout = true
+				} catch (e) {
+				}
+			})();
+
+			// ublock on temu.com blocks setInterval
+			(() => {
+				let interval = null;
+				try {
+					interval = setInterval(function() {}, 10);
+					good.interval = true
+				} catch (e) {
+				}
+
+				if (interval) {
+					try {
+						clearInterval(interval);
+					} catch (e) {}
+				}
+			})();
 
 			if (good.timeout) {
 				set_timeout = setTimeout;
 				clear_timeout = clearTimeout;
 			} else {
-				set_timeout = function(func, timeout) {
-					let interval = setInterval(() => {
-						clearInterval(interval);
-						func();
-					}, timeout);
+				if (good.interval) {
+					set_timeout = function(func, timeout) {
+						let interval = setInterval(function() {
+							clearInterval(interval);
+							func();
+						}, timeout);
+					};
+					clear_timeout = clearInterval;
+				} else {
+					let timeouts = {};
+					let lasttimeout = 1;
+
+					set_timeout = function(func, timeout) {
+						let timeout_id = lasttimeout++;
+						let start_time = performance.now();
+
+						timeouts[timeout_id] = true;
+
+						requestAnimationFrame(function() {
+							if (!(timeout_id in timeouts))
+								return;
+
+							let current_time = performance.now();
+
+							if (current_time - start_time >= timeout) {
+								func();
+							}
+						});
+
+						return timeout_id;
+					};
+
+					clear_timeout = function(timeout_id) {
+						delete timeouts[timeout_id];
+					};
+				}
+			}
+
+			if (good.interval) {
+				set_interval = setInterval;
+				clear_interval = clearInterval;
+			} else {
+				// interval assumes we have a working set_timeout
+				let intervals = {};
+				let lastinterval = 1;
+
+				set_interval = function(func, timeout) {
+					let interval_id = lastinterval++;
+					let timer = null;
+
+					let timerfunc = function() {
+						try {
+							func();
+						} catch (e) {
+							console_error(e);
+						}
+
+						runtimer();
+					};
+
+					let runtimer = function() {
+						timer = set_timeout(timerfunc, timeout);
+						intervals[interval_id] = timer;
+					};
+
+					runtimer();
+					return interval_id;
 				};
-				clear_timeout = clearInterval;
+
+				clear_interval = function(interval_id) {
+					if (!(interval_id in intervals))
+						return;
+
+					clear_timeout(intervals[interval_id]);
+					delete intervals[interval_id];
+				};
 			}
 		};
 		get_compat_settimeout();
@@ -22898,10 +22986,10 @@ var $$IMU_EXPORT$$;
 		var image = new Image();
 		var timeout = null;
 
-		var finalcb = function(e) {
+		var finalcb = function() {
 			image.onload = null;
 			image.onerror = null;
-			clear_timeout(timeout);
+			clear_interval(timeout);
 
 			var x, y;
 			if (!image.naturalHeight || !image.naturalWidth) {
@@ -22918,7 +23006,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		image.onload = image.onerror = finalcb;
-		timeout = setInterval(function() {
+		timeout = set_interval(function() {
 			if (image.naturalHeight && image.naturalWidth) {
 				finalcb();
 			}
@@ -24767,6 +24855,13 @@ var $$IMU_EXPORT$$;
 					console_warn("Unable to find value for x-web-session-id");
 				}
 
+				var maxtouchpoints = 0;
+				try {
+					maxtouchpoints = navigator.maxTouchPoints || 0;
+				} catch (e) {
+					console_warn("Unable to find maxTouchPoints");
+				}
+
 				// https://www.instagram.com/static/bundles/es6/ConsumerLibCommons.js/...
 				var headers = {
 					"Accept": "*/*",
@@ -24776,8 +24871,10 @@ var $$IMU_EXPORT$$;
 						// same as of jan 26 2025
 						// id as of sept 22 2025: 359341
 						// same as of apr 10 2026
+						// same as of aug 1 2026
 					// TODO: x-csrftoken (csrftoken cookie)
 					"X-IG-App-ID": "936619743392459", // instagramWebDesktopFBAppId
+					"X-IG-Max-Touch-Points": maxtouchpoints,
 					"X-Requested-With": "XMLHttpRequest",
 					"Origin": "https://www.instagram.com",
 					"Referer": "https://www.instagram.com/",
@@ -69752,7 +69849,7 @@ var $$IMU_EXPORT$$;
 			}
 			// https://pr1.zbporn.tv/contents/videos/600000/600573/600573_short_preview.mp4
 			if (!match) {
-				match = src.match(/\/(?:contents|c1)\/+videos\/+[0-9]+\/+[0-9]+\/+([0-9]+)(?:_(?:short|small))?_(?:preview|tr)\./);
+				match = src.match(/\/(?:contents|c1)\/+videos\/+[0-9]+\/+[0-9]+\/+([0-9]+)(?:_(?:short|small))?_(?:preview|tr|pv)\./);
 			}
 			// https://mediaserver5.tube-bunny.com/storage1/Jv43/4.jpg
 			if (!match) {
@@ -75866,7 +75963,7 @@ var $$IMU_EXPORT$$;
 				return baseobj;
 			}
 
-			newsrc = src.replace(/(\/content\/+[^/]*\/+)(?:[^/]*\/+[^/]*\/+)?(?:tn@[^/]*|[0-9]+|main)\/+((?:[^/.]+_)?[0-9]+\.[^/.]*)$/, "$1full/$2");
+			newsrc = src.replace(/(\/content\/+[^/]*\/+)(?:[^/]*\/+[^/]*\/+)?(?:tn@[^/]*|[0-9]+|main(?:@[^/]*)?)\/+((?:[^/.]+_)?[0-9]+\.[^/.]*)$/, "$1full/$2");
 			if (newsrc !== src) {
 				baseobj.url = newsrc;
 				return baseobj;
@@ -80326,11 +80423,22 @@ var $$IMU_EXPORT$$;
 							   "://cdn.pornpics.com/" + folder + "/$1big$2");
 		}
 
-		if (domain === "pics.auntmia.com") {
+		if (domain === "pics.auntmia.com" ||
+			// thanks to anonymous for reporting:
+			// https://cdnth.hotpornphotos.com/thumbs/otc/300356/306_036.jpg
+			//   https://cdnth.hotpornphotos.com/thumbs/otc/300356/306_036big.jpg
+			domain === "cdnth.hotpornphotos.com") {
 			// thanks to anonymous for reporting:
 			// https://pics.auntmia.com/thumbs/karupshometownamateurs/498900/337_007.jpg
 			//   https://pics.auntmia.com/thumbs/karupshometownamateurs/498900/337_007big.jpg
 			return src.replace(/(\/thumbs\/+[^/]+\/+[0-9]+\/+[^/]+_[0-9]+)\./, "$1big.");
+		}
+
+		if (domain === "ng.hotpornphotos.com") {
+			// thanks to anonymous for reporting:
+			// https://ng.hotpornphotos.com/galleries.lovelyirene.com/651631/01th.jpg
+			//   https://ng.hotpornphotos.com/galleries.lovelyirene.com/651631/01.jpg
+			return src.replace(/(:\/\/[^/]+\/+[^/]+\/+[0-9]+\/+[0-9]+)th\./, "$1.");
 		}
 
 		if (domain === "images.pornpics.com" ||
@@ -112870,6 +112978,10 @@ var $$IMU_EXPORT$$;
 			// https://nbcmontana.com/resources/media2/16x9/full/1015/center/80/c3c31627-bdf3-457c-b9a0-b8135fe3bc9f-large16x9_ScottStreetDevelopmentCeremonyMap.jpg
 			//   https://nbcmontana.com/resources/media/c3c31627-bdf3-457c-b9a0-b8135fe3bc9f-ScottStreetDevelopmentCeremonyMap.jpg
 			domain_nowww === "nbcmontana.com" ||
+			// thanks to anonymous for reporting:
+			// https://abcnews4.com/resources/media2/16x9/8146/800/0x425/80/c980de93-d6a0-4dec-99c2-e658e05ecab4-SBND11292_r.jpg
+			//   https://abcnews4.com/resources/media/c980de93-d6a0-4dec-99c2-e658e05ecab4-SBND11292_r.jpg
+			domain_nowww === "abcnews4.com" ||
 			// thanks to roi:
 			// https://bakersfieldnow.com/resources/media2/16x9/full/1015/center/80/76d4eb14-462d-4a31-85c1-961a36c4f0cd-large16x9_poster_9e85cfbac04f4757a6544b28e4450ec4.png
 			//   https://bakersfieldnow.com/resources/media/76d4eb14-462d-4a31-85c1-961a36c4f0cd-large16x9_poster_9e85cfbac04f4757a6544b28e4450ec4.png
@@ -112927,6 +113039,8 @@ var $$IMU_EXPORT$$;
 				.replace(/\/resources\/+media2\/+.*?\/+([-0-9a-f]{10,}-[^/]+)(?:[?#].*)?$/, "/resources/media/$1");
 			if (newsrc !== src)
 				return newsrc;
+
+			// /resources/media2/original/full/.../0x0/100/
 		}
 
 		if (host_domain_nowww === "local12.com") {
@@ -132428,7 +132542,9 @@ var $$IMU_EXPORT$$;
 			//   https://starzone.ragalahari.com/nov2025/hd/chandini-chowdary-at-sp-success-meet/chandini-chowdary-at-sp-success-meet1.jpg
 			// https://starzone.ragalahari.com/oct2022/hd/chandini-chowdary-talasha-mens-store/chandini-chowdary-talasha-mens-store3t.jpg
 			//   https://starzone.ragalahari.com/oct2022/hd/chandini-chowdary-talasha-mens-store/chandini-chowdary-talasha-mens-store3.jpg -- 1920x2880
-			return src.replace(/(\/[a-z]+[0-9]{4}\/+hd\/+[^/]+\/+[^/]+[0-9]+)t\./, "$1.");
+			// https://starzone.ragalahari.com/nov2023/photosessions/damini-latest-photoshoot-nov/damini-latest-photoshoot-nov2t.jpg
+			//   https://starzone.ragalahari.com/nov2023/photosessions/damini-latest-photoshoot-nov/damini-latest-photoshoot-nov2.jpg
+			return src.replace(/(\/[a-z]+[0-9]{4}\/+[^/]+\/+[^/]+\/+[^/]+[0-9]+)t\./, "$1.");
 		}
 
 		if (domain === "d1ldvf68ux039x.cloudfront.net" ||
@@ -145180,8 +145296,14 @@ var $$IMU_EXPORT$$;
 		var img = document_createElement("img");
 		set_common_el_properties(img, obj);
 
+		var height_interval = null;
+
 		var end_cbs = function () {
-			clearInterval(height_interval);
+			if (height_interval !== null) {
+				clear_interval(height_interval);
+				height_interval = null;
+			}
+
 			img.onload = null;
 			img.onerror = null;
 		};
@@ -145208,7 +145330,7 @@ var $$IMU_EXPORT$$;
 			err_cb();
 		};
 
-		var height_interval = setInterval(function () {
+		height_interval = set_interval(function () {
 			if (img.naturalWidth !== 0 && img.naturalHeight !== 0) {
 				end_cbs();
 				good_cb(img);
@@ -154158,7 +154280,7 @@ var $$IMU_EXPORT$$;
 
 			if (typeof percent === "number") {
 				if (bar.getAttribute("data-timer")) {
-					clearInterval(parseInt(bar.getAttribute("data-timer")));
+					clear_interval(parseInt(bar.getAttribute("data-timer")));
 					bar.removeAttribute("data-timer");
 				}
 
@@ -154173,7 +154295,7 @@ var $$IMU_EXPORT$$;
 				if (!bar.getAttribute("data-timer")) {
 					bar.style.left = "0%";
 					bar.setAttribute("data-dir", "right");
-					var timer = setInterval(function() {
+					var timer = set_interval(function() {
 						var left = parseFloat(bar.style.left);
 						var delta = (15/1000) * 1;
 						var size = 90;

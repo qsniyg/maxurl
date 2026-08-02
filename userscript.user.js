@@ -527,7 +527,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	var base64_decode, base64_encode, is_array, array_indexof, string_indexof, 
 	// https://www.bing.com/ overrides Blob
 	// https://www.dpreview.com/ overrides URL
-	native_blob, native_URL, new_blob, our_EventTarget, our_addEventListener, our_removeEventListener, string_fromcharcode, string_charat, array_reduce, array_reduce_prototype, set_timeout, clear_timeout, document_createElement;
+	native_blob, native_URL, new_blob, our_EventTarget, our_addEventListener, our_removeEventListener, string_fromcharcode, string_charat, array_reduce, array_reduce_prototype, set_timeout, clear_timeout, set_interval, clear_interval, document_createElement;
 	if (is_node) {
 		base64_decode = function(a) {
 			return Buffer.from(a, 'base64').toString('binary');
@@ -944,27 +944,97 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		};
 		get_compat_blob();
 		var get_compat_settimeout = function() {
-			// ublock on txxx.com blocks settimeout
-			// TODO: support setInterval blocked and requestAnimationFrame fallback
 			var good = {
-				timeout: false
+				timeout: false,
+				interval: false
 			};
-			try {
-				setTimeout(function() { }, 1);
-				good.timeout = true;
-			} catch (e) {
-			}
+			// ublock on txxx.com blocks settimeout
+			(function() {
+				try {
+					setTimeout(function() { }, 1);
+					good.timeout = true;
+				} catch (e) {
+				}
+			})();
+			// ublock on temu.com blocks setInterval
+			(function() {
+				var interval = null;
+				try {
+					interval = setInterval(function() { }, 10);
+					good.interval = true;
+				} catch (e) {
+				}
+				if (interval) {
+					try {
+						clearInterval(interval);
+					} catch (e) { }
+				}
+			})();
 			if (good.timeout) {
 				set_timeout = setTimeout;
 				clear_timeout = clearTimeout;
 			} else {
-				set_timeout = function(func, timeout) {
-					var interval = setInterval(function() {
-						clearInterval(interval);
-						func();
-					}, timeout);
+				if (good.interval) {
+					set_timeout = function(func, timeout) {
+						var interval = setInterval(function() {
+							clearInterval(interval);
+							func();
+						}, timeout);
+					};
+					clear_timeout = clearInterval;
+				} else {
+					var timeouts_1 = {};
+					var lasttimeout_1 = 1;
+					set_timeout = function(func, timeout) {
+						var timeout_id = lasttimeout_1++;
+						var start_time = performance.now();
+						timeouts_1[timeout_id] = true;
+						requestAnimationFrame(function() {
+							if (!(timeout_id in timeouts_1))
+								return;
+							var current_time = performance.now();
+							if (current_time - start_time >= timeout) {
+								func();
+							}
+						});
+						return timeout_id;
+					};
+					clear_timeout = function(timeout_id) {
+						delete timeouts_1[timeout_id];
+					};
+				}
+			}
+			if (good.interval) {
+				set_interval = setInterval;
+				clear_interval = clearInterval;
+			} else {
+				// interval assumes we have a working set_timeout
+				var intervals_1 = {};
+				var lastinterval_1 = 1;
+				set_interval = function(func, timeout) {
+					var interval_id = lastinterval_1++;
+					var timer = null;
+					var timerfunc = function() {
+						try {
+							func();
+						} catch (e) {
+							console_error(e);
+						}
+						runtimer();
+					};
+					var runtimer = function() {
+						timer = set_timeout(timerfunc, timeout);
+						intervals_1[interval_id] = timer;
+					};
+					runtimer();
+					return interval_id;
 				};
-				clear_timeout = clearInterval;
+				clear_interval = function(interval_id) {
+					if (!(interval_id in intervals_1))
+						return;
+					clear_timeout(intervals_1[interval_id]);
+					delete intervals_1[interval_id];
+				};
 			}
 		};
 		get_compat_settimeout();
@@ -21425,10 +21495,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	var get_image_size = function(url, cb) {
 		var image = new Image();
 		var timeout = null;
-		var finalcb = function(e) {
+		var finalcb = function() {
 			image.onload = null;
 			image.onerror = null;
-			clear_timeout(timeout);
+			clear_interval(timeout);
 			var x, y;
 			if (!image.naturalHeight || !image.naturalWidth) {
 				x = null;
@@ -21440,7 +21510,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			cb(x, y);
 		};
 		image.onload = image.onerror = finalcb;
-		timeout = setInterval(function() {
+		timeout = set_interval(function() {
 			if (image.naturalHeight && image.naturalWidth) {
 				finalcb();
 			}
@@ -22968,6 +23038,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (!websessionid) {
 					console_warn("Unable to find value for x-web-session-id");
 				}
+				var maxtouchpoints = 0;
+				try {
+					maxtouchpoints = navigator.maxTouchPoints || 0;
+				} catch (e) {
+					console_warn("Unable to find maxTouchPoints");
+				}
 				// https://www.instagram.com/static/bundles/es6/ConsumerLibCommons.js/...
 				var headers = {
 					"Accept": "*/*",
@@ -22977,8 +23053,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					// same as of jan 26 2025
 					// id as of sept 22 2025: 359341
 					// same as of apr 10 2026
+					// same as of aug 1 2026
 					// TODO: x-csrftoken (csrftoken cookie)
 					"X-IG-App-ID": "936619743392459", // instagramWebDesktopFBAppId
+					"X-IG-Max-Touch-Points": maxtouchpoints,
 					"X-Requested-With": "XMLHttpRequest",
 					"Origin": "https://www.instagram.com",
 					"Referer": "https://www.instagram.com/",
@@ -63478,7 +63556,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			// https://pr1.zbporn.tv/contents/videos/600000/600573/600573_short_preview.mp4
 			if (!match) {
-				match = src.match(/\/(?:contents|c1)\/+videos\/+[0-9]+\/+[0-9]+\/+([0-9]+)(?:_(?:short|small))?_(?:preview|tr)\./);
+				match = src.match(/\/(?:contents|c1)\/+videos\/+[0-9]+\/+[0-9]+\/+([0-9]+)(?:_(?:short|small))?_(?:preview|tr|pv)\./);
 			}
 			// https://mediaserver5.tube-bunny.com/storage1/Jv43/4.jpg
 			if (!match) {
@@ -68937,7 +69015,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				baseobj_10.url = newsrc;
 				return baseobj_10;
 			}
-			newsrc = src.replace(/(\/content\/+[^/]*\/+)(?:[^/]*\/+[^/]*\/+)?(?:tn@[^/]*|[0-9]+|main)\/+((?:[^/.]+_)?[0-9]+\.[^/.]*)$/, "$1full/$2");
+			newsrc = src.replace(/(\/content\/+[^/]*\/+)(?:[^/]*\/+[^/]*\/+)?(?:tn@[^/]*|[0-9]+|main(?:@[^/]*)?)\/+((?:[^/.]+_)?[0-9]+\.[^/.]*)$/, "$1full/$2");
 			if (newsrc !== src) {
 				baseobj_10.url = newsrc;
 				return baseobj_10;
@@ -72901,11 +72979,21 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				folder = "pics1";
 			return src.replace(/:\/\/[^/]*\/+(?:[0-9]+\/+)?([0-9]{4}-[0-9]{2}-[0-9]{2}\/+[0-9]+_[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "://cdn.pornpics.com/" + folder + "/$1big$2");
 		}
-		if (domain === "pics.auntmia.com") {
+		if (domain === "pics.auntmia.com" ||
+			// thanks to anonymous for reporting:
+			// https://cdnth.hotpornphotos.com/thumbs/otc/300356/306_036.jpg
+			//   https://cdnth.hotpornphotos.com/thumbs/otc/300356/306_036big.jpg
+			domain === "cdnth.hotpornphotos.com") {
 			// thanks to anonymous for reporting:
 			// https://pics.auntmia.com/thumbs/karupshometownamateurs/498900/337_007.jpg
 			//   https://pics.auntmia.com/thumbs/karupshometownamateurs/498900/337_007big.jpg
 			return src.replace(/(\/thumbs\/+[^/]+\/+[0-9]+\/+[^/]+_[0-9]+)\./, "$1big.");
+		}
+		if (domain === "ng.hotpornphotos.com") {
+			// thanks to anonymous for reporting:
+			// https://ng.hotpornphotos.com/galleries.lovelyirene.com/651631/01th.jpg
+			//   https://ng.hotpornphotos.com/galleries.lovelyirene.com/651631/01.jpg
+			return src.replace(/(:\/\/[^/]+\/+[^/]+\/+[0-9]+\/+[0-9]+)th\./, "$1.");
 		}
 		if (domain === "images.pornpics.com" ||
 			// http://cdni.shavedpics.com/300/5/238/48003706/48003706_001_c92f.jpg
@@ -101612,6 +101700,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://nbcmontana.com/resources/media2/16x9/full/1015/center/80/c3c31627-bdf3-457c-b9a0-b8135fe3bc9f-large16x9_ScottStreetDevelopmentCeremonyMap.jpg
 			//   https://nbcmontana.com/resources/media/c3c31627-bdf3-457c-b9a0-b8135fe3bc9f-ScottStreetDevelopmentCeremonyMap.jpg
 			domain_nowww === "nbcmontana.com" ||
+			// thanks to anonymous for reporting:
+			// https://abcnews4.com/resources/media2/16x9/8146/800/0x425/80/c980de93-d6a0-4dec-99c2-e658e05ecab4-SBND11292_r.jpg
+			//   https://abcnews4.com/resources/media/c980de93-d6a0-4dec-99c2-e658e05ecab4-SBND11292_r.jpg
+			domain_nowww === "abcnews4.com" ||
 			// thanks to roi:
 			// https://bakersfieldnow.com/resources/media2/16x9/full/1015/center/80/76d4eb14-462d-4a31-85c1-961a36c4f0cd-large16x9_poster_9e85cfbac04f4757a6544b28e4450ec4.png
 			//   https://bakersfieldnow.com/resources/media/76d4eb14-462d-4a31-85c1-961a36c4f0cd-large16x9_poster_9e85cfbac04f4757a6544b28e4450ec4.png
@@ -101669,6 +101761,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/\/resources\/+media2\/+.*?\/+([-0-9a-f]{10,}-[^/]+)(?:[?#].*)?$/, "/resources/media/$1");
 			if (newsrc !== src)
 				return newsrc;
+			// /resources/media2/original/full/.../0x0/100/
 		}
 		if (host_domain_nowww === "local12.com") {
 			var get_info_from_local12_text = function(text) {
@@ -119226,7 +119319,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			//   https://starzone.ragalahari.com/nov2025/hd/chandini-chowdary-at-sp-success-meet/chandini-chowdary-at-sp-success-meet1.jpg
 			// https://starzone.ragalahari.com/oct2022/hd/chandini-chowdary-talasha-mens-store/chandini-chowdary-talasha-mens-store3t.jpg
 			//   https://starzone.ragalahari.com/oct2022/hd/chandini-chowdary-talasha-mens-store/chandini-chowdary-talasha-mens-store3.jpg -- 1920x2880
-			return src.replace(/(\/[a-z]+[0-9]{4}\/+hd\/+[^/]+\/+[^/]+[0-9]+)t\./, "$1.");
+			// https://starzone.ragalahari.com/nov2023/photosessions/damini-latest-photoshoot-nov/damini-latest-photoshoot-nov2t.jpg
+			//   https://starzone.ragalahari.com/nov2023/photosessions/damini-latest-photoshoot-nov/damini-latest-photoshoot-nov2.jpg
+			return src.replace(/(\/[a-z]+[0-9]{4}\/+[^/]+\/+[^/]+\/+[^/]+[0-9]+)t\./, "$1.");
 		}
 		if (domain === "d1ldvf68ux039x.cloudfront.net" ||
 			// https://d2cto119c3bgok.cloudfront.net/thumbs/photos/2510/9350547/1000w_q95.jpg
@@ -129995,8 +130090,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	var create_image_el = function(obj, good_cb, err_cb) {
 		var img = document_createElement("img");
 		set_common_el_properties(img, obj);
+		var height_interval = null;
 		var end_cbs = function() {
-			clearInterval(height_interval);
+			if (height_interval !== null) {
+				clear_interval(height_interval);
+				height_interval = null;
+			}
 			img.onload = null;
 			img.onerror = null;
 		};
@@ -130016,7 +130115,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			end_cbs();
 			err_cb();
 		};
-		var height_interval = setInterval(function() {
+		height_interval = set_interval(function() {
 			if (img.naturalWidth !== 0 && img.naturalHeight !== 0) {
 				end_cbs();
 				good_cb(img);
@@ -137645,7 +137744,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var bar = el.children[0];
 			if (typeof percent === "number") {
 				if (bar.getAttribute("data-timer")) {
-					clearInterval(parseInt(bar.getAttribute("data-timer")));
+					clear_interval(parseInt(bar.getAttribute("data-timer")));
 					bar.removeAttribute("data-timer");
 				}
 				if (percent >= 1 && remove_on_complete && el.parentElement) {
@@ -137658,7 +137757,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (!bar.getAttribute("data-timer")) {
 					bar.style.left = "0%";
 					bar.setAttribute("data-dir", "right");
-					var timer = setInterval(function() {
+					var timer = set_interval(function() {
 						var left = parseFloat(bar.style.left);
 						var delta = (15 / 1000) * 1;
 						var size = 90;
