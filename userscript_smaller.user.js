@@ -44,38 +44,38 @@ var __assign = (this && this.__assign) || function() {
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 10,000+ websites, including a powerful media popup and download feature
-// @description:en    Finds larger or original versions of images and videos for 10,000+ websites, including a powerful media popup and download feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 10,000 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 10,000 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 10,000 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 10,000 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 10,000 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 10,000 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 10,000 sitios
-// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 10,000 verkkosivustolle
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 10 000 sites web, y compris une puissante fonction de popup média
-// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 10 000 sites web, y compris une puissante fonction de popup média
-// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-10,000 אתרים
-// @description:hi    10,000 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
-// @description:hu    Több mint 10,000 webhely képének és videóinak nagyobb vagy eredeti változatát találja
-// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 10,000 situs web
-// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 10,000 siti web
-// @description:ja    10,000以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ko    10,000개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 10,000 nettsteder
-// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 10,000 websites
-// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 10,000 stron internetowych
-// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 10,000 sites
-// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 10,000+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 10,000 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 10,000 веб-сайтів
-// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 10,000 งเว็บไซต์
-// @description:tr    10,000'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
-// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 10,000 trang web
+// @description       Finds larger or original versions of images and videos for 11,000+ websites, including a powerful media popup and download feature
+// @description:en    Finds larger or original versions of images and videos for 11,000+ websites, including a powerful media popup and download feature
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 11,000 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 11,000 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 11,000 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 11,000 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 11,000 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 11,000 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 11,000 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 11,000 verkkosivustolle
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 11 000 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 11 000 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-11,000 אתרים
+// @description:hi    11,000 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
+// @description:hu    Több mint 11,000 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 11,000 situs web
+// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 11,000 siti web
+// @description:ja    11,000以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ko    11,000개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 11,000 nettsteder
+// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 11,000 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 11,000 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 11,000 sites
+// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 11,000+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 11,000 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 11,000 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 11,000 งเว็บไซต์
+// @description:tr    11,000'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 11,000 trang web
 // @description:zh-CN 在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能
-// @description:zh-TW 為10,000多個網站查找更大或原始圖像
-// @description:zh-HK 為10,000多個網站查找更大或原始圖像
+// @description:zh-TW 為11,000多個網站查找更大或原始圖像
+// @description:zh-HK 為11,000多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
 // @version           2026.6.0
 // @author            qsniyg
@@ -530,7 +530,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	var base64_decode, base64_encode, is_array, array_indexof, string_indexof, 
 	// https://www.bing.com/ overrides Blob
 	// https://www.dpreview.com/ overrides URL
-	native_blob, native_URL, new_blob, our_EventTarget, our_addEventListener, our_removeEventListener, string_fromcharcode, string_charat, array_reduce, array_reduce_prototype, set_timeout, clear_timeout, document_createElement;
+	native_blob, native_URL, new_blob, our_EventTarget, our_addEventListener, our_removeEventListener, string_fromcharcode, string_charat, array_reduce, array_reduce_prototype, set_timeout, clear_timeout, set_interval, clear_interval, document_createElement;
 	if (is_node) {
 		base64_decode = function(a) {
 			return Buffer.from(a, 'base64').toString('binary');
@@ -947,27 +947,97 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		};
 		get_compat_blob();
 		var get_compat_settimeout = function() {
-			// ublock on txxx.com blocks settimeout
-			// TODO: support setInterval blocked and requestAnimationFrame fallback
 			var good = {
-				timeout: false
+				timeout: false,
+				interval: false
 			};
-			try {
-				setTimeout(function() { }, 1);
-				good.timeout = true;
-			} catch (e) {
-			}
+			// ublock on txxx.com blocks settimeout
+			(function() {
+				try {
+					setTimeout(function() { }, 1);
+					good.timeout = true;
+				} catch (e) {
+				}
+			})();
+			// ublock on temu.com blocks setInterval
+			(function() {
+				var interval = null;
+				try {
+					interval = setInterval(function() { }, 10);
+					good.interval = true;
+				} catch (e) {
+				}
+				if (interval) {
+					try {
+						clearInterval(interval);
+					} catch (e) { }
+				}
+			})();
 			if (good.timeout) {
 				set_timeout = setTimeout;
 				clear_timeout = clearTimeout;
 			} else {
-				set_timeout = function(func, timeout) {
-					var interval = setInterval(function() {
-						clearInterval(interval);
-						func();
-					}, timeout);
+				if (good.interval) {
+					set_timeout = function(func, timeout) {
+						var interval = setInterval(function() {
+							clearInterval(interval);
+							func();
+						}, timeout);
+					};
+					clear_timeout = clearInterval;
+				} else {
+					var timeouts_1 = {};
+					var lasttimeout_1 = 1;
+					set_timeout = function(func, timeout) {
+						var timeout_id = lasttimeout_1++;
+						var start_time = performance.now();
+						timeouts_1[timeout_id] = true;
+						requestAnimationFrame(function() {
+							if (!(timeout_id in timeouts_1))
+								return;
+							var current_time = performance.now();
+							if (current_time - start_time >= timeout) {
+								func();
+							}
+						});
+						return timeout_id;
+					};
+					clear_timeout = function(timeout_id) {
+						delete timeouts_1[timeout_id];
+					};
+				}
+			}
+			if (good.interval) {
+				set_interval = setInterval;
+				clear_interval = clearInterval;
+			} else {
+				// interval assumes we have a working set_timeout
+				var intervals_1 = {};
+				var lastinterval_1 = 1;
+				set_interval = function(func, timeout) {
+					var interval_id = lastinterval_1++;
+					var timer = null;
+					var timerfunc = function() {
+						try {
+							func();
+						} catch (e) {
+							console_error(e);
+						}
+						runtimer();
+					};
+					var runtimer = function() {
+						timer = set_timeout(timerfunc, timeout);
+						intervals_1[interval_id] = timer;
+					};
+					runtimer();
+					return interval_id;
 				};
-				clear_timeout = clearInterval;
+				clear_interval = function(interval_id) {
+					if (!(interval_id in intervals_1))
+						return;
+					clear_timeout(intervals_1[interval_id]);
+					delete intervals_1[interval_id];
+				};
 			}
 		};
 		get_compat_settimeout();
@@ -14083,10 +14153,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	var get_image_size = function(url, cb) {
 		var image = new Image();
 		var timeout = null;
-		var finalcb = function(e) {
+		var finalcb = function() {
 			image.onload = null;
 			image.onerror = null;
-			clear_timeout(timeout);
+			clear_interval(timeout);
 			var x, y;
 			if (!image.naturalHeight || !image.naturalWidth) {
 				x = null;
@@ -14098,7 +14168,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			cb(x, y);
 		};
 		image.onload = image.onerror = finalcb;
-		timeout = setInterval(function() {
+		timeout = set_interval(function() {
 			if (image.naturalHeight && image.naturalWidth) {
 				finalcb();
 			}
@@ -15626,6 +15696,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (!websessionid) {
 					console_warn("Unable to find value for x-web-session-id");
 				}
+				var maxtouchpoints = 0;
+				try {
+					maxtouchpoints = navigator.maxTouchPoints || 0;
+				} catch (e) {
+					console_warn("Unable to find maxTouchPoints");
+				}
 				// https://www.instagram.com/static/bundles/es6/ConsumerLibCommons.js/...
 				var headers = {
 					"Accept": "*/*",
@@ -15635,8 +15711,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					// same as of jan 26 2025
 					// id as of sept 22 2025: 359341
 					// same as of apr 10 2026
+					// same as of aug 1 2026
 					// TODO: x-csrftoken (csrftoken cookie)
 					"X-IG-App-ID": "936619743392459", // instagramWebDesktopFBAppId
+					"X-IG-Max-Touch-Points": maxtouchpoints,
 					"X-Requested-With": "XMLHttpRequest",
 					"Origin": "https://www.instagram.com",
 					"Referer": "https://www.instagram.com/",
@@ -25607,9 +25685,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return src.replace(/:\/\/[^/]*\/aliexpress[0-9]*(\/kf\/)/, "://ae01.alicdn.com$1");
 		}
 		if (domain === "lastfm-img2.akamaized.net" ||
+			domain === "lastfm-img.freetls.fastly.net" ||
 			domain === "lastfm.freetls.fastly.net" ||
 			domain_nosub === "lst.fm") {
-			return src.replace(/\/i\/+u\/+(?:avatar)?(?:[0-9]+x[0-9]+|[0-9]+s|ar(?:X?L|[0-9]))\//, "/i/u/");
+			return src.replace(/\/i\/+u\/+(?:avatar)?(?:[0-9]+x[0-9]+|[0-9]+s|ar(?:X?L|G|[0-9]))\//, "/i/u/");
 		}
 		if ((domain_nosub === "myspacecdn.com" && /^a[0-9](?:\...)?-images\./.test(domain)) ||
 			domain === "content.myspacecdn.com") {
@@ -39234,7 +39313,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				match = src.match(/(?:\/get_file\/+[0-9a-f]+\/+[0-9a-f]{30,}|:\/\/[^/]+)\/+[0-9]+\/+[0-9]+\/+([0-9]+)_preview\./);
 			}
 			if (!match) {
-				match = src.match(/\/(?:contents|c1)\/+videos\/+[0-9]+\/+[0-9]+\/+([0-9]+)(?:_(?:short|small))?_(?:preview|tr)\./);
+				match = src.match(/\/(?:contents|c1)\/+videos\/+[0-9]+\/+[0-9]+\/+([0-9]+)(?:_(?:short|small))?_(?:preview|tr|pv)\./);
 			}
 			if (!match) {
 				match = src.match(/\/storage[0-9]*\/+([0-9a-zA-Z]+)\/+(?:[0-9]+|default)\./);
@@ -42166,7 +42245,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				baseobj_10.url = newsrc;
 				return baseobj_10;
 			}
-			newsrc = src.replace(/(\/content\/+[^/]*\/+)(?:[^/]*\/+[^/]*\/+)?(?:tn@[^/]*|[0-9]+|main)\/+((?:[^/.]+_)?[0-9]+\.[^/.]*)$/, "$1full/$2");
+			newsrc = src.replace(/(\/content\/+[^/]*\/+)(?:[^/]*\/+[^/]*\/+)?(?:tn@[^/]*|[0-9]+|main(?:@[^/]*)?)\/+((?:[^/.]+_)?[0-9]+\.[^/.]*)$/, "$1full/$2");
 			if (newsrc !== src) {
 				baseobj_10.url = newsrc;
 				return baseobj_10;
@@ -44004,7 +44083,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				folder = "pics1";
 			return src.replace(/:\/\/[^/]*\/+(?:[0-9]+\/+)?([0-9]{4}-[0-9]{2}-[0-9]{2}\/+[0-9]+_[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "://cdn.pornpics.com/" + folder + "/$1big$2");
 		}
-		if (domain === "pics.auntmia.com") return src.replace(/(\/thumbs\/+[^/]+\/+[0-9]+\/+[^/]+_[0-9]+)\./, "$1big.");
+		if (domain === "pics.auntmia.com" ||
+			domain === "cdnth.hotpornphotos.com") {
+			return src.replace(/(\/thumbs\/+[^/]+\/+[0-9]+\/+[^/]+_[0-9]+)\./, "$1big.");
+		}
+		if (domain === "ng.hotpornphotos.com") return src.replace(/(:\/\/[^/]+\/+[^/]+\/+[0-9]+\/+[0-9]+)th\./, "$1.");
 		if (domain === "images.pornpics.com" ||
 			domain === "cdni.shavedpics.com" ||
 			domain === "cdni.hotnudegirls.net" ||
@@ -58522,29 +58605,42 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							},
 							data: "id=" + id
 						}, cb, function(done, resp, cache_key) {
-							var match = resp.responseText.match(/pipi\['file'\]\s*=\s*'(https?%3A[^']+)';/);
+							/*var match = resp.responseText.match(/pipi\['file'\]\s*=\s*'(https?%3A[^']+)';/);
+							if (!match) {
+								console_error(cache_key, "Unable to find match for", resp);
+								return done(null, false);
+							}*/
+							var match = resp.responseText.match(/new Playerjs\(({.*?})\);/);
 							if (!match) {
 								console_error(cache_key, "Unable to find match for", resp);
 								return done(null, false);
 							}
-							return done(decodeURIComponent(match[1]), 60 * 60);
+							var json = JSON_parse(fixup_js_obj(match[1]));
+							var files = json.file.split(/\s+or\s+/);
+							var urls = [];
+							for (var _i = 0, files_2 = files; _i < files_2.length; _i++) {
+								var file = files_2[_i];
+								var video = /\.m3u8/.test(file) ? "hls" : true;
+								urls.push({
+									url: file,
+									video: video
+								});
+							}
+							if (json.poster)
+								urls.push(json.poster);
+							return done(urls, 60 * 60);
 						});
 					};
-					var match = unpacked.match(/multiShowPlayer\('([^']+)','([^']+)'\);/);
+					var match = unpacked.match(/multiShowPlayer\('([^']+)','([^']+)'\)/);
 					if (!match) {
 						console_error(cache_key, "Unable to find match for", { resp: resp, unpacked: unpacked });
 						return done(null, false);
 					}
-					query_pussyspace(match[1], match[2], function(url) {
-						if (!url) {
+					query_pussyspace(match[1], match[2], function(urls) {
+						if (!urls) {
 							return done(null, false);
 						}
-						return done({
-							url: url,
-							extra: {
-								page: resp.finalUrl
-							}
-						});
+						return done(common_functions["fill_ldjson"](urls, resp), 60 * 60);
 					});
 				}
 			});
@@ -61030,6 +61126,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain_nosub === "sinclairstoryline.com" && domain.match(/^static-[0-9]*\./)) ||
 			domain_nowww === "nbc16.com" ||
 			domain_nowww === "nbcmontana.com" ||
+			domain_nowww === "abcnews4.com" ||
 			domain_nowww === "bakersfieldnow.com") {
 			newsrc = src
 				.replace(/(\/resources\/+media\/+[-0-9a-f]{20,})-(?:large|medium|small|jumbo)(?:[0-9]+x[0-9]+|Blur|Scale)_/, "$1-")
@@ -66636,6 +66733,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "vr-porn.tube" ||
 			domain_nowww === "xjav.tube" ||
 			domain_nowww === "manysex.com" ||
+			domain_nowww === "manysex.tube" ||
+			domain_nowww === "videomanysex.com" ||
 			domain_nowww === "videovoyeurhit.com" ||
 			domain_nowww === "voyeurhit.tube" ||
 			domain_nowww === "porn-latina.com") && options.do_request && options.cb) {
@@ -71795,7 +71894,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			}
 		}
-		if (domain === "starzone.ragalahari.com") return src.replace(/(\/[a-z]+[0-9]{4}\/+hd\/+[^/]+\/+[^/]+[0-9]+)t\./, "$1.");
+		if (domain === "starzone.ragalahari.com") return src.replace(/(\/[a-z]+[0-9]{4}\/+[^/]+\/+[^/]+\/+[^/]+[0-9]+)t\./, "$1.");
 		if (domain === "d1ldvf68ux039x.cloudfront.net" ||
 			domain === "d2cto119c3bgok.cloudfront.net") {
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+.*\/(photos\/+[0-9]{4}\/+[0-9]+)\/+[^/]+(\.[a-z]+)(?:[?#].*)?$/, "https://d34w7g4gy10iej.cloudfront.net/$1$2");
@@ -80877,8 +80976,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	var create_image_el = function(obj, good_cb, err_cb) {
 		var img = document_createElement("img");
 		set_common_el_properties(img, obj);
+		var height_interval = null;
 		var end_cbs = function() {
-			clearInterval(height_interval);
+			if (height_interval !== null) {
+				clear_interval(height_interval);
+				height_interval = null;
+			}
 			img.onload = null;
 			img.onerror = null;
 		};
@@ -80898,7 +81001,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			end_cbs();
 			err_cb();
 		};
-		var height_interval = setInterval(function() {
+		height_interval = set_interval(function() {
 			if (img.naturalWidth !== 0 && img.naturalHeight !== 0) {
 				end_cbs();
 				good_cb(img);
@@ -82534,20 +82637,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// files = array of {data: uint8array, mime: ...}, not filenames
 			var ffmpeg_concat = function(ffmpeg, files, cb) {
 				return __awaiter(this, void 0, void 0, function() {
-					var total_size, _i, files_2, file, out, current_size, _a, files_3, file, ourfilename, prefix, files_txt_filename, files_txt_files, filenames, i, file, filename, out_filename, cleanup;
+					var total_size, _i, files_3, file, out, current_size, _a, files_4, file, ourfilename, prefix, files_txt_filename, files_txt_files, filenames, i, file, filename, out_filename, cleanup;
 					return __generator(this, function(_b) {
 						switch (_b.label) {
 							case 0:
 								if (!true) return [3 /*break*/, 2];
 								total_size = 0;
-								for (_i = 0, files_2 = files; _i < files_2.length; _i++) {
-									file = files_2[_i];
+								for (_i = 0, files_3 = files; _i < files_3.length; _i++) {
+									file = files_3[_i];
 									total_size += file.data.byteLength;
 								}
 								out = new Uint8Array(total_size);
 								current_size = 0;
-								for (_a = 0, files_3 = files; _a < files_3.length; _a++) {
-									file = files_3[_a];
+								for (_a = 0, files_4 = files; _a < files_4.length; _a++) {
+									file = files_4[_a];
 									out.set(file.data, current_size);
 									current_size += file.data.byteLength;
 								}
@@ -82764,15 +82867,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var prefix = get_ffmpeg_prefix("join");
 				var cleanup = function() {
 					return __awaiter(this, void 0, void 0, function() {
-						var _i, files_4, filename;
+						var _i, files_5, filename;
 						return __generator(this, function(_a) {
 							switch (_a.label) {
 								case 0:
-									_i = 0, files_4 = files;
+									_i = 0, files_5 = files;
 									_a.label = 1;
 								case 1:
-									if (!(_i < files_4.length)) return [3 /*break*/, 4];
-									filename = files_4[_i];
+									if (!(_i < files_5.length)) return [3 /*break*/, 4];
+									filename = files_5[_i];
 									//await ffmpeg.deleteFile(filename);
 									return [4 /*yield*/, ffmpeg_unmount_file(ffmpeg, filename)];
 								case 2:
@@ -88527,7 +88630,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var bar = el.children[0];
 			if (typeof percent === "number") {
 				if (bar.getAttribute("data-timer")) {
-					clearInterval(parseInt(bar.getAttribute("data-timer")));
+					clear_interval(parseInt(bar.getAttribute("data-timer")));
 					bar.removeAttribute("data-timer");
 				}
 				if (percent >= 1 && remove_on_complete && el.parentElement) {
@@ -88540,7 +88643,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (!bar.getAttribute("data-timer")) {
 					bar.style.left = "0%";
 					bar.setAttribute("data-dir", "right");
-					var timer = setInterval(function() {
+					var timer = set_interval(function() {
 						var left = parseFloat(bar.style.left);
 						var delta = (15 / 1000) * 1;
 						var size = 90;
