@@ -37784,6 +37784,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return decodeURIComponent(src.replace(/.*\/([^/]*%3A%2F%2F[^/]*).*/, "$1"));
 		}
 		if (domain === "lastfm-img2.akamaized.net" ||
+			// https://lastfm-img.freetls.fastly.net/i/u/arG/128110c397d24017ac60b29f34491862.jpg
+			//   https://lastfm-img.freetls.fastly.net/i/u/128110c397d24017ac60b29f34491862.jpg
+			domain === "lastfm-img.freetls.fastly.net" ||
 			// thanks to TheLastZombie on github: https://github.com/qsniyg/maxurl/pull/171
 			// https://lastfm.freetls.fastly.net/i/u/300x300/12b1bfb5e2ea09bf084888c6542de63d.jpg
 			//   https://lastfm.freetls.fastly.net/i/u/34s/12b1bfb5e2ea09bf084888c6542de63d.jpg
@@ -37803,7 +37806,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// http://img2-ak.lst.fm/i/u/770x0/2c2ffdfa64ad4db8d6b5e8c47474fbe8.jpg
 			//   http://img2-ak.lst.fm/i/u/2c2ffdfa64ad4db8d6b5e8c47474fbe8.jpg
 			domain_nosub === "lst.fm") {
-			return src.replace(/\/i\/+u\/+(?:avatar)?(?:[0-9]+x[0-9]+|[0-9]+s|ar(?:X?L|[0-9]))\//, "/i/u/");
+			return src.replace(/\/i\/+u\/+(?:avatar)?(?:[0-9]+x[0-9]+|[0-9]+s|ar(?:X?L|G|[0-9]))\//, "/i/u/");
 		}
 		if ((domain_nosub === "myspacecdn.com" && /^a[0-9](?:\...)?-images\./.test(domain)) ||
 			// thanks to anonymous for reporting:
@@ -98344,29 +98347,42 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							},
 							data: "id=" + id
 						}, cb, function(done, resp, cache_key) {
-							var match = resp.responseText.match(/pipi\['file'\]\s*=\s*'(https?%3A[^']+)';/);
+							/*var match = resp.responseText.match(/pipi\['file'\]\s*=\s*'(https?%3A[^']+)';/);
+							if (!match) {
+								console_error(cache_key, "Unable to find match for", resp);
+								return done(null, false);
+							}*/
+							var match = resp.responseText.match(/new Playerjs\(({.*?})\);/);
 							if (!match) {
 								console_error(cache_key, "Unable to find match for", resp);
 								return done(null, false);
 							}
-							return done(decodeURIComponent(match[1]), 60 * 60);
+							var json = JSON_parse(fixup_js_obj(match[1]));
+							var files = json.file.split(/\s+or\s+/);
+							var urls = [];
+							for (var _i = 0, files_2 = files; _i < files_2.length; _i++) {
+								var file = files_2[_i];
+								var video = /\.m3u8/.test(file) ? "hls" : true;
+								urls.push({
+									url: file,
+									video: video
+								});
+							}
+							if (json.poster)
+								urls.push(json.poster);
+							return done(urls, 60 * 60);
 						});
 					};
-					var match = unpacked.match(/multiShowPlayer\('([^']+)','([^']+)'\);/);
+					var match = unpacked.match(/multiShowPlayer\('([^']+)','([^']+)'\)/);
 					if (!match) {
 						console_error(cache_key, "Unable to find match for", { resp: resp, unpacked: unpacked });
 						return done(null, false);
 					}
-					query_pussyspace(match[1], match[2], function(url) {
-						if (!url) {
+					query_pussyspace(match[1], match[2], function(urls) {
+						if (!urls) {
 							return done(null, false);
 						}
-						return done({
-							url: url,
-							extra: {
-								page: resp.finalUrl
-							}
-						});
+						return done(common_functions["fill_ldjson"](urls, resp), 60 * 60);
 					});
 				}
 			});
@@ -110974,6 +110990,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "vr-porn.tube" ||
 			domain_nowww === "xjav.tube" ||
 			domain_nowww === "manysex.com" ||
+			domain_nowww === "manysex.tube" ||
+			domain_nowww === "videomanysex.com" ||
 			domain_nowww === "videovoyeurhit.com" ||
 			domain_nowww === "voyeurhit.tube" ||
 			domain_nowww === "porn-latina.com") && options.do_request && options.cb) {
@@ -131751,20 +131769,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// files = array of {data: uint8array, mime: ...}, not filenames
 			var ffmpeg_concat = function(ffmpeg, files, cb) {
 				return __awaiter(this, void 0, void 0, function() {
-					var total_size, _i, files_2, file, out, current_size, _a, files_3, file, ourfilename, prefix, files_txt_filename, files_txt_files, filenames, i, file, filename, out_filename, cleanup;
+					var total_size, _i, files_3, file, out, current_size, _a, files_4, file, ourfilename, prefix, files_txt_filename, files_txt_files, filenames, i, file, filename, out_filename, cleanup;
 					return __generator(this, function(_b) {
 						switch (_b.label) {
 							case 0:
 								if (!true) return [3 /*break*/, 2];
 								total_size = 0;
-								for (_i = 0, files_2 = files; _i < files_2.length; _i++) {
-									file = files_2[_i];
+								for (_i = 0, files_3 = files; _i < files_3.length; _i++) {
+									file = files_3[_i];
 									total_size += file.data.byteLength;
 								}
 								out = new Uint8Array(total_size);
 								current_size = 0;
-								for (_a = 0, files_3 = files; _a < files_3.length; _a++) {
-									file = files_3[_a];
+								for (_a = 0, files_4 = files; _a < files_4.length; _a++) {
+									file = files_4[_a];
 									out.set(file.data, current_size);
 									current_size += file.data.byteLength;
 								}
@@ -131981,15 +131999,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var prefix = get_ffmpeg_prefix("join");
 				var cleanup = function() {
 					return __awaiter(this, void 0, void 0, function() {
-						var _i, files_4, filename;
+						var _i, files_5, filename;
 						return __generator(this, function(_a) {
 							switch (_a.label) {
 								case 0:
-									_i = 0, files_4 = files;
+									_i = 0, files_5 = files;
 									_a.label = 1;
 								case 1:
-									if (!(_i < files_4.length)) return [3 /*break*/, 4];
-									filename = files_4[_i];
+									if (!(_i < files_5.length)) return [3 /*break*/, 4];
+									filename = files_5[_i];
 									//await ffmpeg.deleteFile(filename);
 									return [4 /*yield*/, ffmpeg_unmount_file(ffmpeg, filename)];
 								case 2:

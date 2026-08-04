@@ -41251,6 +41251,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "lastfm-img2.akamaized.net" ||
+			// https://lastfm-img.freetls.fastly.net/i/u/arG/128110c397d24017ac60b29f34491862.jpg
+			//   https://lastfm-img.freetls.fastly.net/i/u/128110c397d24017ac60b29f34491862.jpg
+			domain === "lastfm-img.freetls.fastly.net" ||
 			// thanks to TheLastZombie on github: https://github.com/qsniyg/maxurl/pull/171
 			// https://lastfm.freetls.fastly.net/i/u/300x300/12b1bfb5e2ea09bf084888c6542de63d.jpg
 			//   https://lastfm.freetls.fastly.net/i/u/34s/12b1bfb5e2ea09bf084888c6542de63d.jpg
@@ -41270,7 +41273,7 @@ var $$IMU_EXPORT$$;
 			// http://img2-ak.lst.fm/i/u/770x0/2c2ffdfa64ad4db8d6b5e8c47474fbe8.jpg
 			//   http://img2-ak.lst.fm/i/u/2c2ffdfa64ad4db8d6b5e8c47474fbe8.jpg
 			domain_nosub === "lst.fm") {
-			return src.replace(/\/i\/+u\/+(?:avatar)?(?:[0-9]+x[0-9]+|[0-9]+s|ar(?:X?L|[0-9]))\//, "/i/u/");
+			return src.replace(/\/i\/+u\/+(?:avatar)?(?:[0-9]+x[0-9]+|[0-9]+s|ar(?:X?L|G|[0-9]))\//, "/i/u/");
 		}
 
 		if ((domain_nosub === "myspacecdn.com" && /^a[0-9](?:\...)?-images\./.test(domain)) ||
@@ -109228,33 +109231,50 @@ var $$IMU_EXPORT$$;
 							},
 							data: "id=" + id
 						}, cb, function(done, resp, cache_key) {
-							var match = resp.responseText.match(/pipi\['file'\]\s*=\s*'(https?%3A[^']+)';/);
+							/*var match = resp.responseText.match(/pipi\['file'\]\s*=\s*'(https?%3A[^']+)';/);
+							if (!match) {
+								console_error(cache_key, "Unable to find match for", resp);
+								return done(null, false);
+							}*/
+
+							let match = resp.responseText.match(/new Playerjs\(({.*?})\);/);
 							if (!match) {
 								console_error(cache_key, "Unable to find match for", resp);
 								return done(null, false);
 							}
 
-							return done(decodeURIComponent(match[1]), 60*60);
+							let json = JSON_parse(fixup_js_obj(match[1]));
+							let files = json.file.split(/\s+or\s+/);
+
+							let urls = [];
+
+							for (let file of files) {
+								let video = /\.m3u8/.test(file) ? "hls" : true;
+								urls.push({
+									url: file,
+									video
+								});
+							}
+
+							if (json.poster)
+								urls.push(json.poster);
+
+							return done(urls, 60*60);
 						});
 					};
 
-					var match = unpacked.match(/multiShowPlayer\('([^']+)','([^']+)'\);/);
+					var match = unpacked.match(/multiShowPlayer\('([^']+)','([^']+)'\)/);
 					if (!match) {
 						console_error(cache_key, "Unable to find match for", {resp: resp, unpacked: unpacked});
 						return done(null, false);
 					}
 
-					query_pussyspace(match[1], match[2], function(url) {
-						if (!url) {
+					query_pussyspace(match[1], match[2], function(urls) {
+						if (!urls) {
 							return done(null, false);
 						}
 
-						return done({
-							url: url,
-							extra: {
-								page: resp.finalUrl
-							}
-						});
+						return done(common_functions["fill_ldjson"](urls, resp), 60*60);
 					});
 				}
 			});
@@ -123213,6 +123233,8 @@ var $$IMU_EXPORT$$;
 			 domain_nowww === "vr-porn.tube" ||
 			 domain_nowww === "xjav.tube" ||
 			 domain_nowww === "manysex.com" ||
+			 domain_nowww === "manysex.tube" ||
+			 domain_nowww === "videomanysex.com" ||
 			 domain_nowww === "videovoyeurhit.com" ||
 			 domain_nowww === "voyeurhit.tube" ||
 			 domain_nowww === "porn-latina.com") && options.do_request && options.cb) {
