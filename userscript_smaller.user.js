@@ -43798,7 +43798,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nosub === "imx.to" && /^t[0-9]*\./.test(domain)) {
 			return src.replace(/:\/\/[^/]*\/t\//, "://image.imx.to/u/i/");
 		}
-		if (domain_nosub === "imx.to" && domain.match(/^[xi][0-9]+\./)) {
+		if (domain_nosub === "imx.to" && domain.match(/^[xi][0-9]*\./)) {
 			return src.replace(/:\/\/[^/]*\/t\//, "://imx.to/u/i/");
 		}
 		if (domain_nowww === "sisajb.com" ||
@@ -74406,6 +74406,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return newsrc;
 		}
 		if (domain === "image-cdn.hotleak.vip") return src.replace(/(\/storage\/+images\/+[0-9a-f]{3}\/+[0-9a-f]{6}\/+[^/]+)_thumb\./, "$1.");
+		if (domain === "photos.tf1.fr") return src.replace(/(\/[0-9]+\/+[0-9]+\/+[^/]+)-[0-9a-f]{6}-[0-9]+@[0-9]+x\./, "$1.");
+		if (domain === "photos.tf1info.fr") return src.replace(/:\/\/[^/]+\/+images\/+([0-9]+\/+[0-9]+\/+[^/]+)-[0-9a-f]{6}-[0-9]+@[0-9]+x\./, "://photos.tf1.fr/$1.");
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
