@@ -72395,7 +72395,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			//   https://i.imx.to/i/2018/12/06/1whoss.jpg
 			return src.replace(/:\/\/[^/]*\/t\//, "://image.imx.to/u/i/");
 		}
-		if (domain_nosub === "imx.to" && domain.match(/^[xi][0-9]+\./)) {
+		if (domain_nosub === "imx.to" && domain.match(/^[xi][0-9]*\./)) {
 			// https://x001.imx.to/t/2016/01/19/569e0e4e392e4.jpg
 			//   https://x001.imx.to/i/2016/01/19/569e0e4e392e4.jpg
 			// https://i002.imx.to/t/2019/04/05/20esya.jpg
@@ -122623,6 +122623,21 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://image-cdn.hotleak.vip/storage/images/f26/b4f83b/b4f83b_thumb.webp
 			//   https://image-cdn.hotleak.vip/storage/images/f26/b4f83b/b4f83b.webp
 			return src.replace(/(\/storage\/+images\/+[0-9a-f]{3}\/+[0-9a-f]{6}\/+[^/]+)_thumb\./, "$1.");
+		}
+		if (domain === "photos.tf1.fr") {
+			// thanks to elevate and Liz on discord:
+			// https://photos.tf1.fr/1280/720/vlcsnap-2020-01-13-17h34m08s488-113753-b858ec-0@1x.jpg
+			//   https://photos.tf1.fr/1280/720/vlcsnap-2020-01-13-17h34m08s488-113753.jpg
+			// https://photos.tf1.fr/330/186/vlcsnap-2020-01-13-17h34m08s488-113753-98169d-0@1x.avif
+			//   https://photos.tf1.fr/330/186/vlcsnap-2020-01-13-17h34m08s488-113753.avif
+			return src.replace(/(\/[0-9]+\/+[0-9]+\/+[^/]+)-[0-9a-f]{6}-[0-9]+@[0-9]+x\./, "$1.");
+		}
+		if (domain === "photos.tf1info.fr") {
+			// https://photos.tf1info.fr/images/1280/720/c21-champagne-ardenne-rethel-e4b982-0@1x.jpeg
+			//   https://photos.tf1.fr/1280/720/c21-champagne-ardenne-rethel.jpeg -- 2121x1414
+			// https://photos.tf1info.fr/images/1920/1080/escroquerie-xxl-un-proces-a-28-millions-d-euros-2-54595d-0@1x.jpeg
+			//   https://photos.tf1.fr/1920/1080/escroquerie-xxl-un-proces-a-28-millions-d-euros-2.jpeg
+			return src.replace(/:\/\/[^/]+\/+images\/+([0-9]+\/+[0-9]+\/+[^/]+)-[0-9a-f]{6}-[0-9]+@[0-9]+x\./, "://photos.tf1.fr/$1.");
 		}
 		// -- general rules --
 		if (src.match(/\/ImageGen\.ashx\?/)) {
