@@ -37349,6 +37349,10 @@ var $$IMU_EXPORT$$;
 			// thanks to anonymous for reporting:
 			// https://pb.appnetica.com/api/files/ym8mjia0atim325/rhl3icvu00e8wu1/creatures_exodus_qlfp6fn9a6.webp?thumb=256x0
 			(domain === "pb.appnetica.com" && /\/api\/+files\//.test(src)) ||
+			// thanks to iotaOmicron on github: https://github.com/qsniyg/maxurl/issues/1646
+			// https://www.grand-seiko.com/sg-en/-/media/Images/Product--Image/All/GrandSeiko/2026/02/03/21/14/SBGX359G/SBGX359G.png?mh=300&mw=300
+			// https://www.grand-seiko.com/-/media/Images/Product--Image/All/GrandSeiko/2026/02/03/21/14/SBGX359G/SBGX359G.png?mh=300&mw=300
+			(domain_nowww === "grand-seiko.com" &&/\/media\/+Images\//i.test(src)) ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -136260,8 +136264,8 @@ var $$IMU_EXPORT$$;
 			if (/^[a-z]+:\/\/[^/]+\/+resize\/+create\?/.test(src)) {
 				newsrc = keep_queries(src, ["width", "height", "src"], {
 					overwrite: {
-						width: 9999,
-						height: 9999
+						width: "9999",
+						height: "9999"
 					}
 				});
 				if (newsrc !== src)
