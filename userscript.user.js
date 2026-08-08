@@ -122639,6 +122639,42 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			//   https://photos.tf1.fr/1920/1080/escroquerie-xxl-un-proces-a-28-millions-d-euros-2.jpeg
 			return src.replace(/:\/\/[^/]+\/+images\/+([0-9]+\/+[0-9]+\/+[^/]+)-[0-9a-f]{6}-[0-9]+@[0-9]+x\./, "://photos.tf1.fr/$1.");
 		}
+		if (domain_nowww === "idolfap.com" ||
+			// https://media.idolfap.com/files/thumb/153816-7c27a7080028a97899d6a9420a53a05a.jpg
+			//   https://media.idolfap.com/files/src/153816-7c27a7080028a97899d6a9420a53a05a.jpg
+			domain === "media.idolfap.com") {
+			// thanks to anonymous for reporting:
+			// https://idolfap.com/files/thumb/153816-7c27a7080028a97899d6a9420a53a05a.jpg
+			//   https://idolfap.com/files/src/153816-7c27a7080028a97899d6a9420a53a05a.jpg
+			return src.replace(/(\/files\/+)thumb\/+/, "$1src/");
+		}
+		if (domain === "media.reviews.co.uk") {
+			// thanks to iotaOmicron on github: https://github.com/qsniyg/maxurl/issues/1645
+			// https://media.reviews.co.uk/resize/create?width=500&height=0&src=https%3A%2F%2Fs3-us-west-1.amazonaws.com%2Freviews-us-assets%2Fassets%2Fupload-b34f9e519cb2eb0c41b5512812818098-1732385659.jpg
+			//   https://media.reviews.co.uk/resize/create?width=9999&height=0&src=https%3A%2F%2Fs3-us-west-1.amazonaws.com%2Freviews-us-assets%2Fassets%2Fupload-b34f9e519cb2eb0c41b5512812818098-1732385659.jpg
+			if (/^[a-z]+:\/\/[^/]+\/+resize\/+create\?/.test(src)) {
+				newsrc = keep_queries(src, ["width", "height", "src"], {
+					overwrite: {
+						width: 9999,
+						height: 9999
+					}
+				});
+				if (newsrc !== src)
+					return newsrc;
+			}
+			// https://media.reviews.co.uk/resize/create?width=500&height=0&src=https%3A%2F%2Fs3-us-west-1.amazonaws.com%2Freviews-us-assets%2Fassets%2Fupload-b34f9e519cb2eb0c41b5512812818098-1732385659.jpg
+			//   https://s3-us-west-1.amazonaws.com/reviews-us-assets/assets/upload-b34f9e519cb2eb0c41b5512812818098-1732385659.jpg -- 403
+			//   https://d19ayerf5ehaab.cloudfront.net/assets/upload-b34f9e519cb2eb0c41b5512812818098-1732385659.jpg -- 3000x4000
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+resize\/+create\?(?:.*&)?src=([^&]+)(?:[&#].*)?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+		if (amazon_container === "reviews-us-assets") {
+			// thanks to iotaOmicron on github: https://github.com/qsniyg/maxurl/issues/1645
+			// https://s3-us-west-1.amazonaws.com/reviews-us-assets/assets/upload-b34f9e519cb2eb0c41b5512812818098-1732385659.jpg
+			//   https://d19ayerf5ehaab.cloudfront.net/assets/upload-b34f9e519cb2eb0c41b5512812818098-1732385659.jpg
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+(?:[^/]+\/+)?(assets\/+upload-[0-9a-f]+-[0-9]+\.[a-z]+)(?:[?#].*)?$/, "https://d19ayerf5ehaab.cloudfront.net/$1");
+		}
 		// -- general rules --
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			// http://www.lookalikes.info/umbraco/ImageGen.ashx?image=/media/97522/nick%20hewer%20-%20mark%20brown.jpeg&width=250&constrain=true
