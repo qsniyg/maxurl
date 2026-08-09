@@ -136287,6 +136287,13 @@ var $$IMU_EXPORT$$;
 			return src.replace(/^[a-z]+:\/\/[^/]+\/+(?:[^/]+\/+)?(assets\/+upload-[0-9a-f]+-[0-9]+\.[a-z]+)(?:[?#].*)?$/, "https://d19ayerf5ehaab.cloudfront.net/$1");
 		}
 
+		if (domain === "cdnrakuma.buyee.jp") {
+			// thanks to iotaOmicron on github: https://github.com/qsniyg/maxurl/issues/1634
+			// https://cdnrakuma.buyee.jp/img/843770013/s/2910270793.jpg
+			//   https://cdnrakuma.buyee.jp/img/843770013/l/2910270793.jpg -- 1080x1080
+			return src.replace(/(\/img\/+[0-9]+\/+)[sm]\/+/, "$1l/");
+		}
+
 
 
 

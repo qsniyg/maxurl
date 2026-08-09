@@ -122679,6 +122679,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			//   https://d19ayerf5ehaab.cloudfront.net/assets/upload-b34f9e519cb2eb0c41b5512812818098-1732385659.jpg
 			return src.replace(/^[a-z]+:\/\/[^/]+\/+(?:[^/]+\/+)?(assets\/+upload-[0-9a-f]+-[0-9]+\.[a-z]+)(?:[?#].*)?$/, "https://d19ayerf5ehaab.cloudfront.net/$1");
 		}
+		if (domain === "cdnrakuma.buyee.jp") {
+			// thanks to iotaOmicron on github: https://github.com/qsniyg/maxurl/issues/1634
+			// https://cdnrakuma.buyee.jp/img/843770013/s/2910270793.jpg
+			//   https://cdnrakuma.buyee.jp/img/843770013/l/2910270793.jpg -- 1080x1080
+			return src.replace(/(\/img\/+[0-9]+\/+)[sm]\/+/, "$1l/");
+		}
 		// -- general rules --
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			// http://www.lookalikes.info/umbraco/ImageGen.ashx?image=/media/97522/nick%20hewer%20-%20mark%20brown.jpeg&width=250&constrain=true
