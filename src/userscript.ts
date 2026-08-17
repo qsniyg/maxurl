@@ -39588,9 +39588,25 @@ var $$IMU_EXPORT$$;
 			//   https://img17.pixhost.to/images/469/66269400_ns4w-org-2.jpg
 			// https://t16.pixhost.org/thumbs/419/63150269_dsera-023.jpg
 			//   https://img16.pixhost.to/images/419/63150269_dsera-023.jpg
-			return src
-				.replace(/(:\/\/[^/]*\.)pixhost\.(?:org|to)\//, "$1pixhost.cc/")
-				.replace(/\/t([0-9]*\.pixho[^/]+)\/thumbs\//, "/img$1/images/");
+			newsrc = src.replace(/(:\/\/[^/]*\.)pixhost\.(?:org|to)\//, "$1pixhost.cc/")
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/\/t([0-9]*\.pixho[^/]+)\/thumbs\//, "/img$1/images/");
+			if (newsrc !== src)
+				return newsrc;
+
+			if (/:\/\/img[0-9]*\./.test(src)) {
+				return {
+					url: src,
+					headers: {
+						Referer: "https://" + domain_nosub + "/",
+						"Sec-Fetch-Dest": "image",
+						"Sec-Fetch-Mode": "no-cors",
+						"Sec-Fetch-Site": "same-site"
+					}
+				};
+			}
 		}
 
 		/*if (false && string_indexof(domain, "ssli.ulximg.com") >= 0) {
@@ -89580,7 +89596,11 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/img\/+cache\/+[0-9]+(?:x[0-9]+)?(?:-[a-z]+)?\/+(.*?)(?:(\.[^/.]+)?\.webp)?(?:[?#].*)?$/, "/img/$1$2");
 		}
 
-		if (domain === "icdn.2cda.pl") {
+		if (domain === "icdn.2cda.pl" ||
+			// thanks to anonymous for reporting:
+			// https://icdn.cda.pl/covers/thumbs/18ab7bcbf965040029226f845dd32a5a5c8d5ac4.jpg_ooooxoooox_489x.jpg
+			//   https://icdn.cda.pl/covers/oryginalne/18ab7bcbf965040029226f845dd32a5a5c8d5ac4.jpg
+			domain === "icdn.cda.pl") {
 			// https://icdn.2cda.pl/obr/thumbs/e9ac39c4b1aaa2202a6a25e28c1b48a2.jpg_oooooooooo_273x.jpg
 			//   https://icdn.2cda.pl/obr/oryginalne/e9ac39c4b1aaa2202a6a25e28c1b48a2.jpg
 			// http://icdn.2cda.pl/vid/thumbs/14013792859185-11.jpg_ooooxooxox_1280x720.jpg -- upscaled
@@ -130756,6 +130776,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "noodlemagazine.com" ||
 			domain_nowww === "ukdevilz.com" ||
+			domain_nowww === "exporntoons.net" ||
 			domain_nowww === "mat6tube.com") {
 			// thanks to anonymous for reporting:
 			// https://noodlemagazine.com/watch/-[0-9]+_[0-9]+
@@ -136292,6 +136313,29 @@ var $$IMU_EXPORT$$;
 			// https://cdnrakuma.buyee.jp/img/843770013/s/2910270793.jpg
 			//   https://cdnrakuma.buyee.jp/img/843770013/l/2910270793.jpg -- 1080x1080
 			return src.replace(/(\/img\/+[0-9]+\/+)[sm]\/+/, "$1l/");
+		}
+
+		if (domain === "static.sangtacvietcdn.xyz") {
+			// thanks to anonymous for reporting:
+			// https://static.sangtacvietcdn.xyz/img/useravatar120/user62156.jpg
+			//   https://static.sangtacvietcdn.xyz/img/useravatar/user62156.jpeg
+			return src.replace(/(\/img\/+useravatar)[0-9]+\/+([^/]+)\.jpg(?:[?#].*)?$/, "$1/$2.jpeg");
+		}
+
+		if (domain_nowww === "sexadvisor.com") {
+			// thanks to anonymous for reporting:
+			// https://sexadvisor.com/images/russia/tyumen/nightclub/garem-house/garem-house_nightclub_tyumen_russia_405x234_86746.jpg
+			//   https://sexadvisor.com/images/russia/tyumen/nightclub/garem-house/garem-house_nightclub_tyumen_russia_sources_86746.jpg
+			return src.replace(/(\/images\/+.*_)[0-9]+x[0-9]+(_[0-9]+\.[a-z]+)(?:[?#].*)?$/, "$1sources$2");
+		}
+
+		if (domain_nowww === "erotikmaps.com") {
+			// thanks to anonymous for reporting:
+			// https://www.erotikmaps.com/public/cache/images/ai-7053-2-5d813208_800x_6d5e14c17eec0dedb87de904a3e68f65.webp
+			//   https://www.erotikmaps.com/public/uploads/ai-7053-2-5d813208.jpg
+			newsrc = src.replace(/(\/public\/+)cache\/+images\/+([^/]+)_[0-9]+x_[0-9a-f]{10,}\./, "$1uploads/$2.");
+			if (newsrc !== src)
+				return add_extensions(newsrc);
 		}
 
 
