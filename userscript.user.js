@@ -108452,6 +108452,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// http://img-spur.hpplus.jp/article/parts/image/7e/7eb017ce-9ec5-473a-a07e-dd2e8e8e8043-4380x6570.jpg
 			//   http://img-spur.hpplus.jp/image/7e/7eb017ce-9ec5-473a-a07e-dd2e8e8e8043-4380x6570.jpg
 			domain === "img-spur.hpplus.jp" ||
+			// thanks to f2005 on discord:
+			// https://img.seventeen-web.jp/lg=3/vp/m/article/parts/image/92/922c3c2a-bb0f-41ad-95c8-2c5799405039-3234x3925.jpg
+			//   https://img.seventeen-web.jp/image/92/922c3c2a-bb0f-41ad-95c8-2c5799405039-3234x3925.jpg
+			// https://img.seventeen-web.jp/w=1800,q=75,a=0,f=webp:auto,through=gif/image/9e/9e12b94d-a465-4b20-9fe4-1d8ab9015e08-2969x1782.jpg
+			//   https://img.seventeen-web.jp/image/9e/9e12b94d-a465-4b20-9fe4-1d8ab9015e08-2969x1782.jpg
+			domain === "img.seventeen-web.jp" ||
 			// thanks to fireattack on discord:
 			// https://img-maquia.hpplus.jp/common/large/image/bf/bfe6887f-3f9f-4dd6-aa6c-acebf605f285-3000x2000.jpg
 			//   https://img-maquia.hpplus.jp/image/bf/bfe6887f-3f9f-4dd6-aa6c-acebf605f285-3000x2000.jpg
