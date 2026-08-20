@@ -30279,6 +30279,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to anonymous for reporting:
 			domain_nowww === "jeffreymayerphotography.com" ||
 			// thanks to anonymous for reporting:
+			domain_nowww === "huskybandmedia.com" ||
+			// thanks to anonymous for reporting:
 			domain_nowww === "mgpstockphotos.com") {
 			// thanks to meloner on discord for reporting:
 			// https://www.marcusgetta.photography/img-get2/I0000RIQ98yTy98k/fill=/fit=188x188/I0000RIQ98yTy98k.jpg
@@ -34157,6 +34159,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://www.grand-seiko.com/sg-en/-/media/Images/Product--Image/All/GrandSeiko/2026/02/03/21/14/SBGX359G/SBGX359G.png?mh=300&mw=300
 			// https://www.grand-seiko.com/-/media/Images/Product--Image/All/GrandSeiko/2026/02/03/21/14/SBGX359G/SBGX359G.png?mh=300&mw=300
 			(domain_nowww === "grand-seiko.com" && /\/media\/+Images\//i.test(src)) ||
+			// thanks to anonymous for reporting:
+			// https://img.autocarpro.in/autocarpro/6b313de3-5dfb-40e8-beae-591486900c32_WhatsApp-Image-20260818-at-20.16.31-_1_.jpeg?w=750&h=490&q=75&c=1
+			domain === "img.autocarpro.in" ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -107212,12 +107217,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://img.kleinanzeigen.de/api/v1/prod-ads/images/e1/e12e4005-6d25-4e2a-b6c2-f465a8a4b865?rule=$_35.AUTO
 			//   https://img.kleinanzeigen.de/api/v1/prod-ads/images/e1/e12e4005-6d25-4e2a-b6c2-f465a8a4b865?rule=$_57.AUTO -- 1028x1600
 			// https://img.kleinanzeigen.de/api/v1/prod-ads/images/69/69e38ea5-80d1-404e-a35e-685eeb0ebfc7?rule=$_57.AUTO -- 1199x1600, upscaled?
+			// https://img.kleinanzeigen.de/api/v1/prod-ads/images/5b/5bcfad52-11ef-430f-a6ec-93255df4b788?rule=$_59.AUTO
+			//   https://img.kleinanzeigen.de/api/v1/prod-ads/images/5b/5bcfad52-11ef-430f-a6ec-93255df4b788?rule=$_57.AUTO -- 1600x1200
 			domain === "img.kleinanzeigen.de") {
 			// thanks to ABCFE on discord: https://github.com/qsniyg/maxurl/issues/1068
 			// https://img.ebay-kleinanzeigen.de/api/v1/prod-ads/images/86/86687f14-c485-41ea-a0fe-8afd446babe9?rule=$_59.JPG -- https://www.ebay-kleinanzeigen.de/s-anzeige/canon-imagerunner-drucker/2211175347-225-3120
 			//   https://img.ebay-kleinanzeigen.de/api/v1/prod-ads/images/86/86687f14-c485-41ea-a0fe-8afd446babe9?rule=$_57.JPG
 			var queries = get_queries(src);
-			queries.rule = queries.rule.replace(/\d+/, "57");
+			queries.rule = queries.rule.replace(/_[0-9]+/, "_57");
 			newsrc = add_queries(src, queries);
 			if (newsrc !== src)
 				return {
@@ -122729,6 +122736,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			newsrc = src.replace(/(\/public\/+)cache\/+images\/+([^/]+)_[0-9]+x_[0-9a-f]{10,}\./, "$1uploads/$2.");
 			if (newsrc !== src)
 				return add_extensions(newsrc);
+		}
+		if (domain === "imagecache.markt.de") {
+			// thanks to anonymous for reporting:
+			// https://imagecache.markt.de/uEW77ih2M-z00TEFODOoXXmhmb8=/fit-in/450x600/images_classifieds/59/4f/d427-cf29-46dd-b9ea-de5adddfd90b/image
+			//   https://bilder.markt.de/images_classifieds/59/4f/d427-cf29-46dd-b9ea-de5adddfd90b/image
+			return {
+				url: "https://bilder.markt.de/" + common_functions["get_thumbor_url"](src.replace(/^[a-z]+:\/\/[^/]+\/+/, "/")),
+				head_wrong_contenttype: true
+			};
 		}
 		// -- general rules --
 		if (src.match(/\/ImageGen\.ashx\?/)) {
