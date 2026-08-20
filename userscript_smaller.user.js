@@ -21580,6 +21580,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "capitalpictures.com" ||
 			domain_nowww === "sportimage.co.uk" ||
 			domain_nowww === "jeffreymayerphotography.com" ||
+			domain_nowww === "huskybandmedia.com" ||
 			domain_nowww === "mgpstockphotos.com") {
 			return src.replace(/^[a-z]+:\/\/[^/]+\/+(img-get2?\/)/, "https://ssl.c.photoshelter.com/$1");
 		}
@@ -23852,6 +23853,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain === "assets.teenage.engineering" && /\/_img\/+store\//.test(src)) ||
 			(domain === "pb.appnetica.com" && /\/api\/+files\//.test(src)) ||
 			(domain_nowww === "grand-seiko.com" && /\/media\/+Images\//i.test(src)) ||
+			domain === "img.autocarpro.in" ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -64519,7 +64521,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain === "img.ebay-kleinanzeigen.de" ||
 			domain === "img.kleinanzeigen.de") {
 			var queries = get_queries(src);
-			queries.rule = queries.rule.replace(/\d+/, "57");
+			queries.rule = queries.rule.replace(/_[0-9]+/, "_57");
 			newsrc = add_queries(src, queries);
 			if (newsrc !== src)
 				return {
@@ -65225,6 +65227,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain === "img-baila.hpplus.jp" ||
 			domain === "img-spur.hpplus.jp" ||
+			domain === "img.seventeen-web.jp" ||
 			domain === "img-maquia.hpplus.jp" // ||
 		) {
 			return src
@@ -74454,6 +74457,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			newsrc = src.replace(/(\/public\/+)cache\/+images\/+([^/]+)_[0-9]+x_[0-9a-f]{10,}\./, "$1uploads/$2.");
 			if (newsrc !== src)
 				return add_extensions(newsrc);
+		}
+		if (domain === "imagecache.markt.de") {
+			return {
+				url: "https://bilder.markt.de/" + common_functions["get_thumbor_url"](src.replace(/^[a-z]+:\/\/[^/]+\/+/, "/")),
+				head_wrong_contenttype: true
+			};
 		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
