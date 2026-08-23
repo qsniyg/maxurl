@@ -122746,6 +122746,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				head_wrong_contenttype: true
 			};
 		}
+		if (domain === "3y5rx2.5gcdn.net") {
+			// thanks to anonymous for reporting:
+			// https://3y5rx2.5gcdn.net/ext/resize_1200x630min,pos_center,crop_1200x630,auto,q_80?src=https%3A%2F%2Fbubo.sk%2Fuploads%2Fusr%2F10898%2Fkukucin.jpg%3Fmd%3Db187b1af99d41815751a75ac8edff3c4
+			//   https://bubo.sk/uploads/usr/10898/kukucin.jpg?md=b187b1af99d41815751a75ac8edff3c4
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+ext\/+resize_[^/?]+\?(?:.*&)?src=([^&#]+)(?:[&#].*)?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+		if (domain_nosub === "kuwo.cn" && /^img[0-9]*\./.test(domain)) {
+			// thanks to anonymous for reporting:
+			// https://img3.kuwo.cn/star/albumcover/500/s4s35/8/87830773.jpg
+			//   https://img3.kuwo.cn/star/albumcover/0/s4s35/8/87830773.jpg -- 1000
+			return src.replace(/(\/star\/+albumcover\/+)[0-9]+\/+/, "$10/");
+		}
 		// -- general rules --
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			// http://www.lookalikes.info/umbraco/ImageGen.ashx?image=/media/97522/nick%20hewer%20-%20mark%20brown.jpeg&width=250&constrain=true
@@ -141092,7 +141106,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		};
 		var real_xhr = unsafeWindow["XMLHttpRequest"];
 		var private_props = ["_actual", "method", "data", "url", "headers", "responseType", "response", "responseText"];
-		var passthrough_methods = ["addEventListener", "send", "open", "abort", "getAllResponseHeaders", "getResponseHeader", "overrideMimeType", "setRequestHeader"];
+		var passthrough_methods = ["send", "open", "abort", "getAllResponseHeaders", "getResponseHeader", "overrideMimeType", "setRequestHeader"];
 		// HEADERS_RECEIVED is needed by google
 		var copy_xhr_props = ["DONE", "HEADERS_RECEIVED", "LOADING", "OPENED", "UNSENT", "length"];
 		var copy_xhr_prototype_props = ["DONE", "HEADERS_RECEIVED", "LOADING", "OPENED", "UNSENT"];
@@ -141121,7 +141135,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				});
 			});
 			// add all proxy getters/setters
-			["ontimeout, timeout", "withCredentials", "onload", "onloadend", "onerror", "onprogress", "onreadystatechange", "responseType"].forEach(function(item) {
+			["ontimeout", "timeout", "withCredentials", "onload", "onloadend", "onerror", "onprogress", "onreadystatechange", "responseType"].forEach(function(item) {
 				Object.defineProperty(self, item, {
 					get: function() { return actual[item]; },
 					set: function(val) { actual[item] = val; }
@@ -141160,6 +141174,33 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			this[get_hotprefixed("headers")][header] = value;
 		};
+		var get_hotpatch_event_cb = function(xhr, real_cb) {
+			return function() {
+				if (helpers.xhr_override_resp && this.readyState >= 3) {
+					var newresp = null;
+					try {
+						newresp = helpers.xhr_override_resp(get_req_info(this), get_resp_info(this));
+					} catch (e) {
+						console_error(e);
+					}
+					if (newresp) {
+						if (newresp.response) {
+							this[get_hotprefixed("response")] = newresp.response;
+							try {
+								this[get_hotprefixed("responseText")] = newresp.response.toString();
+							} catch (e) {
+								console_error(e);
+							}
+						}
+					}
+				}
+				return real_cb.apply(this, arguments);
+			}.bind(xhr);
+		};
+		hotxhr.prototype.addEventListener = function(type, listener, options) {
+			var real_xhr = this[get_hotprefixed("_actual")];
+			return real_xhr.addEventListener.apply(real_xhr, [type, get_hotpatch_event_cb(this, listener), options]);
+		};
 		hotxhr.prototype.send = function(data) {
 			var actual = this[get_hotprefixed("_actual")];
 			this[get_hotprefixed("data")] = data;
@@ -141196,27 +141237,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var real_cb = this[evt];
 				if (!real_cb)
 					return;
-				this[evt] = function() {
-					if (helpers.xhr_override_resp && this.readyState >= 3) {
-						var newresp = null;
-						try {
-							newresp = helpers.xhr_override_resp(get_req_info(this), get_resp_info(this));
-						} catch (e) {
-							console_error(e);
-						}
-						if (newresp) {
-							if (newresp.response) {
-								this[get_hotprefixed("response")] = newresp.response;
-								try {
-									this[get_hotprefixed("responseText")] = newresp.response.toString();
-								} catch (e) {
-									console_error(e);
-								}
-							}
-						}
-					}
-					return real_cb.apply(this, arguments);
-				}.bind(this);
+				this[evt] = get_hotpatch_event_cb(this, real_cb);
 			};
 			hotpatch_event.bind(this)("onload");
 			hotpatch_event.bind(this)("onloadend");
@@ -141272,8 +141293,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				};
 				xhr.onerror = reject;
 				xhr.withCredentials = options.credentials === "include";
-				for (var header in options.headers) {
-					xhr.setRequestHeader(header, options.headers[header]);
+				if (options.headers && typeof options.headers === "object") {
+					if (typeof options.headers.forEach === "function") {
+						// Headers object, used by reddit and google ai
+						// thanks to BlueBull010 on github for reporting: https://github.com/qsniyg/maxurl/issues/1637
+						options.headers.forEach(function(value, header) {
+							xhr.setRequestHeader(header, value);
+						});
+					} else {
+						for (var header in options.headers) {
+							xhr.setRequestHeader(header, options.headers[header]);
+						}
+					}
 				}
 				if (options.signal) {
 					options.signal.addEventListener("abort", function() {

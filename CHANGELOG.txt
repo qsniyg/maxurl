@@ -9,8 +9,9 @@ Bugfixes:
  * Fix crash when downloading HLS/DASH streams if blob workers aren't supported
  * Fix extra properties disappearing when switching between album images on some websites
  * Fix userscript failing to load on websites with setInterval blocked due to adblockers
+ * Fix XHR hotpatching failing when a Headers object was sent (#1637, thanks to BlueBull010 for reporting)
 
-Special thanks to sn3akyb3ar, Froktime, jespermhl, a-random-lemurian, karpuzikov, BlindWanda, ChipFIN, rRoler, Liz, f2005, in-the-halfway, FibreTTP, fireattack, nimbuz, thomased9412, randomuser1574, elevate, iotaOmicron for their contributions and reports for this release
+Special thanks to sn3akyb3ar, Froktime, jespermhl, a-random-lemurian, karpuzikov, BlindWanda, ChipFIN, rRoler, Liz, f2005, in-the-halfway, FibreTTP, fireattack, nimbuz, thomased9412, randomuser1574, elevate, iotaOmicron, BlueBull010 for their contributions and reports for this release
 
 ---
 
