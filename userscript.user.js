@@ -30865,7 +30865,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				// thanks to anonymous for reporting:
 				// https://lh3.googleusercontent.com/sPRaDIS7CbonlHsRfAWNUWvcw7UKIyyHa_1PT9_xbobOrjtDbVA1khP2Pc_M_ujK-TdWqoJs4CMc%3Ds144
 				//   https://lh3.googleusercontent.com/sPRaDIS7CbonlHsRfAWNUWvcw7UKIyyHa_1PT9_xbobOrjtDbVA1khP2Pc_M_ujK-TdWqoJs4CMc=s0?imgmax=0
-				(/^(?:yt|ci|lh|gp)[0-9](?:-[a-z]{2})?\./.test(domain) ||
+				// thanks to anonymous for reporting:
+				// https://gz0.googleusercontent.com/gps-cs/AH1DqX840iismkdEymF-Wip05kkaOHeoVkLxJR8vfm1lMePEDy8A3z1k1axw5_aAlsFVEnDpToRYWLFgg14lkBNOUh_yrZQTkJjSN7TXUOMUw-Blz0KiKpN0_FuViYBKfRAkiAAFIiw=w3661-h2340-k-no
+				//   https://gz0.googleusercontent.com/gps-cs/AH1DqX840iismkdEymF-Wip05kkaOHeoVkLxJR8vfm1lMePEDy8A3z1k1axw5_aAlsFVEnDpToRYWLFgg14lkBNOUh_yrZQTkJjSN7TXUOMUw-Blz0KiKpN0_FuViYBKfRAkiAAFIiw=s0?imgmax=0
+				(/^(?:yt|ci|lh|gp|gz)[0-9](?:-[a-z]{2})?\./.test(domain) ||
 					// thanks to Elliot Alderson on discord for reporting
 					// https://play-lh.googleusercontent.com/DfAVURLgv0F8OZxFds3vLqd6o7dW9hbe9AUPgvVi4kzY5qb7Y-VRitHYA8_9W8edidI=w1440-h620-rw
 					//   https://play-lh.googleusercontent.com/DfAVURLgv0F8OZxFds3vLqd6o7dW9hbe9AUPgvVi4kzY5qb7Y-VRitHYA8_9W8edidI=s0?imgmax=0
@@ -35359,6 +35362,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://i.tribune.com.pk/media/images/The-Russo-Brothers1714459781-0/The-Russo-Brothers1714459781-0-640x480.webp
 			//   https://i.tribune.com.pk/media/images/The-Russo-Brothers1714459781-0/The-Russo-Brothers1714459781-0.webp
 			(domain === "i.tribune.com.pk" && /\/media\/+images\//.test(src)) ||
+			// thanks to in-the-halfway on github: https://github.com/qsniyg/maxurl/commit/7d0e8f0d33f4a04a59160dd0a7b223921628990c#commitcomment-197399414
+			// https://abai.kz/content/uploads/2026/08/0ca364cc-030e-450c-b011-71ea1e6e8729-1024x638.jpg
+			(domain_nowww === "abai.kz" && /\/content\/+uploads\//.test(src)) ||
 			// thanks to anonymous for reporting:
 			// https://cdn.entameclip.com/2024/10/pic20241023kimitoband1-300x225.jpg
 			//   https://cdn.entameclip.com/2024/10/pic20241023kimitoband1.jpg
@@ -77019,14 +77025,28 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			//   https://cdn.ren.tv/media/img/6a/0f/6a0f018ccd4381980fb02f24cd8c4f421b1e65b3.jpg
 			return src.replace(/\/cache\/+[0-9]+x[0-9]+\/+media\/+/, "/media/");
 		}
-		if (domain_nowww === "3dnews.ru") {
+		if (domain_nowww === "3dnews.ru" ||
+			// https://cdn.3dnews.ru/assets/external/illustrations/2018/10/04/976375/sm.574A3720.750.JPG
+			//   https://cdn.3dnews.ru/assets/external/illustrations/2018/10/04/976375/574A3720.JPG
+			domain === "cdn.3dnews.ru") {
 			// https://3dnews.ru/assets/external/illustrations/2018/10/04/976375/sm.574A3720.750.JPG
 			//   https://3dnews.ru/assets/external/illustrations/2018/10/04/976375/574A3720.JPG
 			// https://3dnews.ru/z/ac:if/w:g/2018/10/04/5bb65922b4182e8a7b8b456e/03201c1e8ef2a60e47e3e82426ac26c4.png/400
 			//   https://3dnews.ru/assets/external/galleries/2018/10/04/5bb65922b4182e8a7b8b456e/03201c1e8ef2a60e47e3e82426ac26c4.png
-			return src
-				.replace(/(\/assets\/.*\/)[a-z]+\.([0-9A-Z]+)\.[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3")
-				.replace(/\/z\/.*?\/([0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9a-f]+\/+[0-9a-fA-Z]+\.[^/.]*)(?:\/+[0-9]+)?(?:[?#].*)?$/, "/assets/external/galleries/$1");
+			// thanks to anonymous for reporting:
+			// https://3dnews.ru/z/ac:if/w:m/2026/08/14/1146824/0.jpg/370/200
+			//   https://3dnews.ru/assets/external/illustrations/2026/08/14/1146824/0.jpg
+			newsrc = src.replace(/(\/assets\/.*\/)[a-z]+\.([0-9A-Z]+)\.[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
+			if (newsrc !== src)
+				return newsrc;
+			match = src.match(/\/z\/[^/]+\/+w(?::|%3[aA])([a-z])\/+([0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9a-f]+\/+[0-9a-fA-Z]+\.[^/.]*)(?:\/+[0-9]+){0,2}(?:[?#].*)?$/);
+			if (match) {
+				var folder_2 = "galleries";
+				if (match[1] === "m")
+					folder_2 = "illustrations";
+				return src.replace(/(:\/\/[^/]+\/+)z\/.*/, "$1assets/external/" + folder_2 + "/" + match[2]);
+			}
+			//.replace(/\/z\/.*?\/([0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9a-f]+\/+[0-9a-fA-Z]+\.[^/.]*)(?:\/+[0-9]+){0,2}(?:[?#].*)?$/, "/assets/external/galleries/$1");
 		}
 		if (domain === "mix.tn.kz" ||
 			// https://tengrinews.kz/userdata/news/2014/news_266860/thumb_b/photo_144147.jpg -- upscaled?
@@ -90655,7 +90675,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			//   https://s0.rbk.ru/v6_top_pics/media/img/7/22/754823926108227.jpg
 			// https://s0.rbk.ru/v6_top_pics/resized/590xH/media/img/7/22/754823926108227.jpg
 			//   https://s0.rbk.ru/v6_top_pics/media/img/7/22/754823926108227.jpg
-			return src.replace(/\/resized\/+[0-9W]+x[0-9H]+(?:_crop)?\/+media\/+/, "/media/");
+			newsrc = src.replace(/\/resized\/+[0-9W]+x[0-9H]+(?:_crop)?\/+media\/+/, "/media/");
+			if (newsrc !== src)
+				return newsrc;
+			// thanks to in-the-halfway on github: https://github.com/qsniyg/maxurl/commit/7d0e8f0d33f4a04a59160dd0a7b223921628990c#commitcomment-197399414
+			// https://s0.rbk.ru/v6_top_pics/media/img/3/98/756793891324983.webp
+			//   https://s0.rbk.ru/v6_top_pics/media/img/3/98/756793891324983.jpg
+			return src.replace(/(\/media\/+img\/+[0-9]+\/+[0-9]+\/+[0-9]+\.)webp(?:[?#].*)?$/, "$1jpg");
 		}
 		if (domain_nowww === "kazanfirst.ru") {
 			// https://kazanfirst.ru/storage//post/August2017/X4rnjf58m2uhD2nIjv90-watermark.jpg
@@ -108900,24 +108926,24 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var subdomain = domain
 				.replace(/\.cdn\.arcpublishing\.com$/, "")
 				.replace(/\.web\.arc-cdn.net$/, "");
-			var folder_2 = subdomain.replace(/^([a-z]+)-.*/, "$1");
+			var folder_3 = subdomain.replace(/^([a-z]+)-.*/, "$1");
 			var loc = "us-east-1";
-			if (folder_2 === "thenational" ||
+			if (folder_3 === "thenational" ||
 				// thanks to anonymous for reporting:
 				// https://qobuz-qobuz-prod.web.arc-cdn.net/resizer/v2/BOL3AI7CGJHTLLWZTO55SI4EMY.jpg?auth=111be25900c5c08f5e976efc5677bf59b566788739cb81282d658a39ec5e2b3d&width=860
 				//   https://cloudfront-eu-central-1.images.arcpublishing.com/qobuz/BOL3AI7CGJHTLLWZTO55SI4EMY.jpg
-				folder_2 === "qobuz")
+				folder_3 === "qobuz")
 				// thanks to roi:
 				// https://thenational-the-national-prod.cdn.arcpublishing.com/resizer/v2/M4J7Z42T6RFJHIOK6C7ST2AOYQ.jpg?smart=true&auth=f1af8e4b5ce5cc75585098baad7a855d471b304c2c47c9df522dd53529d57f0c&width=600&height=337
 				//   https://cloudfront-eu-central-1.images.arcpublishing.com/thenational/M4J7Z42T6RFJHIOK6C7ST2AOYQ.jpg
 				loc = "eu-central-1";
-			if (folder_2 === "sanspo") {
+			if (folder_3 === "sanspo") {
 				// https://sanspo-sanspo-prod.web.arc-cdn.net/resizer/v2/HLUZPQWCQVK7JNILWPVRKHZCBI.jpg?auth=b52ba1bf3b01c3f27e5df9969a976f8059dcd3db8da567219e404869ebfea509&height=768&smart=true
 				//   https://cloudfront-ap-northeast-1.images.arcpublishing.com/sankei/HLUZPQWCQVK7JNILWPVRKHZCBI.jpg
 				loc = "ap-northeast-1";
-				folder_2 = "sankei";
+				folder_3 = "sankei";
 			}
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+resizer\/+v2\/+([^?#/]+)(?:[?#].*)?$/, "https://cloudfront-" + loc + ".images.arcpublishing.com/" + folder_2 + "/$1");
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+resizer\/+v2\/+([^?#/]+)(?:[?#].*)?$/, "https://cloudfront-" + loc + ".images.arcpublishing.com/" + folder_3 + "/$1");
 			if (newsrc !== src)
 				return newsrc;
 		}
@@ -110569,6 +110595,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to anonymous for reporting:
 			// https://static-proxy.strpst.com/photos/0/3/1/031c2d2e967cfa94e91ca8759f0cb679-thumb
 			//   https://static-proxy.strpst.com/photos/0/3/1/031c2d2e967cfa94e91ca8759f0cb679
+			// other:
+			// https://static-proxy.strpst.com/photos/L/T/p/LTpVGbzRenZTZy8XA0v_TuFeUG2Z1TZGWooLQSNxsRqPU81WhmJ2DsYrVG6PA9Rf-thumb-micro
+			// https://static-proxy.strpst.com/photos/1/B/r/1BrZPUV6sLeojtyKnUpVECjqTGK3N6VRSTB3hDWW3K2ZEGVq3Nwmq_-Yc9Zeis_S-thumb-micro
 			domain === "static-proxy.strpst.com") {
 			// thanks to anonymous for reporting:
 			// https://static-cdn.strpst.com/avatars/c/3/e/c3e8931e8298e3ff44f664a86a0ffc75-thumb -- 100x100
@@ -119980,10 +120009,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain === "prev.xxdbx.com" ||
 			domain === "ii.pornxp.tv" ||
 			domain === "ji.pornxp.tv") {
-			var folder_3 = "view";
+			var folder_4 = "view";
 			if (domain_nosub === "pornxp.tv")
-				folder_3 = "videos";
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+([0-9]{8})[0-9]*\.(?:jpg|mp4)(?:[?#].*)?$/, "https://" + domain_nosub + "/" + folder_3 + "/$1");
+				folder_4 = "videos";
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+([0-9]{8})[0-9]*\.(?:jpg|mp4)(?:[?#].*)?$/, "https://" + domain_nosub + "/" + folder_4 + "/$1");
 			if (newsrc !== src)
 				return {
 					url: newsrc,
