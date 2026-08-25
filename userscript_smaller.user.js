@@ -21892,7 +21892,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if ((domain_nosub === "blogspot.com" && string_indexof(domain, ".bp.blogspot.com") >= 0) ||
 			((domain_nosub === "googleusercontent.com" ||
 				domain_nosub.match(/^google\./)) &&
-				(/^(?:yt|ci|lh|gp)[0-9](?:-[a-z]{2})?\./.test(domain) ||
+				(/^(?:yt|ci|lh|gp|gz)[0-9](?:-[a-z]{2})?\./.test(domain) ||
 					/^play-lh\./.test(domain))) ||
 			domain === "d2yal1mtmg1ts6.cloudfront.net" ||
 			domain === "blogger.googleusercontent.com" ||
@@ -24389,6 +24389,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain === "static01.nyt.com" && /\/uploads\/+wp\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]+\/+/.test(src)) ||
 			(domain === "api.ellecanada.com" && /\/app\/+uploads\//.test(src)) ||
 			(domain === "i.tribune.com.pk" && /\/media\/+images\//.test(src)) ||
+			(domain_nowww === "abai.kz" && /\/content\/+uploads\//.test(src)) ||
 			domain === "cdn.entameclip.com") {
 			src = src.replace(/-[0-9]+x[0-9]+\.([^/]*(?:[?#].*)?)$/, ".$1");
 		}
@@ -46222,10 +46223,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return src.replace(/\/cache\/+[0-9]+x[0-9]+(?:-[a-z0-9]+)?\/+img\/+/, "/img/");
 		}
 		if (domain === "cdn.ren.tv") return src.replace(/\/cache\/+[0-9]+x[0-9]+\/+media\/+/, "/media/");
-		if (domain_nowww === "3dnews.ru") {
-			return src
-				.replace(/(\/assets\/.*\/)[a-z]+\.([0-9A-Z]+)\.[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3")
-				.replace(/\/z\/.*?\/([0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9a-f]+\/+[0-9a-fA-Z]+\.[^/.]*)(?:\/+[0-9]+)?(?:[?#].*)?$/, "/assets/external/galleries/$1");
+		if (domain_nowww === "3dnews.ru" ||
+			domain === "cdn.3dnews.ru") {
+			newsrc = src.replace(/(\/assets\/.*\/)[a-z]+\.([0-9A-Z]+)\.[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
+			if (newsrc !== src)
+				return newsrc;
+			match = src.match(/\/z\/[^/]+\/+w(?::|%3[aA])([a-z])\/+([0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9a-f]+\/+[0-9a-fA-Z]+\.[^/.]*)(?:\/+[0-9]+){0,2}(?:[?#].*)?$/);
+			if (match) {
+				var folder_2 = "galleries";
+				if (match[1] === "m")
+					folder_2 = "illustrations";
+				return src.replace(/(:\/\/[^/]+\/+)z\/.*/, "$1assets/external/" + folder_2 + "/" + match[2]);
+			}
 		}
 		if (domain === "mix.tn.kz" ||
 			domain === "tengrinews.kz") {
@@ -53030,7 +53039,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			];
 		}
 		if (domain_nosub === "rbk.ru" && /^s[0-9]*\./.test(domain)) {
-			return src.replace(/\/resized\/+[0-9W]+x[0-9H]+(?:_crop)?\/+media\/+/, "/media/");
+			newsrc = src.replace(/\/resized\/+[0-9W]+x[0-9H]+(?:_crop)?\/+media\/+/, "/media/");
+			if (newsrc !== src)
+				return newsrc;
+			return src.replace(/(\/media\/+img\/+[0-9]+\/+[0-9]+\/+[0-9]+\.)webp(?:[?#].*)?$/, "$1jpg");
 		}
 		if (domain_nowww === "kazanfirst.ru") return src.replace(/(\/storage\/+post\/+[^/]+\/+[^/]+)-watermark(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		if (domain_nowww === "vgtour.ro") {
@@ -59130,6 +59142,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain === "img.discogs.com") return src.replace(/^[a-z]+:\/\/[^/]+\/[^/]+=\/.*\/discogs-images\/([^/?#]+)\.[^/.]+(?:[?#].*)?$/, "https://www.discogs.com/image/$1");
 		if (domain === "i.discogs.com") return src.replace(/^[a-z]+:\/\/[^/]+\/+([-A-Z0-9]+\.[^/.?#]+)\?.*$/, "https://www.discogs.com/image/$1");
+		if (domain === "newreleases-img.discogs.com") return src.replace(/(:\/\/[^/]+\/+)rs\/+[0-9]+\/+/, "$1");
 		if (domain_nowww === "discogs.com" && options.do_request && options.cb) {
 			match = src.match(/\/image\/+([AR])-([0-9]+)-/);
 			if (match) {
@@ -65464,16 +65477,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var subdomain = domain
 				.replace(/\.cdn\.arcpublishing\.com$/, "")
 				.replace(/\.web\.arc-cdn.net$/, "");
-			var folder_2 = subdomain.replace(/^([a-z]+)-.*/, "$1");
+			var folder_3 = subdomain.replace(/^([a-z]+)-.*/, "$1");
 			var loc = "us-east-1";
-			if (folder_2 === "thenational" ||
-				folder_2 === "qobuz")
+			if (folder_3 === "thenational" ||
+				folder_3 === "qobuz")
 				loc = "eu-central-1";
-			if (folder_2 === "sanspo") {
+			if (folder_3 === "sanspo") {
 				loc = "ap-northeast-1";
-				folder_2 = "sankei";
+				folder_3 = "sankei";
 			}
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+resizer\/+v2\/+([^?#/]+)(?:[?#].*)?$/, "https://cloudfront-" + loc + ".images.arcpublishing.com/" + folder_2 + "/$1");
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+resizer\/+v2\/+([^?#/]+)(?:[?#].*)?$/, "https://cloudfront-" + loc + ".images.arcpublishing.com/" + folder_3 + "/$1");
 			if (newsrc !== src)
 				return newsrc;
 		}
@@ -72376,10 +72389,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain === "prev.xxdbx.com" ||
 			domain === "ii.pornxp.tv" ||
 			domain === "ji.pornxp.tv") {
-			var folder_3 = "view";
+			var folder_4 = "view";
 			if (domain_nosub === "pornxp.tv")
-				folder_3 = "videos";
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+([0-9]{8})[0-9]*\.(?:jpg|mp4)(?:[?#].*)?$/, "https://" + domain_nosub + "/" + folder_3 + "/$1");
+				folder_4 = "videos";
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+([0-9]{8})[0-9]*\.(?:jpg|mp4)(?:[?#].*)?$/, "https://" + domain_nosub + "/" + folder_4 + "/$1");
 			if (newsrc !== src)
 				return {
 					url: newsrc,
@@ -74463,6 +74476,37 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				url: "https://bilder.markt.de/" + common_functions["get_thumbor_url"](src.replace(/^[a-z]+:\/\/[^/]+\/+/, "/")),
 				head_wrong_contenttype: true
 			};
+		}
+		if (domain === "3y5rx2.5gcdn.net") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+ext\/+resize_[^/?]+\?(?:.*&)?src=([^&#]+)(?:[&#].*)?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+		if (domain_nosub === "kuwo.cn" && /^img[0-9]*\./.test(domain)) {
+			return src.replace(/(\/star\/+albumcover\/+)[0-9]+\/+/, "$10/");
+		}
+		if (domain_nosub === "kiwi99.space" && /^cdn[0-9]*\./.test(domain)) {
+			return {
+				url: src.replace(/(\/uploads\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9a-f]{10,}\/+)thumb\/+([^/]+)\.webp(?:[?#].*)?$/, "$1$2.jpg"),
+				headers: {
+					Referer: "https://hotpic.vip/"
+				}
+			};
+		}
+		if (domain_nowww === "kiwi99.space") {
+			return {
+				url: src.replace(/(\/reddit\/+[^/]+\/+)thumb\/+([^/]+)\.webp(?:[?#].*)?$/, "$1$2.jpeg"),
+				headers: {
+					Referer: "https://hotpic.vip/"
+				}
+			};
+		}
+		if (domain_nowww === "hotpic.vip") {
+			if (/\/assets\/+img\/+icons\/+/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
 		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
@@ -91896,7 +91940,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		};
 		var real_xhr = unsafeWindow["XMLHttpRequest"];
 		var private_props = ["_actual", "method", "data", "url", "headers", "responseType", "response", "responseText"];
-		var passthrough_methods = ["addEventListener", "send", "open", "abort", "getAllResponseHeaders", "getResponseHeader", "overrideMimeType", "setRequestHeader"];
+		var passthrough_methods = ["send", "open", "abort", "getAllResponseHeaders", "getResponseHeader", "overrideMimeType", "setRequestHeader"];
 		// HEADERS_RECEIVED is needed by google
 		var copy_xhr_props = ["DONE", "HEADERS_RECEIVED", "LOADING", "OPENED", "UNSENT", "length"];
 		var copy_xhr_prototype_props = ["DONE", "HEADERS_RECEIVED", "LOADING", "OPENED", "UNSENT"];
@@ -91925,7 +91969,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				});
 			});
 			// add all proxy getters/setters
-			["ontimeout, timeout", "withCredentials", "onload", "onloadend", "onerror", "onprogress", "onreadystatechange", "responseType"].forEach(function(item) {
+			["ontimeout", "timeout", "withCredentials", "onload", "onloadend", "onerror", "onprogress", "onreadystatechange", "responseType"].forEach(function(item) {
 				Object.defineProperty(self, item, {
 					get: function() { return actual[item]; },
 					set: function(val) { actual[item] = val; }
@@ -91964,6 +92008,33 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			this[get_hotprefixed("headers")][header] = value;
 		};
+		var get_hotpatch_event_cb = function(xhr, real_cb) {
+			return function() {
+				if (helpers.xhr_override_resp && this.readyState >= 3) {
+					var newresp = null;
+					try {
+						newresp = helpers.xhr_override_resp(get_req_info(this), get_resp_info(this));
+					} catch (e) {
+						console_error(e);
+					}
+					if (newresp) {
+						if (newresp.response) {
+							this[get_hotprefixed("response")] = newresp.response;
+							try {
+								this[get_hotprefixed("responseText")] = newresp.response.toString();
+							} catch (e) {
+								console_error(e);
+							}
+						}
+					}
+				}
+				return real_cb.apply(this, arguments);
+			}.bind(xhr);
+		};
+		hotxhr.prototype.addEventListener = function(type, listener, options) {
+			var real_xhr = this[get_hotprefixed("_actual")];
+			return real_xhr.addEventListener.apply(real_xhr, [type, get_hotpatch_event_cb(this, listener), options]);
+		};
 		hotxhr.prototype.send = function(data) {
 			var actual = this[get_hotprefixed("_actual")];
 			this[get_hotprefixed("data")] = data;
@@ -92000,27 +92071,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var real_cb = this[evt];
 				if (!real_cb)
 					return;
-				this[evt] = function() {
-					if (helpers.xhr_override_resp && this.readyState >= 3) {
-						var newresp = null;
-						try {
-							newresp = helpers.xhr_override_resp(get_req_info(this), get_resp_info(this));
-						} catch (e) {
-							console_error(e);
-						}
-						if (newresp) {
-							if (newresp.response) {
-								this[get_hotprefixed("response")] = newresp.response;
-								try {
-									this[get_hotprefixed("responseText")] = newresp.response.toString();
-								} catch (e) {
-									console_error(e);
-								}
-							}
-						}
-					}
-					return real_cb.apply(this, arguments);
-				}.bind(this);
+				this[evt] = get_hotpatch_event_cb(this, real_cb);
 			};
 			hotpatch_event.bind(this)("onload");
 			hotpatch_event.bind(this)("onloadend");
@@ -92076,8 +92127,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				};
 				xhr.onerror = reject;
 				xhr.withCredentials = options.credentials === "include";
-				for (var header in options.headers) {
-					xhr.setRequestHeader(header, options.headers[header]);
+				if (options.headers && typeof options.headers === "object") {
+					if (typeof options.headers.forEach === "function") {
+						// Headers object, used by reddit and google ai
+						// thanks to BlueBull010 on github for reporting: https://github.com/qsniyg/maxurl/issues/1637
+						options.headers.forEach(function(value, header) {
+							xhr.setRequestHeader(header, value);
+						});
+					} else {
+						for (var header in options.headers) {
+							xhr.setRequestHeader(header, options.headers[header]);
+						}
+					}
 				}
 				if (options.signal) {
 					options.signal.addEventListener("abort", function() {
