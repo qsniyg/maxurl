@@ -99061,7 +99061,17 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain === "i.discogs.com") {
 			// thanks to PatPanacea on github: https://github.com/qsniyg/maxurl/issues/684
 			// https://i.discogs.com/R-13554835-1556420557-2178.jpeg?bucket=discogs-images&expiry=1615299242411.438&fit=contain&format=auto&height=600&quality=90&width=600&signature=8Lx3HgK378Y0Kw5TP3GU5CzvRMlqPBk38HGhappLonI%3D
+			// other:
+			// https://i.discogs.com/vdH4LIM1Ytk01nWLQ8y7LWdbk6XEFrTNYV-8Q_aCiDo/rs:fit/g:sm/q:90/h:596/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTM3Nzg0/MDUyLTE3ODYxODc0/NzctMzM2OS5qcGVn.jpeg
+			//   atob('czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTM3Nzg0/MDUyLTE3ODYxODc0/NzctMzM2OS5qcGVn'.replace(/\/+/g, "")) =
+			//     s3://discogs-database-images/R-37784052-1786187477-3369.jpeg
 			return src.replace(/^[a-z]+:\/\/[^/]+\/+([-A-Z0-9]+\.[^/.?#]+)\?.*$/, "https://www.discogs.com/image/$1");
+		}
+		if (domain === "newreleases-img.discogs.com") {
+			// thanks to anonymous for reporting:
+			// https://newreleases-img.discogs.com/rs/768/release/750091/webp/1000/xyFD7f284M8rN2F.webp
+			//   https://newreleases-img.discogs.com/release/750091/webp/1000/xyFD7f284M8rN2F.webp
+			return src.replace(/(:\/\/[^/]+\/+)rs\/+[0-9]+\/+/, "$1");
 		}
 		if (domain_nowww === "discogs.com" && options.do_request && options.cb) {
 			match = src.match(/\/image\/+([AR])-([0-9]+)-/);
@@ -122788,6 +122798,39 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://img3.kuwo.cn/star/albumcover/500/s4s35/8/87830773.jpg
 			//   https://img3.kuwo.cn/star/albumcover/0/s4s35/8/87830773.jpg -- 1000
 			return src.replace(/(\/star\/+albumcover\/+)[0-9]+\/+/, "$10/");
+		}
+		if (domain_nosub === "kiwi99.space" && /^cdn[0-9]*\./.test(domain)) {
+			// thanks to anonymous for reporting:
+			// https://cdn10.kiwi99.space/uploads/2026/08/23/ad9620f2da6b2c748f14e128d27f1925/thumb/0-aishu-1.webp
+			//   https://cdn10.kiwi99.space/uploads/2026/08/23/ad9620f2da6b2c748f14e128d27f1925/0-aishu-1.jpg
+			// https://cdn10.kiwi99.space/uploads/2026/08/23/70130996a36a76f8f186a99cf728e0e9/thumb/0-7d9a575f5e88ff0d191f7a8dee046f09059abf84f2a86e5194ed5406ddf4.webp
+			//   https://cdn10.kiwi99.space/uploads/2026/08/23/70130996a36a76f8f186a99cf728e0e9/0-7d9a575f5e88ff0d191f7a8dee046f09059abf84f2a86e5194ed5406ddf4.jpg
+			return {
+				url: src.replace(/(\/uploads\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9a-f]{10,}\/+)thumb\/+([^/]+)\.webp(?:[?#].*)?$/, "$1$2.jpg"),
+				headers: {
+					Referer: "https://hotpic.vip/"
+				}
+			};
+		}
+		if (domain_nowww === "kiwi99.space") {
+			// thanks to anonymous for reporting:
+			// https://kiwi99.space/reddit/missjennthai/thumb/come-take-it-off-for-me-post-by-reddit-nsfw-missjennthai-on-slutzys.webp
+			//   https://kiwi99.space/reddit/missjennthai/come-take-it-off-for-me-post-by-reddit-nsfw-missjennthai-on-slutzys.jpeg
+			return {
+				url: src.replace(/(\/reddit\/+[^/]+\/+)thumb\/+([^/]+)\.webp(?:[?#].*)?$/, "$1$2.jpeg"),
+				headers: {
+					Referer: "https://hotpic.vip/"
+				}
+			};
+		}
+		if (domain_nowww === "hotpic.vip") {
+			// thanks to anonymous for reporting:
+			// https://hotpic.vip/assets/img/icons/m-play.svg
+			if (/\/assets\/+img\/+icons\/+/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
 		}
 		// -- general rules --
 		if (src.match(/\/ImageGen\.ashx\?/)) {
