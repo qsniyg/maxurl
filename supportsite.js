@@ -118,7 +118,7 @@ function reqsite_userid() {
 
 function reqsite_discord_webhook(contents, cb) {
     // simple protection against web scrapers
-    var webhookurl = reqsite_cipher(atob('FwsLDwxFUFAbFgwcEA0bURwQElAeDxZQCBodFxAQFAxQTktHS0pJSU9PTktGSktLTkpMT1BMOk4KPE1OGQkRKw4RMBYOFRUYPTsrMiUJKRArSSAsOQoqMxwxSAcHGhxGICApKBQ+CBcmUhIeOk4MExEOTkYcLQ4vSw=='));
+    var webhookurl = reqsite_cipher(atob('FwsLDwxFUFAbFgwcEA0bURwQElAeDxZQCBodFxAQFAxQTkpLTUxKS0xLSktPTUlGRkdMSFA2SiA8KRsTBTMgHC8rOk8IMQYcTE1SGk8qFiwbMCcSDgw1LwoTCidPGSAYGTsSGi81HkoOFTseGBJISkseKww8OzQsNg=='));
 
     var request = new XMLHttpRequest();
     request.open("POST", webhookurl, true);
