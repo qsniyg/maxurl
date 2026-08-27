@@ -41230,8 +41230,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to haz on discord for reporting:
 			// https://cdn.discordapp.com/emojis/712016584801124442.webp?size=128&animated=true
 			//   https://cdn.discordapp.com/emojis/712016584801124442.webp?size=4096&animated=true
+			// thanks to anonymous for reporting:
+			// https://cdn.discordapp.com/guilds/805566219557666826/users/1255463899466301501/banners/e02f976ed0af3cec2a37951ed61dd20b.png?size=1280
+			//   https://cdn.discordapp.com/guilds/805566219557666826/users/1255463899466301501/banners/e02f976ed0af3cec2a37951ed61dd20b.png?size=4096
 			if (/\/emojis\/+[0-9]+\.[^/.?#]+(?:[?#].*)?$/.test(src) ||
-				/\/[-a-z]+\/+[0-9]{5,}\/+(?:users\/+[0-9]+\/+avatars\/+)?[^/]+\.[^/.?#]+(?:[?#].*)?$/.test(src)) {
+				/\/[-a-z]+\/+[0-9]{5,}\/+(?:users\/+[0-9]+\/+(?:avatars|banners)\/+)?[^/]+\.[^/.?#]+(?:[?#].*)?$/.test(src)) {
 				return add_queries(remove_queries(src, ["keep_aspect_ratio"]), { size: "4096" });
 			}
 			//return src
