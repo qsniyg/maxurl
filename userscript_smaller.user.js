@@ -27664,7 +27664,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain === "cdn.discordapp.com") {
 			if (/\/emojis\/+[0-9]+\.[^/.?#]+(?:[?#].*)?$/.test(src) ||
-				/\/[-a-z]+\/+[0-9]{5,}\/+(?:users\/+[0-9]+\/+avatars\/+)?[^/]+\.[^/.?#]+(?:[?#].*)?$/.test(src)) {
+				/\/[-a-z]+\/+[0-9]{5,}\/+(?:users\/+[0-9]+\/+(?:avatars|banners)\/+)?[^/]+\.[^/.?#]+(?:[?#].*)?$/.test(src)) {
 				return add_queries(remove_queries(src, ["keep_aspect_ratio"]), { size: "4096" });
 			}
 		}
