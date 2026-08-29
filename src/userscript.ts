@@ -15677,6 +15677,8 @@ var $$IMU_EXPORT$$;
 		disable_keybind_when_editing: true,
 		enable_gm_download: true,
 		gm_download_max: 15,
+		popup_download_transformed_images: false,
+		rotated_image_max_quality: 0.92,
 		enable_chunked_download: false,
 		// thanks to pax romana on discord for the idea: https://github.com/qsniyg/maxurl/issues/372
 		// this must be false, because it requires a permission
@@ -18312,6 +18314,27 @@ var $$IMU_EXPORT$$;
 			],
 			category: "popup",
 			subcategory: "behavior"
+		},
+		popup_download_transformed_images: {
+			name: "Download transformed images",
+			description: "Exports transformed popup images so manual rotation or flip is kept in downloads. When disabled, downloads use the original media file.",
+			requires: "action:popup",
+			category: "popup",
+			subcategory: "behavior",
+			advanced: true
+		},
+		rotated_image_max_quality: {
+			name: "Maximum quality for transformed JPEG downloads",
+			description: "Caps the quality used when exporting transformed popup images as JPEG. PNG exports remain lossless.",
+			requires: {
+				popup_download_transformed_images: true
+			},
+			type: "number",
+			number_min: 0,
+			number_max: 1,
+			category: "popup",
+			subcategory: "behavior",
+			advanced: true
 		},
 		mouseover_close_key: {
 			name: "Close key",
@@ -141497,9 +141520,9 @@ var $$IMU_EXPORT$$;
 		return "data:image/svg+xml," + encodeURIComponent(svgdoc);
 	};
 
-	var get_canvas_src = function(el, format) {
+	var get_canvas_src = function(el, format, quality?) {
 		try {
-			return el.toDataURL(format);
+			return el.toDataURL(format, quality);
 		} catch (e) {
 			console_error(e);
 			// "Tainted canvases may not be exported", CORS error in some pages
@@ -146524,6 +146547,7 @@ var $$IMU_EXPORT$$;
 		var popup_cursorjitterY = 0;
 		var popup_is_fullscreen = false;
 		var popup_last_zoom = null;
+		var popup_transforms_state = null;
 		var popup_client_rect_cache = null;
 		var last_popup_client_rect_cache = 0;
 		var popup_media_client_rect_cache = null;
@@ -146887,6 +146911,7 @@ var $$IMU_EXPORT$$;
 			popup_wheel_cb = null;
 			popup_update_pos_func = null;
 			popup_update_zoom_func = null;
+			popup_transforms_state = null;
 			popup_client_rect_cache = null;
 			popup_is_fullscreen = false;
 			last_popup_client_rect_cache = 0;
@@ -154379,6 +154404,10 @@ var $$IMU_EXPORT$$;
 		};
 
 		var get_popup_transforms = function() {
+			if (popup_transforms_state) {
+				return deepcopy(popup_transforms_state);
+			}
+
 			var style = null;
 
 			if (popups && popups[0]) {
@@ -154389,7 +154418,9 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (style && style.transform) {
-				return parse_transforms(style.transform);
+				var parsed = parse_transforms(style.transform);
+				popup_transforms_state = deepcopy(parsed);
+				return parsed;
 			} else {
 				return {transforms: [], types: {}};
 			}
@@ -154399,7 +154430,16 @@ var $$IMU_EXPORT$$;
 			return transforms.transforms.join(" ");
 		};
 
+		var sync_popup_transform_types = function(transforms) {
+			var parsed = parse_transforms(stringify_transforms(transforms));
+			transforms.transforms = parsed.transforms;
+			transforms.types = parsed.types;
+			return transforms;
+		};
+
 		var set_popup_transforms = function(transforms) {
+			popup_transforms_state = deepcopy(transforms);
+
 			var media = get_popup_media_el();
 
 			if (media) {
@@ -154413,16 +154453,43 @@ var $$IMU_EXPORT$$;
 				index = transforms.types.rotate[0];
 			} else {
 				transforms.transforms.unshift("rotate(0deg)");
+				sync_popup_transform_types(transforms);
+				index = transforms.types.rotate[0];
 			}
 
-			var match = transforms.transforms[index].match(/^rotate\(([-0-9]+)deg\)$/);
+			var match = transforms.transforms[index].match(/^rotate\(([-0-9.]+)deg\)$/);
 			var deg = 0;
 			if (match) {
-				deg = parseInt(match[1]);
+				deg = parseFloat(match[1]);
 			}
 
 			return {
 				deg: deg,
+				index: index
+			};
+		};
+
+		var get_scale_data_from_transforms = function(transforms) {
+			var index = 0;
+			if ("scale" in transforms.types) {
+				index = transforms.types.scale[0];
+			} else {
+				transforms.transforms.push("scale(1,1)");
+				sync_popup_transform_types(transforms);
+				index = transforms.types.scale[0];
+			}
+
+			var match = transforms.transforms[index].match(/^scale\(([-0-9.]+)\s*,\s*([-0-9.]+)\)$/);
+			var scaleh = 1;
+			var scalev = 1;
+			if (match) {
+				scaleh = parseFloat(match[1]);
+				scalev = parseFloat(match[2]);
+			}
+
+			return {
+				scaleh: scaleh,
+				scalev: scalev,
 				index: index
 			};
 		};
@@ -156711,8 +156778,351 @@ var $$IMU_EXPORT$$;
 				return null;
 		};
 
+		var normalize_rotation = function(rotation) {
+			rotation = rotation % 360;
+
+			if (rotation < 0)
+				rotation += 360;
+
+			if (Math_abs(rotation - Math_round(rotation)) < 0.000001)
+				rotation = Math_round(rotation);
+
+			return rotation;
+		};
+
+		var get_rotated_canvas_bounds = function(width, height, rotation) {
+			rotation = normalize_rotation(rotation);
+
+			if (rotation === 0 || rotation === 180) {
+				return {
+					width: width,
+					height: height
+				};
+			}
+
+			if (rotation === 90 || rotation === 270) {
+				return {
+					width: height,
+					height: width
+				};
+			}
+
+			var radians = rotation * Math.PI / 180;
+			return {
+				width: Math.ceil(Math_abs(width * Math.cos(radians)) + Math_abs(height * Math.sin(radians))),
+				height: Math.ceil(Math_abs(width * Math.sin(radians)) + Math_abs(height * Math.cos(radians)))
+			};
+		};
+
+		var dataurl_to_blob = function(dataurl, cb) {
+			var match = dataurl && dataurl.match(/^data:([^;,]*)(;base64)?,([\s\S]*)$/);
+			if (!match) {
+				cb(null);
+				return;
+			}
+
+			try {
+				var data = null;
+				if (match[2]) {
+					var binary = atob(match[3]);
+					var bytes = new Uint8Array(binary.length);
+					for (var i = 0; i < binary.length; i++) {
+						bytes[i] = binary.charCodeAt(i);
+					}
+					data = bytes;
+				} else {
+					data = decodeURIComponent(match[3]);
+				}
+
+				var blob_options = null;
+				if (match[1]) {
+					blob_options = {
+						type: match[1]
+					};
+				}
+
+				new_blob(data, function(blob) {
+					cb(blob);
+				}, blob_options);
+			} catch (e) {
+				console_error(e);
+				cb(null);
+			}
+		};
+
+		var get_canvas_blob = function(canvas, mime, quality, cb) {
+			var fallback = function() {
+				var dataurl = get_canvas_src(canvas, mime, quality);
+				if (!dataurl) {
+					cb(null);
+					return;
+				}
+
+				dataurl_to_blob(dataurl, cb);
+			};
+
+			if (!canvas.toBlob) {
+				fallback();
+				return;
+			}
+
+			try {
+				canvas.toBlob(function(blob) {
+					if (blob) {
+						cb(blob);
+					} else {
+						fallback();
+					}
+				}, mime, quality);
+			} catch (e) {
+				console_error(e);
+				fallback();
+			}
+		};
+
+		var popup_rotated_export_contenttypes = {
+			jpg: "image/jpeg",
+			jpeg: "image/jpeg",
+			jpe: "image/jpeg",
+			jfif: "image/jpeg",
+			png: "image/png",
+			apng: "image/png",
+			webp: "image/webp"
+		};
+
+		var get_popup_rotated_export_ext = function(source) {
+			if (!source || typeof source !== "string")
+				return null;
+
+			source = source.trim();
+			if (!source)
+				return null;
+
+			var source_value = source;
+			if (/^\.[a-z0-9]+$/i.test(source_value)) {
+				source = source_value.replace(/^\./, "");
+			} else if (/^data:/i.test(source_value)) {
+				var dataurl_match = source_value.match(/^data:([^;,]+)/i);
+				if (!dataurl_match)
+					return null;
+
+				source = get_ext_from_contenttype(dataurl_match[1]);
+			} else {
+				var basename_split = url_basename(source_value, {
+					split_ext: true,
+					known_ext: true
+				});
+				source = basename_split[1];
+
+				if (!source) {
+					var format_match = source_value.match(/[?&#](?:format|fm|output|type)=([a-z0-9]+)/i);
+					if (format_match)
+						source = format_match[1];
+				}
+			}
+
+			if (!source || typeof source !== "string")
+				return null;
+
+			source = source.toLowerCase();
+			if (!(source in popup_rotated_export_contenttypes))
+				return null;
+
+			return source;
+		};
+
+		var get_popup_rotated_export_quality = function() {
+			var quality = parseFloat(settings.rotated_image_max_quality as any as string);
+			if (isNaN(quality))
+				quality = 0.92;
+
+			return Math_min(Math_max(quality, 0), 1);
+		};
+
+		var get_popup_rotated_export_options = function(filename, urls, rotation, format_ext?) {
+			var ext = null;
+			var ext_sources = [filename];
+
+			if (format_ext)
+				ext_sources.push(format_ext);
+
+			for (var i = 0; i < urls.length; i++) {
+				ext_sources.push(urls[i]);
+			}
+
+			for (var i = 0; i < ext_sources.length; i++) {
+				ext = get_popup_rotated_export_ext(ext_sources[i]);
+				if (ext)
+					break;
+			}
+
+			var mime = ext ? popup_rotated_export_contenttypes[ext] : "image/png";
+			var transparent_corners = normalize_rotation(rotation) % 90 !== 0;
+
+			if (transparent_corners && mime === "image/jpeg")
+				mime = "image/png";
+
+			if (mime === "image/webp")
+				mime = "image/png";
+
+			return {
+				mime: mime,
+				quality: mime === "image/jpeg" ? get_popup_rotated_export_quality() : void 0
+			};
+		};
+
+		var get_popup_rotated_export_filename = function(filename, mime) {
+			var source_name = filename;
+			if (!source_name || !source_name.length)
+				source_name = "download";
+
+			var split = url_basename(source_name, {
+				split_ext: true
+			});
+			var base = split[0] || source_name;
+			var ext = get_ext_from_contenttype(mime) || split[1];
+			if (!ext)
+				return source_name;
+
+			return base + "." + ext;
+		};
+
+		var export_popup_transformed_image = function(export_media:HTMLImageElement, current_popup_obj, current_filename, current_contentlength, current_format_ext, rotation, scale_data, cleanup_cb, cb:(success:boolean)=>void) {
+			var export_width = export_media.naturalWidth || export_media.width;
+			var export_height = export_media.naturalHeight || export_media.height;
+			if (!export_width || !export_height) {
+				if (cleanup_cb)
+					cleanup_cb();
+				return cb(false);
+			}
+
+			var canvas = document_createElement("canvas");
+			var bounds = get_rotated_canvas_bounds(export_width, export_height, rotation);
+			canvas.width = bounds.width;
+			canvas.height = bounds.height;
+
+			var context = canvas.getContext("2d");
+			if (!context) {
+				if (cleanup_cb)
+					cleanup_cb();
+				return cb(false);
+			}
+
+			try {
+				context.translate(bounds.width / 2, bounds.height / 2);
+				if (rotation)
+					context.rotate(rotation * Math.PI / 180);
+				if (scale_data.scaleh !== 1 || scale_data.scalev !== 1)
+					context.scale(scale_data.scaleh, scale_data.scalev);
+				context.drawImage(export_media, -export_width / 2, -export_height / 2, export_width, export_height);
+			} catch (e) {
+				console_error(e);
+				if (cleanup_cb)
+					cleanup_cb();
+				return cb(false);
+			}
+
+			var source_urls = [
+				current_popup_obj && current_popup_obj.url,
+				get_popup_media_url(),
+				export_media.currentSrc,
+				export_media.src
+			];
+			var export_options = get_popup_rotated_export_options(current_filename, source_urls, rotation, current_format_ext);
+			get_canvas_blob(canvas, export_options.mime, export_options.quality, function(blob) {
+				if (cleanup_cb)
+					cleanup_cb();
+
+				if (!blob) {
+					return cb(false);
+				}
+
+				var blob_mime = blob.type || export_options.mime;
+				var filename = get_popup_rotated_export_filename(current_filename, blob_mime);
+				do_blob_download(blob, filename);
+				return cb(true);
+			});
+		};
+
+		var load_popup_export_image = function(current_popup_obj, cb:(img:HTMLImageElement|null, cleanup_cb?:()=>void)=>void) {
+			if (!current_popup_obj || !current_popup_obj.url || !/^https?:\/\//i.test(current_popup_obj.url)) {
+				return cb(null);
+			}
+
+			check_image_get([deepcopy(current_popup_obj)], function(img) {
+				if (!img || img.tagName !== "IMG") {
+					return cb(null);
+				}
+
+				return cb(img as HTMLImageElement, function() {
+					check_image_unref(img);
+				});
+			}, {
+				running: true,
+				incomplete_image: false,
+				incomplete_video: false
+			});
+		};
+
 		var download_popup_image = function() {
-			do_download(popup_obj, popup_obj.filename, popup_contentlength);
+			if (!settings.popup_download_transformed_images) {
+				do_download(popup_obj, popup_obj.filename, popup_contentlength);
+				return;
+			}
+
+			var media = get_popup_media_el();
+			if (!media || media.tagName !== "IMG") {
+				do_download(popup_obj, popup_obj.filename, popup_contentlength);
+				return;
+			}
+
+			var transforms = get_popup_transforms();
+			var rotation_data = get_rotation_data_from_transforms(transforms);
+			var scale_data = get_scale_data_from_transforms(transforms);
+			var rotation = normalize_rotation(rotation_data.deg);
+			var needs_export = rotation !== 0 || scale_data.scaleh !== 1 || scale_data.scalev !== 1;
+			if (!needs_export) {
+				do_download(popup_obj, popup_obj.filename, popup_contentlength);
+				return;
+			}
+
+			var width = media.naturalWidth || media.width;
+			var height = media.naturalHeight || media.height;
+			if (!width || !height) {
+				do_download(popup_obj, popup_obj.filename, popup_contentlength);
+				return;
+			}
+
+			var current_popup_obj = popup_obj ? deepcopy(popup_obj) : popup_obj;
+			var current_filename = current_popup_obj && current_popup_obj.filename;
+			var current_contentlength = popup_contentlength;
+			var current_format_ext = current_popup_obj && current_popup_obj.format_vars && current_popup_obj.format_vars.ext;
+			var fallback_download = function() {
+				do_download(current_popup_obj, current_filename, current_contentlength);
+			};
+
+			var try_requested_export = function() {
+				load_popup_export_image(current_popup_obj, function(export_media, cleanup_cb) {
+					if (!export_media) {
+						fallback_download();
+						return;
+					}
+
+					export_popup_transformed_image(export_media, current_popup_obj, current_filename, current_contentlength, current_format_ext, rotation, scale_data, cleanup_cb, function(success) {
+						if (!success) {
+							fallback_download();
+						}
+					});
+				});
+			};
+
+			export_popup_transformed_image(media, current_popup_obj, current_filename, current_contentlength, current_format_ext, rotation, scale_data, null, function(success) {
+				if (success) {
+					return;
+				}
+
+				try_requested_export();
+			});
 		};
 
 		var download_popup_media = function() {
