@@ -139093,11 +139093,11 @@ var $$IMU_EXPORT$$;
 			host_domain_nowww === "x.com") {
 			return {
 				gallery: function(el, nextprev) {
-					var is_photo_a = function(el) {
-						return el.tagName === "A" && el.href && /\/status\/+[0-9]+\/+photo\/+/.test(el.href);
+					var is_twitter_photo_anchor = function(el) {
+						return el.tagName === "A" && el.href && /\/status\/+[0-9]+\/+photo\/+([0-9]+)(?:[/?#].*)?$/.test(el.href);
 					};
 
-					var get_img_from_photo_a = function(el) {
+					var get_twitter_photo_media_el = function(el) {
 						var imgel = el.querySelector("img");
 						if (imgel) {
 							// don't return the <img> element because opacity: 0
@@ -139107,52 +139107,80 @@ var $$IMU_EXPORT$$;
 						}
 
 						return imgel;
-					}
-
-					var get_nextprev = function(el) {
-						if (nextprev) {
-							return el.nextElementSibling;
-						} else {
-							return el.previousElementSibling;
-						}
 					};
 
-					var get_photoel_from_photo_container = function(nextel) {
-						if (nextel.tagName === "A") {
-							return get_img_from_photo_a(nextel);
-						} else if (nextel.tagName === "DIV") {
-							var childid = nextprev ? 0 : (nextel.children.length - 1);
+					var get_twitter_tweet_article = function(el) {
+						var tweet_article = common_functions["get_parent_el_matching"](el, function(x) {
+							return x.tagName === "ARTICLE" && x.getAttribute("data-testid") === "tweet";
+						});
 
-							if (nextel.children.length > 0 && is_photo_a(nextel.children[childid])) {
-								return get_img_from_photo_a(nextel.children[childid]);
-							}
-						} else {
-							return "default";
-						}
+						if (tweet_article)
+							return tweet_article;
+
+						return common_functions["get_parent_el_matching"](el, function(x) {
+							return x.tagName === "ARTICLE";
+						});
 					};
 
-					// tweet albums: https://twitter.com/phoronix/status/1229117085432926209
-					var current = el;
-					while ((current = current.parentElement)) {
-						if (is_photo_a(current)) {
-							var nextel = get_nextprev(current);
-
-							if (nextel) {
-								return get_photoel_from_photo_container(nextel);
-							} else {
-								var parent = current.parentElement;
-								var sibling = get_nextprev(parent);
-
-								if (sibling) {
-									return get_photoel_from_photo_container(sibling);
-								}
-							}
-
+					var get_twitter_photo_status_base = function(el) {
+						var normalized = common_functions["twitter_normalize_status_link"](el.href);
+						if (!normalized)
 							return null;
-						}
+
+						return normalized;
+					};
+
+					var get_twitter_photo_num = function(el) {
+						var match = el.href.match(/\/status\/+[0-9]+\/+photo\/+([0-9]+)(?:[/?#].*)?$/);
+						if (!match)
+							return null;
+
+						return parseInt(match[1], 10);
+					};
+
+					var source_el = el;
+					if (!source_el || !source_el.parentElement) {
+						source_el = options.element || el;
 					}
 
-					return "default";
+					var current_anchor = common_functions["get_parent_el_matching"](source_el, is_twitter_photo_anchor);
+					if (!current_anchor) {
+						return "default";
+					}
+
+					var current_status_base = get_twitter_photo_status_base(current_anchor);
+					if (!current_status_base) {
+						return "default";
+					}
+
+					var article = get_twitter_tweet_article(current_anchor);
+					if (!article) {
+						return "default";
+					}
+
+					var photo_anchors = [];
+					array_foreach(article.querySelectorAll("a"), function(anchor) {
+						if (is_twitter_photo_anchor(anchor) &&
+							get_twitter_photo_status_base(anchor) === current_status_base) {
+							photo_anchors.push(anchor);
+						}
+					});
+
+					photo_anchors.sort(function(a, b) {
+						return get_twitter_photo_num(a) - get_twitter_photo_num(b);
+					});
+
+					var current_index = array_indexof(photo_anchors, current_anchor);
+					if (current_index < 0) {
+						return "default";
+					}
+
+					current_index += nextprev ? 1 : -1;
+					if (current_index < 0 || current_index >= photo_anchors.length) {
+						return null;
+					}
+
+					return get_twitter_photo_media_el(photo_anchors[current_index]) || null;
 				},
 				element_ok: function(el) {
 					//var tweet = common_functions["get_twitter_video_tweet"](el, window);
@@ -146896,6 +146924,14 @@ var $$IMU_EXPORT$$;
 			if (!options.automatic) {
 				popup_hold = false;
 				override_album = null;
+
+				// Drop the remembered zoom on user-initiated resets so the
+				// next manual popup (and any gallery navigations it spawns)
+				// starts from the configured fit/fill behavior instead of
+				// inheriting a zoom level from a previous popup session.
+				if (get_single_setting("mouseover_zoom_use_last") !== "always") {
+					popup_last_zoom = null;
+				}
 			}
 
 			if (!options.new_popup) {
