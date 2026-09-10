@@ -65128,7 +65128,11 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/gold\/+awards\/+icon\/+[^/]+)_[1-4]?[0-9]{2}\./, "$1_512.");
 		}
 
-		if (domain === "preview.redd.it") {
+		if (domain === "preview.redd.it" ||
+			// thanks to anonymous for reporting:
+			// https://cf.preview.redd.it/8sbuuqbajaoh1.jpg?width=1080&crop=smart&auto=webp&s=69a741380be47ba6a97e15a814d52e979f4b7064
+			//   https://i.redd.it/8sbuuqbajaoh1.jpg
+			domain === "cf.preview.redd.it") {
 			// https://preview.redd.it/7nte0k30d7p11.jpg?width=640&crop=smart&s=3045865f8ce23192e486c9f35de800bd6e2a685b
 			//   https://i.redd.it/7nte0k30d7p11.jpg
 			// thanks to Liz on discord:
@@ -65137,7 +65141,7 @@ var $$IMU_EXPORT$$;
 			// thanks to pointydev: https://github.com/qsniyg/maxurl/issues/1133
 			// https://preview.redd.it/black-eyed-pees-grail-v0-87udn5gszb6a1.jpg?auto=webp&s=b9ceef6cf0f71ab67ac319e35e41c5c08e3d6553
 			//   https://i.redd.it/87udn5gszb6a1.jpg
-			return src.replace(/:\/\/preview\.redd\.it\/(award_images\/+t[0-9]*_[0-9a-z]+\/+)?(?:[-0-9a-z]+-)?([^/.]*\.[^/.?]*)\?.*$/, "://i.redd.it/$1$2");
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+(award_images\/+t[0-9]*_[0-9a-z]+\/+)?(?:[-0-9a-z]+-)?([^/.]*\.[^/.?]*)\?.*$/, "https://i.redd.it/$1$2");
 		}
 
 		if (domain === "i.reddituploads.com") {
@@ -110038,6 +110042,8 @@ var $$IMU_EXPORT$$;
 			// thanks to anonymous for reporting:
 			// https://newreleases-img.discogs.com/rs/768/release/750091/webp/1000/xyFD7f284M8rN2F.webp
 			//   https://newreleases-img.discogs.com/release/750091/webp/1000/xyFD7f284M8rN2F.webp
+			// other:
+			// https://newreleases-img.discogs.com/release/772132/webp/1500/nX5ly9tZDqQIx23.webp
 			return src.replace(/(:\/\/[^/]+\/+)rs\/+[0-9]+\/+/, "$1");
 		}
 
