@@ -36945,7 +36945,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				};
 			return src.replace(/(\/gold\/+awards\/+icon\/+[^/]+)_[1-4]?[0-9]{2}\./, "$1_512.");
 		}
-		if (domain === "preview.redd.it") return src.replace(/:\/\/preview\.redd\.it\/(award_images\/+t[0-9]*_[0-9a-z]+\/+)?(?:[-0-9a-z]+-)?([^/.]*\.[^/.?]*)\?.*$/, "://i.redd.it/$1$2");
+		if (domain === "preview.redd.it" ||
+			domain === "cf.preview.redd.it") {
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+(award_images\/+t[0-9]*_[0-9a-z]+\/+)?(?:[-0-9a-z]+-)?([^/.]*\.[^/.?]*)\?.*$/, "https://i.redd.it/$1$2");
+		}
 		if (domain === "i.reddituploads.com") {
 			newsrc = src.replace(/(:\/\/[^/]*\/[0-9a-f]+)\?.*$/, "$1");
 			if (newsrc !== src)
