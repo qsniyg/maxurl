@@ -36231,6 +36231,9 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "chrichri.dk" && string_indexof(src, "/media/") >= 0) ||
 			// https://www.rightstufanime.com/images/productImages/816546020668_anime-anohana-the-flower-we-saw-that-day-tv-series-box-set-blu-ray-primary.jpg?resizeid=4&resizeh=100&resizew=60
 			(domain_nowww === "rightstufanime.com" && string_indexof(src, "/images/") >= 0) ||
+			// thanks to anonymous for reporting:
+			// https://www.capitolscientific.com/Images/items/FUJ-64022_main-1.jpg?resizeid=2&resizeh=200&resizew=200
+			(domain_nowww === "capitolscientific.com" && string_indexof(src, "/Images/") >= 0) ||
 			// thanks to anonymous
 			// https://images1.teeshirtpalace.com/images/productImages/wt/ILiveInAMadhouseRunByATinyArmyMomLife/productImage/I-Live-In-A-Madhouse-Run-By-A-Tiny-Army-Mom-Life-navy-wt-back.jpg?width=600
 			(domain_nosub === "teeshirtpalace.com" && /^images[0-9]*\./.test(domain)) ||
@@ -38579,6 +38582,9 @@ var $$IMU_EXPORT$$;
 			// thanks to in-the-halfway on github: https://github.com/qsniyg/maxurl/commit/7d0e8f0d33f4a04a59160dd0a7b223921628990c#commitcomment-197399414
 			// https://abai.kz/content/uploads/2026/08/0ca364cc-030e-450c-b011-71ea1e6e8729-1024x638.jpg
 			(domain_nowww === "abai.kz" && /\/content\/+uploads\//.test(src)) ||
+			// thanks to anonymous for reporting:
+			// https://www.move.org/app/uploads/2025/08/gloomiest-cities-map-1024x768.webp
+			(domain_nowww === "move.org" && /\/app\/+uploads\//.test(src)) ||
 			// thanks to anonymous for reporting:
 			// https://cdn.entameclip.com/2024/10/pic20241023kimitoband1-300x225.jpg
 			//   https://cdn.entameclip.com/2024/10/pic20241023kimitoband1.jpg
@@ -81277,7 +81283,7 @@ var $$IMU_EXPORT$$;
 			*/
 			// higher than 4096 (e.g. 8192) returns m=900
 			let query_500px_api = function(url, cb) {
-				var query_obj = {
+				var query_obj:ApiQueryData = {
 					url: url,
 					json: true
 				};
@@ -81310,6 +81316,110 @@ var $$IMU_EXPORT$$;
 				}
 			};
 
+			let query_500px_graphql = function(opname, query, variables, extensions, cb) {
+				let data = {
+					operationName: opname,
+					query: query,
+					variables: variables
+				};
+
+				if (extensions)
+					data.extensions = extensions;
+
+				api_query("500px_graphql:" + opname + ":" + JSON_stringify(variables), {
+					url: "https://api-neo.500px.com/graphql",
+					method: "POST",
+					data: JSON_stringify(data),
+					headers: {
+						"Accept": "*/*",
+						"Content-Type": "application/json",
+						"Origin": "https://500px.com",
+						"Referer": "https://500px.com/",
+						"Sec-Fetch-Dest": "empty",
+						"Sec-Fetch-Mode": "cors",
+						"Sec-Fetch-Site": "same-site",
+						"X-500px-Platform": "Web"
+					},
+					imu_mode: "xhr",
+					json: true
+				}, cb, function(done, resp, cache_key) {
+					if (!resp) {
+						return done(null, false);
+					} else {
+						return done(resp, 60*60);
+					}
+				});
+			};
+
+			let query_500px_photo_neo = function(id, cb) {
+				let page = "https://500px.com/photo/" + id + "/";
+
+				query_500px_graphql("getPhotoById", decodeURIComponent("query%20getPhotoById(%24id%3A%20ID!)%20%7B%0A%20%20getPhotoById(id%3A%20%24id)%20%7B%0A%20%20%20%20id%0A%20%20%20%20uploader%20%7B%0A%20%20%20%20%20%20id%0A%20%20%20%20%20%20avatar%0A%20%20%20%20%20%20displayName%0A%20%20%20%20%20%20isBlockedByMe%0A%20%20%20%20%20%20username%0A%20%20%20%20%20%20isFollowedByMe%0A%20%20%20%20%20%20isFollowingMe%0A%20%20%20%20%20%20membership%20%7B%0A%20%20%20%20%20%20%20%20membership%0A%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20location%0A%20%20%20%20%20%20city%0A%20%20%20%20%20%20country%0A%20%20%20%20%20%20state%0A%20%20%20%20%20%20address%0A%20%20%20%20%20%20__typename%0A%20%20%20%20%7D%0A%20%20%20%20title%0A%20%20%20%20downloadable%0A%20%20%20%20description%0A%20%20%20%20uploadedAt%0A%20%20%20%20uploadedLocation%0A%20%20%20%20urls%20%7B%0A%20%20%20%20%20%20size_600%0A%20%20%20%20%20%20size_1024%0A%20%20%20%20%20%20size_2048%0A%20%20%20%20%20%20size_4k%0A%20%20%20%20%20%20__typename%0A%20%20%20%20%7D%0A%20%20%20%20width%0A%20%20%20%20height%0A%20%20%20%20dominantColorLight%0A%20%20%20%20dominantColorDark%0A%20%20%20%20location%0A%20%20%20%20locationText%0A%20%20%20%20takenAt%0A%20%20%20%20camera%0A%20%20%20%20lens%0A%20%20%20%20aperture%0A%20%20%20%20focalLength%0A%20%20%20%20shutterSpeed%0A%20%20%20%20iso%0A%20%20%20%20category%0A%20%20%20%20techniques%0A%20%20%20%20isNsfw%0A%20%20%20%20isLikedByMe%0A%20%20%20%20viewerHasReposted%0A%20%20%20%20pulseScore%0A%20%20%20%20viewCount%0A%20%20%20%20likeCount%0A%20%20%20%20favorCount%0A%20%20%20%20commentCount%0A%20%20%20%20hasComment%0A%20%20%20%20shareCount%0A%20%20%20%20repostCount%0A%20%20%20%20geminiDetail%20%7B%0A%20%20%20%20%20%20category%0A%20%20%20%20%20%20style%0A%20%20%20%20%20%20technique%0A%20%20%20%20%20%20title%0A%20%20%20%20%20%20keyword%0A%20%20%20%20%20%20__typename%0A%20%20%20%20%7D%0A%20%20%20%20honors%20%7B%0A%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20...%20on%20PhotoHonorSelected%20%7B%0A%20%20%20%20%20%20%20%20type%0A%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20...%20on%20PhotoHonorAmbassadorsPick%20%7B%0A%20%20%20%20%20%20%20%20ambassador%20%7B%0A%20%20%20%20%20%20%20%20%20%20id%0A%20%20%20%20%20%20%20%20%20%20avatar%0A%20%20%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20...%20on%20PhotoHonorPxGallery%20%7B%0A%20%20%20%20%20%20%20%20gallery%20%7B%0A%20%20%20%20%20%20%20%20%20%20id%0A%20%20%20%20%20%20%20%20%20%20name%0A%20%20%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%20%20%20%20needLoginToView%0A%20%20%20%20aiArtAnalysis%0A%20%20%20%20taggedAigc%0A%20%20%20%20userDeclaredAigc%0A%20%20%20%20isPrivate%0A%20%20%20%20isInReview%0A%20%20%20%20privateSetByAdmin%0A%20%20%20%20publicAiCritiqueReport%20%7B%0A%20%20%20%20%20%20taskId%0A%20%20%20%20%20%20status%0A%20%20%20%20%20%20__typename%0A%20%20%20%20%7D%0A%20%20%20%20__typename%0A%20%20%7D%0A%7D"), {id}, null, function(data) {
+					if (!data)
+						return cb(null);
+
+					if (!data.data || !data.data.getPhotoById) {
+						console_error("Invalid data:", data);
+						return cb(null);
+					}
+
+					let baseobj:BigImageInfoSObject = {
+						extra: {
+							page
+						}
+					};
+
+					let photodata = data.data.getPhotoById;
+
+					if (photodata.uploadedAt)
+						baseobj.extra.created_date = new Date(photodata.uploadedAt).getTime();
+
+					if (photodata.title)
+						baseobj.extra.caption = photodata.title;
+
+					if (!photodata.urls) {
+						console_error("No urls in:", {photodata, data});
+						return cb(null);
+					}
+
+					let urls = [];
+
+					let sortkey = key => {
+						key = key.replace(/^size_/, "");
+						if (key === "4k")
+							return 4096;
+						return parse_int(key);
+					};
+
+					let url_keys = Object.keys(photodata.urls).sort((a, b) => {
+						return sortkey(b) - sortkey(a);
+					});
+
+					for (let key of url_keys) {
+						if (!/^size_/.test(key))
+							continue;
+
+						urls.push(photodata.urls[key]);
+					}
+
+					return cb(fillobj_urls(urls, baseobj));
+				});
+			};
+
+			let query_500px_legacyphoto_to_newphoto = function(id, cb) {
+				query_500px_graphql("resolveLegacyPhoto", decodeURIComponent("query%20resolveLegacyPhoto(%24legacyId%3A%20String!)%20%7B%0A%20%20target%3A%20getPhotoByLegacyId(legacyId%3A%20%24legacyId)%20%7B%0A%20%20%20%20id%0A%20%20%20%20__typename%0A%20%20%7D%0A%7D"), {legacyId: id}, {"clientLibrary": {"name": "@apollo/client","version": "4.1.6"}}, function(data) {
+					if (!data)
+						return cb(null);
+
+					if (!data.data || !data.data.target || !data.data.target.id) {
+						console_error("Unable to resolve legacy 500px id:", {id, data});
+						return cb(null);
+					}
+
+					return cb(data.data.target.id);
+				});
+			};
+
 
 			let query_500px_photo = function(id, cb) {
 				let page = "https://500px.com/photo/" + id + "/";
@@ -81317,7 +81427,7 @@ var $$IMU_EXPORT$$;
 				let query_url =
 					"https://api.500px.com/v1/photos?image_size%5B%5D=1&image_size%5B%5D=2&image_size%5B%5D=32&image_size%5B%5D=31&image_size%5B%5D=33&image_size%5B%5D=34&image_size%5B%5D=35&image_size%5B%5D=36&image_size%5B%5D=2048&image_size%5B%5D=4096&image_size%5B%5D=4&image_size%5B%5D=14&expanded_user_info=true&include_tags=true&include_geo=true&include_equipment_info=true&vendor_photos=true&include_licensing=true&include_releases=true&liked_by=1&following_sample=100&ids=" + id
 				query_500px_api(query_url, function(data) {
-					var obj = {
+					var obj:BigImageInfoSObject = {
 						url: src,
 						extra: {
 							page: page
@@ -81363,13 +81473,42 @@ var $$IMU_EXPORT$$;
 				});
 			};
 
+			// replace legacy numbered ids with newer base64 ids
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+photo\/+([0-9]+)(?:\/+[^/]*\/*)?(?:[?#].*)?$/,
 				run: function(cb, match) {
-					query_500px_photo(match[1], cb);
+					query_500px_legacyphoto_to_newphoto(match[1], function(newid) {
+						if (!newid)
+							return cb(null);
+
+						return cb({
+							url: "https://500px.com/photo/" + newid,
+							is_pagelink: true
+						})
+					});
 				}
 			});
 			if (newsrc) return newsrc;
+
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+photo\/+([0-9a-zA-Z]+)(?:\/+[^/]*\/*)?(?:[?#].*)?$/,
+				run: function(cb, match) {
+					query_500px_photo_neo(match[1], cb);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain === "cdn-resize-prod-com.500px.cloud") {
+			// thanks to anonymous for reporting:
+			// https://cdn-resize-prod-com.500px.cloud/photo/.../0.jpg?...
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+photo\/+([0-9]+)\/+/);
+			if (match) {
+				return {
+					url: "https://500px.com/photo/" + match[1],
+					is_pagelink: true
+				};
+			}
 		}
 
 		if (domain === "drscdn.500px.org") {
@@ -136511,6 +136650,60 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/thumbnails_original\/+/, "/original_files/");
 		}
 
+		if (domain === "mediaserver.realestate.co.nz") {
+			// thanks to anonymous for reporting:
+			// https://mediaserver.realestate.co.nz/listings/43116546/8d4068fbb6360c34dce9b5a32aa69521.crop.300x225.jpg?options=compress
+			//   https://mediaserver.realestate.co.nz/listings/43116546/8d4068fbb6360c34dce9b5a32aa69521.jpg
+			return src.replace(/(\/listings\/+[0-9]+\/+[0-9a-f]{10,})\.(?:(?:crop|[0-9]+x[0-9]+)\.)*([a-z]+)(?:[?#].*)?$/, "$1.$2");
+		}
+
+		if (domain === "images.homes.co.nz") {
+			// thanks to anonymous for reporting:
+			// https://images.homes.co.nz/resize/fill/550/350/ce/0/plain/https://s3-ap-southeast-2.amazonaws.com/homes-listing-images/18399428715191531933
+			//   https://s3-ap-southeast-2.amazonaws.com/homes-listing-images/18399428715191531933
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+resize\/+.*\/(https?:\/\/.*)$/, "$1");
+		}
+
+		if (domain_nowww === "orion-wholesale.com") {
+			// thanks to anonymous for reporting:
+			if (/\/assets\/+product-images\/+grosso\//.test(src)) {
+				// https://www.orion-wholesale.com/assets/product-images/grosso/product-list-image-abo/50082710000_nor_a.avif
+				//   https://www.orion-wholesale.com/assets/product-images/grosso/product-list-image-abo/50082710000_nor_a.jpg
+				newsrc = src.replace(/\.(?:avif|webp)(?:[?#].*)?$/, ".jpg");
+				if (newsrc !== src)
+					return newsrc;
+
+				// https://www.orion-wholesale.com/assets/product-images/grosso/product-list-image-thumbnail-abo/50082710000_nor_a.jpg
+				//   https://www.orion-wholesale.com/assets/product-images/grosso/product-list-image-abo/50082710000_nor_a.jpg
+				// https://www.orion-wholesale.com/assets/product-images/grosso/product-list-image-thumbnail-abo/50082710000_nor_a-2x.jpg
+				//   https://www.orion-wholesale.com/assets/product-images/grosso/product-list-image-abo/50082710000_nor_a.jpg
+				newsrc = src.replace(/\/product-list-image-thumbnail-abo\/+([0-9]+_[a-z_]+)(?:-[0-9]+x)?\./, "/product-list-image-abo/$1.");
+				if (newsrc !== src)
+					return newsrc;
+
+				// https://www.orion-wholesale.com/assets/product-images/grosso/product-list-image-abo/50082710000_nor_a.jpg
+				//   https://www.orion-wholesale.com/assets/product-images/grosso/product-list-image-abo/50082710000_nor_a-2x.jpg
+				newsrc = src.replace(/(\/product-list-image-abo\/+[^/]+_[a-z_]+)\./, "$1-2x.");
+				if (newsrc !== src)
+					return newsrc;
+
+				// https://www.orion-wholesale.com/assets/product-images/grosso/product-list-image-abo/50082710000_nor_a-2x.jpg
+				//   https://www.orion-wholesale.com/assets/product-images/grosso/product-zoom-image-abo/50082710000_nor_a.jpg
+				newsrc = src.replace(/\/product-list-image-abo\/+([^/]+_[a-z_]+)(?:-[0-9]+x)?\./, "/product-zoom-image-abo/$1.");
+				if (newsrc !== src)
+					return newsrc;
+			}
+		}
+
+		if (domain_nowww === "ohoney.eu") {
+			// thanks to anonymous for reporting:
+			// https://ohoney.eu/img/cache/product/512145/1138048_small.webp
+			//   https://ohoney.eu/img/cache/product/512145/1138048_large.webp
+			return src
+				//.replace(/(\/img\/+cache\/+product\/+[0-9]+\/+[0-9]+_[a-z]+)\.webp(?:[?#].*)?$/, "$1.jpg")
+				.replace(/(\/img\/+cache\/+product\/+[0-9]+\/+[0-9]+)_small\./, "$1_large.");
+		}
+
 
 
 
@@ -137662,6 +137855,12 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/\/(?:thumb\/+(archive\/+)?)?([^/]*)\/+(?:lossless-page[0-9]+-)?[0-9]+px-[^/]+(?:[?#].*)?$/, "/$1$2");
 			if (newsrc !== src)
 				return newsrc;
+		}
+
+		if (domain === "thumb.wikimedia.org") {
+			// https://thumb.wikimedia.org/wikipedia/en/thumb/9/96/FC_New_Dawn_cover_art.jpg/250px-FC_New_Dawn_cover_art.jpg
+			//   https://upload.wikimedia.org/wikipedia/en/9/96/FC_New_Dawn_cover_art.jpg
+			return src.replace(/:\/\/[^/]+\/+/, "://upload.wikimedia.org/");
 		}
 
 		if (domain === "upload.wikimedia.org") {
