@@ -34171,6 +34171,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to anonymous for reporting:
 			// https://img.autocarpro.in/autocarpro/6b313de3-5dfb-40e8-beae-591486900c32_WhatsApp-Image-20260818-at-20.16.31-_1_.jpeg?w=750&h=490&q=75&c=1
 			domain === "img.autocarpro.in" ||
+			// thanks to anonymous:
+			// https://trtc.io/_next/static/media/headLogo.0cf4ec30.png?auto=format&fit=max&w=384
+			(domain_nowww === "trtc.io" && /\/_next\/+static\/+media\//.test(src)) ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -119362,6 +119365,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://media.altchar.com/prod/images/1200_672/gm-9ca91fb1-69fb-4e19-804a-8ad376add15f-gwent-price-of-power-harvest-of-sorrow-expansion-pack-now-live.jpg
 			// https://media.altchar.com/prod/images/1200_672/gm-187e2b8b-3d2a-4f70-a08f-b4f153982496-review-header1.jpg
 			return src.replace(/(\/prod\/+images\/+)gm_(?:(?:small|medium|large)_thumbnail|article_embed_image)\/+/, "$1gm_featured_image/");
+		}
+		if (domain === "media.asroma.com") {
+			// thanks to anonymous:
+			// https://media.asroma.com/prod/images/square_medium_fill/a3dc5c920e33-800x800rensch.png
+			//   https://media.asroma.com/prod/images/portrait_gallery_fill/a3dc5c920e33-800x800rensch.png
+			return src.replace(/(\/prod\/+images\/+)square_medium_fill\/+/, "$1portrait_gallery_fill/");
 		}
 		if (domain === "cdn.staticneo.com") {
 			// thanks to anonymous for reporting:
