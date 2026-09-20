@@ -68980,7 +68980,10 @@ var $$IMU_EXPORT$$;
 			//    https://images.stv.tv/articles/master/598476-the-iceberg-is-said-to-be-grounded-on-the-sea-floor.jpg
 			// https://images.stv.tv/articles/w1280xh720xmFit/598472-four-mile-long-iceberg-breaks-off-from-greenland-glacier.jpg -- stretched
 			//    https://images.stv.tv/articles/master/598472-four-mile-long-iceberg-breaks-off-from-greenland-glacier.jpg
-			return src.replace(/\/articles\/[wh][0-9]+(?:xh[0-9]+)?(?:xm[^/]*)?\/([^/]*)$/, "/articles/master/$1");
+			// thanks to anonymous for reporting:
+			// https://images.stv.tv/player/w1024xh576/899291-episode-4.jpeg
+			//   https://images.stv.tv/player/master/899291-episode-4.jpeg
+			return src.replace(/(\/(?:articles|player)\/)[wh][0-9]+(?:xh[0-9]+)?(?:xm[^/]*)?\/([^/]*)$/, "$1master/$2");
 		}
 
 		if (domain === "cdn.cretalive.gr") {
@@ -138248,6 +138251,12 @@ var $$IMU_EXPORT$$;
 			// https://media.artmuseum.princeton.edu/iiif/3/web_images/y711small/full/!800,800/0/default.webp
 			//   https://media.artmuseum.princeton.edu/iiif/3/web_images/y711small/full/max/0/default.jpg
 			domain === "media.artmuseum.princeton.edu" ||
+			// thanks to anonymous for reporting:
+			// https://images.eap.bl.uk/EAP264/EAP264_1_8_14/79.jp2/full/!600,300/0/default.jpg
+			//   https://images.eap.bl.uk/EAP264/EAP264_1_8_14/79.jp2/full/full/0/default.jpg -- 1200x784
+			// original size is 3462x2262: https://images.eap.bl.uk/EAP264/EAP264_1_8_14/79.jp2/info.json
+			// manual size queries >1200 still return 1200.
+			domain === "images.eap.bl.uk" ||
 			// thanks to FreemenMuaddib for a ton of information regarding IIIF: https://greasyfork.org/en/forum/discussion/74977/support-for-iiif-zoomable-images
 			/\/(?:iiif|loris)\/+(?:.*\/)?[^/]+\/+(?:full|square|(?:pct:)?[0-9.]+(?:,[0-9.]+){3})\/+(?:full|max|[0-9.]+,|,[0-9.]+|!?[0-9.]+,[0-9.]+|pct:[0-9.]+)\/+!?[0-9.]+\/+(?:color|gray|bitonal|default|native)\.(?:jpg|tif|png|gif|jp2|pdf|webp)(?:[?#].*)?$/.test(src)) {
 			// first is region:
@@ -138297,6 +138306,8 @@ var $$IMU_EXPORT$$;
 				prefix = "collections";
 			} else if (domain === "media.artmuseum.princeton.edu") {
 				obj.head_wrong_contentlength = true;
+			} else if (domain === "images.eap.bl.uk") {
+				prefix = "EAP[0-9]+";
 			}
 
 			regex = new RegExp("(/" + prefix + "/.*?/)[^/]+/[^/]+/[^/]+/([^/]+\\.[^/.]*)$");
