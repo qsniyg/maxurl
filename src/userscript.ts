@@ -104210,6 +104210,9 @@ var $$IMU_EXPORT$$;
 			// https://images-ssl.gotinder.com/54b1cb30a38bda4970451f45/320x400_39fac80e-f057-4265-a428-eff95083612a.jpg
 			//   https://images-ssl.gotinder.com/54b1cb30a38bda4970451f45/original_39fac80e-f057-4265-a428-eff95083612a.jpeg
 			// https://images-ssl.gotinder.com/546d72f55f2257a85f1b8538/320x400_b6314fba-2537-4fa9-8d6a-1ea19e940cb3.jpg -- original doesn't work, 640x800 and 1080x1350 does, but is upscaled
+			// thanks to pikseli3a on github: https://github.com/qsniyg/maxurl/issues/317#issuecomment-5750217571
+			// https://images-ssl.gotinder.com/6a63510958b6d92f806599c5/640x800_d96360f3-bded-4d77-966f-03727baab64a.jpg
+			//   https://images-ssl.gotinder.com/6a63510958b6d92f806599c5/original_d96360f3-bded-4d77-966f-03727baab64a.jpg
 			// doesn't work for all (square):
 			// https://images-ssl.gotinder.com/59fb90fe62dab66a0c554a33/172x172_415283a5-ae1d-4bfa-81a9-ae04f53130cd.jpg
 			//   https://images-ssl.gotinder.com/59fb90fe62dab66a0c554a33/320x320_415283a5-ae1d-4bfa-81a9-ae04f53130cd.jpg
@@ -104218,8 +104221,9 @@ var $$IMU_EXPORT$$;
 			// https://images-ssl.gotinder.com/5b01db0967c5a090092156b7/640x640_df9ecc9e-4c8d-4ae9-8aeb-4c78a37d1083.jpg
 			//   https://images-ssl.gotinder.com/5b01db0967c5a090092156b7/1080x1080_df9ecc9e-4c8d-4ae9-8aeb-4c78a37d1083.jpg -- upscaled? original doesn't work
 			// https://images-ssl.gotinder.com/577918a7bbf0334413f9724a/7cdbc5d9-0e5f-46c5-8467-d9f51cc189b4.jpg -- 320x320 works, 1080x1080 doesn't
-			return src.replace(/(\/[-0-9a-f]{10,}\/+)(?:[0-9]+x[0-9]+_)?(?:[0-9]+_)?([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})\.[^/.]+(?:[?#].*)?$/,
-								"$1original_$2.jpeg");
+			newsrc = src.replace(/(\/[-0-9a-f]{10,}\/+)(?:[0-9]+x[0-9]+_)?(?:[0-9]+_)?([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\.[^/.]+)(?:[?#].*)?$/, "$1original_$2");
+			if (newsrc !== src)
+				return add_extensions_jpeg(newsrc);
 		}
 
 		if (domain_nowww === "jpopsuki.eu") {
