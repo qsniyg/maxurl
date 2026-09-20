@@ -38845,7 +38845,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				can_head: false // 404 for some images
 			};
 		}
-		if (domain === "images.stv.tv") return src.replace(/\/articles\/[wh][0-9]+(?:xh[0-9]+)?(?:xm[^/]*)?\/([^/]*)$/, "/articles/master/$1");
+		if (domain === "images.stv.tv") return src.replace(/(\/(?:articles|player)\/)[wh][0-9]+(?:xh[0-9]+)?(?:xm[^/]*)?\/([^/]*)$/, "$1master/$2");
 		if (domain === "cdn.cretalive.gr") return src.replace(/(:\/\/[^/]*\/)_[a-z]+Image\//, "$1");
 		if (domain === "img.budgettravel.com") return src.replace(/(:\/\/[^/]+\/+)_[a-zA-Z]+\/+/, "$1");
 		if (amazon_container === "festivalkontoret") {
@@ -75173,6 +75173,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "iiif.wellcomecollection.org" ||
 			domain === "framemark.vam.ac.uk" ||
 			domain === "media.artmuseum.princeton.edu" ||
+			domain === "images.eap.bl.uk" ||
 			/\/(?:iiif|loris)\/+(?:.*\/)?[^/]+\/+(?:full|square|(?:pct:)?[0-9.]+(?:,[0-9.]+){3})\/+(?:full|max|[0-9.]+,|,[0-9.]+|!?[0-9.]+,[0-9.]+|pct:[0-9.]+)\/+!?[0-9.]+\/+(?:color|gray|bitonal|default|native)\.(?:jpg|tif|png|gif|jp2|pdf|webp)(?:[?#].*)?$/.test(src)) {
 			obj = {
 				url: src
@@ -75193,6 +75194,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				prefix = "collections";
 			} else if (domain === "media.artmuseum.princeton.edu") {
 				obj.head_wrong_contentlength = true;
+			} else if (domain === "images.eap.bl.uk") {
+				prefix = "EAP[0-9]+";
 			}
 			regex = new RegExp("(/" + prefix + "/.*?/)[^/]+/[^/]+/[^/]+/([^/]+\\.[^/.]*)$");
 			if (domain === "media.artmuseum.princeton.edu")
