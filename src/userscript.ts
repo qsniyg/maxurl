@@ -26325,7 +26325,7 @@ var $$IMU_EXPORT$$;
 
 			// home
 			if (current.tagName === "ARTICLE" && host_url.match(/:\/\/[^/]+\/+(?:[?#].*)?$/)) {
-				var timeel = current.querySelector("a > time");
+				var timeel = current.querySelector("a time");
 				if (!timeel)
 					timeel = current.querySelector("a > div > time");
 				if (timeel) {
@@ -150612,17 +150612,26 @@ var $$IMU_EXPORT$$;
 				var cached_previmages = 0;
 				var cached_nextimages = 0;
 
+				var gallery_navigating = false;
 				async function lraction(isright:boolean, is_scroll?:boolean) {
-					let changed = await trigger_gallery(isright ? 1 : -1);
-					if (!changed) {
-						if (is_scroll) {
-							if (isright && settings.scroll_past_gallery_end_to_close) {
-								resetpopups();
-								return;
-							}
-						}
+					if (gallery_navigating)
+						return;
 
-						await create_ui();
+					gallery_navigating = true;
+					try {
+						let changed = await trigger_gallery(isright ? 1 : -1);
+						if (!changed) {
+							if (is_scroll) {
+								if (isright && settings.scroll_past_gallery_end_to_close) {
+									resetpopups();
+									return;
+								}
+							}
+
+							await create_ui();
+						}
+					} finally {
+						gallery_navigating = false;
 					}
 				}
 
@@ -154331,6 +154340,7 @@ var $$IMU_EXPORT$$;
 					});
 				} catch (e) {
 					console_error(e);
+					delay_handle_triggering = false;
 					//console.trace();
 					// this doesn't work
 					//makePopup(source.src);
@@ -154389,6 +154399,9 @@ var $$IMU_EXPORT$$;
 			if (helpers && helpers.gallery) {
 				gallery = function(el, nextprev) {
 					var value = helpers.gallery(el, nextprev);
+					if (typeof value === "string") {
+						return value;
+					}
 					if (value || value === null) {
 						if (!value)
 							return value;
