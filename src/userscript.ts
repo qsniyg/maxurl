@@ -37069,6 +37069,9 @@ var $$IMU_EXPORT$$;
 			// https://stat.dokusho-ojikan.jp/bf0e01c5-6bc4-4ce0-815a-1d90b9e19130.jpg?dh=302&dw=212&of=webp&q=70
 			//   https://stat.dokusho-ojikan.jp/bf0e01c5-6bc4-4ce0-815a-1d90b9e19130.jpg
 			domain === "stat.dokusho-ojikan.jp" ||
+			// thanks to iotaOmicron on github: https://github.com/qsniyg/maxurl/issues/1651
+			// https://media4.thewatchagency.com/watches/new/ab/bulova-96D118.jpg?dh=1100&q=80
+			(domain_nosub === "thewatchagency.com" && /^media[0-9]*\./.test(domain)) ||
 			// thanks to anonymous for reporting:
 			// https://www.savannahnow.com/gcdn/authoring/2006/05/27/NSMN/ghows-GA-436437d7-3af2-44b4-a743-3ff643329b91-de026424.jpeg?width=660&height=527&fit=crop&format=pjpg&auto=webp
 			(domain_nowww === "savannahnow.com" && string_indexof(src, "/gcdn/") >= 0) ||
@@ -136845,6 +136848,23 @@ var $$IMU_EXPORT$$;
 			// https://cdn.apollo.cafe/objekts/front/cream02-hayeon-120z/c6695605581b/thumbnail.webp -- 600x926
 			//   https://cdn.apollo.cafe/objekts/front/cream02-hayeon-120z/c6695605581b/original.webp -- 1942x3000
 			return src.replace(/(\/objekts\/.*\/[0-9a-f]+\/+)(?:thumbnail|grid)\./, "$1original.");
+		}
+
+		if (domain_nowww === "casio.com") {
+			// thanks to iotaOmicron on github: https://github.com/qsniyg/maxurl/issues/1651
+			// https://www.casio.com/content/dam/casio/product-info/locales/us/en/timepiece/product/watch/G/GA/GA7/ga-700cmg-3a/assets/GA-700CMG-3A.png.transform/main-visual-sp/image.png
+			//   https://www.casio.com/content/dam/casio/product-info/locales/us/en/timepiece/product/watch/G/GA/GA7/ga-700cmg-3a/assets/GA-700CMG-3A.png
+			return src.replace(/(\/content\/+dam\/.*\/[^/]+\.[a-z]+)\.transform\/.*/, "$1");
+		}
+
+		if (domain_nowww === "kayoutlet.com") {
+			// thanks to iotaOmicron on github: https://github.com/qsniyg/maxurl/issues/1651
+			// https://www.kayoutlet.com/productimages/processed/V-270883604_0_800.jpg?pristine=true -- 800x800
+			//   https://www.kayoutlet.com/productimages/processed/V-270883604_0_0.jpg?pristine=true -- 2500x2500
+			return {
+				url: src.replace(/(\/productimages\/+processed\/+[^/]+_[0-9]+)_[0-9]+\./, "$1_0."),
+				can_head: false // 403
+			};
 		}
 
 
