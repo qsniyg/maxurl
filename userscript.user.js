@@ -56261,7 +56261,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return src.replace(/\/media\/cache\/(.*)[-_]thumb\.[a-f0-9]+(\.[^/.]*)$/, "/media/$1$2");
 		}
 		if (domain_nosub === "smugmug.com" ||
-			domain === "photos.smugmug.com") {
+			domain === "photos.smugmug.com" ||
+			// thanks to anonymous for reporting:
+			// https://www.lanceshuey.com/img/spacer.gif
+			domain_nowww === "lanceshuey.com") {
 			// thanks to anonymous for reporting:
 			// https://[subdomain].smugmug.com/img/spacer.gif
 			if (/\/img\/+spacer\.gif(?:[?#].*)?$/.test(src)) {
@@ -107690,6 +107693,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return newsrc;
 			}
 		}
+		if (domain === "img.cum.st") {
+			// thanks to anonymous for reporting:
+			// https://img.cum.st/thumbnail/c1ee65d5cc134501022b325a5ddd24189e71a9b34ba60333af1563c5b1c580a2/preview.webp
+			//   https://e1.cum.st/media/c1ee65d5cc134501022b325a5ddd24189e71a9b34ba60333af1563c5b1c580a2/original.jpg -- 3024x4032
+			// https://img.cum.st/thumbnail/d616e240f143aa912b4450ece3957f80073fd09c8f54e83ffb59597ac5bd66f3/preview.webp
+			//   https://e1.cum.st/media/d616e240f143aa912b4450ece3957f80073fd09c8f54e83ffb59597ac5bd66f3/original.mp4
+			newsrc = src.replace(/:\/\/[^/]+\/+thumbnail\/+([0-9a-f]{10,})\/+preview\.[a-z]+(?:[?#].*)?$/, "://e1.cum.st/media/$1/original.jpg");
+			return add_full_extensions2(newsrc, {
+				extensions: ["mp4", "jpg"],
+				prefer_order: true
+			});
+		}
 		if (domain === "assistant.gloria.tv") {
 			// https://assistant.gloria.tv/1z94gyaCTBei3D8MsGrYwjE6j/0mjj3brlc4t0hkd7ahx704m0o8sih0ewktgkect.webp?secure=[...]&expires=[...]&scale=256&webp=on -- 256x178
 			//   https://assistant.gloria.tv/1z94gyaCTBei3D8MsGrYwjE6j/0mjj3brlc4t0hkd7ahx704m0o8sih0ewktgkect.webp?secure=[...]&expires=[...] -- 1739x1209
@@ -123068,6 +123083,102 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				//.replace(/(\/img\/+cache\/+product\/+[0-9]+\/+[0-9]+_[a-z]+)\.webp(?:[?#].*)?$/, "$1.jpg")
 				.replace(/(\/img\/+cache\/+product\/+[0-9]+\/+[0-9]+)_small\./, "$1_large.");
 		}
+		if (false && domain === "videos.sproutvideo.com") {
+			// thanks to anonymous for reporting:
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+embed\/+([0-9a-f]+\/+[0-9a-f]+)(?:[?#].*)?$/,
+				query_for_id: "https://videos.sproutvideo.com/embed/${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/\.videoInfo\s*=\s*'([^']+)';/);
+					if (!match) {
+						console_error(cache_key, "Unable to find videoInfo match for", resp);
+						return done(null, false);
+					}
+					var decoded = base64_decode(match[1]);
+					var json = JSON_parse(decoded);
+					var baseobj = {
+						extra: {
+							page: resp.finalUrl,
+							caption: json.title
+						}
+					};
+					var urls = [];
+					var sig = json.signatures.m;
+					// TODO: needs URL editing for m3u8s
+					// key = .k
+					// .ts = .t
+					var sig_query = "Policy=" + encodeURIComponent(sig["CloudFront-Policy"]) + "&Signature=" + encodeURIComponent(sig["CloudFront-Signature"]) + "&Key-Pair-Id=" + encodeURIComponent(sig["CloudFront-Key-Pair-Id"]) + "&sessionID=" + encodeURIComponent(json.sessionID);
+					var vidurl = "https://hls2.videos.sproutvideo.com/" + json.s3_user_hash + "/" + json.s3_video_hash + "/video/index.m3u8?" + sig_query;
+					urls.push({
+						url: vidurl,
+						video: "hls",
+						headers: {
+							Accept: "*/*",
+							Origin: "https://" + domain,
+							Referer: "https://" + domain + "/",
+							"Sec-Fetch-Dest": "empty",
+							"Sec-Fetch-Mode": "cors",
+							"Sec-Fetch-Site": "same-site"
+						},
+						is_private: true
+					});
+					if (json.posterframe_url)
+						urls.push(json.posterframe_url);
+					return done(fillobj_urls(urls, baseobj), 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "punyu.com") {
+			// thanks to anonymous for reporting:
+			newsrc = website_query({
+				website_regex: [
+					/^[a-z]+:\/\/[^/]+\/+puny\/+player\/+([0-9a-f]{10,})\/+F(?:[?#].*)?$/,
+					/^[a-z]+:\/\/[^/]+\/+puny\/+d\/+([0-9a-f]{10,})(?:[?#].*)?$/
+				],
+				query_for_id: "https://" + domain + "/puny/player/${id}/F",
+				process: function(done, resp, cache_key) {
+					var direct_match = resp.responseText.match(/<a href="([^"]+\.mp4)" download="([^"]+)"/);
+					if (!direct_match) {
+						console_error(cache_key, "Unable to find direct link match for", resp);
+						return done(null, false);
+					}
+					var directlink = decode_entities(direct_match[1]);
+					var title = decode_entities(direct_match[2]);
+					var hlsmatch = resp.responseText.match(/var url\s*=\s*'([^']+)';/);
+					if (!hlsmatch) {
+						console_error(cache_key, "Unable to find hls match for", resp);
+						return done(null, false);
+					}
+					var baseobj = {
+						extra: {
+							page: resp.finalUrl,
+							caption: title
+						}
+					};
+					var urls = [];
+					// NOTE: this requires shaka fixes because everything has a .mp4 extension
+					urls.push({
+						url: hlsmatch[1],
+						video: "hls"
+					});
+					urls.push({
+						url: directlink,
+						video: true
+					});
+					return done(fillobj_urls(urls, baseobj), 6 * 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain === "cdn.apollo.cafe") {
+			// thanks to anonymous for reporting:
+			// https://cdn.apollo.cafe/objekts/front/cream02-hayeon-120z/c6695605581b/thumbnail.webp -- 600x926
+			//   https://cdn.apollo.cafe/objekts/front/cream02-hayeon-120z/c6695605581b/original.webp -- 1942x3000
+			return src.replace(/(\/objekts\/.*\/[0-9a-f]+\/+)(?:thumbnail|grid)\./, "$1original.");
+		}
 		// -- general rules --
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			// http://www.lookalikes.info/umbraco/ImageGen.ashx?image=/media/97522/nick%20hewer%20-%20mark%20brown.jpeg&width=250&constrain=true
@@ -123514,6 +123625,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://img.pressone.ro/77AUsLplB2bdUODXhckVtCnjf3Y=/1920x/smart/https%3A%2F%2Fimages.pressone.ro%2Fwp-content%2Fuploads%2F2025%2F01%2F10143647%2FComponente-auto-Dacia-1300-1977-copy-1.jpg
 			//   https://images.pressone.ro/wp-content/uploads/2025/01/10143647/Componente-auto-Dacia-1300-1977-copy-1.jpg
 			domain === "img.pressone.ro" ||
+			// thanks to anonymous for reporting:
+			// https://cdn.lareviewofbooks.org/unsafe/fit-in/3840x0/filters:format(jpeg):quality(75)/https%3A%2F%2Fassets.lareviewofbooks.org%2Fuploads%2F201406Shep-Houghton.jpg
+			//   https://assets.lareviewofbooks.org/uploads/201406Shep-Houghton.jpg
+			domain === "cdn.lareviewofbooks.org" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			// https://www.orlandosentinel.com/resizer/tREpzmUU7LJX1cbkAN-unm7wL0Y=/fit-in/800x600/top/filters:fill(black)/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
 			//   http://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
@@ -132813,6 +132928,29 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 									mime = override_mime_1;
 								return origfactory_1(url, mime);
 							};
+							// punyu.com has a .mp4 extension for hls streams
+							if (/\.mp4(?:[?#].*)?$/i.test(src)) {
+								var orig_guessmimetype_1 = shaka.Player.prototype.guessMimeType_;
+								shaka.Player.prototype.guessMimeType_ = function(a) {
+									var replace_ext = function(new_ext) {
+										return a.replace(/\.[a-zA-Z0-9]+(?:[?#].*)?$/, "." + new_ext);
+									};
+									var a_dec = decodeURIComponent(a);
+									// FIXME: extremely hacky
+									// https://media3.amazingcdn.net/.../media=hls/{hex}_{hex}.mp4 -- m3u8
+									// https://media3.amazingcdn.net/.../media=hls/seg=seg-1-v1-a1.ts/{hex}_{hex}.mp4 -- ts
+									if (/\/media=hls\//.test(a_dec)) {
+										if (/\/seg=[^/]+\.ts\//.test(a_dec))
+											a = replace_ext("ts");
+										else
+											a = replace_ext("m3u8");
+									}
+									return orig_guessmimetype_1.bind(this)(a);
+								};
+								var src_dec = decodeURIComponent(src);
+								if (/\/media=hls\//.test(src_dec))
+									shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("mp4", "video/mp2t");
+							}
 						}
 					} catch (e) {
 						console_error(e);
