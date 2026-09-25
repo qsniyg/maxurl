@@ -123197,6 +123197,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				can_head: false // 403
 			};
 		}
+		if (domain === "images.euronews.com") {
+			// thanks to 03302024 on github for reporting: https://github.com/qsniyg/maxurl/issues/1650
+			// https://images.euronews.com/articles/stories/09/90/01/87/820x468_cmsv2_139b86fc-5069-5088-8972-33e331b5e256-9900187.jpg
+			//   https://images.euronews.com/articles/stories/09/90/01/87/cmsv2_139b86fc-5069-5088-8972-33e331b5e256-9900187.jpg -- 1600x900
+			// seems like the largest size is always 2000x*
+			// https://images.euronews.com/articles/stories/09/91/89/16/cmsv2_e6c85b0a-7f25-5670-9de0-0ed110a967ec-9918916.jpg -- 2000x1125
+			return src.replace(/(\/articles\/+stories\/.*\/)[0-9]+x[0-9]+_(cmsv2_[^/]+)(?:[?#].*)?$/, "$1$2");
+		}
 		// -- general rules --
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			// http://www.lookalikes.info/umbraco/ImageGen.ashx?image=/media/97522/nick%20hewer%20-%20mark%20brown.jpeg&width=250&constrain=true
