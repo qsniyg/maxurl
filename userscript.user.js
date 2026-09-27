@@ -33916,11 +33916,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to anonymous for reporting:
 			// https://www.otempo.com.br/adobe/dynamicmedia/deliver/dm-aid--33a460a9-9598-46e3-863d-b5afc96c0f78/cidades-pris-o-em-bh-1716939511.jpg?preferwebp=true&width=200&quality=90
 			//   https://www.otempo.com.br/adobe/dynamicmedia/deliver/dm-aid--33a460a9-9598-46e3-863d-b5afc96c0f78/cidades-pris-o-em-bh-1716939511.jpg
-			(domain_nowww === "otempo.com.br" && /\/dynamicmedia\/+deliver\//.test(src)) ||
+			//(domain_nowww === "otempo.com.br" && /\/dynamicmedia\/+deliver\//.test(src)) ||
 			// thanks to anonymous for reporting:
 			// https://assets.central.co.th//adobe/dynamicmedia/deliver/dm-aid--075e163b-74e0-4035-9db6-1b96884b47ba/eastman-bluedoubleactionbrushnohandleno100304-mkp0312462-3.jpg?preferwebp=true&quality=60&width=550
 			//   https://assets.central.co.th//adobe/dynamicmedia/deliver/dm-aid--075e163b-74e0-4035-9db6-1b96884b47ba/eastman-bluedoubleactionbrushnohandleno100304-mkp0312462-3.jpg
-			(domain_nowww === "assets.central.co.th" && /\/dynamicmedia\/+deliver\//.test(src)) ||
+			//(domain_nowww === "assets.central.co.th" && /\/dynamicmedia\/+deliver\//.test(src)) ||
 			// thanks to Liz on discord:
 			// https://assetsio.gnwcdn.com/painted_world1.jpg?width=1200&height=1200&fit=bounds&quality=70&format=jpg&auto=webp
 			domain === "assetsio.gnwcdn.com" ||
@@ -34500,12 +34500,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc !== src)
 				return newsrc;
 		}
-		if (domain_nowww === "telugumopo.com") {
+		if (domain_nowww === "telugumopo.com" ||
+			// thanks to anonymous for reporting:
+			// https://www.octane-magazine.com/app/smush-webp/2026/07/tvr_griffith_500_7-1536x985.jpeg.webp
+			//   https://www.octane-magazine.com/app/uploads/2026/07/tvr_griffith_500_7-1536x985.jpeg
+			domain_nowww === "octane-magazine.com") {
 			// thanks to anonymous for reporting:
 			// https://telugumopo.com/wp-content/smush-webp/2025/10/1-2-79-769x1024.jpg.webp
 			//   https://telugumopo.com/wp-content/uploads/2025/10/1-2-79-769x1024.jpg
 			//   https://telugumopo.com/wp-content/uploads/2025/10/1-2-79.jpg
-			newsrc = src.replace(/(\/wp-content\/+)smush-webp(\/.*\.[a-z]+)\.webp(?:[?#].*)?$/, "$1uploads$2");
+			newsrc = src.replace(/(\/(?:wp-content|app)\/+)smush-webp(\/.*\.[a-z]+)\.webp(?:[?#].*)?$/, "$1uploads$2");
 			if (newsrc !== src)
 				return newsrc;
 		}
@@ -35380,6 +35384,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to anonymous for reporting:
 			// https://www.move.org/app/uploads/2025/08/gloomiest-cities-map-1024x768.webp
 			(domain_nowww === "move.org" && /\/app\/+uploads\//.test(src)) ||
+			// thanks to anonymous for reporting:
+			// https://www.octane-magazine.com/app/uploads/2026/07/tvr_griffith_500_7-1536x985.jpeg
+			(domain_nowww === "octane-magazine.com" && /\/app\/+uploads\//.test(src)) ||
 			// thanks to anonymous for reporting:
 			// https://cdn.entameclip.com/2024/10/pic20241023kimitoband1-300x225.jpg
 			//   https://cdn.entameclip.com/2024/10/pic20241023kimitoband1.jpg
@@ -91498,7 +91505,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// client_secret can be found via REACT_APP_API_CLIENT_SECRET in one of the chunk.js files
 			// for the moment let's just avoid doing this as it'll work after opening the site
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+file\/+([0-9a-f]+)(?:[?#].*)?$/,
+				website_regex: /^[a-z]+:\/\/[^/]+\/+file\/+([0-9a-f]+)(?:\/+[^/]*)?(?:[?#].*)?$/,
 				run: function(cb, match) {
 					var id = match[1];
 					api_query("keep2share:" + id, {
@@ -123204,6 +123211,32 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// seems like the largest size is always 2000x*
 			// https://images.euronews.com/articles/stories/09/91/89/16/cmsv2_e6c85b0a-7f25-5670-9de0-0ed110a967ec-9918916.jpg -- 2000x1125
 			return src.replace(/(\/articles\/+stories\/.*\/)[0-9]+x[0-9]+_(cmsv2_[^/]+)(?:[?#].*)?$/, "$1$2");
+		}
+		if (domain === "cdn-images.farfetch-contents.com") {
+			// thanks to anonymous for reporting:
+			// https://cdn-images.farfetch-contents.com/21/58/66/61/21586661_52224756_600.jpg
+			//   https://cdn-images.farfetch-contents.com/21/58/66/61/21586661_52224756.jpg
+			return src.replace(/(\/[0-9]{2}\/+[0-9]+_[0-9]+)_[0-9]+\./, "$1.");
+		}
+		if (domain_nowww === "scania.com" ||
+			// thanks to anonymous for reporting:
+			// https://assets.central.co.th//adobe/dynamicmedia/deliver/dm-aid--075e163b-74e0-4035-9db6-1b96884b47ba/eastman-bluedoubleactionbrushnohandleno100304-mkp0312462-3.jpg?preferwebp=true&quality=60&width=550
+			domain === "assets.central.co.th" ||
+			// thanks to anonymous for reporting:
+			// https://www.otempo.com.br/adobe/dynamicmedia/deliver/dm-aid--33a460a9-9598-46e3-863d-b5afc96c0f78/cidades-pris-o-em-bh-1716939511.jpg?preferwebp=true&width=200&quality=90
+			//   https://www.otempo.com.br/adobe/dynamicmedia/deliver/dm-aid--33a460a9-9598-46e3-863d-b5afc96c0f78/cidades-pris-o-em-bh-1716939511.jpg?preferwebp=false&width=999999&quality=100
+			domain_nowww === "otempo.com.br" ||
+			// https://samsung-climatesolutions.com/adobe/dynamicmedia/deliver/dm-aid--d16bec81-b0dd-43bc-9c04-760de6eb6912/GLS-1.jpg?width=1600&quality=85&preferwebp=true
+			//   https://samsung-climatesolutions.com/adobe/dynamicmedia/deliver/dm-aid--d16bec81-b0dd-43bc-9c04-760de6eb6912/GLS-1.jpg?preferwebp=false&width=999999&quality=100 -- 6025x4000 (without querystring is 2048x*)
+			/^[a-z]+:\/\/[^/]+\/+adobe\/+dynamicmedia\/+deliver\/+dm-aid--[-0-9a-f]+\//.test(src)) {
+			// thanks to anonymous for reporting:
+			// https://www.scania.com/adobe/dynamicmedia/deliver/dm-aid--f04fba14-f896-4541-abf9-11565df0e1ec/1995-4-series-line-up-unveiled.jpg?preferwebp=true&width=1920&quality=85
+			//   https://www.scania.com/adobe/dynamicmedia/deliver/dm-aid--f04fba14-f896-4541-abf9-11565df0e1ec/1995-4-series-line-up-unveiled.jpg?preferwebp=false&width=999999&quality=100
+			// https://www.scania.com/adobe/dynamicmedia/deliver/dm-aid--f04fba14-f896-4541-abf9-11565df0e1ec/1995-4-series-line-up-unveiled.jpg -- smaller
+			//   https://www.scania.com/adobe/dynamicmedia/deliver/dm-aid--f04fba14-f896-4541-abf9-11565df0e1ec/1995-4-series-line-up-unveiled.jpg?preferwebp=false&width=999999&quality=100
+			newsrc = src.replace(/(\/adobe\/+dynamicmedia\/+deliver\/[^?#]+)(?:[?#].*)?$/, "$1?preferwebp=false&width=999999&quality=100");
+			if (newsrc !== src)
+				return newsrc;
 		}
 		// -- general rules --
 		if (src.match(/\/ImageGen\.ashx\?/)) {
