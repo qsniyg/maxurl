@@ -48201,6 +48201,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "i.img.ie" ||
 			// https://i.lensdump.com/i/8UiN2c.md.jpg
 			domain === "i.lensdump.com" ||
+			// thanks to iotaOmicron on github: https://github.com/qsniyg/maxurl/issues/1652
+			// https://c.l3n.co/w0wtT7.md.png
+			domain === "c.l3n.co" ||
 			// https://a.l3n.co/i/IlqARF.th.jpg
 			(domain_nosub === "l3n.co" && /\/i\//.test(src)) ||
 			// https://img.faploads.com/2018/06/21/Mandy-Moore-223.md.jpg
@@ -61782,8 +61785,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						var url = "";
 						if (/^[0-9]+$/.test(videoid)) {
 							url = "https://www.xvideos.com/embedframe/" + videoid;
+						} else {
+							url = "https://www.xvideos.com/video." + videoid + "/a";
 						}
-						url = "https://www.xvideos.com/video." + videoid + "/a";
 						return {
 							url: url,
 							imu_mode: "document"
@@ -63578,6 +63582,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "x-x-x.tube" ||
 			domain_nowww === "x-fetish.tube" ||
 			domain_nowww === "inxxx.com" ||
+			domain_nosub === "shameless.com" ||
 			// different system
 			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
 			//domain_nosub === "tubepornclassic.com" ||
@@ -63636,6 +63641,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			if (!match) {
 				match = src.match(/\/videos\/+[0-9]+\/+([0-9]+)\/+[0-9]+_preview\./);
+			}
+			// https://preview.anysex.com/458000/458366/458366_pr640.mp4
+			if (!match) {
+				match = src.match(/:\/\/[^/]+\/+[0-9]+\/+([0-9]+)\/+\1_pr[0-9]+\./);
 			}
 			if (match) {
 				id = match[1];
@@ -63744,6 +63753,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				domain_nosub === "thehornygay.com" ||
 				domain_nosub === "everydayporn.com" ||
 				domain_nosub === "inxxx.com" ||
+				domain_nosub === "shameless.com" ||
 				domain_nosub === "thisvid.com") {
 				videos_component = "embed";
 				addslash = "";
@@ -64543,6 +64553,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "shemalez.com" ||
 			domain_nosub === "keporn.vip" ||
 			domain_nosub === "kepxy.com" ||
+			domain_nosub === "abxxx.com" ||
+			domain_nosub === "abjav.com" ||
+			domain_nosub === "abbdsm.com" ||
+			domain_nosub === "abebony.com" ||
+			domain_nosub === "ablesbian.com" ||
+			domain_nosub === "11hentai.com" ||
+			domain_nosub === "abmilf.com" ||
 			domain_nosub === "videotxxx.com") {
 			var base_domain_1 = domain_nosub;
 			if (domain_nosub === "videotxxx.com")
@@ -64582,8 +64599,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					},
 					json: true
 				}, cb, function(done, resp, cache_key) {
-					var formats = ["_hq", "_lq"];
+					var formats = ["_hq", "_lq", "", "_tr"];
 					var get_format_id = function(format) {
+						if (typeof format === "object" && format.format)
+							format = format.format;
 						format = format.replace(/\..*/, "");
 						var index = array_indexof(formats, format);
 						if (index < 0) {
@@ -64612,17 +64631,21 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						Referer: "https://" + base_domain_1
 					}
 				};
-				urls = [{
-						url: data[0].video_url,
+				urls = [];
+				for (var _i = 0, data_3 = data; _i < data_3.length; _i++) {
+					var format = data_3[_i];
+					urls.push({
+						url: format.video_url,
 						video: true
-					}];
+					});
+				}
 				return fillobj_urls(urls, baseobj);
 			};
 			// https://hclips.com/videos/ashe-maree-excellent-show-made-28-july-2017/?promo=10376
 			//   redirects to:
 			//   https://hclips.com/videos/2114722/ashe-maree-excellent-show-made-28-july-2017/?promo=10376
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+(?:videos|embed)\/+([0-9]+)\//,
+				website_regex: /^[a-z]+:\/\/[^/]+\/+(?:videos?|embed)\/+([0-9]+)\//,
 				run: function(cb, match) {
 					var id = match[1];
 					query_hclips_1(id, function(data) {
@@ -64663,6 +64686,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "cdn52810799.ahacdn.me" ||
 			domain === "cdn47590165.ahacdn.me" ||
 			(domain_nosub === "shemalez.com" && /^tn[0-9]*\./.test(domain)) ||
+			((domain_nosub === "abxxx.com" ||
+				domain_nosub === "abmilf.com" ||
+				domain_nosub === "abbdsm.com" ||
+				domain_nosub === "abebony.com" ||
+				domain_nosub === "ablesbian.com" ||
+				domain_nosub === "11hentai.com" ||
+				domain_nosub === "abjav.com") && /^(?:vv|ii)[0-9]*\./.test(domain)) ||
 			// https://cdn37804682.ahacdn.me/contents/videos_screenshots/16484000/16484039/288x162/1.jpg
 			domain === "cdn37804682.ahacdn.me") {
 			var basedomain_map = {
@@ -95111,6 +95141,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "viptube.com" ||
 			domain_nosub === "yptpsn.com" ||
 			domain_nowww === "yeptube.com" ||
+			domain_nosub === "vivpsn.com" ||
+			domain_nowww === "vivatube.com" ||
+			domain_nowww === "vivatube.club" ||
 			// https://p3.vptpsn.com/media/videos/tmb/4117567/240_180/10.jpg
 			domain_nosub === "vptpsn.com" ||
 			domain_nosub === "viptube.com") && options.do_request && options.cb) {
@@ -95222,6 +95255,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			} else if (domain_nosub === "yeptube.com" || domain_nosub === "yptpsn.com") {
 				iceporn_domain = "yeptube.com";
 				iceporn_aid = 4;
+			} else if (domain_nosub === "vivatube.com" || domain_nosub === "vivatube.club" || domain_nosub === "vivpsn.com") {
+				iceporn_domain = "vivatube.com";
+				iceporn_aid = 8;
 			}
 			id = get_iceporn_id_from_url(src);
 			if (id) {
@@ -118969,18 +119005,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var hash_2 = common_functions["parse_imu_hash"](src);
 				if (hash_2 && hash_2.data) {
 					try {
-						var data_3 = JSON_parse(decodeURIComponent(hash_2.data));
+						var data_4 = JSON_parse(decodeURIComponent(hash_2.data));
 						var obj_16 = {
 							url: src.replace(/#.*/, ""),
 							headers: {
 								Accept: "*/*",
-								Authorization: "Bearer " + data_3.token
+								Authorization: "Bearer " + data_4.token
 							}
 						};
-						if (data_3.video)
-							obj_16.video = data_3.video;
-						if (data_3.origin)
-							obj_16.headers.Origin = data_3.origin;
+						if (data_4.video)
+							obj_16.video = data_4.video;
+						if (data_4.origin)
+							obj_16.headers.Origin = data_4.origin;
 						return [
 							obj_16,
 							{
@@ -123238,6 +123274,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc !== src)
 				return newsrc;
 		}
+		if (domain === "static.feetished.com") {
+			// thanks to anonymous for reporting:
+			// https://static.feetished.com/jessica-alba/30070_t.webp
+			//   https://static.feetished.com/jessica-alba/30070.webp
+			return src.replace(/(:\/\/[^/]+\/+[^/]+\/+[0-9]+)_t\./, "$1.");
+		}
 		// -- general rules --
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			// http://www.lookalikes.info/umbraco/ImageGen.ashx?image=/media/97522/nick%20hewer%20-%20mark%20brown.jpeg&width=250&constrain=true
@@ -125742,7 +125784,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			};
 		}
-		if (host_domain_nowww === "imagefap.com" && /\/photo\/+[0-9]+\//.test(options.host_url)) {
+		if (false && host_domain_nowww === "imagefap.com" && /\/photo\/+[0-9]+\//.test(options.host_url)) {
 			return {
 				gallery: function(el, nextprev) {
 					if (el.tagName !== "IMG" || !options.do_request)

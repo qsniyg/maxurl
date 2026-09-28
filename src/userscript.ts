@@ -52751,6 +52751,9 @@ var $$IMU_EXPORT$$;
 			domain === "i.img.ie" ||
 			// https://i.lensdump.com/i/8UiN2c.md.jpg
 			domain === "i.lensdump.com" ||
+			// thanks to iotaOmicron on github: https://github.com/qsniyg/maxurl/issues/1652
+			// https://c.l3n.co/w0wtT7.md.png
+			domain === "c.l3n.co" ||
 			// https://a.l3n.co/i/IlqARF.th.jpg
 			(domain_nosub === "l3n.co" && /\/i\//.test(src)) ||
 			// https://img.faploads.com/2018/06/21/Mandy-Moore-223.md.jpg
@@ -67933,9 +67936,9 @@ var $$IMU_EXPORT$$;
 
 						if (/^[0-9]+$/.test(videoid)) {
 							url = "https://www.xvideos.com/embedframe/" + videoid;
+						} else {
+							url = "https://www.xvideos.com/video." + videoid + "/a";
 						}
-
-						url = "https://www.xvideos.com/video." + videoid + "/a";
 
 						return {
 							url,
@@ -69871,6 +69874,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "x-x-x.tube" ||
 			domain_nowww === "x-fetish.tube" ||
 			domain_nowww === "inxxx.com" ||
+			domain_nosub === "shameless.com" ||
 			// different system
 			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
 			//domain_nosub === "tubepornclassic.com" ||
@@ -69931,6 +69935,10 @@ var $$IMU_EXPORT$$;
 			}
 			if (!match) {
 				match = src.match(/\/videos\/+[0-9]+\/+([0-9]+)\/+[0-9]+_preview\./);
+			}
+			// https://preview.anysex.com/458000/458366/458366_pr640.mp4
+			if (!match) {
+				match = src.match(/:\/\/[^/]+\/+[0-9]+\/+([0-9]+)\/+\1_pr[0-9]+\./);
 			}
 
 			if (match) {
@@ -70043,6 +70051,7 @@ var $$IMU_EXPORT$$;
 					   domain_nosub === "thehornygay.com" ||
 					   domain_nosub === "everydayporn.com" ||
 					   domain_nosub === "inxxx.com" ||
+					   domain_nosub === "shameless.com" ||
 					   domain_nosub === "thisvid.com") {
 				videos_component = "embed";
 				addslash = "";
@@ -70981,6 +70990,13 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "shemalez.com" ||
 			domain_nosub === "keporn.vip" ||
 			domain_nosub === "kepxy.com" ||
+			domain_nosub === "abxxx.com" ||
+			domain_nosub === "abjav.com" ||
+			domain_nosub === "abbdsm.com" ||
+			domain_nosub === "abebony.com" ||
+			domain_nosub === "ablesbian.com" ||
+			domain_nosub === "11hentai.com" ||
+			domain_nosub === "abmilf.com" ||
 			domain_nosub === "videotxxx.com") {
 
 			let base_domain = domain_nosub;
@@ -71035,9 +71051,11 @@ var $$IMU_EXPORT$$;
 					},
 					json: true
 				}, cb, function(done, resp, cache_key) {
-					var formats = ["_hq", "_lq"];
+					var formats = ["_hq", "_lq", "", "_tr"];
 
 					var get_format_id = function(format) {
+						if (typeof format === "object" && format.format)
+							format = format.format;
 						format = format.replace(/\..*/, "");
 						var index = array_indexof(formats, format);
 
@@ -71073,10 +71091,14 @@ var $$IMU_EXPORT$$;
 					}
 				};
 
-				urls = [{
-					url: data[0].video_url,
-					video: true
-				}];
+				urls = [];
+
+				for (let format of data) {
+					urls.push({
+						url: format.video_url,
+						video: true
+					});
+				}
 
 				return fillobj_urls(urls, baseobj);
 			};
@@ -71085,7 +71107,7 @@ var $$IMU_EXPORT$$;
 			//   redirects to:
 			//   https://hclips.com/videos/2114722/ashe-maree-excellent-show-made-28-july-2017/?promo=10376
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+(?:videos|embed)\/+([0-9]+)\//,
+				website_regex: /^[a-z]+:\/\/[^/]+\/+(?:videos?|embed)\/+([0-9]+)\//,
 				run: function(cb, match) {
 					let id = match[1];
 					query_hclips(id, function(data) {
@@ -71134,6 +71156,14 @@ var $$IMU_EXPORT$$;
 
 			domain === "cdn47590165.ahacdn.me" ||
 			(domain_nosub === "shemalez.com" && /^tn[0-9]*\./.test(domain)) ||
+
+			((domain_nosub === "abxxx.com" ||
+			  domain_nosub === "abmilf.com" ||
+			  domain_nosub === "abbdsm.com" ||
+			  domain_nosub === "abebony.com" ||
+			  domain_nosub === "ablesbian.com" ||
+			  domain_nosub === "11hentai.com" ||
+			  domain_nosub === "abjav.com") && /^(?:vv|ii)[0-9]*\./.test(domain)) ||
 
 			// https://cdn37804682.ahacdn.me/contents/videos_screenshots/16484000/16484039/288x162/1.jpg
 			domain === "cdn37804682.ahacdn.me") {
@@ -105559,6 +105589,10 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "yptpsn.com" ||
 			domain_nowww === "yeptube.com" ||
 
+			domain_nosub === "vivpsn.com" ||
+			domain_nowww === "vivatube.com" ||
+			domain_nowww === "vivatube.club" ||
+
 			// https://p3.vptpsn.com/media/videos/tmb/4117567/240_180/10.jpg
 			domain_nosub === "vptpsn.com" ||
 			domain_nosub === "viptube.com") && options.do_request && options.cb) {
@@ -105684,6 +105718,9 @@ var $$IMU_EXPORT$$;
 			} else if (domain_nosub === "yeptube.com" || domain_nosub === "yptpsn.com") {
 				iceporn_domain = "yeptube.com";
 				iceporn_aid = 4;
+			} else if (domain_nosub === "vivatube.com" || domain_nosub === "vivatube.club" || domain_nosub === "vivpsn.com") {
+				iceporn_domain = "vivatube.com";
+				iceporn_aid = 8;
 			}
 
 			id = get_iceporn_id_from_url(src);
@@ -136911,6 +136948,13 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (domain === "static.feetished.com") {
+			// thanks to anonymous for reporting:
+			// https://static.feetished.com/jessica-alba/30070_t.webp
+			//   https://static.feetished.com/jessica-alba/30070.webp
+			return src.replace(/(:\/\/[^/]+\/+[^/]+\/+[0-9]+)_t\./, "$1.");
+		}
+
 
 
 
@@ -139887,7 +139931,7 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (host_domain_nowww === "imagefap.com" && /\/photo\/+[0-9]+\//.test(options.host_url)) {
+		if (false && host_domain_nowww === "imagefap.com" && /\/photo\/+[0-9]+\//.test(options.host_url)) {
 			return {
 				gallery: function(el, nextprev) {
 					if (el.tagName !== "IMG" || !options.do_request)
