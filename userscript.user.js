@@ -87452,12 +87452,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://ogre.natalie.mu/media/news/stage/2020/1030/tamurameimi_art.jpg?imwidth=468
 			//   https://ogre.natalie.mu/media/news/stage/2020/1030/tamurameimi_art.jpg
 			//   https://ogre.natalie.mu/media/news/stage/2020/1030/tamurameimi_art.jpg?impolicy=pp_image -- 504x672
+			//   https://ogre.natalie.mu/media/news/stage/2020/1030/tamurameimi_art.jpg?impolicy=a -- 504x672, different color grading (original?)
 			// https://ogre.natalie.mu/media/pp/static/music/sayashiriho/pc_header.jpg
 			//   https://ogre.natalie.mu/media/pp/static/music/sayashiriho/pc_header.jpg?impolicy=pp_image -- 2120x1180
+			//   https://ogre.natalie.mu/media/pp/static/music/sayashiriho/pc_header.jpg?impolicy=a -- 2120x1180, better quality
 			// https://ogre.natalie.mu/media/pp/static/music/sayashiriho/photo01s.jpg
 			//   https://ogre.natalie.mu/media/pp/static/music/sayashiriho/photo01.jpg?impolicy=pp_image -- 800x533
 			return src
-				.replace(/(?:[?#].*)?$/, "?impolicy=pp_image")
+				.replace(/(?:[?#].*)?$/, "?impolicy=a")
 				.replace(/(\/photo[0-9]+)s\./, "$1.");
 		}
 		if (domain === "cdnx.natalie.mu") {
@@ -121281,6 +121283,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to anonymous for reporting:
 			// https://assets.woolworths.com.au/images/2010/226908.jpg?impolicy=wowcdxwbjbx&w=200&h=200
 			//   https://assets.woolworths.com.au/images/2010/226908.jpg?impolicy=wowcdxwbjbx
+			//   https://assets.woolworths.com.au/images/2010/226908.jpg?impolicy=a -- 403
 			if (/\/images\//.test(src))
 				return remove_queries(src, ["w", "h"]);
 		}
