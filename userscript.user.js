@@ -20808,6 +20808,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 	}
 	var parse_headers = function(headerstr) {
+		// occasionally check_image calls this with null or undefined
+		if (!headerstr)
+			return [];
 		var headers = [];
 		var splitstr = "\r\n";
 		if (string_indexof(headerstr, "\r") < 0) {
@@ -32868,8 +32871,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "images.nbcolympics.com" ||
 			// https://dist.joshinweb.jp/cdshop/img/jacket/P5_G/5863/P5_G5863047W.JPG?impolicy=tp100
 			(domain === "dist.joshinweb.jp" && string_indexof(src, "/img/") >= 0) ||
-			// https://live-production.wcms.abc-cdn.net.au/2f345d15c7568513477fc44daa552c2d?impolicy=wcms_crop_resize&cropH=709&cropW=1260&xPos=0&yPos=393&width=862&height=485
-			domain === "live-production.wcms.abc-cdn.net.au" ||
 			// https://compote.slate.com/images/4e1e4179-fb17-436b-a890-1a4fdb417d45.jpeg?width=1180&offset=0x0&rect=1560x1040&height=842
 			domain === "compote.slate.com" ||
 			// https://media.gannett-cdn.com/29906170001/29906170001_5720100432001_5720093419001-vs.jpg?pubId=29906170001&quality=10
@@ -33493,10 +33494,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://ubiservices.cdn.ubi.com/c619c78d-1c6b-47cf-9b36-80160d5c0e8f/connect/DEFAULT_WD3REWARDX012_epic.jpg?imwidth=640
 			// https://ubiservices.cdn.ubi.com/de132bb9-2b0b-4bd2-b918-7bc26a92d413/spaceCardAsset/boxArt_mobile.jpg?imwidth=320
 			domain === "ubiservices.cdn.ubi.com" ||
-			// thanks to fedesk on discord: https://news.abplive.com/photo-gallery/news/india-in-pics-delhi-s-protest-sites-fortified-to-prevent-any-further-violence-amid-farmers-agitation-1442144
-			// https://feeds.abplive.com/onecms/images/uploaded-images/2021/02/01/c8c6f97001293dbc0bde1e9233e1caba_original.jpg?impolicy=abp_cdn&imwidth=480
-			//   https://feeds.abplive.com/onecms/images/uploaded-images/2021/02/01/c8c6f97001293dbc0bde1e9233e1caba_original.jpg
-			domain === "feeds.abplive.com" ||
 			// thanks to fedesk on discord: https://www.thequint.com/
 			// https://images.thequint.com/thequint%2F2018-08%2Fb469a264-0df6-44ed-a4e1-daca007cd998%2Fac576068_30ee_4c46_a4e3_1fe720f0b1dc.jpg?rect=0%2C0%2C750%2C422&auto=format%2Ccompress&fmt=webp&format=webp&w=576&dpr=1.0
 			//   https://images.thequint.com/thequint%2F2018-08%2Fb469a264-0df6-44ed-a4e1-daca007cd998%2Fac576068_30ee_4c46_a4e3_1fe720f0b1dc.jpg
@@ -33950,9 +33947,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://d.fashiontimes.com/en/full/44711/savage-x-fenty-2025-valentines-day-loveline-collection.jpg?w=900&f=77c552965a45bf4fd05a8d1d97c95531
 			domain === "d.fashiontimes.com" ||
 			// thanks to anonymous for reporting:
-			// https://images.ottplay.com/images/big/reem-shaikh-on-social-media-pressure-and-more-1736674690.jpeg?impolicy=ottplay-202410&width=426&height=240
-			domain === "images.ottplay.com" ||
-			// thanks to anonymous for reporting:
 			// https://thewebster.com/media/catalog/product/2/3/231-M311-01_1.jpg?quality=10&fit=bounds&height=&width=100
 			(domain_nowww === "thewebster.com" && /\/media\/+catalog\/+product\//.test(src)) ||
 			// thanks to anonymous for reporting:
@@ -34050,9 +34044,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to anonymous for reporting:
 			// https://static.sky.it/editorialimages/ea11ae89f5bcc84b31cf95080cede91570d9bbde/skytg24/it/mondo/video/2025/11/08/1050137_1762623994801_thumb_494.0000001_1762625195427.jpg?im=Resize,width=565
 			domain === "static.sky.it" ||
-			// thanks to anonymous for reporting:
-			// https://image-assets.m.nintendo.com/6700dd91-a576-47fd-a001-8e8763ac9d2e?im=Resize,width=800
-			domain === "image-assets.m.nintendo.com" ||
 			// thanks to anonymous for reporting:
 			// https://english.cdn.zeenews.com/sites/default/files/2019/06/11/794947-tara-sutaraia-anees-office6.jpg?im=FitAndFill=(800,600)
 			(domain_nosub === "zeenews.com" && /^(?:.*\.)?cdn\./.test(domain)) ||
@@ -67550,8 +67541,19 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nowww === "turboimagehost.com") {
 			// https://www.turboimagehost.com/p/11906711/Asia_2.jpg.html#
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+p\/+([0-9]+)\/+([^/?#]+\.html)(?:[?#].*)?$/,
-				query_for_id: "https://www.turboimagehost.com/p/${1}/${2}",
+				website_regex: /^[a-z]+:\/\/[^/]+\/+p\/+([0-9]+\/+[^/?#]+\.html)(?:[?#].*)?$/,
+				query_for_id: function(id) {
+					return {
+						url: "https://www.turboimagehost.com/p/" + id,
+						headers: {
+							"Sec-Fetch_Dest": "document",
+							"Sec-Fetch-Mode": "navigate",
+							"Sec-Fetch-Site": "none"
+						},
+						imu_mode: "document"
+					};
+				},
+				allow_hostresp_for_match: true,
 				process: function(done, resp, cache_key) {
 					var image = get_meta(resp.responseText, "og:image");
 					if (!image) {
@@ -116642,11 +116644,28 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			//   https://www.comicshoplocator.com/SiteImage/MainImage/STL321428.jpg
 			return src.replace(/(\/SiteImage\/+)CatalogThumbnail\/+/, "$1MainImage/");
 		}
-		if (domain === "img.xchina.store") {
+		if (domain === "img.xchina.store" ||
+			// thanks to anonymous for reporting:
+			// https://img.xchina.io/photos/62d8f26be9e1f/0001_600x0.webp
+			//   https://img.xchina.io/photos/62d8f26be9e1f/0001.jpg -- 1800x2700
+			domain === "img.xchina.io") {
 			// thanks to anonymous for reporting:
 			// https://img.xchina.store/photos2/6666063f48d5c/0003_600x0.webp
 			//   https://img.xchina.store/photos2/6666063f48d5c/0003.jpg -- 1800x2700
-			return src.replace(/(\/photos2\/+[0-9a-f]+\/+[0-9]+)_[0-9]+x[0-9]+\.webp(?:[?#].*)?$/, "$1.jpg");
+			return {
+				url: src.replace(/(\/photos[0-9]*\/+[0-9a-f]{5,}\/+[0-9]+)_[0-9]+x[0-9]+\.webp(?:[?#].*)?$/, "$1.jpg"),
+				headers: {
+					Referer: "https://kr.xchina.io/",
+					// needed for cloudflare
+					"Sec-Fetch-Dest": "image",
+					"Sec-Fetch-Mode": "no-cors",
+					"Sec-Fetch-Site": "cross-site"
+				},
+				referer_ok: {
+					same_domain_nosub: true
+				}
+			};
+			//return src.replace(/(\/photos2\/+[0-9a-f]+\/+[0-9]+)_[0-9]+x[0-9]+\.webp(?:[?#].*)?$/, "$1.jpg");
 		}
 		if (domain_nowww === "exeypanteleev.com") {
 			// thanks to anonymous for reporting:
@@ -121264,6 +121283,34 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			//   https://assets.woolworths.com.au/images/2010/226908.jpg?impolicy=wowcdxwbjbx
 			if (/\/images\//.test(src))
 				return remove_queries(src, ["w", "h"]);
+		}
+		if (domain === "image-assets.m.nintendo.com") {
+			// thanks to Burner Man on discord:
+			// https://image-assets.m.nintendo.com/d04dc8bd-5c98-455a-914e-867cbe9d41c9
+			//   https://image-assets.m.nintendo.com/d04dc8bd-5c98-455a-914e-867cbe9d41c9?impolicy=a -- 5120x2880
+			// https://image-assets.m.nintendo.com/6700dd91-a576-47fd-a001-8e8763ac9d2e?im=Resize,width=800
+			//   https://image-assets.m.nintendo.com/6700dd91-a576-47fd-a001-8e8763ac9d2e?impolicy=a -- 1278x958
+			return {
+				url: src.replace(/^([a-z]+:\/\/[^/]+\/+[-0-9a-f]{10,})(?:[?#].*)?$/, "$1?impolicy=a"),
+				head_wrong_contenttype: true
+			};
+		}
+		if ((domain === "images.ottplay.com" && /:\/\/[^/]+\/+images\//.test(src)) ||
+			// thanks to fedesk on discord: https://news.abplive.com/photo-gallery/news/india-in-pics-delhi-s-protest-sites-fortified-to-prevent-any-further-violence-amid-farmers-agitation-1442144
+			// https://feeds.abplive.com/onecms/images/uploaded-images/2021/02/01/c8c6f97001293dbc0bde1e9233e1caba_original.jpg?impolicy=abp_cdn&imwidth=480
+			//   https://feeds.abplive.com/onecms/images/uploaded-images/2021/02/01/c8c6f97001293dbc0bde1e9233e1caba_original.jpg
+			//   https://feeds.abplive.com/onecms/images/uploaded-images/2021/02/01/c8c6f97001293dbc0bde1e9233e1caba_original.jpg?impolicy=a
+			(domain === "feeds.abplive.com" && /\/onecms\/+images\/+uploaded-images\//.test(src)) ||
+			// https://live-production.wcms.abc-cdn.net.au/2f345d15c7568513477fc44daa552c2d?impolicy=wcms_crop_resize&cropH=709&cropW=1260&xPos=0&yPos=393&width=862&height=485
+			//   https://live-production.wcms.abc-cdn.net.au/2f345d15c7568513477fc44daa552c2d?impolicy=a
+			domain === "live-production.wcms.abc-cdn.net.au") {
+			// thanks to anonymous for reporting:
+			// https://images.ottplay.com/images/big/reem-shaikh-on-social-media-pressure-and-more-1736674690.jpeg?impolicy=ottplay-202410&width=426&height=240
+			//   https://images.ottplay.com/images/big/reem-shaikh-on-social-media-pressure-and-more-1736674690.jpeg -- 1200x675
+			//   https://images.ottplay.com/images/big/reem-shaikh-on-social-media-pressure-and-more-1736674690.jpeg?impolicy=a --1200x675, better quality
+			newsrc = src.replace(/(^[a-z]+:\/\/[^/]+\/+[^?#]+)(?:[?#].*)?$/, "$1?impolicy=a");
+			if (newsrc !== src)
+				return newsrc;
 		}
 		if (domain === "img.dizi.la") {
 			// thanks to anonymous for reporting:
