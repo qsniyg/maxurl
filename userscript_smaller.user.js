@@ -51157,7 +51157,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain === "d2jtsb989t238a.cloudfront.net") return src.replace(/(\/p\/+[0-9]+\/+[0-9]+\/+)small(?:[?#].*)?$/, "$1normal");
 		if (domain === "ogre.natalie.mu" && string_indexof(src, "/media/") >= 0) {
 			return src
-				.replace(/(?:[?#].*)?$/, "?impolicy=pp_image")
+				.replace(/(?:[?#].*)?$/, "?impolicy=a")
 				.replace(/(\/photo[0-9]+)s\./, "$1.");
 		}
 		if (domain === "cdnx.natalie.mu") {
