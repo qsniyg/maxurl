@@ -42354,9 +42354,24 @@ var $$IMU_EXPORT$$;
 			// http://0.t.imgbox.com/eLFM9k0c.jpg
 			//   https://thumbs3.imgbox.com/e4/3f/eLFM9k0c_t.jpg
 			//   https://images3.imgbox.com/e4/3f/eLFM9k0c_o.jpg
-			let obj = {
-				url: src
+
+			let bad_if = [{
+				headers: {
+					"Last-Modified": "Thu, 06 Aug 2026 13:12:33 GMT",
+					"Content-Length": "8091",
+					"Content-Type": "image/jpeg"
+				}
+			}];
+
+			let obj:BigImageInfoSObject = {
+				url: src,
+				bad_if
 			};
+
+			let baseobj = {
+				url: src,
+				bad_if
+			}
 
 			let match = src.match(/\/(?:[0-9a-f]{2}\/+){2}([^/_.]+)_([a-z])\./);
 			if (match) {
@@ -42372,7 +42387,10 @@ var $$IMU_EXPORT$$;
 				.replace(/_[a-z](\.[^/.]*)/, "_o$1");
 			if (newsrc !== src) {
 				obj.url = newsrc;
-				return obj;
+				return [
+					obj,
+					baseobj
+				];
 			}
 
 			return obj;
@@ -67151,6 +67169,19 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "imagebam.com" && /^thumb(?:nail)?s[0-9]*\./.test(domain)) {
+			let bad_if = [{
+				headers: {
+					"Last-Modified": "Thu, 06 Aug 2026 13:11:57 GMT",
+					"Content-Length": "7739",
+					"Content-Type": "image/jpeg"
+				}
+			}];
+
+			let baseobj = {
+				url: src,
+				bad_if
+			};
+
 			// http://www.imagebam.com/image/b08214643524333
 			//   http://thumbs2.imagebam.com/b5/84/c2/b08214643524333.jpg
 			//   http://images2.imagebam.com/c9/b4/96/b08214643524333.jpg
@@ -67159,10 +67190,13 @@ var $$IMU_EXPORT$$;
 			//   http://images3.imagebam.com/5f/1e/36/172f56480587760.jpg
 			id = src.replace(/.*\/([0-9a-f]+)\.[^/.]*$/, "$1");
 			if (id !== src) {
-				return {
-					url: "https://www.imagebam.com/image/" + id,
-					is_pagelink: true
-				};
+				return [
+					{
+						url: "https://www.imagebam.com/image/" + id,
+						is_pagelink: true
+					},
+					baseobj
+				];
 			}
 
 			// https://www.imagebam.com/view/MEBIJN
@@ -67170,10 +67204,13 @@ var $$IMU_EXPORT$$;
 			//   https://images4.imagebam.com/e7/7f/f6/MEBIJN_o.jpg
 			id = src.replace(/.*\/([0-9A-Z]+)_t\.[^/.]+$/, "$1");
 			if (id !== src) {
-				return {
-					url: "https://www.imagebam.com/view/" + id,
-					is_pagelink: true
-				};
+				return [
+					{
+						url: "https://www.imagebam.com/view/" + id,
+						is_pagelink: true
+					},
+					baseobj
+				];
 			}
 		}
 
@@ -134734,6 +134771,10 @@ var $$IMU_EXPORT$$;
 			//   https://feeds.abplive.com/onecms/images/uploaded-images/2021/02/01/c8c6f97001293dbc0bde1e9233e1caba_original.jpg
 			//   https://feeds.abplive.com/onecms/images/uploaded-images/2021/02/01/c8c6f97001293dbc0bde1e9233e1caba_original.jpg?impolicy=a
 			(domain === "feeds.abplive.com" && /\/onecms\/+images\/+uploaded-images\//.test(src)) ||
+			// thanks to anonymous for reporting:
+			// https://images2.ray-ban.com//cdn-record-files-pi/d1ca2a23-e3dc-41eb-a1f5-a984011c4256/39e73f8a-d572-4c20-b898-ae9300b6c351/0RX6434__2501__STD__shad__qt.png?impolicy=RB_Product_clone&width=1024&bgc=%23f2f2f2
+			//   https://images2.ray-ban.com//cdn-record-files-pi/d1ca2a23-e3dc-41eb-a1f5-a984011c4256/39e73f8a-d572-4c20-b898-ae9300b6c351/0RX6434__2501__STD__shad__qt.png?impolicy=a
+			(domain === "images2.ray-ban.com" && /\/[-0-9a-f]{10,}\/[^/]+$/.test(src)) ||
 			// https://live-production.wcms.abc-cdn.net.au/2f345d15c7568513477fc44daa552c2d?impolicy=wcms_crop_resize&cropH=709&cropW=1260&xPos=0&yPos=393&width=862&height=485
 			//   https://live-production.wcms.abc-cdn.net.au/2f345d15c7568513477fc44daa552c2d?impolicy=a
 			domain === "live-production.wcms.abc-cdn.net.au") {
