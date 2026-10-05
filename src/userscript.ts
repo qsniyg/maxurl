@@ -2693,6 +2693,17 @@ var $$IMU_EXPORT$$;
 				};
 			}
 
+			// scriptcat returns a finalUrl of "" for data: urls
+			(function(real_onload) {
+				data.onload = function(resp) {
+					if (!resp.finalUrl && data.url && /^data:/.test(data.url)) {
+						resp.finalUrl = data.url;
+					}
+
+					return real_onload(resp);
+				};
+			})(data.onload);
+
 			if (data.responseType === "blob" && !settings.use_blob_over_arraybuffer) {
 				(function(real_onload) {
 					data.onload = function(resp) {
@@ -3823,7 +3834,7 @@ var $$IMU_EXPORT$$;
 	type VideoDelivery = null|"hls"|"dash";
 	type VideoProp = boolean|"hls"|"dash";
 
-	type InfoMediaInfoProblem = "1x1png"
+	type InfoMediaInfoProblem = "1x1png"|"incorrect_ts_ext"
 
 	type InfoMediaInfo = {
 		type: "image"|"video",
@@ -32796,6 +32807,12 @@ var $$IMU_EXPORT$$;
 			// https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_320,q_50/lsci/db/PICTURES/CMS/385800/385800.2.png
 			//   https://img1.hscicdn.com/image/upload/lsci/db/PICTURES/CMS/385800/385800.2.png
 			(domain_nosub === "hscicdn.com" && /^img[0-9]*\./.test(domain)) ||
+			// thanks to anonymous for reporting:
+			// https://media-catalog.giglio.com/image/upload/f_auto,t_prodPage/v1/products/H79691.009_2
+			//   https://media-catalog.giglio.com/image/upload/products/H79691.009_2
+			// https://media-catalog.giglio.com/images/f_auto/t_default/v1/products/H79691.009_1/polo-ralph-lauren.jpg
+			//   https://media-catalog.giglio.com/images/products/H79691.009_1/polo-ralph-lauren.jpg
+			domain === "media-catalog.giglio.com" ||
 			// thanks to karpuzikov on github: https://github.com/qsniyg/maxurl/issues/1066
 			// https://resource.logitechg.com/w_677,ar_1:1,c_limit,b_rgb:2f3132,q_auto,f_auto,dpr_auto/d_transparent.gif/content/dam/gaming/en/homepage/product-swatch-carousel/home-product-swatch-4.png?v=1
 			//   https://resource.logitechg.com/content/dam/gaming/en/homepage/product-swatch-carousel/home-product-swatch-4.png?v=1
@@ -106715,6 +106732,8 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "streamhgjav.online" ||
 			domain_nowww === "vibuxer.com" ||
 			domain_nowww === "hgcloud.to" ||
+			domain_nowww === "morencius.com" ||
+			domain_nowww === "audinifer.com" ||
 			domain_nowww === "streamwish.to") {
 
 			// streamwish:
@@ -134088,32 +134107,169 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "cdn.loadvid.com") {
 			// thanks to anonymous for reporting:
-			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+videos\/+play\/+([^/?#.]+)(?:[?#].*)?$/,
-				query_for_id: "https://" + domain + "/videos/play/${id}",
-				process: function(done, resp, cache_key) {
-					let match = resp.responseText.match(/videoUrl\s*=\s*'([^']+)';/);
-					if (!match) {
-						console_error(cache_key, "Unable to find video match for", resp);
+			if (false) {
+				newsrc = website_query({
+					website_regex: /^[a-z]+:\/\/[^/]+\/+videos\/+play\/+([^/?#.]+)(?:[?#].*)?$/,
+					query_for_id: "https://" + domain + "/videos/play/${id}",
+					process: function(done, resp, cache_key) {
+						let match = resp.responseText.match(/videoUrl\s*=\s*'([^']+)';/);
+						if (!match) {
+							console_error(cache_key, "Unable to find video match for", resp);
+							return done(null, false);
+						}
+
+						let urls = [];
+
+						urls.push({
+							url: match[1],
+							headers: {
+								Accept: "*/*",
+								Referer: resp.finalUrl
+							},
+							video: "hls"
+						});
+
+						let postermatch = resp.responseText.match(/poster:\s*'([^']+)'/);
+						if (postermatch)
+							urls.push(postermatch[1]);
+
+						return done(common_functions["fill_ldjson"](urls, resp), 60);
+					}
+				});
+				if (newsrc) return newsrc;
+			}
+
+			let query_loadvid_hls = function(hash, token, csrf, cb) {
+				api_query("loadvid_hls:" + hash, {
+					url: "https://cdn.loadvid.com/videos/resolve-token",
+					method: "POST",
+					data: JSON_stringify({
+						token,
+						hash
+					}),
+					headers: {
+						"Accept": "application/vnd.apple.mpegurl,*/*",
+						"Content-Type": "application/json",
+						"Origin": "https://cdn.loadvid.com",
+						"Referer": "https://cdn.loadvid.com/videos/play/" + hash,
+						"Sec-Fetch-Dest": "empty",
+						"Sec-Fetch-Mode": "cors",
+						"Sec-Fetch-Site": "same-origin",
+						"X-Csrf-Token": csrf
+					}
+				}, cb, function(done, resp, cache_key) {
+					if (!/^#EXTM3U/.test(resp.responseText)) {
+						console_error(cache_key, "Invalid response", resp);
 						return done(null, false);
 					}
 
-					let urls = [];
+					return done(resp.responseText, 6*60*60);
+				})
+			};
 
-					urls.push({
-						url: match[1],
-						headers: {
-							Accept: "*/*",
-							Referer: resp.finalUrl
-						},
-						video: "hls"
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+videos\/+play\/+([^/?#.]+)(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/videos/play/${id}",
+				process: function(done, resp, cache_key, match) {
+					let hash = match[1];
+
+					let csrf = get_meta(resp.responseText, "csrf-token");
+					if (!csrf) {
+						console_error(cache_key, "Unable to find csrf token for", resp);
+						return done(null, false);
+					}
+
+					let vidtoken_match = resp.responseText.match(/videoToken:\s*'([^']+)'/);
+					if (!vidtoken_match) {
+						console_error(cache_key, "Unable to find video token match for", resp);
+						return done(null, false);
+					}
+
+					query_loadvid_hls(hash, vidtoken_match[1], csrf, function(hls) {
+						if (!hls) {
+							return done(null, false);
+						}
+
+						let hlsobj = {
+							url: "data:application/vnd.apple.mpegurl," + encodeURIComponent(hls),
+							media_info: {
+								type: "video",
+								delivery: "hls",
+								problems: ["incorrect_ts_ext"] // png
+							}
+						};
+
+						return done(common_functions["fill_ldjson"](hlsobj, resp), 6*60*60);
+					})
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain_nowww === "playmate.to") {
+			let query_playmate = function(hash, cb) {
+				api_query("playmate:" + hash, {
+					url: "https://playmate.to/api/s",
+					method: "POST",
+					data: JSON_stringify({
+						c: hash,
+						d: "web"
+					}),
+					headers: {
+						Accept: "*/*",
+						"Content-Type": "application/json",
+						Origin: "https://" + domain,
+						Referer: "https://" + domain + "/embed/" + hash,
+						"Sec-Fetch-Dest": "empty",
+						"Sec-Fetch-Mode": "cors",
+						"Sec-Fetch-Site": "same-origin"
+					},
+					json: true
+				}, cb, function(done, resp, cache_key) {
+					if (!resp.sx) {
+						console_error(cache_key, "Unable to find hls stream from", resp);
+						return done(null, false);
+					}
+
+					return done({
+						thumbnail: resp.ix,
+						stream: resp.sx
+					}, 6*60*60);
+				});
+			};
+
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+embed\/+([0-9a-zA-Z]+)(?:[?#].*)?$/,
+				run: function(cb, match) {
+					let page = "https://" + domain + "/embed/" + match[1];
+
+					query_playmate(match[1], function(data) {
+						if (!data)
+							return cb(null);
+
+						let urls = [];
+
+						let baseobj = {
+							extra: {
+								page
+							}
+						};
+
+						if (data.stream)
+							urls.push({
+								url: data.stream,
+								media_info: {
+									type: "video",
+									delivery: "hls",
+									problems: ["incorrect_ts_ext"] // css, js
+								}
+							});
+
+						if (data.thumbnail)
+							urls.push(data.thumbnail);
+
+						return cb(fillobj_urls(urls, baseobj));
 					});
-
-					let postermatch = resp.responseText.match(/poster:\s*'([^']+)'/);
-					if (postermatch)
-						urls.push(postermatch[1]);
-
-					return done(common_functions["fill_ldjson"](urls, resp), 60);
 				}
 			});
 			if (newsrc) return newsrc;
@@ -134432,6 +134588,9 @@ var $$IMU_EXPORT$$;
 					let vidid = match[1];
 
 					query_cherrycams_video(vidid, function(data) {
+						if (!data)
+							return cb(null);
+
 						let baseobj = {
 							extra: {
 								page: "https://" + domain + "/#" + vidid,
@@ -148389,6 +148548,10 @@ var $$IMU_EXPORT$$;
 			return info_obj.media_info && info_obj.media_info.problems && array_indexof(info_obj.media_info.problems, "1x1png") >= 0;
 		};
 
+		let has_incorrect_ts_ext_problem = function(info_obj:BigImageInfoSObject):boolean {
+			return info_obj.media_info && info_obj.media_info.problems && array_indexof(info_obj.media_info.problems, "incorrect_ts_ext") >= 0;
+		};
+
 		let fixup_respdata_for_streaming_infoobj = function(data:ArrayBuffer, mime:string, info_obj:BigImageInfoSObject):ArrayBuffer {
 			if (has_1x1png_problem(info_obj) && mime === "image/png") {
 				let arr = new Uint8Array(data);
@@ -148685,17 +148848,19 @@ var $$IMU_EXPORT$$;
 								return origfactory(url, mime);
 							};
 
+							let is_amazingcdn_mp4_problem = /\.mp4(?:[?#].*)?$/.test(src);
+
 							// punyu.com has a .mp4 extension for hls streams
-							if (/\.mp4(?:[?#].*)?$/i.test(src)) {
-								let orig_guessmimetype = shaka.Player.prototype.guessMimeType_;
-								shaka.Player.prototype.guessMimeType_ = function(a) {
-									let replace_ext = function(new_ext) {
-										return a.replace(/\.[a-zA-Z0-9]+(?:[?#].*)?$/, "." + new_ext);
-									};
+							let orig_guessmimetype = shaka.Player.prototype.guessMimeType_;
+							shaka.Player.prototype.guessMimeType_ = function(a) {
+								let replace_ext = function(new_ext) {
+									return a.replace(/\.[a-zA-Z0-9]+(?:[?#].*)?$/, "." + new_ext);
+								};
 
-									let a_dec = decodeURIComponent(a);
+								let a_dec = decodeURIComponent(a);
 
-									// FIXME: extremely hacky
+								if (is_amazingcdn_mp4_problem) {
+									// FIXME: somewhat hacky
 									// https://media3.amazingcdn.net/.../media=hls/{hex}_{hex}.mp4 -- m3u8
 									// https://media3.amazingcdn.net/.../media=hls/seg=seg-1-v1-a1.ts/{hex}_{hex}.mp4 -- ts
 									if (/\/media=hls\//.test(a_dec)) {
@@ -148704,20 +148869,21 @@ var $$IMU_EXPORT$$;
 										else
 											a = replace_ext("m3u8");
 									}
+								}
 
-									return orig_guessmimetype.bind(this)(a);
-								};
+								return orig_guessmimetype.bind(this)(a);
+							};
 
-								let src_dec = decodeURIComponent(src);
-								if (/\/media=hls\//.test(src_dec))
-									shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("mp4", "video/mp2t");
-							}
+							let src_dec = decodeURIComponent(src);
+							if (is_amazingcdn_mp4_problem && /\/media=hls\//.test(src_dec))
+								shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("mp4", "video/mp2t");
 						}
 					} catch (e) {
 						console_error(e);
 					}
 
-					if (has_1x1png_problem(info_obj)) {
+					if (has_1x1png_problem(info_obj) ||
+						has_incorrect_ts_ext_problem(info_obj)) {
 						try {
 							// kamehamehaa.xyz
 							let orig_createseg = shaka.hls.HlsParser.prototype.createSegmentReference_;
@@ -148728,6 +148894,10 @@ var $$IMU_EXPORT$$;
 							};
 
 							shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("png", "video/mp2t");
+							if (has_incorrect_ts_ext_problem(info_obj)) {
+								shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("css", "video/mp2t");
+								shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("js", "video/mp2t");
+							}
 							shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set(null, "video/mp2t");
 						} catch (e) {
 							console_error(e);
