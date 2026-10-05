@@ -29935,7 +29935,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_320,q_50/lsci/db/PICTURES/CMS/385800/385800.2.png
 			//   https://img1.hscicdn.com/image/upload/lsci/db/PICTURES/CMS/385800/385800.2.png
 			(domain_nosub === "hscicdn.com" && /^img[0-9]*\./.test(domain)) ||
-			// thanks to anonymous for reporting:
+			// thanks to fyhtma on github: https://github.com/qsniyg/maxurl/issues/1653
 			// https://media-catalog.giglio.com/image/upload/f_auto,t_prodPage/v1/products/H79691.009_2
 			//   https://media-catalog.giglio.com/image/upload/products/H79691.009_2
 			// https://media-catalog.giglio.com/images/f_auto/t_default/v1/products/H79691.009_1/polo-ralph-lauren.jpg
