@@ -4,6 +4,7 @@
   "main": "bot.js",
   "dependencies": {
     "dotenv": "^5.0.1",
+    "form-data": "^2.5.4",
     "iconv-lite": "^0.5.0",
     "js-yaml": "^3.13.1",
     "mongodb": "^3.7.4",
