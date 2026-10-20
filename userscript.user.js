@@ -25507,11 +25507,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					urls.push({
 						url: newsrc,
 						extra: {
-							page: data.link_url,
-							caption: data.video_title
+							page: data.link_url || data.videoUrl,
+							caption: data.video_title || data.title
 						},
 						headers: {
-							Referer: data.link_url
+							Referer: data.link_url || data.videoUrl
 						},
 						video: video,
 						is_private: true // linked to IP
@@ -47773,11 +47773,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}, cb, function(done, resp, cache_key) {
 					var match = resp.responseText.match(/var\s+flashvars\s*=\s*({.*?})\s*; *\n/);
 					if (!match) {
+						match = resp.responseText.match(/mainRoll:\s*({[\s\S]*}),\s*adRolls:/);
+					}
+					if (!match) {
 						console_error(cache_key, "Unable to find match", resp);
 						return done(null, false);
 					}
 					try {
-						var json = JSON_parse(match[1]);
+						var json_txt = fixup_js_obj_proper(match[1]);
+						var json = JSON_parse(json_txt);
 						done(json, 6 * 60 * 60);
 					} catch (e) {
 						console_error(cache_key, e);
@@ -47786,15 +47790,30 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				});
 			};
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+[^/]+\/+[^/]+\/+([0-9]+)\/*(?:[?#].*)?$/,
+				website_regex: [
+					/^[a-z]+:\/\/[^/]+\/+[^/]+\/+[^/]+\/+([0-9]+)\/*(?:[?#].*)?$/,
+					/^[a-z]+:\/\/[^/]+\/porn-video\/+([0-9]+)\/*(?:[?#].*)?$/,
+				],
 				run: function(cb, match) {
 					var id = match[1];
 					fetch_tube8_flashvars(id, function(data) {
+						if (!data)
+							return cb(null);
 						var origsrc = src;
 						if (options._internal_info && options._internal_info.mediadefinition_src) {
 							origsrc = options._internal_info.mediadefinition_src;
 						}
-						common_functions["parse_mediadefinition"](api_cache, options, origsrc, data, cache_key, cb);
+						common_functions["parse_mediadefinition"](api_cache, options, origsrc, data, cache_key, function(obj) {
+							cb(fillobj_urls(obj, {
+								headers: {
+									Origin: "https://" + domain,
+									Referer: "https://" + domain + "/",
+									"Sec-Fetch-Dest": "empty",
+									"Sec-Fetch-Mode": "cors",
+									"Sec-Fetch-Site": "cross-site"
+								}
+							}, "all"));
+						});
 					});
 				}
 			});
@@ -49848,6 +49867,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://image.euroman.dk/5698829.webp?imageId=5698829&x=30.59&y=0.00&cropw=54.49&croph=100.00&heightx=0.00&heighty=2.95&heightw=100.00&heighth=95.51&width=960&height=1056&format=jpg
 			//   https://image.euroman.dk/5698829.webp?width=-1&height=-1&format=jpg
 			domain === "image.euroman.dk" ||
+			// thanks to anonymous for reporting:
+			// https://image.theregister.com/5285618.webp?imageId=5285618&x=0.00&y=0.00&cropw=100.00&croph=100.00&heightx=0.00&heighty=0.00&heightw=100.00&heighth=100.00&width=1058&height=626&format=webp
+			//   https://image.theregister.com/5285618.webp?width=-1&height=-1&format=jpg
+			domain === "image.theregister.com" ||
 			// https://www.dbstatic.no/68267011.jpg?imageId=68267011&x=0&y=0&cropw=100&croph=100&width=1024&height=1539
 			//   https://www.dbstatic.no/68267011.jpg -- 100x150
 			//   https://www.dbstatic.no/68267011.jpg?width=-1&height=-1 -- 1664x2500
@@ -63621,6 +63644,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "x-fetish.tube" ||
 			domain_nowww === "inxxx.com" ||
 			domain_nosub === "shameless.com" ||
+			domain_nowww === "familyporn.tv" ||
+			domain_nowww === "yesporn.vip" ||
 			// different system
 			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
 			//domain_nosub === "tubepornclassic.com" ||
@@ -64250,6 +64275,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					var jsoned = match[1]
 						.replace(/adv_(?:pre|postpause)_vast(?:_alt)?:\s*'[^\\']+?'(?:\s*\+\s*[a-z_]+),/g, "") // theyarehuge.com, zbporn.com
 						.replace(/adv_(?:pre|postpause)_vast(?:_alt)?:\s*'[^\\']+?'\s*,/g, "") // thisvid.com
+						.replace(/\sprotect_block_html:\s*'.*?',\s+(protect_block_html_after:)/, "$1") // yesporn.vip
 						.replace(/([{,]\s*)([^"'\s:]+)\s*:/g, "$1\"$2\":")
 						.replace(/:\s*encodeURIComponent\(('[^']+')\)/g, ":$1")
 						.replace(/([^\\])\\'/g, "$1\\u0027")
@@ -102731,7 +102757,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 			var get_rumble_embedjs_path = function(url, cb) {
 				api_cache.fetch("rumble_embedjs", cb, function(done) {
-					get_rumble_page(url, function(resp) {
+					get_rumble_page("https://rumble.com/", function(resp) {
 						if (!resp) {
 							return done(null, false);
 						}
@@ -102756,6 +102782,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (match) {
 					return cb(match[1]);
 				}
+				match = url.match(/^[a-z]+:\/\/[^/]+\/+v([0-9a-z]{6,})-/);
+				if (!match)
+					match = url.match(/^[a-z]+:\/\/[^/]+\/+shorts\/+v([0-9a-z]{6,})(?:[?#].*)?$/);
+				if (match) {
+					return cb((parseInt(match[1], 36) - 3655926).toString(36));
+				}
 				api_cache.fetch("rumble_url_videoid:" + url, cb, function(done) {
 					get_rumble_page(url, function(resp) {
 						if (!resp)
@@ -102772,7 +102804,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var query_rumble = function(vid, embedjs, cb) {
 				// info is also in /embed/ link, we don't necessarily need to use the api
 				api_query("rumble_api:" + vid, {
-					url: embedjs + "/?request=video&v=v" + vid + "&ext=%7B%22ad_count%22%3Anull%7D",
+					url: embedjs + "/?ifr=0&dref=rumble.com&request=video&ver=2&v=v" + vid + "&ext=%7B%22ad_count%22%3Anull%7D",
 					imu_mode: "xhr",
 					referer: "https://rumble.com/embed/v" + vid + "/",
 					json: true
@@ -102792,15 +102824,43 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (resp.pubDate)
 						obj.extra.created_date = new Date(resp.pubDate).getTime();
 					var urls = [];
-					var keys = Object.keys(resp.ua);
-					keys.sort();
-					array_foreach(keys, function(key) {
-						urls.push({
-							url: resp.ua[key][0],
-							video: true,
-							//height: key
+					if (resp.ua) {
+						if (resp.ua.hls) {
+							urls.push({
+								url: resp.ua.hls.auto.url,
+								media_info: {
+									type: "video",
+									delivery: "hls",
+									problems: ["incorrect_ts_ext"] // .tar
+								}
+							});
+						}
+						var formats_2 = ["mp4", "webm", "tar"];
+						var all_urls_formats = [];
+						for (var _i = 0, formats_1 = formats_2; _i < formats_1.length; _i++) {
+							var format = formats_1[_i];
+							if (format in resp.ua) {
+								for (var res in resp.ua[format]) {
+									all_urls_formats.push({
+										url: resp.ua[format][res].url,
+										format: format,
+										res: res
+									});
+								}
+							}
+						}
+						var score_format_1 = function(fmt) { return (parse_int(fmt.res) + array_indexof(formats_2, format) / 10); };
+						all_urls_formats.sort(function(a, b) {
+							return score_format_1(b) - score_format_1(a);
 						});
-					});
+						for (var _a = 0, all_urls_formats_1 = all_urls_formats; _a < all_urls_formats_1.length; _a++) {
+							var url_format = all_urls_formats_1[_a];
+							urls.push({
+								url: url_format.url,
+								video: true
+							});
+						}
+					}
 					if (resp.i) {
 						urls.push(resp.i);
 					}
@@ -102810,7 +102870,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			newsrc = website_query({
 				website_regex: [
 					/^[a-z]+:\/\/[^/]+\/+([a-z0-9]+)-[^/?#.]*\.html(?:[?#].*)?$/,
-					/^[a-z]+:\/\/[^/]+\/+embed\/+v([0-9a-z]+)\/*(?:[?#].*)?$/
+					/^[a-z]+:\/\/[^/]+\/+(?:embed|shorts)\/+v([0-9a-z]+)\/*(?:[?#].*)?$/
 				],
 				run: function(cb, match) {
 					var vurl = rumble_normalize_url(src);
@@ -102820,7 +102880,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						}
 						get_rumble_embedjs_path(vurl, function(embedjs) {
 							if (!embedjs) {
-								return cb(null);
+								embedjs = "https://rumble.com/embedJS/u3/";
 							}
 							query_rumble(vid, embedjs, cb);
 						});
@@ -114676,7 +114736,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://www.esprit-photo.com/content/09.vie_paroisses/11.paroisse-saint-jean-baptiste-libourne-bordeaux/06.veillees/01.Veillee-Sainte-Marie-Madeleine-a-St-Jean-Baptiste-de-Libourne/__Veillee-Sainte-Marie-Madeleine-a-St-Jean-Baptiste-de-Libourne.jpg -- 2114x3038
 			return src.replace(/\/render\/+w[0-9]+\/+/, "/content/");
 		}
-		if (amazon_container === "kb-tenant-data") {
+		if (amazon_container === "kb-tenant-data" ||
+			// thanks to anonymous for reporting:
+			// https://assets.kudoboard.com/t/31e8fafc-c06d-4622-af6d-cf67c2132c48/uploads/images/IOFknJGk2JTRAMDH/thumb/bshqefjz.jpg
+			//   https://assets.kudoboard.com/t/31e8fafc-c06d-4622-af6d-cf67c2132c48/uploads/images/IOFknJGk2JTRAMDH/large/bshqefjz.jpg -- 3045x2048
+			domain === "assets.kudoboard.com") {
 			// thanks to anonymous for reporting:
 			// https://s3.amazonaws.com/kb-tenant-data/31e8fafc-c06d-4622-af6d-cf67c2132c48/uploads/images/1664vz9kfM45XzSi/thumb/rnnsn37g.jpg -- 350x350
 			//   https://s3.amazonaws.com/kb-tenant-data/31e8fafc-c06d-4622-af6d-cf67c2132c48/uploads/images/1664vz9kfM45XzSi/medium/rnnsn37g.jpg -- 900x900
@@ -119553,6 +119617,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to fyhtma on github: https://github.com/qsniyg/maxurl/issues/1497
 			// https://acdn-us.mitiendanube.com/stores/001/407/992/products/img_1964-1aa0bb37bcdca519c217438920813664-1024-1024.jpeg
 			//   https://acdn-us.mitiendanube.com/stores/001/407/992/products/img_1964-1aa0bb37bcdca519c217438920813664.jpeg -- 3205x3205
+			// thanks to anonymous for reporting:
+			// https://acdn-us.mitiendanube.com/stores/001/135/653/products/17-5730a21d1858141f6c17890734544536-480-0.webp
+			//   https://acdn-us.mitiendanube.com/stores/001/135/653/products/17-5730a21d1858141f6c17890734544536.jpg
+			// other:
+			// https://acdn-us.mitiendanube.com/stores/001/135/653/themes/morelia/2-slide-1764611898138-896224003-8d70d32df7a6f1060369908d0f30a2b11764611906-1024-1024.webp?6538220899429559959
+			newsrc = src.replace(/(\/stores\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+.*)\.webp(?:[?#].*)?$/, "$1.jpg");
+			if (newsrc !== src)
+				return add_full_extensions(newsrc, ["jpeg", "jpg"]);
 			return src.replace(/(\/stores\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+products\/+[^/]+)-[0-9]+-[0-9]+\./, "$1.");
 		}
 		if (domain_nowww === "thediplomat.com") {
@@ -120896,14 +120968,29 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				query_for_id: "https://" + domain + "/${id}/",
 				process: function(done, resp, cache_key) {
 					var match = resp.responseText.match(/<iframe\s+(?:[^>]*\s)?src="(https?:[^"]+)"/);
-					if (!match) {
-						console_error(cache_key, "Unable to find iframe match for", resp);
-						return done(null, false);
+					if (match) {
+						return done({
+							url: match[1],
+							is_pagelink: true
+						}, 6 * 60 * 60);
 					}
-					return done({
-						url: match[1],
-						is_pagelink: true
-					}, 6 * 60 * 60);
+					var jwplayer_match = resp.responseText.match(/jwplayer\("jw-player-container"\)\.setup\(({[\s\S]*?})\);\s*<\//);
+					if (jwplayer_match) {
+						var obj_17 = common_functions["get_jwplayer_obj"](resp, { setupobj: jwplayer_match[1] });
+						if (!obj_17)
+							return done(null, false);
+						return done(common_functions["fill_ldjson"](obj_17, resp), 60 * 60);
+					}
+					var videotag_match = resp.responseText.match(/<div class="responsive-player">(<video[\s\S]*?<\/video>)<\/div>/);
+					if (videotag_match) {
+						var obj = common_functions["get_videotag_obj"](resp, {
+							ogvideo: false,
+							videotag_txt: videotag_match[1]
+						});
+						return done(obj, obj ? 60 * 60 : false);
+					}
+					console_error(cache_key, "Unable to find iframe or video match for", resp);
+					return done(null, false);
 				}
 			});
 			if (newsrc)
@@ -120912,15 +120999,49 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nowww === "upload18.com" ||
 			domain_nowww === "upload18.org") {
 			// thanks to anonymous for reporting:
+			if (false) {
+				newsrc = website_query({
+					website_regex: /^[a-z]+:\/\/[^/]+\/+play\/+index\/+([0-9a-f]+)(?:[?#].*)?$/,
+					query_for_id: "https://" + domain + "/play/index/${id}",
+					process: function(done, resp, cache_key) {
+						var match = resp.responseText.match(/file:\s*"(\/play\/[^"]+)"/);
+						if (!match) {
+							console_error(cache_key, "Unable to find jwplayer match for", resp);
+							return done(null, false);
+						}
+						var baseobj = {
+							extra: {}
+						};
+						var titlematch = resp.responseText.match(/<title>([^<]+)</);
+						if (titlematch) {
+							baseobj.extra.caption = decode_entities(titlematch[1]);
+						}
+						return done(fillobj_urls([{
+								url: urljoin(resp.finalUrl, match[1], true),
+								video: "hls",
+								headers: {
+									Accept: "*/*",
+									Referer: "https://" + domain + "/",
+									"Sec-Fetch-Dest": "empty",
+									"Sec-Fetch-Mode": "cors",
+									"Sec-Fetch-Site": "same-origin"
+								}
+							}], baseobj), 60 * 60);
+					}
+				});
+				if (newsrc)
+					return newsrc;
+			}
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+play\/+index\/+([0-9a-f]+)(?:[?#].*)?$/,
 				query_for_id: "https://" + domain + "/play/index/${id}",
 				process: function(done, resp, cache_key) {
-					var match = resp.responseText.match(/file:\s*"(\/play\/[^"]+)"/);
+					var match = resp.responseText.match(/window.PLAYER_CONFIG\s*=\s*({.*?});/);
 					if (!match) {
-						console_error(cache_key, "Unable to find jwplayer match for", resp);
+						console_error(cache_key, "Unable to find player_config match for", resp);
 						return done(null, false);
 					}
+					var player_config = JSON_parse(match[1]);
 					var baseobj = {
 						extra: {}
 					};
@@ -120929,7 +121050,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						baseobj.extra.caption = decode_entities(titlematch[1]);
 					}
 					return done(fillobj_urls([{
-							url: urljoin(resp.finalUrl, match[1], true),
+							url: player_config.m3u8,
 							video: "hls",
 							headers: {
 								Accept: "*/*",
@@ -120939,6 +121060,36 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								"Sec-Fetch-Site": "same-origin"
 							}
 						}], baseobj), 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "myupload.us") {
+			// thanks to anonymous for reporting:
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+embed\/+([0-9a-zA-Z]+)(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/embed/${id}",
+				process: function(done, resp, cache_key, match) {
+					var id = match[1];
+					var token_match = resp.responseText.match(/\\"token\\":\\"([^\\"]+)\\"/);
+					if (!token_match) {
+						console_error(cache_key, "Unable to find token for", resp);
+						return done(null, false);
+					}
+					var baseobj = {
+						extra: {
+							page: resp.finalUrl
+						}
+					};
+					var urls = [
+						{
+							url: "https://" + domain + "/v/" + id + "/stream/hls/master.m3u8?t=" + token_match[1],
+							video: "hls"
+						},
+						"https://" + domain + "/v/" + id + "/stream/thumb.jpg"
+					];
+					done(fillobj_urls(urls, baseobj), 60 * 60);
 				}
 			});
 			if (newsrc)
@@ -121001,8 +121152,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					});
 					if (!obj)
 						return done(null, false);
-					for (var _i = 0, obj_17 = obj; _i < obj_17.length; _i++) {
-						var url_16 = obj_17[_i];
+					for (var _i = 0, obj_18 = obj; _i < obj_18.length; _i++) {
+						var url_16 = obj_18[_i];
 						if (url_16.video) {
 							url_16.headers = {
 								Accept: "*/*",
@@ -121787,6 +121938,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (domain_nowww === "vidara.so" ||
+			domain_nowww === "gbsagbo.com" ||
 			domain_nowww === "vidara.to") {
 			var query_vidara_1 = function(id, cb) {
 				var page = "https://" + domain + "/e/" + id;
@@ -121826,7 +121978,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						urls.push({
 							url: resp.streaming_url,
 							subtitles: captions,
-							video: "hls"
+							media_info: {
+								type: "video",
+								delivery: "hls",
+								problems: ["incorrect_ts_ext"] // woff2
+							},
+							is_private: true // has ip
 						});
 					}
 					if (resp.thumbnail) {
@@ -123506,6 +123663,91 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://static.feetished.com/jessica-alba/30070_t.webp
 			//   https://static.feetished.com/jessica-alba/30070.webp
 			return src.replace(/(:\/\/[^/]+\/+[^/]+\/+[0-9]+)_t\./, "$1.");
+		}
+		if (domain === "dl.vimm.net") {
+			// thanks to anonymous for reporting:
+			// https://dl.vimm.net/image.php?type=box&id=8757
+			//   https://dl.vimm.net/image.php?type=box_large&id=8757
+			return src.replace(/(\/image\.php\?(?:.*&)?type=)box([&#].*)?$/, "$1box_large$2");
+		}
+		if (domain_nosub === "pornhex.com") {
+			// thanks to anonymous for reporting:
+			// https://kr.pornhex.com/video/deres-qu-leo-vlento-cum-side-me-sted-fillupmymom
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+([^/?#]+)(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/video/${id}",
+				allow_hostresp_for_match: true,
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/videoSources\s*=\s*(\[{.*?}\]);/);
+					if (!match) {
+						console_error(cache_key, "Unable to find video sources match for", resp);
+						return done(null, false);
+					}
+					var urls = [];
+					var sources = JSON_parse(match[1]);
+					for (var _i = 0, sources_5 = sources; _i < sources_5.length; _i++) {
+						var source = sources_5[_i];
+						urls.push({
+							url: source.src + "?h=" + source.k,
+							video: true,
+							can_head: false, // 403
+							headers: {
+								Referer: "https://" + domain + "/",
+								"Sec-Fetch-Dest": "video",
+								"Sec-Fetch-Mode": "no-cors",
+								"Sec-Fetch-Site": "same-site"
+							}
+						});
+					}
+					var poster_match = resp.responseText.match(/<video[^>]*\sposter="([^"]+)"/);
+					if (poster_match) {
+						urls.push(decode_entities(poster_match[1]));
+					}
+					return done(common_functions["fill_ldjson"](urls, resp), 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "firstview.com") {
+			// thanks to anonymous for reporting:
+			// https://firstview.com/files/54692/thumb_8715072-6554ace8a9535.jpg
+			//   https://firstview.com/files/54692/8715072-6554ace8a9535.jpg
+			return src.replace(/(\/files\/+[0-9]+\/+)thumb_/, "$1");
+		}
+		if (domain_nowww === "studio.co.uk") {
+			// thanks to anonymous for reporting:
+			// https://www.studio.co.uk/images/products/42297990_h.jpg
+			//   https://www.studio.co.uk/images/products/42297990_l.jpg
+			//   https://www.studio.co.uk/images/imgzoom/42/42297990_xxl.jpg -- 1425x1425, upscaled
+			return src
+				.replace(/(\/images\/+)products\/+([0-9]{2})([0-9]+_)l(_[a-z0-9]+)?\./, "$1imgzoom/$2/$2$3xxl$4.")
+				.replace(/(\/images\/+products\/+[0-9]+_)[smh](_[a-z0-9]+)?\./, "$1l$2.");
+		}
+		if (domain_nowww === "pionier.pe") {
+			// https://www.pionier.pe/assets/img/lazy-loading-img.gif
+			if (/\/assets\/+img\/+lazy-loading-img\./.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+			// thanks to anonymous for reporting:
+			// https://www.pionier.pe/assets/upload/thumb/producto/90/5120504713_1.jpg
+			//   https://www.pionier.pe/assets/upload/producto/5120504713_1.jpg -- 1500x1500
+			return src.replace(/(\/assets\/+upload\/+)thumb\/+(producto\/+)[0-9]+\/+/, "$1$2");
+		}
+		if (domain_nowww === "streetart.media") {
+			// thanks to anonymous for reporting:
+			// https://streetart.media/0/0b0aead1-cc7a-43b3-bef2-28bed1134e06/1024.jpg
+			//   https://streetart.media/0/0b0aead1-cc7a-43b3-bef2-28bed1134e06/orig.jpg -- 2252x4000
+			return src.replace(/(\/[0-9a-f]\/[-0-9a-f]{10,}\/+)[0-9]+\./, "$1orig.");
+		}
+		if (domain === "image.volkskrant.nl") {
+			// thanks to anonymous for reporting:
+			// https://image.volkskrant.nl/268906610/width/1280/de-engelse-schrijver-george-orwell
+			//   https://image.volkskrant.nl/268906610/width/0/de-engelse-schrijver-george-orwell -- 2306x2874
+			return src.replace(/(:\/\/[^/]+\/+[0-9]+\/+width\/+)[0-9]+\/+/, "$10/");
 		}
 		// -- general rules --
 		if (src.match(/\/ImageGen\.ashx\?/)) {
@@ -126746,8 +126988,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return obj;
 		obj = force_array(obj);
 		var newobj = [];
-		for (var _i = 0, obj_18 = obj; _i < obj_18.length; _i++) {
-			var url = obj_18[_i];
+		for (var _i = 0, obj_19 = obj; _i < obj_19.length; _i++) {
+			var url = obj_19[_i];
 			if (typeof (url) === "string") {
 				newobj.push(fullurl(currenturl, url));
 			} else {
@@ -127596,7 +127838,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			});
 		};
 		(function() { return __awaiter(_this_1, void 0, void 0, function() {
-			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_19, sobj, _a, queryobj_1, obj_20, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
+			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_20, sobj, _a, queryobj_1, obj_21, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
 			return __generator(this, function(_c) {
 				switch (_c.label) {
 					case 0:
@@ -127637,8 +127879,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							}
 						}
 						queryobj = [];
-						for (_i = 0, obj_19 = obj; _i < obj_19.length; _i++) {
-							sobj = obj_19[_i];
+						for (_i = 0, obj_20 = obj; _i < obj_20.length; _i++) {
+							sobj = obj_20[_i];
 							if (is_bad_url(sobj.url)) {
 								continue;
 							}
@@ -127646,9 +127888,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						}
 						// required to avoid querying an ok url twice
 						for (_a = 0, queryobj_1 = queryobj; _a < queryobj_1.length; _a++) {
-							obj_20 = queryobj_1[_a];
-							if (tried_urls.has(obj_20.url) && !is_bad_url(obj_20.url))
-								return [2 /*return*/, options.cb([obj_20], last_data)];
+							obj_21 = queryobj_1[_a];
+							if (tried_urls.has(obj_21.url) && !is_bad_url(obj_21.url))
+								return [2 /*return*/, options.cb([obj_21], last_data)];
 						}
 						if (!queryobj.length) {
 							if (_nir_debug_) {
@@ -133022,6 +133264,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		var fixup_respdata_for_streaming_infoobj = function(data, mime, info_obj) {
 			if (has_1x1png_problem(info_obj) && mime === "image/png") {
 				var arr = new Uint8Array(data);
+				if (arr[0] === 71 && // G
+					arr[1] === 64 && // @
+					arr[2] === 0) {
+					// already mp2t
+					return arr.buffer;
+				}
 				while (true) {
 					var i_idx = arr.indexOf(73); // I
 					if (i_idx < 0)
@@ -133059,6 +133307,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				resp.responseHeaders = resp.responseHeaders.replace(/(content-type: )image\/png/i, "$1video/mp2t");
 				fixup = true;
 			}
+			if (mime === "video/MP2T") {
+				resp.responseHeaders = resp.responseHeaders.replace(/(content-type: )video\/MP2T/i, "$1video/mp2t");
+			}
+			console.log(resp);
 			// check if arraybuffer
 			if (fixup && resp.response && resp.response.byteLength) {
 				resp.response = fixup_respdata_for_streaming_infoobj(resp.response, mime, info_obj);
@@ -133298,6 +133550,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								return orig_createseg_1.bind(this)(a, b, c, d, e, f, g, h, k, l);
 							};
 							shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("png", "video/mp2t");
+							shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("woff2", "video/mp2t"); // morencius / businessanalyticspro.cfd
 							if (has_incorrect_ts_ext_problem(info_obj)) {
 								shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("css", "video/mp2t");
 								shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("js", "video/mp2t");
@@ -139223,8 +139476,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							sources = [];
 							source_el_set = new_set();
 							_find_source = function(source_el) {
-								for (var _i = 0, sources_5 = sources; _i < sources_5.length; _i++) {
-									var src = sources_5[_i];
+								for (var _i = 0, sources_6 = sources; _i < sources_6.length; _i++) {
+									var src = sources_6[_i];
 									if (src.el === source_el)
 										return src;
 								}
@@ -139273,8 +139526,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								return remove_source_el(source.el);
 							};
 							reposition_source_outlines = function() {
-								for (var _i = 0, sources_6 = sources; _i < sources_6.length; _i++) {
-									var source = sources_6[_i];
+								for (var _i = 0, sources_7 = sources; _i < sources_7.length; _i++) {
+									var source = sources_7[_i];
 									var rect = source._real_el.getBoundingClientRect();
 									var outline_el = source._outline_el;
 									if (!outline_el)
@@ -139303,8 +139556,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								if (!sources.length)
 									return;
 								override_album = [];
-								for (var _i = 0, sources_7 = sources; _i < sources_7.length; _i++) {
-									var source = sources_7[_i];
+								for (var _i = 0, sources_8 = sources; _i < sources_8.length; _i++) {
+									var source = sources_8[_i];
 									override_album.push(source.el);
 								}
 								trigger_popup_with_source(sources[0], options);
