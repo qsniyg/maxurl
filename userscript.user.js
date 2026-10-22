@@ -118097,7 +118097,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				});
 			};
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+embed\/+([-_0-9a-zA-Z]+)(?:[?#].*)?$/,
+				website_regex: /^[a-z]+:\/\/[^/]+\/+(?:embed|v)\/+([-_0-9a-zA-Z]+)(?:[?#].*)?$/,
 				/*query_for_id: "https://" + domain + "/embed/${id}",
 				process: function(done, resp, cache_key) {
 					var obj = common_functions["get_videotag_obj"](resp, {
@@ -118121,6 +118121,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			});
 			if (newsrc)
 				return newsrc;
+		}
+		if (domain === "static.scdn.st") {
+			// thanks to anonymous for reporting:
+			match = src.match(/:\/\/[^/]+\/+[-0-9a-f]{10,}\/+thumbs\/+([-_0-9a-zA-Z]+)\./);
+			if (match) {
+				return {
+					url: "https://turbo.cr/v/" + match[1],
+					is_pagelink: true
+				};
+			}
 		}
 		if (domain === "embed.widencdn.net" || domain_nosub === "widen.net") {
 			// thanks to drunub on github: https://github.com/qsniyg/maxurl/pull/1450
@@ -123748,6 +123758,53 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://image.volkskrant.nl/268906610/width/1280/de-engelse-schrijver-george-orwell
 			//   https://image.volkskrant.nl/268906610/width/0/de-engelse-schrijver-george-orwell -- 2306x2874
 			return src.replace(/(:\/\/[^/]+\/+[0-9]+\/+width\/+)[0-9]+\/+/, "$10/");
+		}
+		if (domain_nowww === "filester.gg") {
+			// thanks to anonymous for reporting:
+			var query_filester_file_1 = function(id, cb) {
+				api_query("filester:" + id, {
+					url: "https://filester.gg/v2/api/public/view",
+					method: "POST",
+					data: JSON_stringify({ file_slug: id }),
+					headers: {
+						Accept: "*/*",
+						"Content-Type": "application/json",
+						Origin: "https://" + domain,
+						Referer: "https://" + domain + "/d/" + id,
+						"Sec-Fetch-Dest": "empty",
+						"Sec-Fetch-Mode": "cors",
+						"Sec-Fetch-Site": "same-origin"
+					},
+					imu_mode: "xhr",
+					json: true
+				}, cb, function(done, resp, cache_key) {
+					if (!resp.token || !resp.server || !resp.file || !resp.success) {
+						console_error(cache_key, "Invalid response:", resp);
+						return done(null, false);
+					}
+					var url = resp.server + "/v2/" + resp.file + "?token=" + resp.token;
+					var obj = {
+						url: url,
+						headers: {
+							Referer: "https://" + resp.server + "/"
+						},
+						extra: {
+							page: "https://" + domain + "/d/" + id
+						}
+					};
+					if (/\.mp4$/i.test(resp.file))
+						obj.video = true;
+					return done(obj, 29 * 60); // 1800
+				});
+			};
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+d\/+([0-9A-Za-z]+)(?:[?#].*)?$/,
+				run: function(cb, match) {
+					query_filester_file_1(match[1], cb);
+				}
+			});
+			if (newsrc)
+				return newsrc;
 		}
 		// -- general rules --
 		if (src.match(/\/ImageGen\.ashx\?/)) {
