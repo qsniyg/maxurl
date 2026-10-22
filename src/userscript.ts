@@ -55822,12 +55822,17 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/pornpics\/.*)-pin(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
-		if (domain === "hwcdn.funbags.com" ||
-			// https://hwcdn.voyeurweb.com/albums/3330225/large/5634400-boudoir-set.jpg
-			//   https://hwcdn.voyeurweb.com/albums/3330225/orig/5634400-boudoir-set.jpg
-			domain === "hwcdn.voyeurweb.com") {
+		if ((domain_nosub === "funbags.com" ||
+			 domain_nosub === "redclouds.com" ||
+			 domain_nosub === "homeclips.com" ||
+			 // https://hwcdn.voyeurweb.com/albums/3330225/large/5634400-boudoir-set.jpg
+			 //   https://hwcdn.voyeurweb.com/albums/3330225/orig/5634400-boudoir-set.jpg
+			 //domain === "hwcdn.voyeurweb.com" ||
+			 domain_nosub === "voyeurweb.com") && /^(?:hw)?cdn[0-9]*\./.test(domain)) {
 			// https://hwcdn.funbags.com/albums/1082885/thumb/2646921-hot-mexican-girlfriend-at-the-computer.jpg
 			//   https://hwcdn.funbags.com/albums/1082885/orig/2646921-hot-mexican-girlfriend-at-the-computer.jpg
+			// https://cdn2.funbags.com/albums/1082885/thumb/2646921-hot-mexican-girlfriend-at-the-computer.jpg
+			//   https://cdn2.funbags.com/albums/1082885/orig/2646921-hot-mexican-girlfriend-at-the-computer.jpg
 			regex = /(\/albums\/+[0-9]+\/+)(?:thumb|large)\/+/;
 
 			obj = [];
@@ -55842,6 +55847,57 @@ var $$IMU_EXPORT$$;
 
 			if (obj.length > 0)
 				return obj;
+		}
+
+		if (domain_nowww === "funbags.com" ||
+			domain_nowww === "voyeurweb.com" ||
+			domain_nowww === "homeclips.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+contributions\/+view\/+([0-9]+)-[^/]+(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/contributions/view/${id}-a",
+				allow_hostresp_for_match: true,
+				process: function(done, resp, cache_key) {
+					let match = resp.responseText.match(/"(https?:\/\/[^/]+\/+albums\/+[0-9]+\/+cover\/+[0-9]+-[^/"]+)"/);
+					if (!match) {
+						console_error(cache_key, "Unable to find cover match for", resp);
+						return done(null, false);
+					}
+
+					let coverurl = match[1];
+
+					let covermatch = coverurl.match(/^(https?:\/\/[^/]+\/+)albums\/+([0-9]+)\/+cover\/+([0-9]+)-[^/?#]+(\?.*)?$/);
+					if (!covermatch) {
+						console_error(cache_key, "Unable to find cover url match for", {resp, coverurl});
+						return done(null, false);
+					}
+
+					let datematch = resp.responseText.match(/class="(?:posted-date|more-contrib-date)">([^<]+?)<\//);
+					if (!datematch) {
+						console_error(cache_key, "Unable to find date match for", resp);
+						return done(null, false);
+					}
+
+					let date = null;
+
+					try {
+						date = new Date(datematch[1]);
+					} catch (e) {
+						console_error(cache_key, e);
+						return done(null, false);
+					}
+
+					let videourl = covermatch[1] + "videos/" + date.getUTCFullYear() + "/" + zpadnum(date.getUTCMonth()+1, 2) + "/" + covermatch[2] + "-" + covermatch[3] + ".mp4" + covermatch[4];
+
+					return done(common_functions["fill_ldjson"]([
+						{
+							url: videourl,
+							video: true
+						},
+						coverurl
+					], resp), 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
 		}
 
 		if (domain === "aws-foto.amateri.com") {
@@ -65288,19 +65344,27 @@ var $$IMU_EXPORT$$;
 
 			var request_reddit_api = function(id, cb) {
 				api_query("reddit_api:" + id, {
-					url: "https://www.reddit.com/api/info.json?id=" + id,
+					//url: "https://www.reddit.com/api/info.json?id=" + id,
+					url: "https://old.reddit.com/by_id/" + id + ".json?limit=100&raw_json=1&app=res",
 					imu_mode: "xhr",
 					// thanks to Noodlers and Zui on discord for reporting, the following user agent returns Blocked:
 					// Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.0.0 Safari/537.36
 					headers: {
+						"Accept": "*/*",
 						"Origin": "https://old.reddit.com",
-						"Referer": "https://old.reddit.com/"
+						"Referer": "https://old.reddit.com/",
+						"Sec-Fetch-Dest": "empty",
+						"Sec-Fetch-Mode": "cors",
+						"Sec-Fetch-Site": "same-origin"
 						//"User-Agent": "" // also returns Blocked
 						// TODO: X-Signature-V2: key=RedditFrontend3(events_collector_key), mac=(hmac sha256 as hex, using events_collector_secret)
 						//   is it needed? or is it only used for telemetry?
 					},
 					json: true
 				}, cb, function(done, resp, cache_key) {
+					if (!resp)
+						return done(null, false);
+
 					console_log(resp);
 					var item = resp.data.children[0].data;
 
