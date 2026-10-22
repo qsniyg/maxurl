@@ -2181,6 +2181,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					finalcb(resp, true);
 				};
 			}
+			// scriptcat returns a finalUrl of "" for data: urls
+			(function(real_onload) {
+				data.onload = function(resp) {
+					if (!resp.finalUrl && data.url && /^data:/.test(data.url)) {
+						resp.finalUrl = data.url;
+					}
+					return real_onload(resp);
+				};
+			})(data.onload);
 			if (data.responseType === "blob" && !settings.use_blob_over_arraybuffer) {
 				(function(real_onload) {
 					data.onload = function(resp) {
@@ -18156,11 +18165,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					urls.push({
 						url: newsrc,
 						extra: {
-							page: data.link_url,
-							caption: data.video_title
+							page: data.link_url || data.videoUrl,
+							caption: data.video_title || data.title
 						},
 						headers: {
-							Referer: data.link_url
+							Referer: data.link_url || data.videoUrl
 						},
 						video: video,
 						is_private: true // linked to IP
@@ -21435,6 +21444,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain === "assets.goaaa.com" && /\/image\/+upload\//.test(src)) ||
 			domain === "img.img-cdn.yle.fi" ||
 			(domain_nosub === "hscicdn.com" && /^img[0-9]*\./.test(domain)) ||
+			domain === "media-catalog.giglio.com" ||
 			domain === "resource.logitechg.com") {
 			newsrc = src
 				.replace(/%2C/g, ",")
@@ -26347,8 +26357,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nosub === "imgbox.com" &&
 			(domain.match(/^thumbs[0-9]*\./) ||
 				domain.match(/images[0-9]*\./))) {
+			var bad_if = [{
+					headers: {
+						"Last-Modified": "Thu, 06 Aug 2026 13:12:33 GMT",
+						"Content-Length": "8091",
+						"Content-Type": "image/jpeg"
+					}
+				}];
 			var obj_1 = {
-				url: src
+				url: src,
+				bad_if: bad_if
+			};
+			var baseobj_3 = {
+				url: src,
+				bad_if: bad_if
 			};
 			var match_2 = src.match(/\/(?:[0-9a-f]{2}\/+){2}([^/_.]+)_([a-z])\./);
 			if (match_2) {
@@ -26363,7 +26385,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/_[a-z](\.[^/.]*)/, "_o$1");
 			if (newsrc !== src) {
 				obj_1.url = newsrc;
-				return obj_1;
+				return [
+					obj_1,
+					baseobj_3
+				];
 			}
 			return obj_1;
 		}
@@ -28270,10 +28295,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain_nosub === "nyafuu.org" && /^archive-media/.test(domain)) ||
 			(domain === "arch.b4k.dev" && string_indexof(src, "/media/") >= 0) ||
 			domain_nowww === "archiveofsins.com") {
-			var baseobj_3 = {};
+			var baseobj_4 = {};
 			if (domain_nowww === "thebarchive.com" ||
 				domain_nowww === "archiveofsins.com") {
-				baseobj_3 = {
+				baseobj_4 = {
 					headers: {
 						Referer: "https://" + domain + "/"
 					}
@@ -28283,9 +28308,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc !== src && domain_nosub === "b4k.dev")
 				newsrc = newsrc.replace(/\/media\/+([^/]+\/+image\/+)[0-9]{4}\/+[0-9]{2}\/+/, "/$1");
 			if (newsrc !== src)
-				return fillobj_urls(add_full_extensions(newsrc), baseobj_3);
-			baseobj_3.url = src;
-			return baseobj_3;
+				return fillobj_urls(add_full_extensions(newsrc), baseobj_4);
+			baseobj_4.url = src;
+			return baseobj_4;
 		}
 		if (domain === "arch.b4k.co") {
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+files\/+([^/]+)\/+thumb\/+[0-9]+\/+[0-9]+\/+([0-9]+s\.[^/.]*)$/, "https://i.4cdn.org/$1/$2");
@@ -30974,11 +30999,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}, cb, function(done, resp, cache_key) {
 					var match = resp.responseText.match(/var\s+flashvars\s*=\s*({.*?})\s*; *\n/);
 					if (!match) {
+						match = resp.responseText.match(/mainRoll:\s*({[\s\S]*}),\s*adRolls:/);
+					}
+					if (!match) {
 						console_error(cache_key, "Unable to find match", resp);
 						return done(null, false);
 					}
 					try {
-						var json = JSON_parse(match[1]);
+						var json_txt = fixup_js_obj_proper(match[1]);
+						var json = JSON_parse(json_txt);
 						done(json, 6 * 60 * 60);
 					} catch (e) {
 						console_error(cache_key, e);
@@ -30987,15 +31016,30 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				});
 			};
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+[^/]+\/+[^/]+\/+([0-9]+)\/*(?:[?#].*)?$/,
+				website_regex: [
+					/^[a-z]+:\/\/[^/]+\/+[^/]+\/+[^/]+\/+([0-9]+)\/*(?:[?#].*)?$/,
+					/^[a-z]+:\/\/[^/]+\/porn-video\/+([0-9]+)\/*(?:[?#].*)?$/,
+				],
 				run: function(cb, match) {
 					var id = match[1];
 					fetch_tube8_flashvars(id, function(data) {
+						if (!data)
+							return cb(null);
 						var origsrc = src;
 						if (options._internal_info && options._internal_info.mediadefinition_src) {
 							origsrc = options._internal_info.mediadefinition_src;
 						}
-						common_functions["parse_mediadefinition"](api_cache, options, origsrc, data, cache_key, cb);
+						common_functions["parse_mediadefinition"](api_cache, options, origsrc, data, cache_key, function(obj) {
+							cb(fillobj_urls(obj, {
+								headers: {
+									Origin: "https://" + domain,
+									Referer: "https://" + domain + "/",
+									"Sec-Fetch-Dest": "empty",
+									"Sec-Fetch-Mode": "cors",
+									"Sec-Fetch-Site": "cross-site"
+								}
+							}, "all"));
+						});
 					});
 				}
 			});
@@ -31310,7 +31354,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "hamster.is" ||
 			domain_nowww === "trafficimage.club" ||
 			domain_nowww === "image-bugs.com") {
-			var baseobj_4 = {
+			var baseobj_5 = {
 				headers: {
 					"Accept": "*/*",
 					"Referer": "https://" + domain + "/",
@@ -31319,10 +31363,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 			newsrc = src.replace(/\.(?:th|md)(\.[^/.]*)$/, "$1");
 			if (newsrc !== src)
-				return fillobj_urls(add_full_extensions(newsrc, ["mp4"], false), baseobj_4);
+				return fillobj_urls(add_full_extensions(newsrc, ["mp4"], false), baseobj_5);
 			newsrc = src.replace(/\.fr(\.[^/.]*)$/, "$1");
 			if (newsrc !== src)
-				return fillobj_urls(add_full_extensions(newsrc, ["mp4"], true), baseobj_4);
+				return fillobj_urls(add_full_extensions(newsrc, ["mp4"], true), baseobj_5);
 		}
 		if (domain_nowww === "imgpile.com" && /\/images\//.test(src)) {
 			return {
@@ -31556,7 +31600,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				try {
 					var item = data.itemInfo.itemStruct;
 					var caption = item.desc;
-					var baseobj_5 = {
+					var baseobj_6 = {
 						extra: {
 							caption: caption
 						},
@@ -31571,9 +31615,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						can_head: false,
 					};
 					if (data.metaParams && data.metaParams.canonicalHref) {
-						baseobj_5.extra.page = data.metaParams.canonicalHref;
+						baseobj_6.extra.page = data.metaParams.canonicalHref;
 					} else {
-						baseobj_5.extra.page = "https://www.tiktok.com/@" + item.author.uniqueId + "/video/" + item.id;
+						baseobj_6.extra.page = "https://www.tiktok.com/@" + item.author.uniqueId + "/video/" + item.id;
 					}
 					var urls_6 = [];
 					for (var _i = 0, _a = item.video.bitrateInfo; _i < _a.length; _i++) {
@@ -31596,7 +31640,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							}
 						});
 					}
-					var finalobj = fillobj_urls(urls_6, baseobj_5);
+					var finalobj = fillobj_urls(urls_6, baseobj_6);
 					for (var _b = 0, finalobj_1 = finalobj; _b < finalobj_1.length; _b++) {
 						var obj_3 = finalobj_1[_b];
 						common_functions["set_tiktok_vid_filename"](obj_3);
@@ -31817,25 +31861,25 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if ((domain_nosub === "muscdn.com" || domain_nosub === "tiktokcdn.com") && /^v[0-9]+m?\./.test(domain)) {
-			var baseobj_6 = {
+			var baseobj_7 = {
 				url: src,
 				video: true,
 				can_head: false // 503 sometimes
 			};
-			common_functions["set_tiktok_vid_filename"](baseobj_6);
+			common_functions["set_tiktok_vid_filename"](baseobj_7);
 			if (options.do_request && options.cb && options.rule_specific && options.rule_specific.tiktok_no_watermarks) {
 				common_functions["get_best_tiktok_url"](api_cache, options.do_request, src, function(newurl) {
 					if (newurl) {
-						baseobj_6.url = newurl;
+						baseobj_7.url = newurl;
 					}
-					common_functions["set_tiktok_vid_filename"](baseobj_6);
-					options.cb(baseobj_6);
+					common_functions["set_tiktok_vid_filename"](baseobj_7);
+					options.cb(baseobj_7);
 				});
 				return {
 					waiting: true
 				};
 			} else {
-				return baseobj_6;
+				return baseobj_7;
 			}
 		}
 		if ((domain_nosub === "pstatp.com" ||
@@ -32161,6 +32205,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "image.allas.se" ||
 			domain === "image.jamtlandstidning.se" ||
 			domain === "image.euroman.dk" ||
+			domain === "image.theregister.com" ||
 			domain_nowww === "dbstatic.no") {
 			newsrc = src
 				.replace(/(:\/\/[^/]+\/+(?:images\/+)?[0-9]+\.[^/.?#]*)(?:[?#].*)?$/, "$1?width=-1&height=-1")
@@ -32218,7 +32263,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "cdn.strangemusicinc.net" ||
 			domain_nowww === "sublimet.com" ||
 			/^[a-z]+:\/\/[^/]+\/+[0-9]+-(?:home|large|thickbox|medium)_default\/+[^/.]+\.(?:jpg|webp)(?:[?#].*)?$/.test(src)) {
-			var baseobj_7 = {
+			var baseobj_8 = {
 				url: src
 			};
 			var prefix = "(://[^/]+/+";
@@ -32229,17 +32274,17 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				prefix += "en/+";
 			} else if (domain_nowww === "allbrandstoys.com") {
 				prefix += "ABT2/+";
-				baseobj_7.can_head = false; // hangs otherwise
+				baseobj_8.can_head = false; // hangs otherwise
 			}
 			newsrc = src.replace(/(\/img\/+p\/+(?:[0-9]\/+){1,}[0-9]+)[-_][^/.]*(\.[^/.]*)$/, "$1$2");
 			if (newsrc !== src) {
-				baseobj_7.url = newsrc;
-				return baseobj_7;
+				baseobj_8.url = newsrc;
+				return baseobj_8;
 			}
 			newsrc = src.replace(new RegExp(prefix + "[0-9]+(?:-[0-9]+)?)(?:[-_][^/]*?)?(\/[^/]*)$"), "$1$2");
 			if (newsrc !== src) {
-				baseobj_7.url = newsrc;
-				return baseobj_7;
+				baseobj_8.url = newsrc;
+				return baseobj_8;
 			}
 		}
 		if (domain_nowww === "desistore.cz") return src.replace(/(:\/\/[^/]+\/+[0-9]+)-[a-z]+_[a-z0-9]+\/+/, "$1/");
@@ -35427,13 +35472,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain_nowww === "laughspark.info") return src.replace(/\/thumbfiles\/[0-9]+X[0-9]+\//, "/uploadfiles/");
 		if (domain_nosub === "giphy.com" && domain.match(/^(?:media[0-9]*|i)\./)) {
-			var baseobj_8 = {
+			var baseobj_9 = {
 				url: src,
 				headers: {
 					Referer: "https://giphy.com/"
 				}
 			};
-			obj = baseobj_8;
+			obj = baseobj_9;
 			match = src.match(/\/media\/+([^/]{10,})\/+/);
 			if (match) {
 				var get_giphy_page = function(id) {
@@ -35441,7 +35486,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				};
 				id = match[1];
 				var page = get_giphy_page(id);
-				baseobj_8.extra = { page: page };
+				baseobj_9.extra = { page: page };
 				var query_giphy = function(id, cb) {
 					var cache_key = "giphy:" + id;
 					api_cache.fetch(cache_key, cb, function(done) {
@@ -35481,7 +35526,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						}
 						var images = data.images;
 						var get_image = function(obj) {
-							var ourobj = deepcopy(baseobj_8);
+							var ourobj = deepcopy(baseobj_9);
 							ourobj.url = obj.url;
 							return ourobj;
 						};
@@ -37956,19 +38001,36 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return newsrc;
 		}
 		if (domain_nosub === "imagebam.com" && /^thumb(?:nail)?s[0-9]*\./.test(domain)) {
+			var bad_if = [{
+					headers: {
+						"Last-Modified": "Thu, 06 Aug 2026 13:11:57 GMT",
+						"Content-Length": "7739",
+						"Content-Type": "image/jpeg"
+					}
+				}];
+			var baseobj_10 = {
+				url: src,
+				bad_if: bad_if
+			};
 			id = src.replace(/.*\/([0-9a-f]+)\.[^/.]*$/, "$1");
 			if (id !== src) {
-				return {
-					url: "https://www.imagebam.com/image/" + id,
-					is_pagelink: true
-				};
+				return [
+					{
+						url: "https://www.imagebam.com/image/" + id,
+						is_pagelink: true
+					},
+					baseobj_10
+				];
 			}
 			id = src.replace(/.*\/([0-9A-Z]+)_t\.[^/.]+$/, "$1");
 			if (id !== src) {
-				return {
-					url: "https://www.imagebam.com/view/" + id,
-					is_pagelink: true
-				};
+				return [
+					{
+						url: "https://www.imagebam.com/view/" + id,
+						is_pagelink: true
+					},
+					baseobj_10
+				];
 			}
 		}
 		if (domain_nosub === "imagebam.com" && /^images[0-9]*\./.test(domain)) {
@@ -39321,6 +39383,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "x-fetish.tube" ||
 			domain_nowww === "inxxx.com" ||
 			domain_nosub === "shameless.com" ||
+			domain_nowww === "familyporn.tv" ||
+			domain_nowww === "yesporn.vip" ||
 			domain_nosub === "mylust.com" ||
 			domain_nosub === "yourlust.com" ||
 			domain_nowww === "pornrewind.com") {
@@ -39899,6 +39963,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					var jsoned = match[1]
 						.replace(/adv_(?:pre|postpause)_vast(?:_alt)?:\s*'[^\\']+?'(?:\s*\+\s*[a-z_]+),/g, "") // theyarehuge.com, zbporn.com
 						.replace(/adv_(?:pre|postpause)_vast(?:_alt)?:\s*'[^\\']+?'\s*,/g, "") // thisvid.com
+						.replace(/\sprotect_block_html:\s*'.*?',\s+(protect_block_html_after:)/, "$1") // yesporn.vip
 						.replace(/([{,]\s*)([^"'\s:]+)\s*:/g, "$1\"$2\":")
 						.replace(/:\s*encodeURIComponent\(('[^']+')\)/g, ":$1")
 						.replace(/([^\\])\\'/g, "$1\\u0027")
@@ -41202,7 +41267,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if ((domain_nosub === "fastpic.ru" || domain_nosub === "fastpic.org") &&
 			domain.match(/^i[0-9]*\./)) {
-			var baseobj_9 = {
+			var baseobj_11 = {
 				url: src,
 				extra: {},
 				headers: {
@@ -41215,7 +41280,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			match = src.match(/^[a-z]+:\/\/i([0-9]+)\.[^/]+\/+(?:thumb|big)\/+([0-9]{4}\/+[0-9]{4})\/+[0-9a-f]{2}\/+(_?[0-9a-f]{10,}\.[a-z]+)(?:[?#].*)?$/);
 			if (match) {
 				page = "https://fastpic.org/view/" + match[1] + "/" + match[2] + "/" + match[3].replace(/\.jpeg$/, ".jpg") + ".html";
-				baseobj_9.extra.page = page;
+				baseobj_11.extra.page = page;
 			}
 			if (page && /:\/\/[^/]+\/+thumb\//.test(src)) {
 				return [
@@ -41223,13 +41288,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						url: page,
 						is_pagelink: true
 					},
-					baseobj_9
+					baseobj_11
 				];
 			}
 			newsrc = src.replace(/(:\/\/[^/]*\/)thumb(\/.*\.)jpeg/, "$1big$2jpg?noht=1");
 			if (newsrc !== src)
-				return fillobj_urls([newsrc, src], baseobj_9);
-			return baseobj_9;
+				return fillobj_urls([newsrc, src], baseobj_11);
+			return baseobj_11;
 		}
 		if (domain_nowww === "fastpic.ru" || domain_nowww === "fastpic.org") {
 			newsrc = website_query({
@@ -42297,7 +42362,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nosub === "hometownnudes.com" ||
 			domain_nosub === "eroticmetart.com"
 		) {
-			var baseobj_10 = {
+			var baseobj_12 = {
 				headers: {
 					Referer: "http://" + domain_nosub + "/"
 				},
@@ -42307,13 +42372,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 			newsrc = src.replace(/\.webp([?#].*)?$/, ".jpg$1");
 			if (newsrc !== src) {
-				baseobj_10.url = newsrc;
-				return baseobj_10;
+				baseobj_12.url = newsrc;
+				return baseobj_12;
 			}
 			newsrc = src.replace(/(\/content\/+[^/]*\/+)(?:[^/]*\/+[^/]*\/+)?(?:tn@[^/]*|[0-9]+|main(?:@[^/]*)?)\/+((?:[^/.]+_)?[0-9]+\.[^/.]*)$/, "$1full/$2");
 			if (newsrc !== src) {
-				baseobj_10.url = newsrc;
-				return baseobj_10;
+				baseobj_12.url = newsrc;
+				return baseobj_12;
 			}
 		}
 		if (domain_nowww === "barahla.net") return src.replace(/(\/images\/photo\/[0-9]+\/[0-9]+\/[0-9]+\/)(?:[a-z]+\/)?([0-9]+)(?:_[a-z]+)?(\.[^/.]*)$/, "$1big/$2_big$3");
@@ -42729,11 +42794,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					},
 					src
 				];
-				var baseobj_11 = {};
+				var baseobj_13 = {};
 				var match = src.match(/\/([0-9]+)-[^/]+\.[^/.]+(?:[?#].*)?$/);
 				if (match) {
 					id = match[1];
-					baseobj_11.extra = {
+					baseobj_13.extra = {
 						page: "https://www.123rf.com/photo_" + id + ".html"
 					};
 					if (options.do_request && options.cb) {
@@ -42741,25 +42806,25 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							url: "https://www.123rf.com/photo_" + id + ".html",
 						}, function(data) {
 							if (data) {
-								baseobj_11 = data;
+								baseobj_13 = data;
 							}
-							return options.cb(fillobj_urls(urls, baseobj_11));
+							return options.cb(fillobj_urls(urls, baseobj_13));
 						}, function(done, resp, cache_key) {
 							var match = resp.responseText.match(/dataLayer\.push\({[\s\S]+?["']product_name["']:\s*["'](.*?)["'],/);
-							baseobj_11.extra.page = resp.finalUrl;
+							baseobj_13.extra.page = resp.finalUrl;
 							if (match) {
-								baseobj_11.extra.caption = match[1];
+								baseobj_13.extra.caption = match[1];
 							} else {
 								console_warn(cache_key, "Unable to find match in", resp);
 							}
-							done(baseobj_11, 24 * 60 * 60);
+							done(baseobj_13, 24 * 60 * 60);
 						});
 						return {
 							waiting: true
 						};
 					}
 				}
-				return fillobj_urls(urls, baseobj_11);
+				return fillobj_urls(urls, baseobj_13);
 			}
 		}
 		if (domain_nowww === "chenderroad.com") {
@@ -45333,7 +45398,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain === "images.spicyadulttools.com") return src.replace(/\/images\/+thumb\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/images/full/$1");
 		if (domain_nosub === "trafficdeposit.com" &&
 			domain.match(/^[sb][0-9]*\./)) {
-			var baseobj_12 = {
+			var baseobj_14 = {
 				url: src,
 				extra: {}
 			};
@@ -45341,9 +45406,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:blog|pivi)\/+(?:[0-9]+\/+[0-9]+\/+)?(?:vid|img)\/+(?:[0-9a-zA-Z]+\/+[0-9]+\/+)?(?:[0-9a-f]+|porn-collection)\/+([0-9a-f]{10,})\/+[^/]+$/);
 			if (match) {
 				id = match[1];
-				baseobj_12.extra.page = "https://sxyprn.com/post/" + id + ".html";
+				baseobj_14.extra.page = "https://sxyprn.com/post/" + id + ".html";
 				urls.push({
-					url: baseobj_12.extra.page,
+					url: baseobj_14.extra.page,
 					is_pagelink: true
 				});
 			}
@@ -45352,7 +45417,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				urls.push(newsrc);
 			}
 			urls.push(src);
-			return fillobj_urls(urls, baseobj_12);
+			return fillobj_urls(urls, baseobj_14);
 		}
 		if (domain_nosub === "sxyprn.com") {
 			newsrc = website_query({
@@ -53423,10 +53488,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			regex = /(\/live\/+cover_images\/+.*_)([0-9]+x[0-9]+)(\.[^/.]+)(?:[?#].*)?$/;
 			match = src.match(regex);
 			if (match) {
-				var baseobj_13 = { url: src };
+				var baseobj_15 = { url: src };
 				var idmatch = src.match(/\/live\/+cover_images\/+[^/]+\/+([^/_]{5,15})_/);
 				if (idmatch) {
-					baseobj_13.extra = { page: "https://www.bitchute.com/video/" + idmatch[1] + "/" };
+					baseobj_15.extra = { page: "https://www.bitchute.com/video/" + idmatch[1] + "/" };
 				}
 				var sizes = [
 					"1280x720",
@@ -53441,14 +53506,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var newurls = [];
 				array_foreach(sizes, function(size) {
 					if (urlsize < sizetoint(size)) {
-						var obj = deepcopy(baseobj_13);
+						var obj = deepcopy(baseobj_15);
 						obj.url = src.replace(regex, "$1" + size + "$3");
 						newurls.push(obj);
 					}
 				});
-				if (idmatch && baseobj_13.extra && baseobj_13.extra.page) {
+				if (idmatch && baseobj_15.extra && baseobj_15.extra.page) {
 					newurls.unshift({
-						url: baseobj_13.extra.page,
+						url: baseobj_15.extra.page,
 						is_pagelink: true
 					});
 				}
@@ -53457,8 +53522,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 				var videourl = src.replace(/^[a-z]+:\/\/static-([0-9])\.bitchute\.com\/+live\/+cover_images\/+([^/]+\/+[^/_]{5,15})_[0-9]+x[0-9]+\..*/, "https://seed$100.bitchute.com/$2.mp4");
 				if (videourl !== src) {
-					baseobj_13.url = videourl;
-					return baseobj_13;
+					baseobj_15.url = videourl;
+					return baseobj_15;
 				}
 			}
 		}
@@ -55327,9 +55392,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					"d21ld3wfckjpu2.cloudfront.net/appleticktbox": "https://appleticktbox.s3.amazonaws.com/",
 					"media.hswstatic.com/content.hswstatic.com": "http://content.hswstatic.com/",
 				};
-				var baseobj_14 = {};
+				var baseobj_16 = {};
 				if (domain_nosub === "privacy.com.br") {
-					baseobj_14 = {
+					baseobj_16 = {
 						headers: {
 							Referer: "https://" + domain_nosub + "/"
 						}
@@ -55354,7 +55419,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (!/[?&]Signature=/i.test(src))
 						urls_12.push(host + base64_encode(JSON_stringify(json)));
 					if (urls_12.length > 0)
-						return fillobj_urls(urls_12, baseobj_14);
+						return fillobj_urls(urls_12, baseobj_16);
 				} catch (e) {
 					console_error(e);
 				}
@@ -56707,6 +56772,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain_nowww === "streamhgjav.online" ||
 			domain_nowww === "vibuxer.com" ||
 			domain_nowww === "hgcloud.to" ||
+			domain_nowww === "morencius.com" ||
+			domain_nowww === "audinifer.com" ||
 			domain_nowww === "streamwish.to") {
 			var query_domain = domain;
 			if (domain_nowww === "streamwish.to")
@@ -59413,12 +59480,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var urls = [];
 				array_extend(urls, objs.watermark);
 				array_extend(urls, objs.smaller);
-				var baseobj_16 = {
+				var baseobj_18 = {
 					extra: {
 						page: "https://www.imago-images.de/st/" + match[1]
 					}
 				};
-				return fillobj_urls(urls, baseobj_16);
+				return fillobj_urls(urls, baseobj_18);
 			}
 		}
 		if (domain_nowww === "banned.video" ||
@@ -61942,7 +62009,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 			var get_rumble_embedjs_path = function(url, cb) {
 				api_cache.fetch("rumble_embedjs", cb, function(done) {
-					get_rumble_page(url, function(resp) {
+					get_rumble_page("https://rumble.com/", function(resp) {
 						if (!resp) {
 							return done(null, false);
 						}
@@ -61967,6 +62034,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (match) {
 					return cb(match[1]);
 				}
+				match = url.match(/^[a-z]+:\/\/[^/]+\/+v([0-9a-z]{6,})-/);
+				if (!match)
+					match = url.match(/^[a-z]+:\/\/[^/]+\/+shorts\/+v([0-9a-z]{6,})(?:[?#].*)?$/);
+				if (match) {
+					return cb((parseInt(match[1], 36) - 3655926).toString(36));
+				}
 				api_cache.fetch("rumble_url_videoid:" + url, cb, function(done) {
 					get_rumble_page(url, function(resp) {
 						if (!resp)
@@ -61982,7 +62055,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			};
 			var query_rumble = function(vid, embedjs, cb) {
 				api_query("rumble_api:" + vid, {
-					url: embedjs + "/?request=video&v=v" + vid + "&ext=%7B%22ad_count%22%3Anull%7D",
+					url: embedjs + "/?ifr=0&dref=rumble.com&request=video&ver=2&v=v" + vid + "&ext=%7B%22ad_count%22%3Anull%7D",
 					imu_mode: "xhr",
 					referer: "https://rumble.com/embed/v" + vid + "/",
 					json: true
@@ -62002,14 +62075,43 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (resp.pubDate)
 						obj.extra.created_date = new Date(resp.pubDate).getTime();
 					var urls = [];
-					var keys = Object.keys(resp.ua);
-					keys.sort();
-					array_foreach(keys, function(key) {
-						urls.push({
-							url: resp.ua[key][0],
-							video: true,
+					if (resp.ua) {
+						if (resp.ua.hls) {
+							urls.push({
+								url: resp.ua.hls.auto.url,
+								media_info: {
+									type: "video",
+									delivery: "hls",
+									problems: ["incorrect_ts_ext"] // .tar
+								}
+							});
+						}
+						var formats_2 = ["mp4", "webm", "tar"];
+						var all_urls_formats = [];
+						for (var _i = 0, formats_1 = formats_2; _i < formats_1.length; _i++) {
+							var format = formats_1[_i];
+							if (format in resp.ua) {
+								for (var res in resp.ua[format]) {
+									all_urls_formats.push({
+										url: resp.ua[format][res].url,
+										format: format,
+										res: res
+									});
+								}
+							}
+						}
+						var score_format_1 = function(fmt) { return (parse_int(fmt.res) + array_indexof(formats_2, format) / 10); };
+						all_urls_formats.sort(function(a, b) {
+							return score_format_1(b) - score_format_1(a);
 						});
-					});
+						for (var _a = 0, all_urls_formats_1 = all_urls_formats; _a < all_urls_formats_1.length; _a++) {
+							var url_format = all_urls_formats_1[_a];
+							urls.push({
+								url: url_format.url,
+								video: true
+							});
+						}
+					}
 					if (resp.i) {
 						urls.push(resp.i);
 					}
@@ -62019,7 +62121,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			newsrc = website_query({
 				website_regex: [
 					/^[a-z]+:\/\/[^/]+\/+([a-z0-9]+)-[^/?#.]*\.html(?:[?#].*)?$/,
-					/^[a-z]+:\/\/[^/]+\/+embed\/+v([0-9a-z]+)\/*(?:[?#].*)?$/
+					/^[a-z]+:\/\/[^/]+\/+(?:embed|shorts)\/+v([0-9a-z]+)\/*(?:[?#].*)?$/
 				],
 				run: function(cb, match) {
 					var vurl = rumble_normalize_url(src);
@@ -62029,7 +62131,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						}
 						get_rumble_embedjs_path(vurl, function(embedjs) {
 							if (!embedjs) {
-								return cb(null);
+								embedjs = "https://rumble.com/embedJS/u3/";
 							}
 							query_rumble(vid, embedjs, cb);
 						});
@@ -68953,7 +69055,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (domain_nowww === "esprit-photo.com") return src.replace(/\/render\/+w[0-9]+\/+/, "/content/");
-		if (amazon_container === "kb-tenant-data") {
+		if (amazon_container === "kb-tenant-data" ||
+			domain === "assets.kudoboard.com") {
 			return src.replace(/(\/uploads\/+images\/+[^/]+\/+)(?:thumb|medium)\/+/, "$1large/");
 		}
 		if (domain === "i.icanvas.com") {
@@ -70132,16 +70235,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (match) {
 						var page_4 = JSON_parse(match[1]);
 						if (!/^https?:\/\/(?:[^/]*\.)?facecheck\.id\//.test(page_4)) {
-							var baseobj_17 = {
+							var baseobj_19 = {
 								url: origsrc,
 								extra: {
 									page: page_4
 								}
 							};
 							if (looks_like_valid_link(page_4, true)) {
-								return [page_4, baseobj_17];
+								return [page_4, baseobj_19];
 							} else {
-								return baseobj_17;
+								return baseobj_19;
 							}
 						}
 					}
@@ -70923,7 +71026,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				});
 			};
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+embed\/+([-_0-9a-zA-Z]+)(?:[?#].*)?$/,
+				website_regex: /^[a-z]+:\/\/[^/]+\/+(?:embed|v)\/+([-_0-9a-zA-Z]+)(?:[?#].*)?$/,
 				/*query_for_id: "https://" + domain + "/embed/${id}",
 				process: function(done, resp, cache_key) {
 					var obj = common_functions["get_videotag_obj"](resp, {
@@ -70947,6 +71050,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			});
 			if (newsrc)
 				return newsrc;
+		}
+		if (domain === "static.scdn.st") {
+			match = src.match(/:\/\/[^/]+\/+[-0-9a-f]{10,}\/+thumbs\/+([-_0-9a-zA-Z]+)\./);
+			if (match) {
+				return {
+					url: "https://turbo.cr/v/" + match[1],
+					is_pagelink: true
+				};
+			}
 		}
 		if (domain === "embed.widencdn.net" || domain_nosub === "widen.net") {
 			newsrc = src
@@ -72011,7 +72123,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				head_wrong_contenttype: true
 			};
 		}
-		if (domain_nosub === "mitiendanube.com") return src.replace(/(\/stores\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+products\/+[^/]+)-[0-9]+-[0-9]+\./, "$1.");
+		if (domain_nosub === "mitiendanube.com") {
+			newsrc = src.replace(/(\/stores\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+.*)\.webp(?:[?#].*)?$/, "$1.jpg");
+			if (newsrc !== src)
+				return add_full_extensions(newsrc, ["jpeg", "jpg"]);
+			return src.replace(/(\/stores\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+products\/+[^/]+)-[0-9]+-[0-9]+\./, "$1.");
+		}
 		if (domain_nowww === "thediplomat.com") {
 			newsrc = src.replace(/(\/wp-content\/+uploads\/+[0-9]{4}\/+[0-9]{2}\/+)sizes\/+[a-z]+\/+/, "$1");
 			if (newsrc !== src)
@@ -72926,28 +73043,150 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return newsrc;
 		}
 		if (domain === "cdn.loadvid.com") {
+			if (false) {
+				newsrc = website_query({
+					website_regex: /^[a-z]+:\/\/[^/]+\/+videos\/+play\/+([^/?#.]+)(?:[?#].*)?$/,
+					query_for_id: "https://" + domain + "/videos/play/${id}",
+					process: function(done, resp, cache_key) {
+						var match = resp.responseText.match(/videoUrl\s*=\s*'([^']+)';/);
+						if (!match) {
+							console_error(cache_key, "Unable to find video match for", resp);
+							return done(null, false);
+						}
+						var urls = [];
+						urls.push({
+							url: match[1],
+							headers: {
+								Accept: "*/*",
+								Referer: resp.finalUrl
+							},
+							video: "hls"
+						});
+						var postermatch = resp.responseText.match(/poster:\s*'([^']+)'/);
+						if (postermatch)
+							urls.push(postermatch[1]);
+						return done(common_functions["fill_ldjson"](urls, resp), 60);
+					}
+				});
+				if (newsrc)
+					return newsrc;
+			}
+			var query_loadvid_hls_1 = function(hash, token, csrf, cb) {
+				api_query("loadvid_hls:" + hash, {
+					url: "https://cdn.loadvid.com/videos/resolve-token",
+					method: "POST",
+					data: JSON_stringify({
+						token: token,
+						hash: hash
+					}),
+					headers: {
+						"Accept": "application/vnd.apple.mpegurl,*/*",
+						"Content-Type": "application/json",
+						"Origin": "https://cdn.loadvid.com",
+						"Referer": "https://cdn.loadvid.com/videos/play/" + hash,
+						"Sec-Fetch-Dest": "empty",
+						"Sec-Fetch-Mode": "cors",
+						"Sec-Fetch-Site": "same-origin",
+						"X-Csrf-Token": csrf
+					}
+				}, cb, function(done, resp, cache_key) {
+					if (!/^#EXTM3U/.test(resp.responseText)) {
+						console_error(cache_key, "Invalid response", resp);
+						return done(null, false);
+					}
+					return done(resp.responseText, 6 * 60 * 60);
+				});
+			};
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+videos\/+play\/+([^/?#.]+)(?:[?#].*)?$/,
 				query_for_id: "https://" + domain + "/videos/play/${id}",
-				process: function(done, resp, cache_key) {
-					var match = resp.responseText.match(/videoUrl\s*=\s*'([^']+)';/);
-					if (!match) {
-						console_error(cache_key, "Unable to find video match for", resp);
+				process: function(done, resp, cache_key, match) {
+					var hash = match[1];
+					var csrf = get_meta(resp.responseText, "csrf-token");
+					if (!csrf) {
+						console_error(cache_key, "Unable to find csrf token for", resp);
 						return done(null, false);
 					}
-					var urls = [];
-					urls.push({
-						url: match[1],
-						headers: {
-							Accept: "*/*",
-							Referer: resp.finalUrl
-						},
-						video: "hls"
+					var vidtoken_match = resp.responseText.match(/videoToken:\s*'([^']+)'/);
+					if (!vidtoken_match) {
+						console_error(cache_key, "Unable to find video token match for", resp);
+						return done(null, false);
+					}
+					query_loadvid_hls_1(hash, vidtoken_match[1], csrf, function(hls) {
+						if (!hls) {
+							return done(null, false);
+						}
+						var hlsobj = {
+							url: "data:application/vnd.apple.mpegurl," + encodeURIComponent(hls),
+							media_info: {
+								type: "video",
+								delivery: "hls",
+								problems: ["incorrect_ts_ext"] // png
+							}
+						};
+						return done(common_functions["fill_ldjson"](hlsobj, resp), 6 * 60 * 60);
 					});
-					var postermatch = resp.responseText.match(/poster:\s*'([^']+)'/);
-					if (postermatch)
-						urls.push(postermatch[1]);
-					return done(common_functions["fill_ldjson"](urls, resp), 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "playmate.to") {
+			var query_playmate_1 = function(hash, cb) {
+				api_query("playmate:" + hash, {
+					url: "https://playmate.to/api/s",
+					method: "POST",
+					data: JSON_stringify({
+						c: hash,
+						d: "web"
+					}),
+					headers: {
+						Accept: "*/*",
+						"Content-Type": "application/json",
+						Origin: "https://" + domain,
+						Referer: "https://" + domain + "/embed/" + hash,
+						"Sec-Fetch-Dest": "empty",
+						"Sec-Fetch-Mode": "cors",
+						"Sec-Fetch-Site": "same-origin"
+					},
+					json: true
+				}, cb, function(done, resp, cache_key) {
+					if (!resp.sx) {
+						console_error(cache_key, "Unable to find hls stream from", resp);
+						return done(null, false);
+					}
+					return done({
+						thumbnail: resp.ix,
+						stream: resp.sx
+					}, 6 * 60 * 60);
+				});
+			};
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+embed\/+([0-9a-zA-Z]+)(?:[?#].*)?$/,
+				run: function(cb, match) {
+					var page = "https://" + domain + "/embed/" + match[1];
+					query_playmate_1(match[1], function(data) {
+						if (!data)
+							return cb(null);
+						var urls = [];
+						var baseobj = {
+							extra: {
+								page: page
+							}
+						};
+						if (data.stream)
+							urls.push({
+								url: data.stream,
+								media_info: {
+									type: "video",
+									delivery: "hls",
+									problems: ["incorrect_ts_ext"] // css, js
+								}
+							});
+						if (data.thumbnail)
+							urls.push(data.thumbnail);
+						return cb(fillobj_urls(urls, baseobj));
+					});
 				}
 			});
 			if (newsrc)
@@ -72959,14 +73198,29 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				query_for_id: "https://" + domain + "/${id}/",
 				process: function(done, resp, cache_key) {
 					var match = resp.responseText.match(/<iframe\s+(?:[^>]*\s)?src="(https?:[^"]+)"/);
-					if (!match) {
-						console_error(cache_key, "Unable to find iframe match for", resp);
-						return done(null, false);
+					if (match) {
+						return done({
+							url: match[1],
+							is_pagelink: true
+						}, 6 * 60 * 60);
 					}
-					return done({
-						url: match[1],
-						is_pagelink: true
-					}, 6 * 60 * 60);
+					var jwplayer_match = resp.responseText.match(/jwplayer\("jw-player-container"\)\.setup\(({[\s\S]*?})\);\s*<\//);
+					if (jwplayer_match) {
+						var obj_17 = common_functions["get_jwplayer_obj"](resp, { setupobj: jwplayer_match[1] });
+						if (!obj_17)
+							return done(null, false);
+						return done(common_functions["fill_ldjson"](obj_17, resp), 60 * 60);
+					}
+					var videotag_match = resp.responseText.match(/<div class="responsive-player">(<video[\s\S]*?<\/video>)<\/div>/);
+					if (videotag_match) {
+						var obj = common_functions["get_videotag_obj"](resp, {
+							ogvideo: false,
+							videotag_txt: videotag_match[1]
+						});
+						return done(obj, obj ? 60 * 60 : false);
+					}
+					console_error(cache_key, "Unable to find iframe or video match for", resp);
+					return done(null, false);
 				}
 			});
 			if (newsrc)
@@ -72974,15 +73228,49 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if (domain_nowww === "upload18.com" ||
 			domain_nowww === "upload18.org") {
+			if (false) {
+				newsrc = website_query({
+					website_regex: /^[a-z]+:\/\/[^/]+\/+play\/+index\/+([0-9a-f]+)(?:[?#].*)?$/,
+					query_for_id: "https://" + domain + "/play/index/${id}",
+					process: function(done, resp, cache_key) {
+						var match = resp.responseText.match(/file:\s*"(\/play\/[^"]+)"/);
+						if (!match) {
+							console_error(cache_key, "Unable to find jwplayer match for", resp);
+							return done(null, false);
+						}
+						var baseobj = {
+							extra: {}
+						};
+						var titlematch = resp.responseText.match(/<title>([^<]+)</);
+						if (titlematch) {
+							baseobj.extra.caption = decode_entities(titlematch[1]);
+						}
+						return done(fillobj_urls([{
+								url: urljoin(resp.finalUrl, match[1], true),
+								video: "hls",
+								headers: {
+									Accept: "*/*",
+									Referer: "https://" + domain + "/",
+									"Sec-Fetch-Dest": "empty",
+									"Sec-Fetch-Mode": "cors",
+									"Sec-Fetch-Site": "same-origin"
+								}
+							}], baseobj), 60 * 60);
+					}
+				});
+				if (newsrc)
+					return newsrc;
+			}
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+play\/+index\/+([0-9a-f]+)(?:[?#].*)?$/,
 				query_for_id: "https://" + domain + "/play/index/${id}",
 				process: function(done, resp, cache_key) {
-					var match = resp.responseText.match(/file:\s*"(\/play\/[^"]+)"/);
+					var match = resp.responseText.match(/window.PLAYER_CONFIG\s*=\s*({.*?});/);
 					if (!match) {
-						console_error(cache_key, "Unable to find jwplayer match for", resp);
+						console_error(cache_key, "Unable to find player_config match for", resp);
 						return done(null, false);
 					}
+					var player_config = JSON_parse(match[1]);
 					var baseobj = {
 						extra: {}
 					};
@@ -72991,7 +73279,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						baseobj.extra.caption = decode_entities(titlematch[1]);
 					}
 					return done(fillobj_urls([{
-							url: urljoin(resp.finalUrl, match[1], true),
+							url: player_config.m3u8,
 							video: "hls",
 							headers: {
 								Accept: "*/*",
@@ -73001,6 +73289,35 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								"Sec-Fetch-Site": "same-origin"
 							}
 						}], baseobj), 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "myupload.us") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+embed\/+([0-9a-zA-Z]+)(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/embed/${id}",
+				process: function(done, resp, cache_key, match) {
+					var id = match[1];
+					var token_match = resp.responseText.match(/\\"token\\":\\"([^\\"]+)\\"/);
+					if (!token_match) {
+						console_error(cache_key, "Unable to find token for", resp);
+						return done(null, false);
+					}
+					var baseobj = {
+						extra: {
+							page: resp.finalUrl
+						}
+					};
+					var urls = [
+						{
+							url: "https://" + domain + "/v/" + id + "/stream/hls/master.m3u8?t=" + token_match[1],
+							video: "hls"
+						},
+						"https://" + domain + "/v/" + id + "/stream/thumb.jpg"
+					];
+					done(fillobj_urls(urls, baseobj), 60 * 60);
 				}
 			});
 			if (newsrc)
@@ -73061,8 +73378,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					});
 					if (!obj)
 						return done(null, false);
-					for (var _i = 0, obj_17 = obj; _i < obj_17.length; _i++) {
-						var url_16 = obj_17[_i];
+					for (var _i = 0, obj_18 = obj; _i < obj_18.length; _i++) {
+						var url_16 = obj_18[_i];
 						if (url_16.video) {
 							url_16.headers = {
 								Accept: "*/*",
@@ -73218,6 +73535,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				run: function(cb, match) {
 					var vidid = match[1];
 					query_cherrycams_video_1(vidid, function(data) {
+						if (!data)
+							return cb(null);
 						var baseobj = {
 							extra: {
 								page: "https://" + domain + "/#" + vidid,
@@ -73392,6 +73711,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		if ((domain === "images.ottplay.com" && /:\/\/[^/]+\/+images\//.test(src)) ||
 			(domain === "feeds.abplive.com" && /\/onecms\/+images\/+uploaded-images\//.test(src)) ||
+			(domain === "images2.ray-ban.com" && /\/[-0-9a-f]{10,}\/[^/]+$/.test(src)) ||
 			domain === "live-production.wcms.abc-cdn.net.au") {
 			newsrc = src.replace(/(^[a-z]+:\/\/[^/]+\/+[^?#]+)(?:[?#].*)?$/, "$1?impolicy=a");
 			if (newsrc !== src)
@@ -73626,6 +73946,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (domain_nowww === "vidara.so" ||
+			domain_nowww === "gbsagbo.com" ||
 			domain_nowww === "vidara.to") {
 			var query_vidara_1 = function(id, cb) {
 				var page = "https://" + domain + "/e/" + id;
@@ -73665,7 +73986,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						urls.push({
 							url: resp.streaming_url,
 							subtitles: captions,
-							video: "hls"
+							media_info: {
+								type: "video",
+								delivery: "hls",
+								problems: ["incorrect_ts_ext"] // woff2
+							},
+							is_private: true // has ip
 						});
 					}
 					if (resp.thumbnail) {
@@ -74163,7 +74489,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							video: "hls"
 						});
 						urls_21.push(json_15.thumbnailUrl[json_15.thumbnailUrl.length - 1]);
-						var baseobj_18 = {
+						var baseobj_20 = {
 							extra: {
 								caption: json_15.description,
 								author_username: json_15.name,
@@ -74171,7 +74497,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								created_date: new Date(json_15.uploadDate).getTime()
 							}
 						};
-						return done(fillobj_urls(urls_21, baseobj_18), 6 * 60 * 60);
+						return done(fillobj_urls(urls_21, baseobj_20), 6 * 60 * 60);
 					}
 					console_error(cache_key, "Unable to find ldjson match for", resp);
 					return done(null, false);
@@ -74801,6 +75127,107 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return newsrc;
 		}
 		if (domain === "static.feetished.com") return src.replace(/(:\/\/[^/]+\/+[^/]+\/+[0-9]+)_t\./, "$1.");
+		if (domain === "dl.vimm.net") return src.replace(/(\/image\.php\?(?:.*&)?type=)box([&#].*)?$/, "$1box_large$2");
+		if (domain_nosub === "pornhex.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+([^/?#]+)(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/video/${id}",
+				allow_hostresp_for_match: true,
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/videoSources\s*=\s*(\[{.*?}\]);/);
+					if (!match) {
+						console_error(cache_key, "Unable to find video sources match for", resp);
+						return done(null, false);
+					}
+					var urls = [];
+					var sources = JSON_parse(match[1]);
+					for (var _i = 0, sources_5 = sources; _i < sources_5.length; _i++) {
+						var source = sources_5[_i];
+						urls.push({
+							url: source.src + "?h=" + source.k,
+							video: true,
+							can_head: false, // 403
+							headers: {
+								Referer: "https://" + domain + "/",
+								"Sec-Fetch-Dest": "video",
+								"Sec-Fetch-Mode": "no-cors",
+								"Sec-Fetch-Site": "same-site"
+							}
+						});
+					}
+					var poster_match = resp.responseText.match(/<video[^>]*\sposter="([^"]+)"/);
+					if (poster_match) {
+						urls.push(decode_entities(poster_match[1]));
+					}
+					return done(common_functions["fill_ldjson"](urls, resp), 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain_nowww === "firstview.com") return src.replace(/(\/files\/+[0-9]+\/+)thumb_/, "$1");
+		if (domain_nowww === "studio.co.uk") {
+			return src
+				.replace(/(\/images\/+)products\/+([0-9]{2})([0-9]+_)l(_[a-z0-9]+)?\./, "$1imgzoom/$2/$2$3xxl$4.")
+				.replace(/(\/images\/+products\/+[0-9]+_)[smh](_[a-z0-9]+)?\./, "$1l$2.");
+		}
+		if (domain_nowww === "pionier.pe") {
+			if (/\/assets\/+img\/+lazy-loading-img\./.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+			return src.replace(/(\/assets\/+upload\/+)thumb\/+(producto\/+)[0-9]+\/+/, "$1$2");
+		}
+		if (domain_nowww === "streetart.media") return src.replace(/(\/[0-9a-f]\/[-0-9a-f]{10,}\/+)[0-9]+\./, "$1orig.");
+		if (domain === "image.volkskrant.nl") return src.replace(/(:\/\/[^/]+\/+[0-9]+\/+width\/+)[0-9]+\/+/, "$10/");
+		if (domain_nowww === "filester.gg") {
+			var query_filester_file_1 = function(id, cb) {
+				api_query("filester:" + id, {
+					url: "https://filester.gg/v2/api/public/view",
+					method: "POST",
+					data: JSON_stringify({ file_slug: id }),
+					headers: {
+						Accept: "*/*",
+						"Content-Type": "application/json",
+						Origin: "https://" + domain,
+						Referer: "https://" + domain + "/d/" + id,
+						"Sec-Fetch-Dest": "empty",
+						"Sec-Fetch-Mode": "cors",
+						"Sec-Fetch-Site": "same-origin"
+					},
+					imu_mode: "xhr",
+					json: true
+				}, cb, function(done, resp, cache_key) {
+					if (!resp.token || !resp.server || !resp.file || !resp.success) {
+						console_error(cache_key, "Invalid response:", resp);
+						return done(null, false);
+					}
+					var url = resp.server + "/v2/" + resp.file + "?token=" + resp.token;
+					var obj = {
+						url: url,
+						headers: {
+							Referer: "https://" + resp.server + "/"
+						},
+						extra: {
+							page: "https://" + domain + "/d/" + id
+						}
+					};
+					if (/\.mp4$/i.test(resp.file))
+						obj.video = true;
+					return done(obj, 29 * 60); // 1800
+				});
+			};
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+d\/+([0-9A-Za-z]+)(?:[?#].*)?$/,
+				run: function(cb, match) {
+					query_filester_file_1(match[1], cb);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -77114,8 +77541,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return obj;
 		obj = force_array(obj);
 		var newobj = [];
-		for (var _i = 0, obj_18 = obj; _i < obj_18.length; _i++) {
-			var url = obj_18[_i];
+		for (var _i = 0, obj_19 = obj; _i < obj_19.length; _i++) {
+			var url = obj_19[_i];
 			if (typeof (url) === "string") {
 				newobj.push(fullurl(currenturl, url));
 			} else {
@@ -77964,7 +78391,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			});
 		};
 		(function() { return __awaiter(_this_1, void 0, void 0, function() {
-			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_19, sobj, _a, queryobj_1, obj_20, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
+			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_20, sobj, _a, queryobj_1, obj_21, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
 			return __generator(this, function(_c) {
 				switch (_c.label) {
 					case 0:
@@ -78005,8 +78432,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							}
 						}
 						queryobj = [];
-						for (_i = 0, obj_19 = obj; _i < obj_19.length; _i++) {
-							sobj = obj_19[_i];
+						for (_i = 0, obj_20 = obj; _i < obj_20.length; _i++) {
+							sobj = obj_20[_i];
 							if (is_bad_url(sobj.url)) {
 								continue;
 							}
@@ -78014,9 +78441,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						}
 						// required to avoid querying an ok url twice
 						for (_a = 0, queryobj_1 = queryobj; _a < queryobj_1.length; _a++) {
-							obj_20 = queryobj_1[_a];
-							if (tried_urls.has(obj_20.url) && !is_bad_url(obj_20.url))
-								return [2 /*return*/, options.cb([obj_20], last_data)];
+							obj_21 = queryobj_1[_a];
+							if (tried_urls.has(obj_21.url) && !is_bad_url(obj_21.url))
+								return [2 /*return*/, options.cb([obj_21], last_data)];
 						}
 						if (!queryobj.length) {
 							if (_nir_debug_) {
@@ -83384,9 +83811,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		var has_1x1png_problem = function(info_obj) {
 			return info_obj.media_info && info_obj.media_info.problems && array_indexof(info_obj.media_info.problems, "1x1png") >= 0;
 		};
+		var has_incorrect_ts_ext_problem = function(info_obj) {
+			return info_obj.media_info && info_obj.media_info.problems && array_indexof(info_obj.media_info.problems, "incorrect_ts_ext") >= 0;
+		};
 		var fixup_respdata_for_streaming_infoobj = function(data, mime, info_obj) {
 			if (has_1x1png_problem(info_obj) && mime === "image/png") {
 				var arr = new Uint8Array(data);
+				if (arr[0] === 71 && // G
+					arr[1] === 64 && // @
+					arr[2] === 0) {
+					// already mp2t
+					return arr.buffer;
+				}
 				while (true) {
 					var i_idx = arr.indexOf(73); // I
 					if (i_idx < 0)
@@ -83424,6 +83860,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				resp.responseHeaders = resp.responseHeaders.replace(/(content-type: )image\/png/i, "$1video/mp2t");
 				fixup = true;
 			}
+			if (mime === "video/MP2T") {
+				resp.responseHeaders = resp.responseHeaders.replace(/(content-type: )video\/MP2T/i, "$1video/mp2t");
+			}
+			console.log(resp);
 			// check if arraybuffer
 			if (fixup && resp.response && resp.response.byteLength) {
 				resp.response = fixup_respdata_for_streaming_infoobj(resp.response, mime, info_obj);
@@ -83624,15 +84064,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 									mime = override_mime_1;
 								return origfactory_1(url, mime);
 							};
+							var is_amazingcdn_mp4_problem_1 = /\.mp4(?:[?#].*)?$/.test(src);
 							// punyu.com has a .mp4 extension for hls streams
-							if (/\.mp4(?:[?#].*)?$/i.test(src)) {
-								var orig_guessmimetype_1 = shaka.Player.prototype.guessMimeType_;
-								shaka.Player.prototype.guessMimeType_ = function(a) {
-									var replace_ext = function(new_ext) {
-										return a.replace(/\.[a-zA-Z0-9]+(?:[?#].*)?$/, "." + new_ext);
-									};
-									var a_dec = decodeURIComponent(a);
-									// FIXME: extremely hacky
+							var orig_guessmimetype_1 = shaka.Player.prototype.guessMimeType_;
+							shaka.Player.prototype.guessMimeType_ = function(a) {
+								var replace_ext = function(new_ext) {
+									return a.replace(/\.[a-zA-Z0-9]+(?:[?#].*)?$/, "." + new_ext);
+								};
+								var a_dec = decodeURIComponent(a);
+								if (is_amazingcdn_mp4_problem_1) {
+									// FIXME: somewhat hacky
 									// https://media3.amazingcdn.net/.../media=hls/{hex}_{hex}.mp4 -- m3u8
 									// https://media3.amazingcdn.net/.../media=hls/seg=seg-1-v1-a1.ts/{hex}_{hex}.mp4 -- ts
 									if (/\/media=hls\//.test(a_dec)) {
@@ -83641,17 +84082,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 										else
 											a = replace_ext("m3u8");
 									}
-									return orig_guessmimetype_1.bind(this)(a);
-								};
-								var src_dec = decodeURIComponent(src);
-								if (/\/media=hls\//.test(src_dec))
-									shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("mp4", "video/mp2t");
-							}
+								}
+								return orig_guessmimetype_1.bind(this)(a);
+							};
+							var src_dec = decodeURIComponent(src);
+							if (is_amazingcdn_mp4_problem_1 && /\/media=hls\//.test(src_dec))
+								shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("mp4", "video/mp2t");
 						}
 					} catch (e) {
 						console_error(e);
 					}
-					if (has_1x1png_problem(info_obj)) {
+					if (has_1x1png_problem(info_obj) ||
+						has_incorrect_ts_ext_problem(info_obj)) {
 						try {
 							// kamehamehaa.xyz
 							var orig_createseg_1 = shaka.hls.HlsParser.prototype.createSegmentReference_;
@@ -83661,6 +84103,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								return orig_createseg_1.bind(this)(a, b, c, d, e, f, g, h, k, l);
 							};
 							shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("png", "video/mp2t");
+							shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("woff2", "video/mp2t"); // morencius / businessanalyticspro.cfd
+							if (has_incorrect_ts_ext_problem(info_obj)) {
+								shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("css", "video/mp2t");
+								shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("js", "video/mp2t");
+							}
 							shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set(null, "video/mp2t");
 						} catch (e) {
 							console_error(e);
@@ -89582,8 +90029,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							sources = [];
 							source_el_set = new_set();
 							_find_source = function(source_el) {
-								for (var _i = 0, sources_5 = sources; _i < sources_5.length; _i++) {
-									var src = sources_5[_i];
+								for (var _i = 0, sources_6 = sources; _i < sources_6.length; _i++) {
+									var src = sources_6[_i];
 									if (src.el === source_el)
 										return src;
 								}
@@ -89632,8 +90079,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								return remove_source_el(source.el);
 							};
 							reposition_source_outlines = function() {
-								for (var _i = 0, sources_6 = sources; _i < sources_6.length; _i++) {
-									var source = sources_6[_i];
+								for (var _i = 0, sources_7 = sources; _i < sources_7.length; _i++) {
+									var source = sources_7[_i];
 									var rect = source._real_el.getBoundingClientRect();
 									var outline_el = source._outline_el;
 									if (!outline_el)
@@ -89662,8 +90109,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								if (!sources.length)
 									return;
 								override_album = [];
-								for (var _i = 0, sources_7 = sources; _i < sources_7.length; _i++) {
-									var source = sources_7[_i];
+								for (var _i = 0, sources_8 = sources; _i < sources_8.length; _i++) {
+									var source = sources_8[_i];
 									override_album.push(source.el);
 								}
 								trigger_popup_with_source(sources[0], options);
