@@ -106458,16 +106458,78 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://tr.rbxcdn.com/30DAY-AvatarHeadshot-4AEFD79668CD68487460579AFAB18A85-Png/150/150/AvatarHeadshot/Webp/noFilter
 			// https://tr.rbxcdn.com/30DAY-Avatar-2703FFD18590A77A46967CFCCCF1210A-Png/720/720/Avatar/Webp/noFilter
 			//   https://tr.rbxcdn.com/30DAY-Avatar-2703FFD18590A77A46967CFCCCF1210A-Png/1024/1024/Avatar/Png/noFilter
-			newsrc = src
-				.replace(/\/720\/+720\//, "/1024/1024/")
-				.replace(/\/480\/+480\//, "/720/720/")
-				.replace(/\/256\/+256\//, "/480/480/")
-				.replace(/\/150\/+150\//, "/256/256/");
-			if (newsrc !== src)
-				return {
-					url: newsrc,
-					can_head: false
-				};
+			var size_match_1 = null;
+			match = src.match(/:\/\/[^/]+\/+[^/]+\/+([0-9]+)\/+([0-9]+)\/+/);
+			if (match)
+				size_match_1 = "/" + match[1] + "/" + match[2] + "/";
+			var replace_roblox_sizes = function(sizes) {
+				if (!size_match_1)
+					return;
+				for (var i_22 = 1; i_22 < sizes.length; i_22++) {
+					if (size_match_1 === sizes[i_22]) {
+						return {
+							url: src.replace(/(:\/\/[^/]+\/+[^/]+)\/+[0-9]+\/+[0-9]+\/+/, "$1" + sizes[i_22 - 1]),
+							can_head: false
+						};
+					}
+				}
+			};
+			// thanks to exurd on github: https://github.com/qsniyg/maxurl/pull/1660
+			// square (1:1)
+			newsrc = replace_roblox_sizes([
+				"/1024/1024/",
+				"/720/720/",
+				"/700/700/",
+				"/512/512/",
+				"/480/480/",
+				"/420/420/",
+				"/256/256/",
+				"/250/250/",
+				"/150/150/",
+				"/140/140/",
+				"/110/110/",
+				"/75/75/",
+				"/50/50/",
+				"/42/42/",
+				"/30/30/"
+			]);
+			if (newsrc)
+				return newsrc;
+			// 16:9 (strangely, the images aren't 16:9?)
+			newsrc = replace_roblox_sizes([
+				"/768/432/",
+				"/576/324/",
+				"/480/270/",
+				"/384/216/",
+				"/256/144/"
+			]);
+			if (newsrc)
+				return newsrc;
+			// 3:1
+			newsrc = replace_roblox_sizes([
+				"/1320/440/",
+				"/660/220/",
+				"/330/110/"
+			]);
+			if (newsrc)
+				return newsrc;
+			// 60:19
+			newsrc = replace_roblox_sizes([
+				"/1440/456/",
+				"/720/228/",
+			]);
+			if (newsrc)
+				return newsrc;
+			// these sizes do not have a matching higher aspect ratio:
+			// 60×62
+			// 160×100
+			// 160×600
+			// 300×250
+			// 304×166
+			// 396×216
+			// 728×90
+			// 1200×80
+			// 930×480
 			return {
 				url: src.replace(/\/Webp\//, "/Png/"),
 				can_head: false
@@ -110379,8 +110441,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					var decoded = base64_decode(resp.url);
 					var xorbase = base64_decode("IFNFQ1JFVF9LRVlf").slice(1) + ((resp.timestamp / 60 / 60) | 0);
 					var output = [];
-					for (var i_22 = 0; i_22 < decoded.length; i_22++) {
-						output.push(string_fromcharcode(decoded.charCodeAt(i_22) ^ xorbase.charCodeAt(i_22 % xorbase.length)));
+					for (var i_23 = 0; i_23 < decoded.length; i_23++) {
+						output.push(string_fromcharcode(decoded.charCodeAt(i_23) ^ xorbase.charCodeAt(i_23 % xorbase.length)));
 					}
 					done(output.join(""), 60 * 60);
 				});
@@ -112250,9 +112312,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				try {
 					var decoded_9 = base64_decode(match[1]);
 					var newstr = null;
-					for (var i_23 = 1; i_23 < decoded_9.length; i_23++) {
-						if (decoded_9[i_23] === "u" && decoded_9.charCodeAt(i_23 - 1) === 1) {
-							newstr = decoded_9.substr(i_23);
+					for (var i_24 = 1; i_24 < decoded_9.length; i_24++) {
+						if (decoded_9[i_24] === "u" && decoded_9.charCodeAt(i_24 - 1) === 1) {
+							newstr = decoded_9.substr(i_24);
 							if (/^upic\//.test(newstr))
 								break;
 							newstr = null;
@@ -115599,8 +115661,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							common_functions["update_album_info_links"](obj, function(x) {
 								var ids = x.split("|");
 								for (var _i = 0, ids_1 = ids; _i < ids_1.length; _i++) {
-									var i_24 = ids_1[_i];
-									if (imu_imageid === i_24)
+									var i_25 = ids_1[_i];
+									if (imu_imageid === i_25)
 										return true;
 								}
 								return false;
@@ -120040,8 +120102,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			var str_to_arr_1 = function(str) {
 				var result = [];
-				for (var i_25 = 0; i_25 < str.length; i_25++) {
-					result.push(str.charCodeAt(i_25));
+				for (var i_26 = 0; i_26 < str.length; i_26++) {
+					result.push(str.charCodeAt(i_26));
 				}
 				return result;
 			};
@@ -120077,8 +120139,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					var str1 = xt.substr(0, 32);
 					var str2 = xt.substr(32);
 					var remapped_seed_arr = [];
-					for (var i_26 = 0; i_26 < str1.length; i_26++) {
-						remapped_seed_arr.push(str2[i_26 + 31 - string_indexof(algo_seed, str1[i_26] || "")] || "");
+					for (var i_27 = 0; i_27 < str1.length; i_27++) {
+						remapped_seed_arr.push(str2[i_27 + 31 - string_indexof(algo_seed, str1[i_27] || "")] || "");
 					}
 					var remapped_seed = remapped_seed_arr.join("");
 					api_query("videahu_xml:" + fileid, {
@@ -123234,7 +123296,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var gen_fikfap_auth_1 = function(cb) {
 				api_cache.fetch("fikfap_auth", cb, function(done) {
 					var bytes = [];
-					for (var i_27 = 0; i_27 < 16; i_27++) {
+					for (var i_28 = 0; i_28 < 16; i_28++) {
 						bytes.push((Math.random() * 256) | 0);
 					}
 					bytes[6] = bytes[6] & 0xf | 0x40;
@@ -133478,8 +133540,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 									streams[i] = null; // deref
 									next_stream = function() {
 										// deref current stream data
-										for (var i_28 = 0; i_28 < stream.length; i_28++) {
-											stream[i_28] = null;
+										for (var i_29 = 0; i_29 < stream.length; i_29++) {
+											stream[i_29] = null;
 										}
 										set_timeout(function() {
 											process_stream(i + 1);
@@ -134314,18 +134376,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 															console.error("Invalid regex stage:", { stage: stage, c: c, regexval: regexval_1 });
 														}
 													};
-													for (var i_29 = 0; i_29 < regexval_1.length; i_29++) {
-														var c = regexval_1[i_29];
+													for (var i_30 = 0; i_30 < regexval_1.length; i_30++) {
+														var c = regexval_1[i_30];
 														var nextc = null;
-														if (i_29 + 1 < regexval_1.length)
-															nextc = regexval_1[i_29 + 1];
+														if (i_30 + 1 < regexval_1.length)
+															nextc = regexval_1[i_30 + 1];
 														if (stage === 2) {
 															commit(c);
 															continue;
 														}
 														if (c === "\\" && nextc === "/") {
 															commit("/");
-															i_29++;
+															i_30++;
 															continue;
 														}
 														if (c === "/") {

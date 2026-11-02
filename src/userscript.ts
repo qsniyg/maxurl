@@ -118269,16 +118269,83 @@ var $$IMU_EXPORT$$;
 			// https://tr.rbxcdn.com/30DAY-AvatarHeadshot-4AEFD79668CD68487460579AFAB18A85-Png/150/150/AvatarHeadshot/Webp/noFilter
 			// https://tr.rbxcdn.com/30DAY-Avatar-2703FFD18590A77A46967CFCCCF1210A-Png/720/720/Avatar/Webp/noFilter
 			//   https://tr.rbxcdn.com/30DAY-Avatar-2703FFD18590A77A46967CFCCCF1210A-Png/1024/1024/Avatar/Png/noFilter
-			newsrc = src
-				.replace(/\/720\/+720\//, "/1024/1024/")
-				.replace(/\/480\/+480\//, "/720/720/")
-				.replace(/\/256\/+256\//, "/480/480/")
-				.replace(/\/150\/+150\//, "/256/256/");
-			if (newsrc !== src)
-				return {
-					url: newsrc,
-					can_head: false
-				};
+
+			let size_match = null;
+			match = src.match(/:\/\/[^/]+\/+[^/]+\/+([0-9]+)\/+([0-9]+)\/+/);
+			if (match)
+				size_match = "/" + match[1] + "/" + match[2] + "/";
+
+			let replace_roblox_sizes = function(sizes) {
+				if (!size_match)
+					return;
+
+				for (let i = 1; i < sizes.length; i++) {
+					if (size_match === sizes[i]) {
+						return {
+							url: src.replace(/(:\/\/[^/]+\/+[^/]+)\/+[0-9]+\/+[0-9]+\/+/, "$1" + sizes[i-1]),
+							can_head: false
+						};
+					}
+				}
+			};
+
+			// thanks to exurd on github: https://github.com/qsniyg/maxurl/pull/1660
+
+			// square (1:1)
+			newsrc = replace_roblox_sizes([
+				"/1024/1024/",
+				"/720/720/",
+				"/700/700/",
+				"/512/512/",
+				"/480/480/",
+				"/420/420/",
+				"/256/256/",
+				"/250/250/",
+				"/150/150/",
+				"/140/140/",
+				"/110/110/",
+				"/75/75/",
+				"/50/50/",
+				"/42/42/",
+				"/30/30/"
+			]);
+			if (newsrc) return newsrc;
+
+			// 16:9 (strangely, the images aren't 16:9?)
+			newsrc = replace_roblox_sizes([
+				"/768/432/",
+				"/576/324/",
+				"/480/270/",
+				"/384/216/",
+				"/256/144/"
+			]);
+			if (newsrc) return newsrc;
+
+			// 3:1
+			newsrc = replace_roblox_sizes([
+				"/1320/440/",
+				"/660/220/",
+				"/330/110/"
+			]);
+			if (newsrc) return newsrc;
+
+			// 60:19
+			newsrc = replace_roblox_sizes([
+				"/1440/456/",
+				"/720/228/",
+			]);
+			if (newsrc) return newsrc;
+
+			// these sizes do not have a matching higher aspect ratio:
+			// 60×62
+			// 160×100
+			// 160×600
+			// 300×250
+			// 304×166
+			// 396×216
+			// 728×90
+			// 1200×80
+			// 930×480
 
 			return {
 				url: src.replace(/\/Webp\//, "/Png/"),
