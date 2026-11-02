@@ -106385,6 +106385,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://tr.rbxcdn.com/30DAY-AvatarHeadshot-4AEFD79668CD68487460579AFAB18A85-Png/150/150/AvatarHeadshot/Webp/noFilter
 			// https://tr.rbxcdn.com/30DAY-Avatar-2703FFD18590A77A46967CFCCCF1210A-Png/720/720/Avatar/Webp/noFilter
 			//   https://tr.rbxcdn.com/30DAY-Avatar-2703FFD18590A77A46967CFCCCF1210A-Png/1024/1024/Avatar/Png/noFilter
+			// square (1:1)
 			newsrc = src
 				.replace(/\/720\/+720\//, "/1024/1024/")
 				.replace(/\/700\/+700\//, "/720/720/")
@@ -106400,6 +106401,29 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/\/50\/+50\//, "/75/75/")
 				.replace(/\/42\/+42\//, "/50/50/")
 				.replace(/\/30\/+30\//, "/42/42/");
+			// 16:9 (strangely, the images aren't 16:9?)
+			newsrc = src
+				.replace(/\/576\/+324\//, "/768/432/")
+				.replace(/\/480\/+270\//, "/576/324/")
+				.replace(/\/384\/+216\//, "/480/270/")
+				.replace(/\/256\/+144\//, "/384/216/");
+			// 3:1
+			newsrc = newsrc
+				.replace(/\/660\/+220\//, "/1320/440/")
+				.replace(/\/330\/+110\//, "/660/220/");
+			// 60:19
+			newsrc = newsrc
+				.replace(/\/720\/+228\//, "/1440/456/");
+			// these sizes do not have a matching higher aspect ratio:
+			// 60×62
+			// 160×100
+			// 160×600
+			// 300×250
+			// 304×166
+			// 396×216
+			// 728×90
+			// 1200×80
+			// 930×480
 			if (newsrc !== src)
 				return {
 					url: newsrc,
