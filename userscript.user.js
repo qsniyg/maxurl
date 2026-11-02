@@ -27579,6 +27579,54 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			});
 		}); })();
 	};
+	common_functions["parse_nuxt"] = function(nuxt_array) {
+		if (typeof nuxt_array === "string") {
+			var nuxt_array_match = nuxt_array.match(/<script[^>]*\sid=["']__NUXT_DATA__["'][^>]*>(.*?)<\/script>/);
+			if (nuxt_array_match) {
+				return common_functions["parse_nuxt"](JSON_parse(nuxt_array_match[1]));
+			} else {
+				console_error("Unable to get nuxt match from", { nuxt_array: nuxt_array });
+				return null;
+			}
+		}
+		var root = nuxt_array[0];
+		var is_number_array = function(array) {
+			for (var _i = 0, array_1 = array; _i < array_1.length; _i++) {
+				var el = array_1[_i];
+				if (typeof el !== "number")
+					return false;
+			}
+			return true;
+		};
+		var parse_el = function(el) {
+			if (is_array(el)) {
+				if (el.length === 2 && typeof el[0] === "string" && typeof el[1] === "number") {
+					if (el[0] === "ShallowReactive") {
+						return parse_el(nuxt_array[el[1]]);
+					} else if (el[0] === "Reactive") {
+						return deepcopy(parse_el(nuxt_array[el[1]]));
+					}
+				}
+				if (is_number_array(el)) {
+					var result = [];
+					for (var _i = 0, el_1 = el; _i < el_1.length; _i++) {
+						var sub_el_id = el_1[_i];
+						result.push(parse_el(nuxt_array[sub_el_id]));
+					}
+					return result;
+				}
+				return el;
+			} else if (el && typeof el === "object") {
+				var result = {};
+				for (var key in el) {
+					result[key] = parse_el(nuxt_array[el[key]]);
+				}
+				return result;
+			}
+			return el;
+		};
+		return parse_el(root);
+	};
 	// -- end common_functions --
 	var get_domain_from_url = function(url) {
 		return url.replace(/^[a-z]+:\/\/([^/]*)(?:\/+.*)?$/, "$1");
@@ -35312,7 +35360,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to sn3akyb3ar on github: https://github.com/qsniyg/maxurl/issues/1062
 			// https://www.voguehk.com/media/2022/08/VHK-041-Kim-Tae-Ri-Cover-02-1440x1800.jpg
 			//   https://www.voguehk.com/media/2022/08/VHK-041-Kim-Tae-Ri-Cover-02.jpg
-			(domain_nowww === "voguehk.com" && /\/media\//.test(src)) ||
+			// thanks to anonymous for reporting:
+			// https://img.voguehk.com/media/2021/03/GettyImages-1186596954-min-1225x1800.jpg
+			//   https://img.voguehk.com/media/2021/03/GettyImages-1186596954-min.jpg
+			(domain_nosub === "voguehk.com" && /:\/\/[^/]+\/+media\//.test(src)) ||
 			// thanks to anonymous for reporting:
 			// https://images.voguehk.com/media/2025/06/05154832/IMG_4542-1280x855.jpg
 			(domain === "images.voguehk.com" && string_indexof(src, "/media/") >= 0) ||
@@ -35393,6 +35444,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to anonymous for reporting:
 			// https://www.octane-magazine.com/app/uploads/2026/07/tvr_griffith_500_7-1536x985.jpeg
 			(domain_nowww === "octane-magazine.com" && /\/app\/+uploads\//.test(src)) ||
+			// thanks to anonymous for reporting:
+			// https://pic.mingtuiw.com/2025/08/18e7ccd2e5daeb1e93b01241ba5e2e9e-400x396.jpg
+			domain === "pic.mingtuiw.com" ||
 			// thanks to anonymous for reporting:
 			// https://cdn.entameclip.com/2024/10/pic20241023kimitoband1-300x225.jpg
 			//   https://cdn.entameclip.com/2024/10/pic20241023kimitoband1.jpg
@@ -37073,17 +37127,17 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					var imgid = get_zhimg_id(src);
 					if (imgid) {
 						for (var _a = 0, _b = document.querySelectorAll("img[data-original-token]"); _a < _b.length; _a++) {
-							var el_1 = _b[_a];
+							var el_2 = _b[_a];
 							var el_urls = [];
-							array_upush(el_urls, el_1.src);
-							array_upush(el_urls, el_1.getAttribute("data-default-watermark-src"));
-							array_upush(el_urls, el_1.getAttribute("data-original"));
-							array_upush(el_urls, el_1.getAttribute("data-actualsrc"));
+							array_upush(el_urls, el_2.src);
+							array_upush(el_urls, el_2.getAttribute("data-default-watermark-src"));
+							array_upush(el_urls, el_2.getAttribute("data-original"));
+							array_upush(el_urls, el_2.getAttribute("data-actualsrc"));
 							for (var _c = 0, el_urls_1 = el_urls; _c < el_urls_1.length; _c++) {
 								var url_4 = el_urls_1[_c];
 								var elid = get_zhimg_id(url_4);
 								if (elid === imgid) {
-									newsrc = "https://pica.zhimg.com/" + el_1.getAttribute("data-original-token") + ".jpg";
+									newsrc = "https://pica.zhimg.com/" + el_2.getAttribute("data-original-token") + ".jpg";
 									if (newsrc !== src)
 										return newsrc;
 								}
@@ -41241,11 +41295,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return false;
 			};
 			if (options.element.tagName === "IMG" && has_discord_class_1(options.element, "lazyImg")) {
-				var el_2 = common_functions["get_parent_el_matching"](options.element, function(x) {
+				var el_3 = common_functions["get_parent_el_matching"](options.element, function(x) {
 					return has_discord_class_1(x, "imageWrapper");
 				});
-				if (el_2) {
-					var ael_1 = el_2.querySelector('a[data-role="img"]');
+				if (el_3) {
+					var ael_1 = el_3.querySelector('a[data-role="img"]');
 					return ael_1.href;
 				}
 			}
@@ -45214,6 +45268,17 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://cdn.okdress.co.nz/media/catalog/product/cache/1/small_image/400x600/va/crqx3207/yhhv4ee5.jpg?1497240049
 			//   https://cdn.okdress.co.nz/media/catalog/product/va/crqx3207/yhhv4ee5.jpg?1497240049
 			return src.replace(/(\/media\/catalog\/product\/)cache\/[0-9]*\/[^/]*\/[0-9]+x[0-9]+\//, "$1");
+		}
+		if (domain_nowww === "robertdyas.co.uk" ||
+			/\/media\/+catalog\/+product\//.test(src)) {
+			// thanks to anonymous for reporting:
+			// https://www.robertdyas.co.uk/media/catalog/product/5/3/537086_1.jpg?quality=80&bg-color=255,255,255&fit=bounds&height=550&width=550&canvas=550:550
+			//   https://www.robertdyas.co.uk/media/catalog/product/5/3/537086_1.jpg
+			if (/\/media\/+catalog\/+product\//.test(src)) {
+				newsrc = remove_queries(src, ["quality", "bg-color", "fit", "height", "width", "canvas"]);
+				if (newsrc !== src)
+					return newsrc;
+			}
 		}
 		if (domain === "img.nextmag.com.tw") {
 			// http://img.nextmag.com.tw//campaign/28/640x_dc09fc97b8f881555c21e8df08f39d01.jpg
@@ -52711,6 +52776,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						if (!info)
 							return cb(null);
 						find_image_info_1(info, match[1], null, function(image) {
+							if (!image)
+								return cb(null);
 							if (image.media !== "photo" && image.media !== "video") {
 								console.warn(cache_key, "Unhandled media type", image.media, image);
 							}
@@ -76583,6 +76650,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					url: src,
 					bad: "mask"
 				};
+			// thanks to anonymous for reporting:
+			// https://kpopping.com/api/kpics-image?url=https%3A%2F%2Flegacy.kpopping.com%2F30%2F4%2F220828-BLACKPINK-at-MTV-Video-Music-Awards-documents-9.jpeg&size=display-small&v=3
+			//   https://legacy.kpopping.com/30/4/220828-BLACKPINK-at-MTV-Video-Music-Awards-documents-9.jpeg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+api\/+kpics-image\?(?:.*&)?url=([^&#]+)(?:[&#].*)?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 			// https://kpopping.com/uploads/documents/kpics_related-cropped/ro90108367_ori.jpeg
 			//   https://kpopping.com/uploads/documents/kpics_gallery-kept/ro90108367_ori.jpeg
 			//   https://kpopping.com/uploads/documents/ro90108367_ori.jpeg
@@ -123862,6 +123935,104 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (newsrc)
 				return newsrc;
 		}
+		if (domain_nowww === "starwalk.space") {
+			// thanks to anonymous for reporting:
+			// https://starwalk.space/gallery/images/best-celestial-events-2026-october/it/1140x641.jpg
+			//   https://starwalk.space/gallery/images/best-celestial-events-2026-october/it/original
+			// https://starwalk.space/gallery/images/mercury-quiz-intro-1/320x180.jpg
+			//   https://starwalk.space/gallery/images/mercury-quiz-intro-1/original
+			// https://starwalk.space/gallery/images/meteor-showers-quiz-intro-2/200x112.jpg
+			//   https://starwalk.space/gallery/images/meteor-showers-quiz-intro-2/original -- 2912x1632
+			return src.replace(/(\/gallery\/+images\/+[^/]+\/+(?:it\/+)?)[0-9]+x[0-9]+(?:\.[a-z]+)(?:[?#].*)?$/, "$1original");
+		}
+		if (domain_nowww === "puregirl.tv") {
+			// https://puregirl.tv/_ipx/f_webp&fit_cover&q_85&s_320x180/https://puregirl.tv/preview/image/{...}.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+_ipx\/+[a-z]+_[^/]+\/+(https?:\/\/[^/]+\/+.*)$/, "$1");
+			if (newsrc !== src)
+				return newsrc;
+			// https://puregirl.tv/preview/image/68747470{...}.jpg
+			match = src.match(/:\/\/[^/]+\/+preview\/+image\/+(68747470[^/.?#]+)\./);
+			if (match) {
+				return hex_to_ascii(match[1]);
+			}
+			// thanks to anonymous for reporting:
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+post\/+(?:[^/?#]*\.)?([-0-9a-f]{10,})(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/post/${id}",
+				process: function(done, resp, cache_key) {
+					var nuxt_data = common_functions["parse_nuxt"](resp.responseText);
+					if (!nuxt_data) {
+						console_error(cache_key, "Unable to get nuxt data from", resp);
+						return done(null, false);
+					}
+					var postpage_key = null;
+					for (var key_13 in nuxt_data.data) {
+						if (/^post-page-/.test(key_13)) {
+							postpage_key = key_13;
+							break;
+						}
+					}
+					if (!postpage_key) {
+						console_error(cache_key, "Unable to find postpage key in", { resp: resp, nuxt_data: nuxt_data });
+						return done(null, false);
+					}
+					var post = nuxt_data.data[postpage_key].post;
+					var file = post.playback_source[0].file;
+					if (/master\.m3u8(?:[?#].*)?$/.test(file)) {
+						var filename_2 = file.replace(/[?#].*$/, "").replace(/^.*\/([^/.]+)\.[^/]+$/, "$1");
+						var filename_m5 = filename_2.replace(/^(.*).{5}$/, "$1");
+						file = file.replace(filename_2, reverse_str(filename_m5));
+					}
+					var urls = [];
+					if (post.playback_format_type === "hls") {
+						urls.push({
+							url: file,
+							video: "hls",
+							headers: {
+								Accept: "*/*",
+								Referer: "https://" + domain + "/",
+								"Sec-Fetch-Dest": "video",
+								"Sec-Fetch-Mode": "no-cors",
+								"Sec-Fetch-Site": "same-site"
+							}
+						});
+					}
+					if (post.image_url)
+						urls.push(post.image_url);
+					var baseobj = {
+						extra: {
+							page: resp.finalUrl,
+							caption: post.title
+						}
+					};
+					return done(fillobj_urls(urls, baseobj), 60 * 60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
+		}
+		if (domain === "images.westend61.de") {
+			// thanks to anonymous for reporting:
+			// https://images.westend61.de/{id}l/{...}.jpg
+			//   https://images.westend61.de/{id}e/{...}.jpg
+			// e, l, f, j, k, i, h, g, c, b, a, d
+			newsrc = src.replace(/(:\/\/[^/]+\/+[0-9]+)[lfjkihgcbad]\//, "$1e/");
+			if (newsrc !== src)
+				return newsrc;
+			newsrc = src.replace(/(:\/\/[^/]+\/+[0-9]+)e\//, "$1pw/");
+			if (newsrc !== src) {
+				return {
+					url: newsrc,
+					problems: { watermark: true }
+				};
+			}
+		}
+		if (domain_nowww === "fisharchive.cc") {
+			// thanks to anonymous for reporting:
+			// https://fisharchive.cc/character-art/v1/small/chatgpt-full.webp
+			//   https://fisharchive.cc/character-art/v1/view/chatgpt-full.webp
+			return src.replace(/(\/character-art\/+v[0-9]+\/+)small\/+/, "$1view/");
+		}
 		// -- general rules --
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			// http://www.lookalikes.info/umbraco/ImageGen.ashx?image=/media/97522/nick%20hewer%20-%20mark%20brown.jpeg&width=250&constrain=true
@@ -125369,8 +125540,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			if (match) {
 				var year = match[3];
 				var month_1 = zpadnum(match[2], 2);
-				var filename_2 = match[1];
-				return src.replace(/\/wp-content\/+uploads\/+elementor\/+thumbs\/+[^/]+\./, "/wp-content/uploads/" + year + "/" + month_1 + "/" + filename_2 + ".");
+				var filename_3 = match[1];
+				return src.replace(/\/wp-content\/+uploads\/+elementor\/+thumbs\/+[^/]+\./, "/wp-content/uploads/" + year + "/" + month_1 + "/" + filename_3 + ".");
 			}
 		}
 		// joomgallery
@@ -133076,7 +133247,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								out_filename = prefix + "out";
 								cleanup = function(delete_out) {
 									return __awaiter(this, void 0, void 0, function() {
-										var _i, filenames_1, filename_3, e_2;
+										var _i, filenames_1, filename_4, e_2;
 										return __generator(this, function(_a) {
 											switch (_a.label) {
 												case 0:
@@ -133084,8 +133255,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 													_a.label = 1;
 												case 1:
 													if (!(_i < filenames_1.length)) return [3 /*break*/, 4];
-													filename_3 = filenames_1[_i];
-													return [4 /*yield*/, ffmpeg.deleteFile(filename_3)];
+													filename_4 = filenames_1[_i];
+													return [4 /*yield*/, ffmpeg.deleteFile(filename_4)];
 												case 2:
 													_a.sent();
 													_a.label = 3;
