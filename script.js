@@ -183,7 +183,34 @@ function main_reqsupport(e) {
     sending_request = false;
 
     if (status) {
-      maxspanel.innerHTML = "Site request sent!";
+      maxspanel.innerHTML = "<p>Site request sent!</p><p><a href=\"#\" id=\"reqsite_add_extra_info\">Add extra info to the request</a></p>";
+
+      var add_extra_info_el = document.getElementById("reqsite_add_extra_info");
+      if (add_extra_info_el) {
+        add_extra_info_el.onclick = function() {
+          maxspanel.innerHTML = "<textarea id=\"reqsite_extra_info_text\"></textarea><button id=\"reqsite_extra_info_send\">Send</button>";
+
+          var extra_info_text_el = document.getElementById("reqsite_extra_info_text");
+          var extra_info_send_el = document.getElementById("reqsite_extra_info_send");
+          if (extra_info_send_el && extra_info_text_el) {
+            extra_info_send_el.onclick = function() {
+              var value = extra_info_text_el.value;
+
+              maxspanel.innerHTML = "Sending...";
+
+              reqsite_discord(url, "b64:" + btoa(extra_info_text_el.value), function(status, msg) {
+                if (status) {
+                  maxspanel.innerHTML = "Sent!"
+                } else {
+                  maxspanel.innerHTML = "Failed to send request: " + msg;
+                }
+              })
+            };
+          } else {
+            maxspanel.innerHTML = "Failed to load.";
+          }
+        };
+      }
     } else {
       maxspanel.innerHTML = "Failed to send request: " + msg;
     }
