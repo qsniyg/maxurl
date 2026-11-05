@@ -21493,6 +21493,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "img.img-cdn.yle.fi" ||
 			(domain_nosub === "hscicdn.com" && /^img[0-9]*\./.test(domain)) ||
 			domain === "media-catalog.giglio.com" ||
+			(domain === "media.truereligion.com" && /\/image\/+upload\//.test(src)) ||
 			domain === "resource.logitechg.com") {
 			newsrc = src
 				.replace(/%2C/g, ",")
@@ -75466,6 +75467,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 		}
 		if (domain_nowww === "fisharchive.cc") return src.replace(/(\/character-art\/+v[0-9]+\/+)small\/+/, "$1view/");
+		if (domain === "uploads.scratch.mit.edu" ||
+			(domain_nosub === "mit.edu" && /^cdn[0-9]*\.scratch\./.test(domain))) {
+			return src.replace(/(\/get_image\/+project\/+[0-9]+)_[0-9]+x[0-9]+\./, "$1_999999x999999.");
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
