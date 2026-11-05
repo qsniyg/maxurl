@@ -32872,6 +32872,10 @@ var $$IMU_EXPORT$$;
 			// https://media-catalog.giglio.com/images/f_auto/t_default/v1/products/H79691.009_1/polo-ralph-lauren.jpg
 			//   https://media-catalog.giglio.com/images/products/H79691.009_1/polo-ralph-lauren.jpg
 			domain === "media-catalog.giglio.com" ||
+			// thanks to anonymous for reporting:
+			// https://media.truereligion.com/image/upload/t_kiosk_small/f_auto,q_auto/210631_1001_dtl1
+			//   https://media.truereligion.com/image/upload/210631_1001_dtl1
+			(domain === "media.truereligion.com" && /\/image\/+upload\//.test(src)) ||
 			// thanks to karpuzikov on github: https://github.com/qsniyg/maxurl/issues/1066
 			// https://resource.logitechg.com/w_677,ar_1:1,c_limit,b_rgb:2f3132,q_auto,f_auto,dpr_auto/d_transparent.gif/content/dam/gaming/en/homepage/product-swatch-carousel/home-product-swatch-4.png?v=1
 			//   https://resource.logitechg.com/content/dam/gaming/en/homepage/product-swatch-carousel/home-product-swatch-4.png?v=1
@@ -137869,6 +137873,15 @@ var $$IMU_EXPORT$$;
 			// https://fisharchive.cc/character-art/v1/small/chatgpt-full.webp
 			//   https://fisharchive.cc/character-art/v1/view/chatgpt-full.webp
 			return src.replace(/(\/character-art\/+v[0-9]+\/+)small\/+/, "$1view/");
+		}
+
+		if (domain === "uploads.scratch.mit.edu" ||
+			// https://cdn2.scratch.mit.edu/get_image/project/1374426228_144x108.png
+			(domain_nosub === "mit.edu" && /^cdn[0-9]*\.scratch\./.test(domain))) {
+			// thanks to anonymous:
+			// https://uploads.scratch.mit.edu/get_image/project/1374426228_144x108.png
+			//   https://uploads.scratch.mit.edu/get_image/project/1374426228_999999x999999.png
+			return src.replace(/(\/get_image\/+project\/+[0-9]+)_[0-9]+x[0-9]+\./, "$1_999999x999999.");
 		}
 
 
