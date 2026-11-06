@@ -43,39 +43,39 @@ var __assign = (this && this.__assign) || function() {
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 10,000+ websites, including a powerful media popup and download feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 10,000 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 10,000 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 10,000 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 10,000 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 10,000 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 10,000 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 10,000 sitios
-// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 10,000 verkkosivustolle
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 10 000 sites web, y compris une puissante fonction de popup média
-// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 10 000 sites web, y compris une puissante fonction de popup média
-// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-10,000 אתרים
-// @description:hi    10,000 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
-// @description:hu    Több mint 10,000 webhely képének és videóinak nagyobb vagy eredeti változatát találja
-// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 10,000 situs web
-// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 10,000 siti web
-// @description:ja    10,000以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ko    10,000개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 10,000 nettsteder
-// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 10,000 websites
-// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 10,000 stron internetowych
-// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 10,000 sites
-// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 10,000+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 10,000 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 10,000 веб-сайтів
-// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 10,000 งเว็บไซต์
-// @description:tr    10,000'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
-// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 10,000 trang web
+// @description       Finds larger or original versions of images and videos for 11,000+ websites, including a powerful media popup and download feature
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 11,000 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 11,000 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 11,000 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 11,000 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 11,000 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 11,000 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 11,000 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 11,000 verkkosivustolle
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 11 000 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 11 000 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-11,000 אתרים
+// @description:hi    11,000 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
+// @description:hu    Több mint 11,000 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 11,000 situs web
+// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 11,000 siti web
+// @description:ja    11,000以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ko    11,000개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 11,000 nettsteder
+// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 11,000 websites
+// @description:pl    Wyszukuje większe lub oryginalne wersje obrazów i filmów dla ponad 11,000 stron internetowych
+// @description:pt-BR Encontra versões maiores ou originais de imagens e vídeos para mais de 11,000 sites
+// @description:ru    Находит увеличенные или оригинальные версии изображений и видео для 11,000+ сайтов. Имеет мощную функцию всплывающего окна и скачивание медиафайлов.
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 11,000 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 11,000 веб-сайтів
+// @description:th    หาที่ใหญ่กว่าหรือเวอร์ชั่นดั้งเดิมของภาพทั้งหมดและวีดีโอสำหรับมากกว่า 11,000 งเว็บไซต์
+// @description:tr    11,000'den fazla web sitesi için resim ve videoların daha büyük veya orijinal sürümlerini bulur
+// @description:vi    Tìm phiên bản lớn hơn hoặc phiên bản gốc của hình ảnh và video cho hơn 11,000 trang web
 // @description:zh-CN 在近万个网站上查找尺寸更大或原版的图像/视频，提供媒体文件小弹窗和下载功能
-// @description:zh-TW 為10,000多個網站查找更大或原始圖像
-// @description:zh-HK 為10,000多個網站查找更大或原始圖像
+// @description:zh-TW 為11,000多個網站查找更大或原始圖像
+// @description:zh-HK 為11,000多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2026.6.0
+// @version           2026.11.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -113,7 +113,7 @@ var __assign = (this && this.__assign) || function() {
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@cfc76aef6a904090e33d13b7bce01275cbeb7ed1/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@3e20b161ce726dbafd037f90dec7208e7f774b20/build/rules.js
 // ==/UserScript==
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
 //   * Detecting whether or not the destination URL exists before redirecting
@@ -223,7 +223,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
 	var imu_icon = "https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png";
-	var current_version = "2026.6.0";
+	var current_version = "2026.11.0";
 	var imagetab_ok_override = false;
 	var has_ffmpeg_lib = true;
 	// -- Currently this is unused, it'll be used in a future release (to workaround the 1MB and 2MB limits for OUJS and Greasyfork respectively) --
@@ -532,7 +532,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	var base64_decode, base64_encode, is_array, array_indexof, string_indexof, 
 	// https://www.bing.com/ overrides Blob
 	// https://www.dpreview.com/ overrides URL
-	native_blob, native_URL, new_blob, our_EventTarget, our_addEventListener, our_removeEventListener, string_fromcharcode, string_charat, array_reduce, array_reduce_prototype, set_timeout, clear_timeout, document_createElement;
+	native_blob, native_URL, new_blob, our_EventTarget, our_addEventListener, our_removeEventListener, string_fromcharcode, string_charat, array_reduce, array_reduce_prototype, set_timeout, clear_timeout, set_interval, clear_interval, document_createElement;
 	if (is_node) {
 		base64_decode = function(a) {
 			return Buffer.from(a, 'base64').toString('binary');
@@ -949,27 +949,97 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		};
 		get_compat_blob();
 		var get_compat_settimeout = function() {
-			// ublock on txxx.com blocks settimeout
-			// TODO: support setInterval blocked and requestAnimationFrame fallback
 			var good = {
-				timeout: false
+				timeout: false,
+				interval: false
 			};
-			try {
-				setTimeout(function() { }, 1);
-				good.timeout = true;
-			} catch (e) {
-			}
+			// ublock on txxx.com blocks settimeout
+			(function() {
+				try {
+					setTimeout(function() { }, 1);
+					good.timeout = true;
+				} catch (e) {
+				}
+			})();
+			// ublock on temu.com blocks setInterval
+			(function() {
+				var interval = null;
+				try {
+					interval = setInterval(function() { }, 10);
+					good.interval = true;
+				} catch (e) {
+				}
+				if (interval) {
+					try {
+						clearInterval(interval);
+					} catch (e) { }
+				}
+			})();
 			if (good.timeout) {
 				set_timeout = setTimeout;
 				clear_timeout = clearTimeout;
 			} else {
-				set_timeout = function(func, timeout) {
-					var interval = setInterval(function() {
-						clearInterval(interval);
-						func();
-					}, timeout);
+				if (good.interval) {
+					set_timeout = function(func, timeout) {
+						var interval = setInterval(function() {
+							clearInterval(interval);
+							func();
+						}, timeout);
+					};
+					clear_timeout = clearInterval;
+				} else {
+					var timeouts_1 = {};
+					var lasttimeout_1 = 1;
+					set_timeout = function(func, timeout) {
+						var timeout_id = lasttimeout_1++;
+						var start_time = performance.now();
+						timeouts_1[timeout_id] = true;
+						requestAnimationFrame(function() {
+							if (!(timeout_id in timeouts_1))
+								return;
+							var current_time = performance.now();
+							if (current_time - start_time >= timeout) {
+								func();
+							}
+						});
+						return timeout_id;
+					};
+					clear_timeout = function(timeout_id) {
+						delete timeouts_1[timeout_id];
+					};
+				}
+			}
+			if (good.interval) {
+				set_interval = setInterval;
+				clear_interval = clearInterval;
+			} else {
+				// interval assumes we have a working set_timeout
+				var intervals_1 = {};
+				var lastinterval_1 = 1;
+				set_interval = function(func, timeout) {
+					var interval_id = lastinterval_1++;
+					var timer = null;
+					var timerfunc = function() {
+						try {
+							func();
+						} catch (e) {
+							console_error(e);
+						}
+						runtimer();
+					};
+					var runtimer = function() {
+						timer = set_timeout(timerfunc, timeout);
+						intervals_1[interval_id] = timer;
+					};
+					runtimer();
+					return interval_id;
 				};
-				clear_timeout = clearInterval;
+				clear_interval = function(interval_id) {
+					if (!(interval_id in intervals_1))
+						return;
+					clear_timeout(intervals_1[interval_id]);
+					delete intervals_1[interval_id];
+				};
 			}
 		};
 		get_compat_settimeout();
@@ -1308,6 +1378,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				newtext = newnum.toString(26);
 			} else if (num === "both") {
 				newtext = newnum.toString(36);
+			} else if (num === "hex") {
+				newtext = newnum.toString(16);
 			} else {
 				newtext = newnum.toString(10);
 			}
@@ -2111,6 +2183,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					finalcb(resp, true);
 				};
 			}
+			// scriptcat returns a finalUrl of "" for data: urls
+			(function(real_onload) {
+				data.onload = function(resp) {
+					if (!resp.finalUrl && data.url && /^data:/.test(data.url)) {
+						resp.finalUrl = data.url;
+					}
+					return real_onload(resp);
+				};
+			})(data.onload);
 			if (data.responseType === "blob" && !settings.use_blob_over_arraybuffer) {
 				(function(real_onload) {
 					data.onload = function(resp) {
@@ -2216,6 +2297,17 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	} else if (is_interactive) {
 		console.warn("Unable to initialize do_request, most functions will likely fail");
 	}
+	// creates an element that can be verifiably be created by IMU
+	// note that this is only secure under the extension/firefox version, and the element cannot be added to the DOM.
+	var imu_el_nonce = get_random_text(20, "both");
+	var document_createElement_imu = function(tagName) {
+		var el = document_createElement(tagName);
+		el["__imu_nonce"] = imu_el_nonce;
+		return el;
+	};
+	var is_imu_el = function(el) {
+		return "__imu_nonce" in el && el["__imu_nonce"] === imu_el_nonce;
+	};
 	var fixup_filename = function(filename) {
 		var special_regex = /["<>/:?\\*|\^]/g;
 		if (settings.filename_replace_special_underscores)
@@ -2604,6 +2696,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			} else {
 				console_error("Bad status", resp.status, resp);
+				return options.onload(null, resp);
+			}
+			if (!resp.response) {
+				console_error("No response", resp);
 				return options.onload(null, resp);
 			}
 			data = new Uint8Array(Math_max(content_length, resp.response.byteLength));
@@ -12723,7 +12819,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				url = currentobj.url;
 			}
 			url = url;
-			var regex = /(.*)\.([^/.]*?)([?#].*)?$/;
+			var regex = /([^?#]*)\.([^/.?#]*?)([?#].*)?$/;
 			if (!url.match(regex)) {
 				result.push(currentobj);
 				continue;
@@ -13397,6 +13493,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 	}
 	var parse_headers = function(headerstr) {
+		// occasionally check_image calls this with null or undefined
+		if (!headerstr)
+			return [];
 		var headers = [];
 		var splitstr = "\r\n";
 		if (string_indexof(headerstr, "\r") < 0) {
@@ -14068,10 +14167,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	var get_image_size = function(url, cb) {
 		var image = new Image();
 		var timeout = null;
-		var finalcb = function(e) {
+		var finalcb = function() {
 			image.onload = null;
 			image.onerror = null;
-			clear_timeout(timeout);
+			clear_interval(timeout);
 			var x, y;
 			if (!image.naturalHeight || !image.naturalWidth) {
 				x = null;
@@ -14083,7 +14182,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			cb(x, y);
 		};
 		image.onload = image.onerror = finalcb;
-		timeout = setInterval(function() {
+		timeout = set_interval(function() {
 			if (image.naturalHeight && image.naturalWidth) {
 				finalcb();
 			}
@@ -14169,7 +14268,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		return parsed;
 	};
 	var get_meta = function(text, property) {
-		var regex = new RegExp("<meta\\s+(?:(?:property|name|itemprop)=[\"']?" + property + "[\"']?\\s+(?:content|value|href)=[\"']([^'\"]+)[\"']|(?:content|value|href)=[\"']([^'\"]+)[\"']\\s+(?:property|name|itemprop)=[\"']?" + property + "[\"']?)\\s*\/?>", "i");
+		var regex = new RegExp("<meta\\s+(?:[^>]*\\s+)?(?:(?:property|name|itemprop)=[\"']?" + property + "[\"']?\\s+(?:content|value|href)=[\"']([^'\"]+)[\"']|(?:content|value|href)=[\"']([^'\"]+)[\"']\\s+(?:property|name|itemprop)=[\"']?" + property + "[\"']?)\\s*\/?>", "i");
 		var match = text.match(regex);
 		if (!match)
 			return null;
@@ -14378,8 +14477,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	var fixup_js_obj_proper = function(objtext) {
 		var parsed = parse_js_obj(objtext, js_obj_token_types);
 		//console.log(parsed);
-		if (!parsed)
-			throw "unable to parse";
+		if (!parsed) {
+			throw "fixup_js_obj_proper: unable to parse";
+		}
 		var token_types = {
 			whitespace: " ",
 			jvarname: function(x) { return '"' + x + '"'; },
@@ -15610,6 +15710,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (!websessionid) {
 					console_warn("Unable to find value for x-web-session-id");
 				}
+				var maxtouchpoints = 0;
+				try {
+					maxtouchpoints = navigator.maxTouchPoints || 0;
+				} catch (e) {
+					console_warn("Unable to find maxTouchPoints");
+				}
 				// https://www.instagram.com/static/bundles/es6/ConsumerLibCommons.js/...
 				var headers = {
 					"Accept": "*/*",
@@ -15619,8 +15725,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					// same as of jan 26 2025
 					// id as of sept 22 2025: 359341
 					// same as of apr 10 2026
+					// same as of aug 1 2026
 					// TODO: x-csrftoken (csrftoken cookie)
 					"X-IG-App-ID": "936619743392459", // instagramWebDesktopFBAppId
+					"X-IG-Max-Touch-Points": maxtouchpoints,
 					"X-Requested-With": "XMLHttpRequest",
 					"Origin": "https://www.instagram.com",
 					"Referer": "https://www.instagram.com/",
@@ -18059,11 +18167,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					urls.push({
 						url: newsrc,
 						extra: {
-							page: data.link_url,
-							caption: data.video_title
+							page: data.link_url || data.videoUrl,
+							caption: data.video_title || data.title
 						},
 						headers: {
-							Referer: data.link_url
+							Referer: data.link_url || data.videoUrl
 						},
 						video: video,
 						is_private: true // linked to IP
@@ -18492,11 +18600,29 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		});
 		return urls;
 	};
+	common_functions["get_ldjsons"] = function(resptext) {
+		var ldjsons = [];
+		var matches = match_all(resptext, /<script[^>]* type="application\/ld\+json"[^>]*>\s*([\s\S]*?)\s*<\/script>/i);
+		for (var _i = 0, matches_3 = matches; _i < matches_3.length; _i++) {
+			var match = matches_3[_i];
+			var json = null;
+			try {
+				json = JSON_parse(match[1]);
+			} catch (e) {
+				console_error(e);
+				continue;
+			}
+			ldjsons.push(json);
+		}
+		return ldjsons;
+	};
 	common_functions["fill_ldjson"] = function(urls, resp, options) {
 		if (!options)
 			options = {};
 		if (!("baseobj" in options))
 			options.baseobj = {};
+		if (!("video" in options))
+			options.video = true;
 		if (!("thumbnail" in options))
 			options.thumbnail = true;
 		if (!("overwrite_mode" in options))
@@ -18510,12 +18636,19 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			urls = [urls];
 		urls = urls;
 		var ldjson = {};
-		var ldjsonmatch = resp.responseText.match(/<script[^>]* type="application\/ld\+json"[^>]*>\s*([\s\S]*?)\s*<\/script>/i);
-		if (ldjsonmatch && options.ldjson) {
+		var ldjsontxt = null;
+		if (typeof options.ldjson === "string") {
+			ldjsontxt = options.ldjson;
+		} else {
+			var ldjsonmatch = resp.responseText.match(/<script[^>]* type="application\/ld\+json"[^>]*>\s*([\s\S]*?)\s*<\/script>/i);
+			if (ldjsonmatch)
+				ldjsontxt = ldjsonmatch[1];
+		}
+		if (ldjsontxt && options.ldjson) {
 			try {
-				ldjson = JSON_parse(ldjsonmatch[1]);
+				ldjson = JSON_parse(ldjsontxt);
 			} catch (e) {
-				console_warn("Unable to parse ld+json", { e: e, ldjsonmatch: ldjsonmatch });
+				console_warn("Unable to parse ld+json", { e: e, ldjsontxt: ldjsontxt });
 			}
 			if (typeof ldjson !== "object")
 				ldjson = {};
@@ -18600,6 +18733,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			page = resp.finalUrl;
 		if (page)
 			baseobj.extra.page = page;
+		if (options.video) {
+			var ogvideo = get_meta(resp.responseText, "og:video");
+			if (ogvideo) {
+				urls.push({
+					url: urljoin(resp.finalUrl, ogvideo, true),
+					video: true
+				});
+			}
+		}
 		if (options.thumbnail) {
 			var ogimage = get_meta(resp.responseText, "og:image");
 			if (!ogimage)
@@ -18780,7 +18922,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (jsontext) {
 			// remove comments
 			jsontext = jsontext.replace(/\n\s*\/\/.*/ig, "");
-			var proper_json = fixup_js_obj_proper(jsontext);
+			var proper_json = void 0;
+			try {
+				proper_json = fixup_js_obj_proper(jsontext);
+			} catch (e) {
+				console_error(e, { resp: resp, jsontext: jsontext, jwplayerstr: jwplayerstr });
+				return null;
+			}
 			try {
 				json = JSON_parse(proper_json);
 			} catch (e) {
@@ -20062,6 +20210,83 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		}
 		return result;
 	};
+	common_functions["sha256"] = function(message, cb) {
+		var _this_1 = this;
+		(function() { return __awaiter(_this_1, void 0, void 0, function() {
+			var hex, buffer, hashbuffer, hashuint8, e_1;
+			return __generator(this, function(_a) {
+				switch (_a.label) {
+					case 0:
+						hex = null;
+						_a.label = 1;
+					case 1:
+						_a.trys.push([1, 3, , 4]);
+						buffer = new TextEncoder().encode(message);
+						return [4 /*yield*/, crypto.subtle.digest('SHA-256', buffer)];
+					case 2:
+						hashbuffer = _a.sent();
+						hashuint8 = new Uint8Array(hashbuffer);
+						hex = numberarray_to_hex(hashuint8);
+						return [3 /*break*/, 4];
+					case 3:
+						e_1 = _a.sent();
+						console.error(e_1);
+						return [3 /*break*/, 4];
+					case 4:
+						cb(hex);
+						return [2 /*return*/];
+				}
+			});
+		}); })();
+	};
+	common_functions["parse_nuxt"] = function(nuxt_array) {
+		if (typeof nuxt_array === "string") {
+			var nuxt_array_match = nuxt_array.match(/<script[^>]*\sid=["']__NUXT_DATA__["'][^>]*>(.*?)<\/script>/);
+			if (nuxt_array_match) {
+				return common_functions["parse_nuxt"](JSON_parse(nuxt_array_match[1]));
+			} else {
+				console_error("Unable to get nuxt match from", { nuxt_array: nuxt_array });
+				return null;
+			}
+		}
+		var root = nuxt_array[0];
+		var is_number_array = function(array) {
+			for (var _i = 0, array_1 = array; _i < array_1.length; _i++) {
+				var el = array_1[_i];
+				if (typeof el !== "number")
+					return false;
+			}
+			return true;
+		};
+		var parse_el = function(el) {
+			if (is_array(el)) {
+				if (el.length === 2 && typeof el[0] === "string" && typeof el[1] === "number") {
+					if (el[0] === "ShallowReactive") {
+						return parse_el(nuxt_array[el[1]]);
+					} else if (el[0] === "Reactive") {
+						return deepcopy(parse_el(nuxt_array[el[1]]));
+					}
+				}
+				if (is_number_array(el)) {
+					var result = [];
+					for (var _i = 0, el_1 = el; _i < el_1.length; _i++) {
+						var sub_el_id = el_1[_i];
+						result.push(parse_el(nuxt_array[sub_el_id]));
+					}
+					return result;
+				}
+				return el;
+			} else if (el && typeof el === "object") {
+				var result = {};
+				for (var key in el) {
+					result[key] = parse_el(nuxt_array[el[key]]);
+				}
+				return result;
+			}
+			return el;
+		};
+		return parse_el(root);
+	};
 	// -- end common_functions --
 	var get_domain_from_url = function(url) {
 		return url.replace(/^[a-z]+:\/\/([^/]*)(?:\/+.*)?$/, "$1");
@@ -20225,13 +20450,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "24kjp3d2fjodjp2j") {
+	            } else if (bigimage_obj.nonce !== "76h5lp2pocnom257") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "24kjp3d2fjodjp2j"
+	                    message: "Bad nonce, expected: " + "76h5lp2pocnom257"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -20911,7 +21136,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			};
 		}
-		if (host_domain_nowww === "imagefap.com" && /\/photo\/+[0-9]+\//.test(options.host_url)) {
+		if (false && host_domain_nowww === "imagefap.com" && /\/photo\/+[0-9]+\//.test(options.host_url)) {
 			return {
 				gallery: function(el, nextprev) {
 					if (el.tagName !== "IMG" || !options.do_request)
@@ -21559,8 +21784,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (!/\/search\?(?:.*&)?async=/.test(req.url) || !/[?&]s=images/.test(req.url))
 						return;
 					var matches = match_all(resp.response, /\[[0-9]+,\\"([^"]+)\\",\[\\"https:\/\/[^/]+\.gstatic\.com\/images\?q[^"]+\\"[^\]]+\],\[\\"([^"]+)\\"/);
-					for (var _i = 0, matches_9 = matches; _i < matches_9.length; _i++) {
-						var match = matches_9[_i];
+					for (var _i = 0, matches_10 = matches; _i < matches_10.length; _i++) {
+						var match = matches_10[_i];
 						var tbnid_raw = match[1];
 						var tbnid = unjson_str_1(unjson_str_1(tbnid_raw));
 						var url_raw = match[2];
@@ -21645,6 +21870,23 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			};
 		}
+		if (host_domain_nosub === "fikfap.com") {
+			// thanks to anonymous for reporting:
+			return {
+				element_ok: function(el) {
+					if (!el.parentElement)
+						return;
+					var props = common_functions["get_react_props"](el.parentElement);
+					if (!props)
+						return;
+					if (props.children && is_array(props.children) && props.children[0] && props.children[0].props && props.children[0].props.src) {
+						var videoel = el.querySelector("video");
+						if (videoel)
+							return videoel;
+					}
+				}
+			};
+		}
 		return null;
 	};
 	var do_get_helpers = function(options) {
@@ -21713,9 +21955,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return result;
 		if (typeof result === "string") {
 			var url = result;
-			result = document_createElement("img");
+			result = document_createElement_imu("img");
 			// don't set src, because otherwise the browser will try to load it
 			result.setAttribute("data-imu-fake-src", url);
+			if (popup_obj) {
+				if (!result.hasAttribute("imu-obj")) {
+					result.setAttribute("imu-obj", JSON_stringify(popup_obj));
+				}
+			}
 		}
 		if (!result.hasAttribute("imu-album-info")) {
 			// album_info can be modified by _get_album_info_gallery, so we must re-stringify it
@@ -21729,8 +21976,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return obj;
 		obj = force_array(obj);
 		var newobj = [];
-		for (var _i = 0, obj_18 = obj; _i < obj_18.length; _i++) {
-			var url = obj_18[_i];
+		for (var _i = 0, obj_19 = obj; _i < obj_19.length; _i++) {
+			var url = obj_19[_i];
 			if (typeof (url) === "string") {
 				newobj.push(fullurl(currenturl, url));
 			} else {
@@ -22579,7 +22826,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			});
 		};
 		(function() { return __awaiter(_this_1, void 0, void 0, function() {
-			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_19, sobj, _a, queryobj_1, obj_20, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
+			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_20, sobj, _a, queryobj_1, obj_21, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
 			return __generator(this, function(_c) {
 				switch (_c.label) {
 					case 0:
@@ -22620,8 +22867,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							}
 						}
 						queryobj = [];
-						for (_i = 0, obj_19 = obj; _i < obj_19.length; _i++) {
-							sobj = obj_19[_i];
+						for (_i = 0, obj_20 = obj; _i < obj_20.length; _i++) {
+							sobj = obj_20[_i];
 							if (is_bad_url(sobj.url)) {
 								continue;
 							}
@@ -22629,9 +22876,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						}
 						// required to avoid querying an ok url twice
 						for (_a = 0, queryobj_1 = queryobj; _a < queryobj_1.length; _a++) {
-							obj_20 = queryobj_1[_a];
-							if (tried_urls.has(obj_20.url) && !is_bad_url(obj_20.url))
-								return [2 /*return*/, options.cb([obj_20], last_data)];
+							obj_21 = queryobj_1[_a];
+							if (tried_urls.has(obj_21.url) && !is_bad_url(obj_21.url))
+								return [2 /*return*/, options.cb([obj_21], last_data)];
 						}
 						if (!queryobj.length) {
 							if (_nir_debug_) {
@@ -22788,7 +23035,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		// IMG or IFRAME
 		// currentSrc is used if another image is used in the srcset
 		var src = el.currentSrc || el.src;
-		if (!src && el.tagName === "IMG") {
+		if (!src && el.tagName === "IMG" && is_imu_el(el)) {
 			// fake-src is used to avoid loading the image
 			var fake_src = el.getAttribute("data-imu-fake-src");
 			if (fake_src)
@@ -25991,8 +26238,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	var create_image_el = function(obj, good_cb, err_cb) {
 		var img = document_createElement("img");
 		set_common_el_properties(img, obj);
+		var height_interval = null;
 		var end_cbs = function() {
-			clearInterval(height_interval);
+			if (height_interval !== null) {
+				clear_interval(height_interval);
+				height_interval = null;
+			}
 			img.onload = null;
 			img.onerror = null;
 		};
@@ -26012,7 +26263,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			end_cbs();
 			err_cb();
 		};
-		var height_interval = setInterval(function() {
+		height_interval = set_interval(function() {
 			if (img.naturalWidth !== 0 && img.naturalHeight !== 0) {
 				end_cbs();
 				good_cb(img);
@@ -27370,6 +27621,28 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				});
 			};
 		})();
+		// hotscope.tv doesn't support blob workers, but supports data: urls
+		var is_blob_worker_supported = function(cb) {
+			var blob = new native_blob(["self.postMessage({})"]);
+			var objurl = create_objecturl(blob);
+			var resolved = false;
+			var resolve = function(value) {
+				if (resolved)
+					return;
+				resolved = true;
+				revoke_objecturl(objurl);
+				cb(value);
+			};
+			var worker = new Worker(objurl, {
+				type: void 0
+			});
+			worker.addEventListener("error", function() {
+				cb(false);
+			});
+			worker.addEventListener("message", function() {
+				cb(true);
+			});
+		};
 		var ffmpeg_progress_cb = null;
 		var get_ffmpeg_inner = function(cb) {
 			get_library("ffmpeg", settings, do_request, function(ffmpeg_lib) {
@@ -27474,7 +27747,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				console_error("Unable to load FFmpeg library: disabled for this build");
 				return cb(null);
 			}
-			get_ffmpeg_inner(cb);
+			is_blob_worker_supported(function(supported) {
+				if (!supported) {
+					console_error("Unable to load FFmpeg library: site doesn't support blob workers");
+					return cb(null);
+				} else {
+					get_ffmpeg_inner(cb);
+				}
+			});
+			//get_ffmpeg_inner(cb);
 			/*check_sharedarraybuffer(function(success) {
 				// if we don't check for this, ffmpeg will hang under firefox
 				if (!success) {
@@ -27618,20 +27899,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// files = array of {data: uint8array, mime: ...}, not filenames
 			var ffmpeg_concat = function(ffmpeg, files, cb) {
 				return __awaiter(this, void 0, void 0, function() {
-					var total_size, _i, files_2, file, out, current_size, _a, files_3, file, ourfilename, prefix, files_txt_filename, files_txt_files, filenames, i, file, filename, out_filename, cleanup;
+					var total_size, _i, files_3, file, out, current_size, _a, files_4, file, ourfilename, prefix, files_txt_filename, files_txt_files, filenames, i, file, filename, out_filename, cleanup;
 					return __generator(this, function(_b) {
 						switch (_b.label) {
 							case 0:
 								if (!true) return [3 /*break*/, 2];
 								total_size = 0;
-								for (_i = 0, files_2 = files; _i < files_2.length; _i++) {
-									file = files_2[_i];
+								for (_i = 0, files_3 = files; _i < files_3.length; _i++) {
+									file = files_3[_i];
 									total_size += file.data.byteLength;
 								}
 								out = new Uint8Array(total_size);
 								current_size = 0;
-								for (_a = 0, files_3 = files; _a < files_3.length; _a++) {
-									file = files_3[_a];
+								for (_a = 0, files_4 = files; _a < files_4.length; _a++) {
+									file = files_4[_a];
 									out.set(file.data, current_size);
 									current_size += file.data.byteLength;
 								}
@@ -27670,7 +27951,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								out_filename = prefix + "out";
 								cleanup = function(delete_out) {
 									return __awaiter(this, void 0, void 0, function() {
-										var _i, filenames_1, filename_3, e_1;
+										var _i, filenames_1, filename_4, e_2;
 										return __generator(this, function(_a) {
 											switch (_a.label) {
 												case 0:
@@ -27678,8 +27959,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 													_a.label = 1;
 												case 1:
 													if (!(_i < filenames_1.length)) return [3 /*break*/, 4];
-													filename_3 = filenames_1[_i];
-													return [4 /*yield*/, ffmpeg.deleteFile(filename_3)];
+													filename_4 = filenames_1[_i];
+													return [4 /*yield*/, ffmpeg.deleteFile(filename_4)];
 												case 2:
 													_a.sent();
 													_a.label = 3;
@@ -27700,7 +27981,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 													_a.sent();
 													return [3 /*break*/, 9];
 												case 8:
-													e_1 = _a.sent();
+													e_2 = _a.sent();
 													return [3 /*break*/, 9];
 												case 9: return [2 /*return*/];
 											}
@@ -27762,7 +28043,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var ffmpeg_mux_single = function(ffmpeg, video_file, audio_file, out_filename, progress, success, fail) {
 				var failfunc = function(err) {
 					return __awaiter(this, void 0, void 0, function() {
-						var e_2;
+						var e_3;
 						return __generator(this, function(_a) {
 							switch (_a.label) {
 								case 0:
@@ -27772,7 +28053,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 									_a.sent();
 									return [3 /*break*/, 3];
 								case 2:
-									e_2 = _a.sent();
+									e_3 = _a.sent();
 									return [3 /*break*/, 3];
 								case 3:
 									fail(err);
@@ -27848,15 +28129,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var prefix = get_ffmpeg_prefix("join");
 				var cleanup = function() {
 					return __awaiter(this, void 0, void 0, function() {
-						var _i, files_4, filename;
+						var _i, files_5, filename;
 						return __generator(this, function(_a) {
 							switch (_a.label) {
 								case 0:
-									_i = 0, files_4 = files;
+									_i = 0, files_5 = files;
 									_a.label = 1;
 								case 1:
-									if (!(_i < files_4.length)) return [3 /*break*/, 4];
-									filename = files_4[_i];
+									if (!(_i < files_5.length)) return [3 /*break*/, 4];
+									filename = files_5[_i];
 									//await ffmpeg.deleteFile(filename);
 									return [4 /*yield*/, ffmpeg_unmount_file(ffmpeg, filename)];
 								case 2:
@@ -27901,8 +28182,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 									streams[i] = null; // deref
 									next_stream = function() {
 										// deref current stream data
-										for (var i_27 = 0; i_27 < stream.length; i_27++) {
-											stream[i_27] = null;
+										for (var i_29 = 0; i_29 < stream.length; i_29++) {
+											stream[i_29] = null;
 										}
 										set_timeout(function() {
 											process_stream(i + 1);
@@ -27965,9 +28246,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		var has_1x1png_problem = function(info_obj) {
 			return info_obj.media_info && info_obj.media_info.problems && array_indexof(info_obj.media_info.problems, "1x1png") >= 0;
 		};
+		var has_incorrect_ts_ext_problem = function(info_obj) {
+			return info_obj.media_info && info_obj.media_info.problems && array_indexof(info_obj.media_info.problems, "incorrect_ts_ext") >= 0;
+		};
 		var fixup_respdata_for_streaming_infoobj = function(data, mime, info_obj) {
 			if (has_1x1png_problem(info_obj) && mime === "image/png") {
 				var arr = new Uint8Array(data);
+				if (arr[0] === 71 && // G
+					arr[1] === 64 && // @
+					arr[2] === 0) {
+					// already mp2t
+					return arr.buffer;
+				}
 				while (true) {
 					var i_idx = arr.indexOf(73); // I
 					if (i_idx < 0)
@@ -28005,6 +28295,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				resp.responseHeaders = resp.responseHeaders.replace(/(content-type: )image\/png/i, "$1video/mp2t");
 				fixup = true;
 			}
+			if (mime === "video/MP2T") {
+				resp.responseHeaders = resp.responseHeaders.replace(/(content-type: )video\/MP2T/i, "$1video/mp2t");
+			}
+			console.log(resp);
 			// check if arraybuffer
 			if (fixup && resp.response && resp.response.byteLength) {
 				resp.response = fixup_respdata_for_streaming_infoobj(resp.response, mime, info_obj);
@@ -28205,11 +28499,36 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 									mime = override_mime_1;
 								return origfactory_1(url, mime);
 							};
+							var is_amazingcdn_mp4_problem_1 = /\.mp4(?:[?#].*)?$/.test(src);
+							// punyu.com has a .mp4 extension for hls streams
+							var orig_guessmimetype_1 = shaka.Player.prototype.guessMimeType_;
+							shaka.Player.prototype.guessMimeType_ = function(a) {
+								var replace_ext = function(new_ext) {
+									return a.replace(/\.[a-zA-Z0-9]+(?:[?#].*)?$/, "." + new_ext);
+								};
+								var a_dec = decodeURIComponent(a);
+								if (is_amazingcdn_mp4_problem_1) {
+									// FIXME: somewhat hacky
+									// https://media3.amazingcdn.net/.../media=hls/{hex}_{hex}.mp4 -- m3u8
+									// https://media3.amazingcdn.net/.../media=hls/seg=seg-1-v1-a1.ts/{hex}_{hex}.mp4 -- ts
+									if (/\/media=hls\//.test(a_dec)) {
+										if (/\/seg=[^/]+\.ts\//.test(a_dec))
+											a = replace_ext("ts");
+										else
+											a = replace_ext("m3u8");
+									}
+								}
+								return orig_guessmimetype_1.bind(this)(a);
+							};
+							var src_dec = decodeURIComponent(src);
+							if (is_amazingcdn_mp4_problem_1 && /\/media=hls\//.test(src_dec))
+								shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("mp4", "video/mp2t");
 						}
 					} catch (e) {
 						console_error(e);
 					}
-					if (has_1x1png_problem(info_obj)) {
+					if (has_1x1png_problem(info_obj) ||
+						has_incorrect_ts_ext_problem(info_obj)) {
 						try {
 							// kamehamehaa.xyz
 							var orig_createseg_1 = shaka.hls.HlsParser.prototype.createSegmentReference_;
@@ -28219,6 +28538,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								return orig_createseg_1.bind(this)(a, b, c, d, e, f, g, h, k, l);
 							};
 							shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("png", "video/mp2t");
+							shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("woff2", "video/mp2t"); // morencius / businessanalyticspro.cfd
+							if (has_incorrect_ts_ext_problem(info_obj)) {
+								shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("css", "video/mp2t");
+								shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set("js", "video/mp2t");
+							}
 							shaka.hls.HlsParser.VIDEO_EXTENSIONS_TO_MIME_TYPES_.set(null, "video/mp2t");
 						} catch (e) {
 							console_error(e);
@@ -28694,18 +29018,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 															console.error("Invalid regex stage:", { stage: stage, c: c, regexval: regexval_1 });
 														}
 													};
-													for (var i_28 = 0; i_28 < regexval_1.length; i_28++) {
-														var c = regexval_1[i_28];
+													for (var i_30 = 0; i_30 < regexval_1.length; i_30++) {
+														var c = regexval_1[i_30];
 														var nextc = null;
-														if (i_28 + 1 < regexval_1.length)
-															nextc = regexval_1[i_28 + 1];
+														if (i_30 + 1 < regexval_1.length)
+															nextc = regexval_1[i_30 + 1];
 														if (stage === 2) {
 															commit(c);
 															continue;
 														}
 														if (c === "\\" && nextc === "/") {
 															commit("/");
-															i_28++;
+															i_30++;
 															continue;
 														}
 														if (c === "/") {
@@ -33058,6 +33382,26 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						x = null;
 						y = null;
 					}
+					// for e.g. reddit albums, going to the next image will wipe out the extra field
+					if (source_imu && is_imu_el(source.el) && source.el.hasAttribute("imu-obj")) {
+						//console.log(source.el);
+						var imu_obj = null;
+						try {
+							imu_obj = JSON_parse(source.el.getAttribute("imu-obj"));
+						} catch (e) {
+							console_error(e);
+						}
+						if (imu_obj) {
+							var simplified_imu_obj = {
+								extra: imu_obj.extra
+							};
+							source_imu = fillobj_urls(source_imu, simplified_imu_obj, "null");
+							if (data.obj && typeof data.obj === "object" && !is_array(data.obj)) {
+								data.obj = fillobj_urls([data.obj], simplified_imu_obj, "null")[0];
+							}
+							//console.log(imu_obj, source_imu);
+						}
+					}
 					cb(source_imu, source, processing, {
 						data: data,
 						x: x,
@@ -33591,7 +33935,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			var bar = el.children[0];
 			if (typeof percent === "number") {
 				if (bar.getAttribute("data-timer")) {
-					clearInterval(parseInt(bar.getAttribute("data-timer")));
+					clear_interval(parseInt(bar.getAttribute("data-timer")));
 					bar.removeAttribute("data-timer");
 				}
 				if (percent >= 1 && remove_on_complete && el.parentElement) {
@@ -33604,7 +33948,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				if (!bar.getAttribute("data-timer")) {
 					bar.style.left = "0%";
 					bar.setAttribute("data-dir", "right");
-					var timer = setInterval(function() {
+					var timer = set_interval(function() {
 						var left = parseFloat(bar.style.left);
 						var delta = (15 / 1000) * 1;
 						var size = 90;
@@ -34120,8 +34464,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							sources = [];
 							source_el_set = new_set();
 							_find_source = function(source_el) {
-								for (var _i = 0, sources_4 = sources; _i < sources_4.length; _i++) {
-									var src = sources_4[_i];
+								for (var _i = 0, sources_6 = sources; _i < sources_6.length; _i++) {
+									var src = sources_6[_i];
 									if (src.el === source_el)
 										return src;
 								}
@@ -34170,8 +34514,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								return remove_source_el(source.el);
 							};
 							reposition_source_outlines = function() {
-								for (var _i = 0, sources_5 = sources; _i < sources_5.length; _i++) {
-									var source = sources_5[_i];
+								for (var _i = 0, sources_7 = sources; _i < sources_7.length; _i++) {
+									var source = sources_7[_i];
 									var rect = source._real_el.getBoundingClientRect();
 									var outline_el = source._outline_el;
 									if (!outline_el)
@@ -34200,8 +34544,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								if (!sources.length)
 									return;
 								override_album = [];
-								for (var _i = 0, sources_6 = sources; _i < sources_6.length; _i++) {
-									var source = sources_6[_i];
+								for (var _i = 0, sources_8 = sources; _i < sources_8.length; _i++) {
+									var source = sources_8[_i];
 									override_album.push(source.el);
 								}
 								trigger_popup_with_source(sources[0], options);
@@ -36799,7 +37143,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		};
 		var real_xhr = unsafeWindow["XMLHttpRequest"];
 		var private_props = ["_actual", "method", "data", "url", "headers", "responseType", "response", "responseText"];
-		var passthrough_methods = ["addEventListener", "send", "open", "abort", "getAllResponseHeaders", "getResponseHeader", "overrideMimeType", "setRequestHeader"];
+		var passthrough_methods = ["send", "open", "abort", "getAllResponseHeaders", "getResponseHeader", "overrideMimeType", "setRequestHeader"];
 		// HEADERS_RECEIVED is needed by google
 		var copy_xhr_props = ["DONE", "HEADERS_RECEIVED", "LOADING", "OPENED", "UNSENT", "length"];
 		var copy_xhr_prototype_props = ["DONE", "HEADERS_RECEIVED", "LOADING", "OPENED", "UNSENT"];
@@ -36828,7 +37172,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				});
 			});
 			// add all proxy getters/setters
-			["ontimeout, timeout", "withCredentials", "onload", "onloadend", "onerror", "onprogress", "onreadystatechange", "responseType"].forEach(function(item) {
+			["ontimeout", "timeout", "withCredentials", "onload", "onloadend", "onerror", "onprogress", "onreadystatechange", "responseType"].forEach(function(item) {
 				Object.defineProperty(self, item, {
 					get: function() { return actual[item]; },
 					set: function(val) { actual[item] = val; }
@@ -36867,6 +37211,33 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			}
 			this[get_hotprefixed("headers")][header] = value;
 		};
+		var get_hotpatch_event_cb = function(xhr, real_cb) {
+			return function() {
+				if (helpers.xhr_override_resp && this.readyState >= 3) {
+					var newresp = null;
+					try {
+						newresp = helpers.xhr_override_resp(get_req_info(this), get_resp_info(this));
+					} catch (e) {
+						console_error(e);
+					}
+					if (newresp) {
+						if (newresp.response) {
+							this[get_hotprefixed("response")] = newresp.response;
+							try {
+								this[get_hotprefixed("responseText")] = newresp.response.toString();
+							} catch (e) {
+								console_error(e);
+							}
+						}
+					}
+				}
+				return real_cb.apply(this, arguments);
+			}.bind(xhr);
+		};
+		hotxhr.prototype.addEventListener = function(type, listener, options) {
+			var real_xhr = this[get_hotprefixed("_actual")];
+			return real_xhr.addEventListener.apply(real_xhr, [type, get_hotpatch_event_cb(this, listener), options]);
+		};
 		hotxhr.prototype.send = function(data) {
 			var actual = this[get_hotprefixed("_actual")];
 			this[get_hotprefixed("data")] = data;
@@ -36903,27 +37274,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				var real_cb = this[evt];
 				if (!real_cb)
 					return;
-				this[evt] = function() {
-					if (helpers.xhr_override_resp && this.readyState >= 3) {
-						var newresp = null;
-						try {
-							newresp = helpers.xhr_override_resp(get_req_info(this), get_resp_info(this));
-						} catch (e) {
-							console_error(e);
-						}
-						if (newresp) {
-							if (newresp.response) {
-								this[get_hotprefixed("response")] = newresp.response;
-								try {
-									this[get_hotprefixed("responseText")] = newresp.response.toString();
-								} catch (e) {
-									console_error(e);
-								}
-							}
-						}
-					}
-					return real_cb.apply(this, arguments);
-				}.bind(this);
+				this[evt] = get_hotpatch_event_cb(this, real_cb);
 			};
 			hotpatch_event.bind(this)("onload");
 			hotpatch_event.bind(this)("onloadend");
@@ -36979,8 +37330,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				};
 				xhr.onerror = reject;
 				xhr.withCredentials = options.credentials === "include";
-				for (var header in options.headers) {
-					xhr.setRequestHeader(header, options.headers[header]);
+				if (options.headers && typeof options.headers === "object") {
+					if (typeof options.headers.forEach === "function") {
+						// Headers object, used by reddit and google ai
+						// thanks to BlueBull010 on github for reporting: https://github.com/qsniyg/maxurl/issues/1637
+						options.headers.forEach(function(value, header) {
+							xhr.setRequestHeader(header, value);
+						});
+					} else {
+						for (var header in options.headers) {
+							xhr.setRequestHeader(header, options.headers[header]);
+						}
+					}
 				}
 				if (options.signal) {
 					options.signal.addEventListener("abort", function() {

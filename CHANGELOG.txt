@@ -1,4 +1,8 @@
-2026.9.0 (in-dev)
+2026.11.0
+
+New features:
+
+ * Support for ~165 new websites (using ~85 new rules)
 
 Improvements:
 
