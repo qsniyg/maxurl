@@ -12,7 +12,7 @@
 
 **Image Max URL** é um programa que busca versões maiores ou originais de imagens e vídeos, substituindo padrões de URL.
 
-Suporta mais de 9000 sites (veja a lista completa em [sites-suportados.txt](sites-suportados.txt)), além de vários mecanismos genéricos como WordPress e MediaWiki.
+Suporta mais de 11,000 sites (veja a lista completa em [sites-suportados.txt](sites-suportados.txt)), além de vários mecanismos genéricos como WordPress e MediaWiki.
 
 Disponível como:
 
