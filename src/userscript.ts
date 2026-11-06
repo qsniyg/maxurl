@@ -114426,7 +114426,7 @@ var $$IMU_EXPORT$$;
 							}
 						}
 
-						let score_format = fmt => (parse_int(fmt.res) + array_indexof(formats, format) / 10);
+						let score_format = fmt => (parse_int(fmt.res) + array_indexof(formats, fmt) / 10);
 
 						all_urls_formats.sort((a, b) => {
 							return score_format(b) - score_format(a);
