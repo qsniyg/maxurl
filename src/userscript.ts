@@ -118297,6 +118297,9 @@ var $$IMU_EXPORT$$;
 
 			// square (1:1)
 			newsrc = replace_roblox_sizes([
+				// highest res found so far: 1680
+				// https://x.com/PizzaBlox/status/2065492222947250677
+				"/1680/1680/",
 				"/1024/1024/",
 				"/720/720/",
 				"/700/700/",
