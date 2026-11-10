@@ -1,3 +1,9 @@
+2026.11.1 (in-dev)
+
+Special thanks to GHVirus, exurd for their contributions and reports for this release
+
+---
+
 2026.11.0
 
 New features:

@@ -30753,6 +30753,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://information.tv5monde.com/sites/tv5-info/files/styles/entete/public/2021-12/field_media_image-49654-Bal_des_folles.webp?itok=ccZ-rQ4D
 			//   https://information.tv5monde.com/sites/tv5-info/files/2021-12/field_media_image-49654-Bal_des_folles.jpg
 			domain === "information.tv5monde.com" ||
+			// thanks to GHVirus on github: https://github.com/qsniyg/maxurl/issues/1662
+			// https://cdn.sega.co.uk/mhc-sega/public/styles/3840/public/content/media/images/raster/s_sth_iam8bit_fan_gallery_sailorsonicx-a2b6f453.jpg.webp
+			(domain === "cdn.sega.co.uk" && /\/public\/+styles\//.test(src)) ||
 			// http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/imagecache/623px_wide/episode/hewer500.jpg
 			//   http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/episode/hewer500.jpg
 			// https://www.telugucinema.com/sites/default/files2/styles/media_gallery_thumbnail/public/amy-jackson-instagram1.jpg?itok=nwFhV2Iy
@@ -106481,6 +106484,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to exurd on github: https://github.com/qsniyg/maxurl/pull/1660
 			// square (1:1)
 			newsrc = replace_roblox_sizes([
+				"/1680/1680/",
+				"/1260/1260/",
 				"/1024/1024/",
 				"/720/720/",
 				"/700/700/",
@@ -124105,7 +124110,28 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to anonymous:
 			// https://uploads.scratch.mit.edu/get_image/project/1374426228_144x108.png
 			//   https://uploads.scratch.mit.edu/get_image/project/1374426228_999999x999999.png
-			return src.replace(/(\/get_image\/+project\/+[0-9]+)_[0-9]+x[0-9]+\./, "$1_999999x999999.");
+			// https://uploads.scratch.mit.edu/get_image/user/54427612_60x60.png
+			//   https://uploads.scratch.mit.edu/get_image/user/54427612_999999x999999.png
+			// https://uploads.scratch.mit.edu/get_image/gallery/34639484_170x100.png
+			//   https://uploads.scratch.mit.edu/get_image/gallery/34639484_999999x999999.png
+			return src.replace(/(\/get_image\/+[a-z]+\/+[0-9]+)_[0-9]+x[0-9]+\./, "$1_999999x999999.");
+		}
+		if (domain === "cdn.gosu-noob.com") {
+			// thanks to anonymous for reporting:
+			// https://cdn.gosu-noob.com/static/img/1/2026/09/How-To-Find-Lacra-in-The-Blood-of-Dawnwalker-640x370-jpg.webp
+			//   https://cdn.gosu-noob.com/static/img/1/2026/09/How-To-Find-Lacra-in-The-Blood-of-Dawnwalker.jpg
+			return {
+				url: src
+					.replace(/(\/static\/+img\/+.*)-[0-9]+x[0-9]+-([a-z]{3})\.webp(?:[?#].*)?$/, "$1.$2")
+					.replace(/(\/static\/+img\/+.*)-[0-9]+x[0-9]+(\.[a-z]+)(?:[?#].*)?$/, "$1$2"),
+				can_head: false, // 403
+				headers: {
+					Referer: "https://www.gosunoob.com/",
+					"Sec-Fetch-Dest": "document",
+					"Sec-Fetch-Mode": "navigate",
+					"Sec-Fetch-Site": "none"
+				}
+			};
 		}
 		// -- general rules --
 		if (src.match(/\/ImageGen\.ashx\?/)) {
