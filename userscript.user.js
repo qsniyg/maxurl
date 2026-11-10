@@ -30755,7 +30755,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "information.tv5monde.com" ||
 			// thanks to GHVirus on github: https://github.com/qsniyg/maxurl/issues/1662
 			// https://cdn.sega.co.uk/mhc-sega/public/styles/3840/public/content/media/images/raster/s_sth_iam8bit_fan_gallery_sailorsonicx-a2b6f453.jpg.webp
-			(domain === "cdn.sega.co.uk" && /\/public\/+styles\//.test(src)) ||
+			//   https://cdn.sega.co.uk/mhc-sega/public/content/media/images/raster/s_sth_iam8bit_fan_gallery_sailorsonicx-a2b6f453.jpg
+			// https://cdn.sega.co.uk/mhc-sega/public/styles/3840/public/content/media/images/raster/s_sth_iam8bit_fan_gallery_arivsart-94741949.jpg.webp
+			//   https://cdn.sega.co.uk/mhc-sega/public/content/media/images/raster/s_sth_iam8bit_fan_gallery_arivsart-94741949.jpg
+			// https://cdn.sega.co.uk/mhc-sega/public/styles/480/public/content/media/images/raster/s_sonic_35th_logo-5c0234f6.png.webp?itok=Cc3Klel7
+			//   https://cdn.sega.co.uk/mhc-sega/public/content/media/images/raster/s_sonic_35th_logo-5c0234f6.png
+			(domain === "cdn.sega.co.uk" && /\/public\/+(?:styles|content)\//.test(src)) ||
 			// http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/imagecache/623px_wide/episode/hewer500.jpg
 			//   http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/episode/hewer500.jpg
 			// https://www.telugucinema.com/sites/default/files2/styles/media_gallery_thumbnail/public/amy-jackson-instagram1.jpg?itok=nwFhV2Iy
@@ -30779,7 +30784,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/\/imagecache\/+[^/]*\/+(?:files\/)?/, "/");
 			if (newsrc !== src)
 				return newsrc;
-			newsrc = src.replace(/(\.jpe?g)\.webp([?#].*)?$/i, "$1$2");
+			newsrc = src.replace(/(\.(?:jpe?g|png))\.webp([?#].*)?$/i, "$1$2");
 			if (newsrc !== src)
 				return newsrc;
 			newsrc = src.replace(/\.webp([?#].*)?$/, ".jpg$1");
