@@ -77,7 +77,7 @@ var __assign = (this && this.__assign) || function() {
 // @description:zh-TW 為11,000多個網站查找更大或原始圖像
 // @description:zh-HK 為11,000多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           2026.6.0
+// @version           2026.11.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -221,7 +221,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
 	var imu_icon = "https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png";
-	var current_version = "2026.6.0";
+	var current_version = "2026.11.0";
 	var imagetab_ok_override = false;
 	var has_ffmpeg_lib = true;
 	// -- Currently this is unused, it'll be used in a future release (to workaround the 1MB and 2MB limits for OUJS and Greasyfork respectively) --
@@ -21862,6 +21862,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "cdn-live.foreignaffairs.com" ||
 			domain_nowww === "negrusty.pro" ||
 			domain === "information.tv5monde.com" ||
+			(domain === "cdn.sega.co.uk" && /\/public\/+(?:styles|content)\//.test(src)) ||
 			src.match(/\/sites\/[^/]*\/files2?\/styles\/[^/]*/) ||
 			src.match(/\/sites\/[^/]*\/files2?\/[^/]*\/styles\/[^/]*/) ||
 			src.match(/(?:(?:\/sites\/+[^/]*)?\/files\/+|\/sites\/+[^/]*\/+)imagecache\/+[^/]*|\/sites\/+[^/]*\/+public\/+styles\/+/) ||
@@ -21872,7 +21873,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/\/imagecache\/+[^/]*\/+(?:files\/)?/, "/");
 			if (newsrc !== src)
 				return newsrc;
-			newsrc = src.replace(/(\.jpe?g)\.webp([?#].*)?$/i, "$1$2");
+			newsrc = src.replace(/(\.(?:jpe?g|png))\.webp([?#].*)?$/i, "$1$2");
 			if (newsrc !== src)
 				return newsrc;
 			newsrc = src.replace(/\.webp([?#].*)?$/, ".jpg$1");
@@ -62215,7 +62216,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 								}
 							}
 						}
-						var score_format_1 = function(fmt) { return (parse_int(fmt.res) + array_indexof(formats_2, format) / 10); };
+						var score_format_1 = function(fmt) { return (parse_int(fmt.res) + array_indexof(formats_2, fmt) / 10); };
 						all_urls_formats.sort(function(a, b) {
 							return score_format_1(b) - score_format_1(a);
 						});
@@ -64310,6 +64311,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			};
 			newsrc = replace_roblox_sizes([
+				"/1680/1680/",
+				"/1260/1260/",
 				"/1024/1024/",
 				"/720/720/",
 				"/700/700/",
@@ -75469,7 +75472,21 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nowww === "fisharchive.cc") return src.replace(/(\/character-art\/+v[0-9]+\/+)small\/+/, "$1view/");
 		if (domain === "uploads.scratch.mit.edu" ||
 			(domain_nosub === "mit.edu" && /^cdn[0-9]*\.scratch\./.test(domain))) {
-			return src.replace(/(\/get_image\/+project\/+[0-9]+)_[0-9]+x[0-9]+\./, "$1_999999x999999.");
+			return src.replace(/(\/get_image\/+[a-z]+\/+[0-9]+)_[0-9]+x[0-9]+\./, "$1_999999x999999.");
+		}
+		if (domain === "cdn.gosu-noob.com") {
+			return {
+				url: src
+					.replace(/(\/static\/+img\/+.*)-[0-9]+x[0-9]+-([a-z]{3})\.webp(?:[?#].*)?$/, "$1.$2")
+					.replace(/(\/static\/+img\/+.*)-[0-9]+x[0-9]+(\.[a-z]+)(?:[?#].*)?$/, "$1$2"),
+				can_head: false, // 403
+				headers: {
+					Referer: "https://www.gosunoob.com/",
+					"Sec-Fetch-Dest": "document",
+					"Sec-Fetch-Mode": "navigate",
+					"Sec-Fetch-Site": "none"
+				}
+			};
 		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
