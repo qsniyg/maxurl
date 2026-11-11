@@ -37644,12 +37644,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			//   http://image.cine21.com/cine21/still/2017/1213/11_39_08__5a3092cc9f638.jpg
 			// http://image.cine21.com/resize/cine21/poster/2005/0603/M0010044_1[F230,329].jpg
 			//   http://image.cine21.com/cine21/poster/2005/0603/M0010044_1.jpg
+			// thanks to kapa-fanta on github: https://github.com/qsniyg/maxurl/issues/1664
+			// https://image.cine21.com/resize/cine21/still/2026/1012/63452_6acc38e349887[S750,750].jpg -- 750x499
+			//   https://image.cine21.com/cine21/still/2026/1012/63452_6acc38e349887.jpg -- 962x640
 			return src
 				.replace("/resize/", "/")
 				.replace(/\/(?:small|medium)(\/[^/]*)$/, "/large$1")
 				.replace(/\?.*$/, "")
 				.replace(/\[[WH][-0-9]*\](\.[^/.]*)$/, "$1")
-				.replace(/\[[XF][0-9]+,[0-9]+\](\.[^/.]*)$/, "$1");
+				.replace(/\[[XFS][0-9]+,[0-9]+\](\.[^/.]*)$/, "$1");
 		}
 		if (domain === "cdnimg.melon.co.kr" ||
 			// http://image.melon.co.kr/cm/album/images/022/91/986/2291986_500.jpg
@@ -120288,7 +120291,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			//   https://www.kvetinace-365.cz/gallery/products/middle/opus-raw-couple-silver-65x53cm-6opsc65rs-1.jpg
 			return add_extensions(src.replace(/(\/gallery\/+products\/+[a-z]+\/+)webp\/+([^/.?#]+)\.webp(?:[?#].*)?$/, "$1$2.png"));
 		}
-		if (domain_nowww === "qooza.jp") {
+		if (domain_nowww === "qooza.jp" ||
+			// thanks to GHVirus on github: https://github.com/qsniyg/maxurl/issues/1666
+			// https://medicos-e-shop.net/media/cache/resize/rc/DS/DSbQ8CG2/html/upload/save_image/0826180934_6a8ead4ea0f9f.jpg
+			//   https://medicos-e-shop.net/html/upload/save_image/0826180934_6a8ead4ea0f9f.jpg
+			domain === "medicos-e-shop.net") {
 			// thanks to fireattack on discord:
 			// https://qooza.jp/media/cache/resize/rc/kqHIvDu1/html/upload/save_image/1125123039_692522df2c4e9.jpg
 			//   https://qooza.jp/html/upload/save_image/1125123039_692522df2c4e9.jpg
@@ -125665,8 +125672,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return src.replace(/\/images\/+joomgallery\/+(?:thumbnails|details)\/+([^/]+\/+(?:.*\/)?[^/]+)(?:[?#].*)?$/, "/images/joomgallery/originals/$1");
 		}
 		// next.js
-		if ((/\/_next\/+image\/*\?/.test(src)) ||
-			/\/_next\/+image(?:\/*|\.jpg)\?(?:.*&)?url=/.test(src)) {
+		if ((/\/_(?:next|vercel)\/+image\/*\?/.test(src)) ||
+			/\/_(?:next|vercel)\/+image(?:\/*|\.jpg)\?(?:.*&)?url=/.test(src)) {
 			// thanks to dym-sh on github: https://github.com/qsniyg/maxurl/issues/894
 			// https://egghead.io/_next/image?url=https%3A%2F%2Fd2eip9sf3oo6c2.cloudfront.net%2Fplaylists%2Fsquare_covers%2F000%2F487%2F059%2Ffull%2FPrisma_TS.png&w=750&q=100
 			//   https://d2eip9sf3oo6c2.cloudfront.net/playlists/square_covers/000/487/059/full/Prisma_TS.png
@@ -125687,9 +125694,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			//   https://d2.alternativeto.net/dist/listheaders/list-21083-1605422357-cover.png?format=jpg&width=1200&height=630&mode=crop
 			// https://www.bonhams.com/_next/image.jpg?url=https%3A%2F%2Fimg2.bonhams.com%2Fimage%3Fsrc%3DImages%2Flive%2F2023-05%2F04%2F25319652-8-2.jpg&w=1200&q=75
 			//   https://img2.bonhams.com/image?src=Images/live/2023-05/04/25319652-8-2.jpg
+			// thanks to anonymous for reporting:
+			// https://moosyc.com/_vercel/image?url=https:%2F%2Fr2.moosyc.com%2Fmedia%2Freleases%2Fimages%2F147683_fff507b76c404a888305352f10c161c6.png&w=320&q=75
+			//   https://r2.moosyc.com/media/releases/images/147683_fff507b76c404a888305352f10c161c6.png
 			var queries = get_queries(src);
 			if (queries && queries.url)
-				return urljoin(src.replace(/\/_next\/.*/, ""), decodeURIComponent(queries.url), false);
+				return urljoin(src.replace(/\/_(?:next|vercel)\/.*/, ""), decodeURIComponent(queries.url), false);
 		}
 		// Discuz!X
 		if (/\/uc_server\/+data\/+avatar\/+[0-9]{3}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9]{2}_avatar(?:_[0-9a-f]+)?_[a-z]+\.[^/.]+(?:[?#].*)?$/.test(src)) {

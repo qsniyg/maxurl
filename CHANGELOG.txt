@@ -1,6 +1,6 @@
 2026.11.1 (in-dev)
 
-Special thanks to GHVirus, exurd for their contributions and reports for this release
+Special thanks to GHVirus, exurd, kapa-fanta for their contributions and reports for this release
 
 ---
 
