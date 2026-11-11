@@ -41100,12 +41100,14 @@ var $$IMU_EXPORT$$;
 			//   http://image.cine21.com/cine21/still/2017/1213/11_39_08__5a3092cc9f638.jpg
 			// http://image.cine21.com/resize/cine21/poster/2005/0603/M0010044_1[F230,329].jpg
 			//   http://image.cine21.com/cine21/poster/2005/0603/M0010044_1.jpg
+			// https://image.cine21.com/resize/cine21/still/2026/1012/63452_6acc38e349887[S750,750].jpg -- 750x499
+			//   https://image.cine21.com/cine21/still/2026/1012/63452_6acc38e349887.jpg -- 1606x2000
 			return src
 				.replace("/resize/", "/")
 				.replace(/\/(?:small|medium)(\/[^/]*)$/, "/large$1")
 				.replace(/\?.*$/, "")
 				.replace(/\[[WH][-0-9]*\](\.[^/.]*)$/, "$1")
-				.replace(/\[[XF][0-9]+,[0-9]+\](\.[^/.]*)$/, "$1");
+				.replace(/\[[XFS][0-9]+,[0-9]+\](\.[^/.]*)$/, "$1");
 		}
 
 		if (domain === "cdnimg.melon.co.kr" ||
