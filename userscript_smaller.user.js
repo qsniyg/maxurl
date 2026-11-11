@@ -25633,7 +25633,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				.replace(/\/(?:small|medium)(\/[^/]*)$/, "/large$1")
 				.replace(/\?.*$/, "")
 				.replace(/\[[WH][-0-9]*\](\.[^/.]*)$/, "$1")
-				.replace(/\[[XF][0-9]+,[0-9]+\](\.[^/.]*)$/, "$1");
+				.replace(/\[[XFS][0-9]+,[0-9]+\](\.[^/.]*)$/, "$1");
 		}
 		if (domain === "cdnimg.melon.co.kr" ||
 			domain === "image.melon.co.kr" ||
@@ -72638,7 +72638,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return newsrc;
 			return add_extensions(src.replace(/(\/gallery\/+products\/+[a-z]+\/+)webp\/+([^/.?#]+)\.webp(?:[?#].*)?$/, "$1$2.png"));
 		}
-		if (domain_nowww === "qooza.jp") return src.replace(/\/media\/+cache\/+resize\/.*(\/html\/+upload\/)/, "$1");
+		if (domain_nowww === "qooza.jp" ||
+			domain === "medicos-e-shop.net") {
+			return src.replace(/\/media\/+cache\/+resize\/.*(\/html\/+upload\/)/, "$1");
+		}
 		if (domain_nowww === "nashchelyabinsk.ru") return src.replace(/(\/media\/+main_images\/+[0-9a-f]{10,})\.(?:low|normal)\./, "$1.");
 		if (domain === "static.ngs.ru") return src.replace(/(\/news\/+[0-9]+\/+preview\/+[0-9a-f]{10,})_[0-9]+\./, "$1_0.");
 		if (domain === "photos.wikimapia.org") {
@@ -76088,11 +76091,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (/\/images\/+joomgallery\//.test(src)) {
 			return src.replace(/\/images\/+joomgallery\/+(?:thumbnails|details)\/+([^/]+\/+(?:.*\/)?[^/]+)(?:[?#].*)?$/, "/images/joomgallery/originals/$1");
 		}
-		if ((/\/_next\/+image\/*\?/.test(src)) ||
-			/\/_next\/+image(?:\/*|\.jpg)\?(?:.*&)?url=/.test(src)) {
+		if ((/\/_(?:next|vercel)\/+image\/*\?/.test(src)) ||
+			/\/_(?:next|vercel)\/+image(?:\/*|\.jpg)\?(?:.*&)?url=/.test(src)) {
 			var queries = get_queries(src);
 			if (queries && queries.url)
-				return urljoin(src.replace(/\/_next\/.*/, ""), decodeURIComponent(queries.url), false);
+				return urljoin(src.replace(/\/_(?:next|vercel)\/.*/, ""), decodeURIComponent(queries.url), false);
 		}
 		if (/\/uc_server\/+data\/+avatar\/+[0-9]{3}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9]{2}_avatar(?:_[0-9a-f]+)?_[a-z]+\.[^/.]+(?:[?#].*)?$/.test(src)) {
 			return src.replace(/(\/uc_server\/+data\/+avatar\/+[0-9]{3}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9]{2}_avatar(?:_[0-9a-f]+)?)_(?:small|middle)\./, "$1_big.");
