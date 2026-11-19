@@ -34243,6 +34243,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to anonymous:
 			// https://trtc.io/_next/static/media/headLogo.0cf4ec30.png?auto=format&fit=max&w=384
 			(domain_nowww === "trtc.io" && /\/_next\/+static\/+media\//.test(src)) ||
+			// thanks to anonymous for reporting:
+			// https://cdn2.f-cdn.com/files/download/295620748/tshirt-front-back.jpg?fit=crop&image-optimizer=force&format=webply&width=1490&height=1120
+			(domain_nosub === "f-cdn.com" && /^cdn[0-9]*\./.test(domain)) ||
+			// thanks to anonymous for reporting:
+			// https://cdn.f1connect.net/photo/tributes/t/8/5701376/Jonathon-Germon-1582044925.jpg?w=256&h=0&q=75
+			(domain === "cdn.f1connect.net" && /:\/\/[^/]+\/+photo\//.test(src)) ||
+			// thanks to anonymous for reporting:
+			// https://media.soliver.com/i/soliver/2186534.7523_front?$ai$&fmt=auto&qlt=default&scale=clamp&w=480
+			(domain === "media.soliver.com" && /:\/\/[^/]+\/+i\//.test(src)) ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -47410,7 +47419,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				website_regex: /^[a-z]+:\/\/[^/]+\/+photo\/+([0-9]+)(?:[?#].*)?$/,
 				query_for_id: "https://www.pornhub.com/photo/${id}",
 				process: function(done, resp, cache_key) {
-					var imagesrc = get_meta(resp.responseText, "twitter:image:src"); //og:image is thumbnail
+					var imagesrc = null;
+					var match = resp.responseText.match(/<a href="\/photo\/+[0-9]+">\s*<img src="(https?:\/\/[^"]+)"/);
+					if (match)
+						imagesrc = decode_entities(match[1]);
+					if (!imagesrc)
+						imagesrc = get_meta(resp.responseText, "twitter:image"); //og:image is thumbnail
 					if (!imagesrc) {
 						console_error(cache_key, "Unable to find source image for", resp);
 						return done(null, false);
@@ -58910,6 +58924,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			//   https://avatars.mds.yandex.net/get-zen_doc/4756188/pub_6241ca3a3beafa65f0b4fe9c_6241ce2f47dc0e7df4426de5/orig
 			// https://avatars.mds.yandex.net/get-games/1890793/2a00000186a79f24ab81e36760f1f756b5d1/pjpg280x500
 			//   https://avatars.mds.yandex.net/get-games/1890793/2a00000186a79f24ab81e36760f1f756b5d1/orig
+			// thanks to anonymous for reporting:
+			// https://avatars.mds.yandex.net/get-altay/4439632/2a000001794b043b7337411100d3f936638a/L
+			//   https://avatars.mds.yandex.net/get-altay/4439632/2a000001794b043b7337411100d3f936638a/orig -- 4000x3000
+			// https://avatars.mds.yandex.net/get-altay/4439632/2a000001794b043b7337411100d3f936638a/XS
+			//   https://avatars.mds.yandex.net/get-altay/4439632/2a000001794b043b7337411100d3f936638a/orig
+			// https://avatars.mds.yandex.net/get-altay/4439632/2a000001794b043b7337411100d3f936638a/XXXL
+			//   https://avatars.mds.yandex.net/get-altay/4439632/2a000001794b043b7337411100d3f936638a/orig
 			domain === "avatars.dzeninfra.ru") {
 			// thanks to aslian on github: https://github.com/qsniyg/maxurl/issues/1070
 			// https://avatars.dzeninfra.ru/get-zen_doc/135437/pub_5d02297793658100b1ada4e0_5d022fd9778de800b0d69901/scale_600
@@ -58917,7 +58938,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://avatars.dzeninfra.ru/get-zen_doc/46847/pub_5accfec879885ebb4ce18e76_5accff227ddde8b6903295d8/scale_1200
 			//   https://avatars.dzeninfra.ru/get-zen_doc/46847/pub_5accfec879885ebb4ce18e76_5accff227ddde8b6903295d8/orig
 			obj = {
-				url: src.replace(/\/(?:[a-z]+_(?:[a-z]+_)?|[a-zA-Z]|pjpg)?[0-9]+(?:x[0-9]+)?(?:[A-Za-z_0-9]+)([?&].*)?$/, "/orig$1")
+				url: src.replace(/\/(?:(?:[a-z]+_(?:[a-z]+_)?|[a-zA-Z]|pjpg)?[0-9]+(?:x[0-9]+)?(?:[A-Za-z_0-9]+)|X*[SML])([?&].*)?$/, "/orig$1")
 			};
 			match = src.match(/\/get-[^/]+\/+([0-9]+)\/+[^/]+\/+[^/]+(?:[?#].*)?$/);
 			if (match)
@@ -70453,13 +70474,16 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			//   https://files.sirclocdn.xyz/jkloop/products/_170715162210_Nogizaka46-Nigemizu-LEA_ori.jpg
 			return src.replace(/(\/products\/_[0-9]+_[^/._]*)(?:_[a-z]+)?(\.[^/.]*)$/, "$1_ori$2");
 		}
-		if (domain === "s.tvp.pl") {
+		if (domain_nosub === "tvp.pl" && /^s[0-9]*\./.test(domain)) {
 			// http://s.tvp.pl/images/4/2/3/uid_4232752c96d1f9e3bf91e7e116b2d8aa1303465175421_width_268_play_0_pos_3_gs_0.jpg
 			//   http://s.tvp.pl/images/4/2/3/uid_4232752c96d1f9e3bf91e7e116b2d8aa1303465175421_width_9999999999999.jpg
 			// http://s.tvp.pl/images2/8/d/8/uid_8d88e0204c8cf269ce0a38939f2428121537448809944_width_200_play_6_pos_5_gs_0_height_150.jpg
 			//   http://s.tvp.pl/images2/8/d/8/uid_8d88e0204c8cf269ce0a38939f2428121537448809944_width_9999999999999.jpg -- stretched? (992x743)
 			// http://s.tvp.pl/images2/4/f/7/uid_4f7200dfd11aa2f280c8e62aa23e31b91536341825746_width_600_play_0_pos_0_gs_0_height_450.jpg
 			//   http://s.tvp.pl/images2/4/f/7/uid_4f7200dfd11aa2f280c8e62aa23e31b91536341825746_width_9999999999999.jpg -- 1280x959 (not stretched)
+			// thanks to rudolphos on github for reporting: https://github.com/qsniyg/maxurl/issues/1667
+			// https://s2.tvp.pl/images2/3/f/0/uid_3f02b8043baa47a495cdb307afb36681_width_1814_play_0_pos_0_gs_0_height_1020.jpg
+			//   https://s2.tvp.pl/images2/3/f/0/uid_3f02b8043baa47a495cdb307afb36681_width_9999999999999.jpg
 			return src.replace(/(\/images2?\/(?:[0-9a-f]\/){3})[-_a-zA-Z0-9]*(uid_[0-9a-f]+)[^/.]*?(\.[^/.]*)$/, "$1$2_width_9999999999999$3");
 		}
 		if (domain === "sf.be.com") {
@@ -124143,6 +124167,15 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					"Sec-Fetch-Mode": "navigate",
 					"Sec-Fetch-Site": "none"
 				}
+			};
+		}
+		if (domain === "d3stdg5so273ei.cloudfront.net") {
+			// thanks to anonymous for reporting:
+			// https://d3stdg5so273ei.cloudfront.net/jsorianog/2026-11-03/766253/1400xAUTO/Smoking%2Bwoman-jsorianog-crop.jpg
+			//   https://d3stdg5so273ei.cloudfront.net/jsorianog/2026-11-03/766253/Smoking%2Bwoman-jsorianog-crop.jpg -- 2529x1897
+			return {
+				url: src.replace(/(:\/\/[^/]+\/+.*\/[0-9]+\/+)[AUTO0-9]+x[AUTO0-9]+\/+/, "$1"),
+				can_head: false // 400
 			};
 		}
 		// -- general rules --
