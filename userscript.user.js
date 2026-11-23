@@ -34252,6 +34252,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to anonymous for reporting:
 			// https://media.soliver.com/i/soliver/2186534.7523_front?$ai$&fmt=auto&qlt=default&scale=clamp&w=480
 			(domain === "media.soliver.com" && /:\/\/[^/]+\/+i\//.test(src)) ||
+			// thanks to anonymous for reporting:
+			// https://assets-labs.zeta-ai.io/assets/1e9bde04-3c44-4e41-a89f-15aeb4ea50ba.png?w=16&q=75&f=webp
+			(domain === "assets-labs.zeta-ai.io" && string_indexof(src, "/assets/") >= 0) ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -36998,6 +37001,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				obj.filename = match[1];
 			}
 			newsrc = src.replace(/(:\/\/[^/]+\/+[-a-f0-9]{10,})\/+.*$/, "$1");
+			if (newsrc !== src)
+				return newsrc;
+			// thanks to anonymous for reporting:
+			// https://static.wikia.nocookie.net/drakablooder/images/8/85/Bandcamp_icon.svg/
+			//   https://static.wikia.nocookie.net/drakablooder/images/8/85/Bandcamp_icon.svg/revision/latest?format=original
+			newsrc = src.replace(/(\/images\/+[0-9a-f]\/+[0-9a-f]{2}\/+[^/]+)\/*(?:[?#].*)?$/, "$1/revision/latest");
 			if (newsrc !== src)
 				return newsrc;
 			newsrc = src.replace(/(\/revision\/[^/?#]+\/*)(?:[?#].*)?$/, "$1?format=original");
@@ -65499,6 +65508,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://oye-records.com/media/__sized__/releases/various-bd01_l9LYU59-crop-c0-5__0-5-600x600-70.jpg
 			//   https://oye-records.com/media/releases/various-bd01_l9LYU59.jpg
 			domain_nowww === "oye-records.com" ||
+			// thanks to anonymous for reporting:
+			// https://funk.firobe.fr/media/__sized__/attachments/63/c7/99/e71768320a358d0037c50c1ec41d2ebd40db0353fcc06a14c6-crop-c0-5__0-5-200x200-95.jpg
+			//   https://funk.firobe.fr/media/attachments/63/c7/99/e71768320a358d0037c50c1ec41d2ebd40db0353fcc06a14c6.jpg -- 404
+			//domain === "funk.firobe.fr" ||
 			// https://audio.gafamfree.party/media/__sized__/albums/covers/2019/12/25/c863ff96-e7a1-474e-a1bf-a5774b8591cd-crop-c0-5__0-5-200x200-70.jpgd
 			//   https://audio.gafamfree.party/media/albums/covers/2019/12/25/c863ff96-e7a1-474e-a1bf-a5774b8591cd.jpg
 			domain === "audio.gafamfree.party") {
@@ -85778,6 +85791,14 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			//   https://art.ngfiles.com/images/1017000/1017695_grillhou5e_jesus-quintana.png?f1567918067
 			return src.replace(/(\/icons\/+[0-9]+\/+[0-9]+_)(?:small|medium)\./, "$1large.");
 		}
+		if (domain === "aicon.ngfiles.com") {
+			// thanks to anonymous:
+			// https://aicon.ngfiles.com/965/965859_cover.webp
+			//   https://aicon.ngfiles.com/965/965859_raw.png -- 2500x2500
+			newsrc = src.replace(/(:\/\/[^/]+\/+[0-9]+\/+[0-9]+)_cover(\.[a-z]+)(?:[?#].*)?$/, "$1_raw$2");
+			if (newsrc !== src)
+				return add_extensions(newsrc);
+		}
 		if (domain_nowww === "newgrounds.com") {
 			// share page
 			// https://www.newgrounds.com/content/share/779568/4
@@ -94553,6 +94574,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// atob:
 			//   = {"bucket":"ugcmods.bethesda.net","key":"public/content/GENESIS/617904/CLASSIFICATION_PREVIEW_IMAGE/MBLkC4V6bTR4itfkcHXv3g==/Cryomancers - 001.png","edits":{"resize":{"width":1920}},"outputFormat":"webp"}
 			domain === "ugcmods.bethesda.net" ||
+			// thanks to anonymous for reporting:
+			// https://img.festival-cannes.com/eyJidWNrZXQiOiJtZWRpYSIsImtleSI6InVwbG9hZHNcLzIwMjNcLzAzXC8xNTg1MzYucG5nIiwiZWRpdHMiOnsicmVzaXplIjp7IndpZHRoIjo1NTYsImhlaWdodCI6NjgwLCJmaXQiOiJjb3ZlciJ9LCJ0b0Zvcm1hdCI6IndlYnAifX0=
+			//   https://img.festival-cannes.com/eyJidWNrZXQiOiJtZWRpYSIsImtleSI6InVwbG9hZHMvMjAyMy8wMy8xNTg1MzYucG5nIn0=
+			// atob:
+			//   = {"bucket":"media","key":"uploads/2023/03/158536.png"}
+			domain === "img.festival-cannes.com" ||
 			// thanks to anonymous for reporting:
 			// https://images.ams-prd.blv.cloud/eyJidWNrZXQiOiJpbWFnZXMtcHJkLTFvNHV6OXpieHd6cDF1Ym0iLCJrZXkiOiJkYTkwNjE5Yy0yOGVkLTRjMDYtOTkzNi03Y2EzNGE1NjI1MzQiLCJlZGl0cyI6eyJyZXNpemUiOnsid2lkdGgiOjM2MCwiaGVpZ2h0IjozNjB9fX0=
 			//   https://images.ams-prd.blv.cloud/eyJidWNrZXQiOiJpbWFnZXMtcHJkLTFvNHV6OXpieHd6cDF1Ym0iLCJrZXkiOiJkYTkwNjE5Yy0yOGVkLTRjMDYtOTkzNi03Y2EzNGE1NjI1MzQifQ==
@@ -124178,6 +124205,32 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				can_head: false // 400
 			};
 		}
+		if (domain_nosub === "xsz-av.com") {
+			// thanks to anonymous for reporting:
+			if (/:\/\/[^/]+\/+media\/+v_[0-9a-f]{10,}\./.test(src)) {
+				var media_info = {
+					type: "video"
+				};
+				if (/\.m3u8/.test(src)) {
+					media_info.delivery = "hls",
+						media_info.problems = ["incorrect_ts_ext"]; // .jpeg
+				}
+				return {
+					url: src,
+					headers: {
+						// needed for cloudflare, under the xszcdn8.com domain linked by the m3u8
+						Accept: "*/*",
+						Origin: "https://" + domain_nosub,
+						Referer: "https://" + domain_nosub + "/",
+						"Sec-Fetch-Dest": "empty",
+						"Sec-Fetch-Mode": "cors",
+						"Sec-Fetch-Site": "same-origin"
+					},
+					media_info: media_info,
+					can_head: false
+				};
+			}
+		}
 		// -- general rules --
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			// http://www.lookalikes.info/umbraco/ImageGen.ashx?image=/media/97522/nick%20hewer%20-%20mark%20brown.jpeg&width=250&constrain=true
@@ -128434,7 +128487,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		// FIXME for audio
 		return src && (!(/^blob:/.test(src)) || !isvideo);
 	};
-	var get_img_src = function(el) {
+	var get_img_src = function(el, options) {
+		if (!options)
+			options = {};
 		if (typeof el === "string")
 			return el;
 		var el_tagname = get_tagname(el);
@@ -128460,8 +128515,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return el.currentSrc || el.src;
 		}
 		if (el_tagname === "SOURCE") {
-			if (el.parentElement) {
-				var newsrc = get_img_src(el.parentElement);
+			// FIXME: why do we have this check?
+			if (!options.source_dont_use_parent && el.parentElement) {
+				var newsrc = get_img_src(el.parentElement, options);
 				// avoid adding blob url, e.g. reddit.com videos
 				if (newsrc && is_valid_src(newsrc, true))
 					return newsrc;
@@ -137590,12 +137646,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							return;
 						}
 					}
-					var el_src = get_img_src(el);
+					var el_src = get_img_src(el, {
+						// FIXME: what was the logic of using the parent? it doesn't seem right for this
+						source_dont_use_parent: true
+					});
 					if (el_src) {
 						var src = norm(el_src);
 						addImage(src, el, { layer: layer });
 						if (!el.srcset && src in sources) {
 							var dimensions = get_el_dimensions(el);
+							// don't descriminate against <source> elements with no description over a blob: video element (xsz-av.com, thanks to anonymous for reporting)
+							if (!dimensions[0] && !dimensions[1] && el_tagname === "SOURCE" && el.parentElement)
+								dimensions = get_el_dimensions(el.parentElement);
 							sources[src].width = dimensions[0];
 							sources[src].height = dimensions[1];
 						}

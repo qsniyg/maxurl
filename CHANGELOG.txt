@@ -1,5 +1,9 @@
 2026.11.1 (in-dev)
 
+Bugfixes:
+
+ * Fix source elements being ignored as sources when popping up for video tags
+
 Special thanks to GHVirus, exurd, kapa-fanta, rudolphos for their contributions and reports for this release
 
 ---
