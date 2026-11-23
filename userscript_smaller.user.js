@@ -23914,6 +23914,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			(domain_nowww === "grand-seiko.com" && /\/media\/+Images\//i.test(src)) ||
 			domain === "img.autocarpro.in" ||
 			(domain_nowww === "trtc.io" && /\/_next\/+static\/+media\//.test(src)) ||
+			(domain_nosub === "f-cdn.com" && /^cdn[0-9]*\./.test(domain)) ||
+			(domain === "cdn.f1connect.net" && /:\/\/[^/]+\/+photo\//.test(src)) ||
+			(domain === "media.soliver.com" && /:\/\/[^/]+\/+i\//.test(src)) ||
+			(domain === "assets-labs.zeta-ai.io" && string_indexof(src, "/assets/") >= 0) ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -25308,6 +25312,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				obj.filename = match[1];
 			}
 			newsrc = src.replace(/(:\/\/[^/]+\/+[-a-f0-9]{10,})\/+.*$/, "$1");
+			if (newsrc !== src)
+				return newsrc;
+			newsrc = src.replace(/(\/images\/+[0-9a-f]\/+[0-9a-f]{2}\/+[^/]+)\/*(?:[?#].*)?$/, "$1/revision/latest");
 			if (newsrc !== src)
 				return newsrc;
 			newsrc = src.replace(/(\/revision\/[^/?#]+\/*)(?:[?#].*)?$/, "$1?format=original");
@@ -30633,7 +30640,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				website_regex: /^[a-z]+:\/\/[^/]+\/+photo\/+([0-9]+)(?:[?#].*)?$/,
 				query_for_id: "https://www.pornhub.com/photo/${id}",
 				process: function(done, resp, cache_key) {
-					var imagesrc = get_meta(resp.responseText, "twitter:image:src"); //og:image is thumbnail
+					var imagesrc = null;
+					var match = resp.responseText.match(/<a href="\/photo\/+[0-9]+">\s*<img src="(https?:\/\/[^"]+)"/);
+					if (match)
+						imagesrc = decode_entities(match[1]);
+					if (!imagesrc)
+						imagesrc = get_meta(resp.responseText, "twitter:image"); //og:image is thumbnail
 					if (!imagesrc) {
 						console_error(cache_key, "Unable to find source image for", resp);
 						return done(null, false);
@@ -36858,7 +36870,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "avatars.yandex.net" ||
 			domain === "avatars.dzeninfra.ru") {
 			obj = {
-				url: src.replace(/\/(?:[a-z]+_(?:[a-z]+_)?|[a-zA-Z]|pjpg)?[0-9]+(?:x[0-9]+)?(?:[A-Za-z_0-9]+)([?&].*)?$/, "/orig$1")
+				url: src.replace(/\/(?:(?:[a-z]+_(?:[a-z]+_)?|[a-zA-Z]|pjpg)?[0-9]+(?:x[0-9]+)?(?:[A-Za-z_0-9]+)|X*[SML])([?&].*)?$/, "/orig$1")
 			};
 			match = src.match(/\/get-[^/]+\/+([0-9]+)\/+[^/]+\/+[^/]+(?:[?#].*)?$/);
 			if (match)
@@ -42967,7 +42979,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				return add_http(decodeURIComponent(newsrc));
 		}
 		if (domain === "files.sirclocdn.xyz") return src.replace(/(\/products\/_[0-9]+_[^/._]*)(?:_[a-z]+)?(\.[^/.]*)$/, "$1_ori$2");
-		if (domain === "s.tvp.pl") return src.replace(/(\/images2?\/(?:[0-9a-f]\/){3})[-_a-zA-Z0-9]*(uid_[0-9a-f]+)[^/.]*?(\.[^/.]*)$/, "$1$2_width_9999999999999$3");
+		if (domain_nosub === "tvp.pl" && /^s[0-9]*\./.test(domain)) {
+			return src.replace(/(\/images2?\/(?:[0-9a-f]\/){3})[-_a-zA-Z0-9]*(uid_[0-9a-f]+)[^/.]*?(\.[^/.]*)$/, "$1$2_width_9999999999999$3");
+		}
 		if (domain === "sf.be.com") return src.replace(/(\/photo\/[0-9]+\/[0-9a-z]+\/[^/]*-)[a-z][0-9]+(\.[^/.]*)$/, "$1img$2");
 		if (domain_nowww === "fitwell.bg") return src.replace(/(\/pictures\/[0-9]+)_[0-9]+_*(\.[^/.]*)$/, "$1$2");
 		if (domain === "bilder.bild.de") return src.replace(/\/fotos-skaliert(\/[^/]*\/)([0-9]+),[^/.]*(\.bild\.[^/.]*)$/, "/fotos$1Bild/$2$3");
@@ -50349,6 +50363,11 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				};
 		}
 		if (domain === "uimg.ngfiles.com") return src.replace(/(\/icons\/+[0-9]+\/+[0-9]+_)(?:small|medium)\./, "$1large.");
+		if (domain === "aicon.ngfiles.com") {
+			newsrc = src.replace(/(:\/\/[^/]+\/+[0-9]+\/+[0-9]+)_cover(\.[a-z]+)(?:[?#].*)?$/, "$1_raw$2");
+			if (newsrc !== src)
+				return add_extensions(newsrc);
+		}
 		if (domain_nowww === "newgrounds.com") {
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+content\/+share\/+([0-9]+\/+[0-9]+)(?:[?#].*)?$/,
@@ -55497,6 +55516,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "d21ld3wfckjpu2.cloudfront.net" ||
 			domain === "media.hswstatic.com" ||
 			domain === "ugcmods.bethesda.net" ||
+			domain === "img.festival-cannes.com" ||
 			domain === "images.ams-prd.blv.cloud") {
 			match = src.match(/^([a-z]+:\/\/[^/]+\/+(?:(?:resize|image)\/+)?)([^-_/.]{20,})(?:[?#].*)?$/);
 			if (match) {
@@ -75491,6 +75511,36 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			};
 		}
+		if (domain === "d3stdg5so273ei.cloudfront.net") {
+			return {
+				url: src.replace(/(:\/\/[^/]+\/+.*\/[0-9]+\/+)[AUTO0-9]+x[AUTO0-9]+\/+/, "$1"),
+				can_head: false // 400
+			};
+		}
+		if (domain_nosub === "xsz-av.com") {
+			if (/:\/\/[^/]+\/+media\/+v_[0-9a-f]{10,}\./.test(src)) {
+				var media_info = {
+					type: "video"
+				};
+				if (/\.m3u8/.test(src)) {
+					media_info.delivery = "hls",
+						media_info.problems = ["incorrect_ts_ext"]; // .jpeg
+				}
+				return {
+					url: src,
+					headers: {
+						Accept: "*/*",
+						Origin: "https://" + domain_nosub,
+						Referer: "https://" + domain_nosub + "/",
+						"Sec-Fetch-Dest": "empty",
+						"Sec-Fetch-Mode": "cors",
+						"Sec-Fetch-Site": "same-origin"
+					},
+					media_info: media_info,
+					can_head: false
+				};
+			}
+		}
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			return urljoin(src, src.replace(/.*\/ImageGen\.ashx.*?image=([^&]*).*/, "$1"));
 		}
@@ -78818,7 +78868,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		// FIXME for audio
 		return src && (!(/^blob:/.test(src)) || !isvideo);
 	};
-	var get_img_src = function(el) {
+	var get_img_src = function(el, options) {
+		if (!options)
+			options = {};
 		if (typeof el === "string")
 			return el;
 		var el_tagname = get_tagname(el);
@@ -78844,8 +78896,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return el.currentSrc || el.src;
 		}
 		if (el_tagname === "SOURCE") {
-			if (el.parentElement) {
-				var newsrc = get_img_src(el.parentElement);
+			// FIXME: why do we have this check?
+			if (!options.source_dont_use_parent && el.parentElement) {
+				var newsrc = get_img_src(el.parentElement, options);
 				// avoid adding blob url, e.g. reddit.com videos
 				if (newsrc && is_valid_src(newsrc, true))
 					return newsrc;
@@ -87974,12 +88027,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							return;
 						}
 					}
-					var el_src = get_img_src(el);
+					var el_src = get_img_src(el, {
+						// FIXME: what was the logic of using the parent? it doesn't seem right for this
+						source_dont_use_parent: true
+					});
 					if (el_src) {
 						var src = norm(el_src);
 						addImage(src, el, { layer: layer });
 						if (!el.srcset && src in sources) {
 							var dimensions = get_el_dimensions(el);
+							// don't descriminate against <source> elements with no description over a blob: video element (xsz-av.com, thanks to anonymous for reporting)
+							if (!dimensions[0] && !dimensions[1] && el_tagname === "SOURCE" && el.parentElement)
+								dimensions = get_el_dimensions(el.parentElement);
 							sources[src].width = dimensions[0];
 							sources[src].height = dimensions[1];
 						}
