@@ -80140,7 +80140,7 @@ var $$IMU_EXPORT$$;
 					};
 				},
 				process: function(done, resp, cache_key) {
-					var match = resp.responseText.match(/<a href="(https?:\/\/(?:[^/]+\.)?imx\.to\/+u\/+i\/+[^"]+)" title="([^"]+)"[^>]*><img class="[^"]+" src="https?:\/\/(?:[^/]+\.)?imx\.to\/+u\/+i\/+/);
+					var match = resp.responseText.match(/<a\s+(?:class="[^"]+"\s+)href="(https?:\/\/(?:[^/]+\.)?imx\.to\/+u\/+i\/+[^"]+)" title="([^"]+)"[^>]*><img\s+(?:class="[^"]+"\s+)?src="https?:\/\/(?:[^/]+\.)?imx\.to\/+u\/+i\/+/);
 					if (!match) {
 						console_error(cache_key, "Unable to find match for", resp);
 						return done(null, false);
