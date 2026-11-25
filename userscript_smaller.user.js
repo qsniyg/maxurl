@@ -20285,6 +20285,45 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		};
 		return parse_el(root);
 	};
+	common_functions["parse_next_f_basic"] = function(responseText) {
+		var matches = match_all(responseText, /<script[^>]*>self\.__next_f\.push\(\[1,(".*?")\]\)\<\/script>/);
+		if (!matches || !matches.length) {
+			console_error("Unable to parse next_f for", { responseText: responseText });
+			return null;
+		}
+		var parts = [];
+		for (var _i = 0, matches_4 = matches; _i < matches_4.length; _i++) {
+			var match = matches_4[_i];
+			var str = match[1];
+			try {
+				var str_parsed = JSON_parse(str);
+				parts.push(str_parsed);
+			} catch (e) {
+				console_error("next_f: Skipping part:", { str: str });
+				console_error(e);
+				continue;
+			}
+		}
+		var fullstr = parts.join("");
+		var vars = {};
+		var splitted = fullstr.split("\n");
+		for (var _a = 0, splitted_1 = splitted; _a < splitted_1.length; _a++) {
+			var part = splitted_1[_a];
+			var match = part.match(/^([0-9a-f]+):([\[{"].*)$/);
+			if (!match)
+				continue;
+			var varname = match[1];
+			var json_str = match[2];
+			try {
+				var json = JSON_parse(json_str);
+				vars[varname] = json;
+			} catch (e) {
+				console_warn("next_f: Unable to parse:", { varname: varname, json_str: json_str, part: part });
+				continue;
+			}
+		}
+		return vars;
+	};
 	// -- end common_functions --
 	var get_domain_from_url = function(url) {
 		return url.replace(/^[a-z]+:\/\/([^/]*)(?:\/+.*)?$/, "$1");
@@ -24998,8 +25037,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					}
 					var id = website_match[1];
 					var response = null;
-					for (var _i = 0, matches_5 = matches; _i < matches_5.length; _i++) {
-						var match_1 = matches_5[_i];
+					for (var _i = 0, matches_6 = matches; _i < matches_6.length; _i++) {
+						var match_1 = matches_6[_i];
 						var json_1 = JSON_parse(match_1[1]);
 						var response_data = null;
 						if (json_1.response)
@@ -51841,7 +51880,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 			};
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+posts\/+(?:[^/?#]+-)?([0-9]+)(?:[?#].*)?$/,
+				website_regex: /^[a-z]+:\/\/[^/]+\/+(?:[^/]+\/+)?posts\/+(?:[^/?#]+-)?([0-9]+)(?:[?#].*)?$/,
 				query_for_id: "https://www.patreon.com/posts/${id}",
 				override_cb: function(cb, data) {
 					if (!data)
@@ -51878,17 +51917,28 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					cb(data);
 				},
 				process: function(done, resp, cache_key) {
+					var json = null;
 					var match = resp.responseText.match(/window\.patreon\s*=\s*({.*?});\s/);
 					if (!match) {
 						match = resp.responseText.match(/<script id="__NEXT_DATA__" type="application\/json">({.*?})<\/script>/);
 					}
-					if (!match) {
+					if (match) {
+						json = JSON_parse(match[1]);
+						if (json.props && json.props.pageProps) {
+							json = json.props.pageProps.bootstrapEnvelope;
+						}
+					} else {
+						var next_f_vars = common_functions["parse_next_f_basic"](resp.responseText);
+						for (var varname in next_f_vars) {
+							var varvalue = next_f_vars[varname];
+							if (is_array(varvalue) && varvalue.length === 4 && typeof varvalue[3] === "object" && varvalue[3] && varvalue[3].bootstrapEnvelope) {
+								json = varvalue[3].bootstrapEnvelope;
+							}
+						}
+					}
+					if (!json) {
 						console_error(cache_key, "Unable to find bootstrap match for", resp);
 						return done(null, false);
-					}
-					var json = JSON_parse(match[1]);
-					if (json.props && json.props.pageProps) {
-						json = json.props.pageProps.bootstrapEnvelope;
 					}
 					if (json.bootstrap)
 						json = json.bootstrap;
@@ -51901,11 +51951,12 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					var attributes = post.data.attributes;
 					var metadata = attributes.post_metadata;
 					var image_ids = [];
-					if (metadata)
+					if (metadata && metadata.image_order) // undefined for locked posts
 						image_ids = metadata.image_order;
 					var included = post.included;
 					var images = [];
-					array_foreach(image_ids, function(image_id) {
+					for (var _i = 0, image_ids_1 = image_ids; _i < image_ids_1.length; _i++) {
+						var image_id = image_ids_1[_i];
 						var image_data = find_id_in_included(included, image_id).attributes;
 						var image_url;
 						if (image_data.image_urls.original) {
@@ -51917,13 +51968,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						}
 						if (!image_url) {
 							console_warn(cache_key, "Unable to find image URL in", image_data);
-							return;
+							continue;
 						}
 						images.push({
 							url: image_url,
 							is_current: false
 						});
-					});
+					}
 					if (!images.length) {
 						if (attributes.image) {
 							var imageobj = attributes.image;
@@ -52029,8 +52080,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						return done(null, false);
 					}
 					var images = [];
-					for (var _i = 0, matches_6 = matches; _i < matches_6.length; _i++) {
-						var match_4 = matches_6[_i];
+					for (var _i = 0, matches_7 = matches; _i < matches_7.length; _i++) {
+						var match_4 = matches_7[_i];
 						images.push(urljoin(resp.finalUrl, decode_entities(match_4[1]), true));
 					}
 					images.sort(function(a, b) {
@@ -55822,8 +55873,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						return done(null, false);
 					}
 					var raw_urls = [];
-					for (var _i = 0, matches_7 = matches; _i < matches_7.length; _i++) {
-						var match_5 = matches_7[_i];
+					for (var _i = 0, matches_8 = matches; _i < matches_8.length; _i++) {
+						var match_5 = matches_8[_i];
 						var json_4 = JSON_parse(match_5[1]);
 						if (json_4.contentUrl)
 							array_upush(raw_urls, json_4.contentUrl);
@@ -60454,8 +60505,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					var matches = match_all(resp.responseText, /document\.getElementById\('(.*?)'\)\.innerHTML *= *(["'](\/\/*s.*?));/);
 					var match = null;
 					if (matches) {
-						for (var _i = 0, matches_8 = matches; _i < matches_8.length; _i++) {
-							var m = matches_8[_i];
+						for (var _i = 0, matches_9 = matches; _i < matches_9.length; _i++) {
+							var m = matches_9[_i];
 							if (m[1] === "botlink")
 								match = m;
 						}
@@ -64856,8 +64907,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						return done(null, false);
 					}
 					var urls = [];
-					for (var _i = 0, matches_9 = matches; _i < matches_9.length; _i++) {
-						var match_9 = matches_9[_i];
+					for (var _i = 0, matches_10 = matches; _i < matches_10.length; _i++) {
+						var match_9 = matches_10[_i];
 						urls.push(decode_entities(match_9[1]));
 					}
 					done(urls, 30); // 60 second expiry
@@ -66350,10 +66401,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 		if (domain_nowww === "snapxcdn.com") {
 			match = src.match(/[?&]token=eyJ[^.&]+\.(eyJ[^.&]+)\./);
 			if (match) {
-				var splitted_2 = match[1].split("_");
-				var jsonstr_1 = base64_decode(splitted_2[0]);
-				if (splitted_2[1])
-					jsonstr_1 += "?" + base64_decode(splitted_2[1]);
+				var splitted_3 = match[1].split("_");
+				var jsonstr_1 = base64_decode(splitted_3[0]);
+				if (splitted_3[1])
+					jsonstr_1 += "?" + base64_decode(splitted_3[1]);
 				var json_7 = JSON_parse(jsonstr_1);
 				return json_7.url;
 			}
@@ -67018,10 +67069,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			domain === "img.dfrag.gg") {
 			newsrc = src.replace(/.*?\/(aHR0c[^.?#]+?)(?:[?#.].*)?$/, "$1");
 			if (newsrc !== src) {
-				var splitted_3 = newsrc.split("/");
+				var splitted_4 = newsrc.split("/");
 				var decoded_7 = [];
-				for (var _h = 0, splitted_1 = splitted_3; _h < splitted_1.length; _h++) {
-					var s = splitted_1[_h];
+				for (var _h = 0, splitted_2 = splitted_4; _h < splitted_2.length; _h++) {
+					var s = splitted_2[_h];
 					decoded_7.push(base64_decode(s));
 				}
 				return decoded_7.join("");
@@ -71092,8 +71143,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					}
 					var splitted = addmatch[2].split(/\s*\+\s*/);
 					var value = [];
-					for (var _a = 0, splitted_4 = splitted; _a < splitted_4.length; _a++) {
-						var sval = splitted_4[_a];
+					for (var _a = 0, splitted_5 = splitted; _a < splitted_5.length; _a++) {
+						var sval = splitted_5[_a];
 						value.push(sval);
 					}
 					return done({
@@ -72417,8 +72468,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			match = src.match(/\/usuaris\/+libros\/+thumbs\/+[-0-9a-f]{10,}\/+[^/]+\/+([^/]+)\.[a-z]+(?:[?#].*)?$/);
 			if (match) {
 				var matches = match_all(options.document.documentElement.innerHTML, /\/usuaris\/libros\/fotos\/[0-9]+\/original\/([^/\"\s.]+)\.[a-z]+/);
-				for (var _l = 0, matches_4 = matches; _l < matches_4.length; _l++) {
-					var smatch = matches_4[_l];
+				for (var _l = 0, matches_5 = matches; _l < matches_5.length; _l++) {
+					var smatch = matches_5[_l];
 					if (smatch[1] === match[1]) {
 						return smatch[0];
 					}
@@ -74800,11 +74851,19 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				};
 			}
 		}
-		if (domain_nowww === "yuvideos.com") {
+		if (domain_nowww === "yuvideos.com" ||
+			domain_nowww === "celebsnudeworld.com") {
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+([0-9]+)\/+(?:[^/]+\/*)?(?:[?#].*)?$/,
 				query_for_id: "https://" + domain + "/${id}/",
 				process: function(done, resp, cache_key, urlmatch) {
+					var videotag_match = resp.responseText.match(/<video id="player-fluid"[^>]*>\s*<source[\s\S]*?<\/video>/);
+					if (videotag_match) {
+						var obj_19 = common_functions["get_videotag_obj"](resp);
+						if (videotag_match) {
+							return done(obj_19, 60 * 60);
+						}
+					}
 					var vid = urlmatch[1].replace(/^0*/, "");
 					var match = resp.responseText.match(/let f\s*=\s*(\[{.*?},*\]);/);
 					if (!match) {
@@ -77662,8 +77721,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 					if (!/\/search\?(?:.*&)?async=/.test(req.url) || !/[?&]s=images/.test(req.url))
 						return;
 					var matches = match_all(resp.response, /\[[0-9]+,\\"([^"]+)\\",\[\\"https:\/\/[^/]+\.gstatic\.com\/images\?q[^"]+\\"[^\]]+\],\[\\"([^"]+)\\"/);
-					for (var _i = 0, matches_10 = matches; _i < matches_10.length; _i++) {
-						var match = matches_10[_i];
+					for (var _i = 0, matches_11 = matches; _i < matches_11.length; _i++) {
+						var match = matches_11[_i];
 						var tbnid_raw = match[1];
 						var tbnid = unjson_str_1(unjson_str_1(tbnid_raw));
 						var url_raw = match[2];
@@ -77854,8 +77913,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return obj;
 		obj = force_array(obj);
 		var newobj = [];
-		for (var _i = 0, obj_19 = obj; _i < obj_19.length; _i++) {
-			var url = obj_19[_i];
+		for (var _i = 0, obj_20 = obj; _i < obj_20.length; _i++) {
+			var url = obj_20[_i];
 			if (typeof (url) === "string") {
 				newobj.push(fullurl(currenturl, url));
 			} else {
@@ -78704,7 +78763,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			});
 		};
 		(function() { return __awaiter(_this_1, void 0, void 0, function() {
-			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_20, sobj, _a, queryobj_1, obj_21, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
+			var finalcb, oldobj, redirect_map, bad_urls, skipped_urls, tried_urls, is_bad_url, last_data, last_newurl, newoptions, option_2, obj, obj_urls, i, orig_url_1, redirected, queryobj, _i, obj_21, sobj, _a, queryobj_1, obj_22, _b, newurl, newobj, data, orig_url, tried_index, i, newurl_index;
 			return __generator(this, function(_c) {
 				switch (_c.label) {
 					case 0:
@@ -78745,8 +78804,8 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 							}
 						}
 						queryobj = [];
-						for (_i = 0, obj_20 = obj; _i < obj_20.length; _i++) {
-							sobj = obj_20[_i];
+						for (_i = 0, obj_21 = obj; _i < obj_21.length; _i++) {
+							sobj = obj_21[_i];
 							if (is_bad_url(sobj.url)) {
 								continue;
 							}
@@ -78754,9 +78813,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 						}
 						// required to avoid querying an ok url twice
 						for (_a = 0, queryobj_1 = queryobj; _a < queryobj_1.length; _a++) {
-							obj_21 = queryobj_1[_a];
-							if (tried_urls.has(obj_21.url) && !is_bad_url(obj_21.url))
-								return [2 /*return*/, options.cb([obj_21], last_data)];
+							obj_22 = queryobj_1[_a];
+							if (tried_urls.has(obj_22.url) && !is_bad_url(obj_22.url))
+								return [2 /*return*/, options.cb([obj_22], last_data)];
 						}
 						if (!queryobj.length) {
 							if (_nir_debug_) {
