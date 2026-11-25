@@ -1,5 +1,9 @@
 2026.11.1 (in-dev)
 
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Patreon)
+
 Bugfixes:
 
  * Fix source elements being ignored as sources when popping up for video tags

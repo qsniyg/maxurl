@@ -30275,6 +30275,53 @@ var $$IMU_EXPORT$$;
 		return parse_el(root);
 	}
 
+	common_functions["parse_next_f_basic"] = function(responseText) {
+		let matches = match_all(responseText, /<script[^>]*>self\.__next_f\.push\(\[1,(".*?")\]\)\<\/script>/);
+		if (!matches || !matches.length) {
+			console_error("Unable to parse next_f for", {responseText});
+			return null;
+		}
+
+		let parts = [];
+
+		for (let match of matches) {
+			let str = match[1];
+			try {
+				let str_parsed = JSON_parse(str);
+				parts.push(str_parsed);
+			} catch (e) {
+				console_error("next_f: Skipping part:", {str});
+				console_error(e);
+
+				continue
+			}
+		}
+
+		let fullstr = parts.join("");
+
+		let vars = {};
+
+		let splitted = fullstr.split("\n");
+		for (let part of splitted) {
+			let match = part.match(/^([0-9a-f]+):([\[{"].*)$/);
+			if (!match)
+				continue;
+
+			let varname = match[1];
+			let json_str = match[2];
+
+			try {
+				let json = JSON_parse(json_str);
+				vars[varname] = json
+			} catch (e) {
+				console_warn("next_f: Unable to parse:", {varname, json_str, part});
+				continue;
+			}
+		}
+
+		return vars;
+	};
+
 	// -- end common_functions --
 
 	var get_domain_from_url = function(url:string):string {
@@ -98275,7 +98322,7 @@ var $$IMU_EXPORT$$;
 
 			// TODO: campaigns, user pictures
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+posts\/+(?:[^/?#]+-)?([0-9]+)(?:[?#].*)?$/,
+				website_regex: /^[a-z]+:\/\/[^/]+\/+(?:[^/]+\/+)?posts\/+(?:[^/?#]+-)?([0-9]+)(?:[?#].*)?$/,
 				// or: https://www.patreon.com/api/posts/${id}
 				query_for_id: "https://www.patreon.com/posts/${id}",
 				override_cb: function(cb, data) {
@@ -98322,20 +98369,32 @@ var $$IMU_EXPORT$$;
 					cb(data);
 				},
 				process: function(done, resp, cache_key) {
+					var json = null;
+
 					//var match = resp.responseText.match(/Object\.assign\s*\(\s*window\.patreon\.bootstrap\s*,\s*({[\s\S]*?})\);\s*Object\./);
 					var match = resp.responseText.match(/window\.patreon\s*=\s*({.*?});\s/);
 					if (!match) {
 						match = resp.responseText.match(/<script id="__NEXT_DATA__" type="application\/json">({.*?})<\/script>/);
 					}
-					if (!match) {
-						console_error(cache_key, "Unable to find bootstrap match for", resp);
-						return done(null, false);
+
+					if (match) {
+						json = JSON_parse(match[1]);
+						if (json.props && json.props.pageProps) {
+							json = json.props.pageProps.bootstrapEnvelope;
+						}
+					} else {
+						let next_f_vars = common_functions["parse_next_f_basic"](resp.responseText);
+						for (let varname in next_f_vars) {
+							let varvalue = next_f_vars[varname];
+							if (is_array(varvalue) && varvalue.length === 4 && typeof varvalue[3] === "object" && varvalue[3] && varvalue[3].bootstrapEnvelope) {
+								json = varvalue[3].bootstrapEnvelope;
+							}
+						}
 					}
 
-					var json = JSON_parse(match[1]);
-					// next_data
-					if (json.props && json.props.pageProps) {
-						json = json.props.pageProps.bootstrapEnvelope;
+					if (!json) {
+						console_error(cache_key, "Unable to find bootstrap match for", resp);
+						return done(null, false);
 					}
 
 					if (json.bootstrap)
@@ -98350,12 +98409,13 @@ var $$IMU_EXPORT$$;
 					var attributes = post.data.attributes;
 					var metadata = attributes.post_metadata;
 					var image_ids = [];
-					if (metadata) image_ids = metadata.image_order;
+					if (metadata && metadata.image_order) // undefined for locked posts
+						image_ids = metadata.image_order;
 					var included = post.included;
 
 					var images = [];
 
-					array_foreach(image_ids, function(image_id) {
+					for (let image_id of image_ids) {
 						var image_data = find_id_in_included(included, image_id).attributes;
 
 						var image_url;
@@ -98371,14 +98431,14 @@ var $$IMU_EXPORT$$;
 
 						if (!image_url) {
 							console_warn(cache_key, "Unable to find image URL in", image_data);
-							return;
+							continue;
 						}
 
 						images.push({
 							url: image_url,
 							is_current: false
 						});
-					});
+					}
 
 					if (!images.length) {
 						if (attributes.image) {
@@ -136867,12 +136927,23 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nowww === "yuvideos.com") {
+		if (domain_nowww === "yuvideos.com" ||
+			domain_nowww === "celebsnudeworld.com") {
 			// thanks to anonymous for reporting:
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+([0-9]+)\/+(?:[^/]+\/*)?(?:[?#].*)?$/,
 				query_for_id: "https://" + domain + "/${id}/",
 				process: function(done, resp, cache_key, urlmatch) {
+					// celebsnudeworld.com
+					let videotag_match = resp.responseText.match(/<video id="player-fluid"[^>]*>\s*<source[\s\S]*?<\/video>/);
+					if (videotag_match) {
+						let obj = common_functions["get_videotag_obj"](resp);
+						if (videotag_match) {
+							return done(obj, 60*60);
+						}
+					}
+
+					// yuvideos.com
 					let vid = urlmatch[1].replace(/^0*/, "");
 
 					let match = resp.responseText.match(/let f\s*=\s*(\[{.*?},*\]);/)
@@ -136913,6 +136984,8 @@ var $$IMU_EXPORT$$;
 
 			// https://www.yuvideos.com/media/photos/thumbs/143543.jpg
 			//   https://www.yuvideos.com/media/photos/143543.jpg
+			// https://celebsnudeworld.com/media/photos/thumbs/193353.jpg
+			//   https://celebsnudeworld.com/media/photos/193353.jpg
 			newsrc = src.replace(/\/media\/+photos\/+thumbs\/+/, "/media/photos/");
 			if (newsrc !== src)
 				return newsrc;
