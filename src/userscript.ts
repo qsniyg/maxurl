@@ -15968,6 +15968,7 @@ var $$IMU_EXPORT$$;
 		mouseover_allow_popup_when_fullscreen: false,
 		//mouseover_support_pointerevents_none: false,
 		mouseover_find_els_mode: "hybrid",
+		popup_reset_pointerevents: true,
 		popup_allow_cache: true,
 		popup_cache_duration: 30,
 		popup_cache_itemlimit: 20,
@@ -18902,6 +18903,16 @@ var $$IMU_EXPORT$$;
 				"full": "This will result in a much higher CPU load for websites such as Facebook, and will occasionally return the wrong element.\nUse this option with caution."
 			},
 			//advanced: true, // Commenting this out because the option is important
+			category: "popup",
+			subcategory: "source"
+		},
+		popup_reset_pointerevents: {
+			name: "Modify styles when finding elements",
+			description: "Temporarily resets styles that can hinder IMU from finding the media element. This will not affect the flow of the website.",
+			requires: {
+				mouseover: true
+			},
+			advanced: true,
 			category: "popup",
 			subcategory: "source"
 		},
@@ -37512,6 +37523,9 @@ var $$IMU_EXPORT$$;
 			// thanks to anonymous for reporting:
 			// https://assets-labs.zeta-ai.io/assets/1e9bde04-3c44-4e41-a89f-15aeb4ea50ba.png?w=16&q=75&f=webp
 			(domain === "assets-labs.zeta-ai.io" && string_indexof(src, "/assets/") >= 0) ||
+			// thanks to anonymous for reporting:
+			// https://cdn.cosmos.so/ef02e075-fba1-4777-844b-7eb6817d0bcb?format=webp&w=2048
+			domain === "cdn.cosmos.so" ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -155150,6 +155164,7 @@ var $$IMU_EXPORT$$;
 			els_mode?: "full"|"hybrid"|"simple",
 			els?: Array<Element>
 		}
+		let disable_pointer_events_style = null;
 		function find_els_at_point(xy, options?:FindElsAtPointOptions, els?:Array<Element>, prev?:IMUSet, zoom_cache?:Map<Element, {zIndex: number}>):Array<HTMLElement> {
 			// test for pointer-events: none: https://www.shacknews.com/article/114834/should-you-choose-vulkan-or-directx-12-in-red-dead-redemption-2
 
@@ -155183,7 +155198,20 @@ var $$IMU_EXPORT$$;
 			var afterret = [];
 
 			if (!els) {
+				if (settings.popup_reset_pointerevents) {
+					if (!disable_pointer_events_style) {
+						disable_pointer_events_style = document_createElement("style");
+						disable_pointer_events_style.innerText = "* {pointer-events: initial !important;}";
+					}
+
+					document.documentElement.appendChild(disable_pointer_events_style);
+				}
+
 				let orig_els = document.elementsFromPoint(xy[0], xy[1]);
+
+				if (settings.popup_reset_pointerevents) {
+					disable_pointer_events_style.parentElement.removeChild(disable_pointer_events_style);
+				}
 
 				els = [];
 				for (let el of orig_els) {
