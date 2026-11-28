@@ -30043,6 +30043,10 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://media.truereligion.com/image/upload/t_kiosk_small/f_auto,q_auto/210631_1001_dtl1
 			//   https://media.truereligion.com/image/upload/210631_1001_dtl1
 			(domain === "media.truereligion.com" && /\/image\/+upload\//.test(src)) ||
+			// thanks to iotaOmicron on github: https://github.com/qsniyg/maxurl/issues/1669
+			// https://media.rolex.com/image/upload/q_auto/f_auto/c_limit,w_1600/v1786439098/rolexcom/collection/family-pages/classic-watches/day-date/family-page/2026/classic-watches-day-date-m228236-0018-cover-v2-portrait
+			//   https://media.rolex.com/image/upload/rolexcom/collection/family-pages/classic-watches/day-date/family-page/2026/classic-watches-day-date-m228236-0018-cover-v2-portrait
+			(domain === "media.rolex.com" && /\/image\/+upload\//.test(src)) ||
 			// thanks to karpuzikov on github: https://github.com/qsniyg/maxurl/issues/1066
 			// https://resource.logitechg.com/w_677,ar_1:1,c_limit,b_rgb:2f3132,q_auto,f_auto,dpr_auto/d_transparent.gif/content/dam/gaming/en/homepage/product-swatch-carousel/home-product-swatch-4.png?v=1
 			//   https://resource.logitechg.com/content/dam/gaming/en/homepage/product-swatch-carousel/home-product-swatch-4.png?v=1
@@ -32880,10 +32884,6 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// https://content.assets.pressassociation.io/2018/02/06210749/1324f25e-1b19-4315-9420-e8e027475cf2.jpg?rect=0,183,2355,1325&ext=.jpg
 			//domain === "content.assets.pressassociation.io" ||
 			(domain_nosub === "pressassociation.io" && domain.match(/\.assets\.pressassociation\.io$/)) ||
-			// http://media.immediate.co.uk/volatile/sites/3/2012/05/13874.jpg?quality=90&lb=620,413&background=white
-			domain === "media.immediate.co.uk" ||
-			// https://images.immediate.co.uk/volatile/sites/3/2018/03/Emma-Watson-Oscars-tattoo-25baac2.jpg?quality=10&lb=620,413&background=white
-			domain === "images.immediate.co.uk" ||
 			// https://media.gettyimages.com/photos/nick-hewer-arriving-for-the-2012-arqiva-british-academy-television-picture-id848052898?k=6&m=848052898&s=612x612&w=0&h=4QnBTCuNyp6nYhAumGR6k9gqH3iYagsnqkDo0ouGnts=
 			// adds watermark, sometimes smaller
 			//domain === "media.gettyimages.com" ||
@@ -34308,6 +34308,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to anonymous for reporting:
 			// https://cdn.cosmos.so/ef02e075-fba1-4777-844b-7eb6817d0bcb?format=webp&w=2048
 			domain === "cdn.cosmos.so" ||
+			// thanks to anonymous for reporting:
+			// https://img.bdg.com/uploads/image/2026/11/17/7affa2bd/header.jpg?tr=w-295,h-295,dpr-2
+			(domain === "img.bdg.com" && /\/uploads\/+image\//.test(src)) ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -34496,6 +34499,18 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			return {
 				url: src.replace(/\?.*$/, ""),
 				head_wrong_contenttype: true
+			};
+		}
+		if (domain_nosub === "immediate.co.uk" && /^(?:images|media)\./.test(domain)) {
+			// http://media.immediate.co.uk/volatile/sites/3/2012/05/13874.jpg?quality=90&lb=620,413&background=white
+			//domain === "media.immediate.co.uk" ||
+			// https://images.immediate.co.uk/volatile/sites/3/2018/03/Emma-Watson-Oscars-tattoo-25baac2.jpg?quality=10&lb=620,413&background=white
+			// thanks to anonymous for reporting:
+			// https://images.production.immediate.co.uk/volatile/sites/3/2026/11/26-07-14RTSIASHOT-10126V2-copy-1a4b70b.jpg?quality=90&resize=980,654
+			return {
+				url: src.replace(/\?.*$/, ""),
+				head_wrong_contenttype: true,
+				head_wrong_contentlength: true
 			};
 		}
 		if ((domain_nowww === "bristolworld.com" ||
@@ -35524,6 +35539,9 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			// thanks to anonymous for reporting:
 			// https://pic.mingtuiw.com/2025/08/18e7ccd2e5daeb1e93b01241ba5e2e9e-400x396.jpg
 			domain === "pic.mingtuiw.com" ||
+			// thanks to anonymous:
+			// https://opcinailidza.ba/skladiste/2026/11/WhatsApp-Image-2026-11-27-at-10.28.08-2-2048x1365.jpeg
+			(domain_nowww === "opcinailidza.ba" && string_indexof(src, "/skladiste/") >= 0) ||
 			// thanks to anonymous for reporting:
 			// https://cdn.entameclip.com/2024/10/pic20241023kimitoband1-300x225.jpg
 			//   https://cdn.entameclip.com/2024/10/pic20241023kimitoband1.jpg
@@ -85599,7 +85617,7 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 			//   https://s2.erome.com/165/aToCOFkn/of5tx2ym.jpeg
 			return src.replace(/\/thumbs\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/$1");
 		}
-		if (domain_nosub === "erome.com" && /^v[0-9]*\./.test(domain)) {
+		if (domain_nosub === "erome.com" && /^v[0-9]*(?:-[^/.]+)?\./.test(domain)) {
 			var video = void 0;
 			if (/\.mp4(?:[?#])$/.test(src))
 				video = true;
@@ -124307,6 +124325,20 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				};
 			}
 		}
+		if (domain === "img.creativepool.com") {
+			// thanks to anonymous for reporting:
+			// https://img.creativepool.com/files/profileimage/c7/52/c7528c278102ec980a6ffa5fa113bd72_medium.jpeg
+			//   https://img.creativepool.com/files/profileimage/c7/52/c7528c278102ec980a6ffa5fa113bd72_full.jpeg
+			// https://img.creativepool.com/files/profileimage/c7/52/c7528c278102ec980a6ffa5fa113bd72_thumb.jpeg
+			//   https://img.creativepool.com/files/profileimage/c7/52/c7528c278102ec980a6ffa5fa113bd72_full.jpeg
+			// https://img.creativepool.com/files/candidate/portfolio/2col/2545694.jpg
+			//   https://img.creativepool.com/files/candidate/portfolio/full/2545694.jpg
+			// https://img.creativepool.com/files/candidate/portfolio/_w680/2512823.png
+			//   https://img.creativepool.com/files/candidate/portfolio/full/2512823.png -- 960x1200
+			return src
+				.replace(/(\/files\/+candidate\/+portfolio\/+)(?:_[wh][0-9]+|2col)\/+/, "$1full/")
+				.replace(/(\/files\/+profileimage\/+(?:[0-9a-f]{2}\/+){2}[0-9a-f]{10,})_(?:thumb|medium)\./, "$1_full.");
+		}
 		// -- general rules --
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			// http://www.lookalikes.info/umbraco/ImageGen.ashx?image=/media/97522/nick%20hewer%20-%20mark%20brown.jpeg&width=250&constrain=true
@@ -139907,10 +139939,13 @@ var __generator = (this && this.__generator) || function(thisArg, body) {
 				}
 				var our_id = current_img_i;
 				current_img_i++;
+				//console.log("STARTING", our_id, our_source, deepcopy(domains_processing), currently_processing);
 				if (our_source) {
 					options.replace_image_func(options, our_source, function() {
+						//console.log("FINISHED", our_id, deepcopy(domains_processing), currently_processing);
 						finish_img(our_id);
 					}, function() {
+						//console.log("DOMAIN", our_id, deepcopy(domains_processing), currently_processing);
 						if (our_domain)
 							domains_processing[our_domain]--;
 					}, function(progobj) {

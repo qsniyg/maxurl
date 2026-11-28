@@ -12,7 +12,7 @@ Bugfixes:
 
  * Fix source elements being ignored as sources when popping up for video tags
 
-Special thanks to GHVirus, exurd, kapa-fanta, rudolphos for their contributions and reports for this release
+Special thanks to GHVirus, exurd, kapa-fanta, rudolphos, iotaOmicron for their contributions and reports for this release
 
 ---
 
